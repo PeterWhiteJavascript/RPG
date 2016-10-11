@@ -1,0 +1,13 @@
+{
+    "homeland_forest":{
+        "shop":{
+            "potion":{"name":"Potion","cost":100}
+        },
+        "blacksmith":{
+            
+        },
+        "inn":{
+            "cost":100
+        }
+    }
+}

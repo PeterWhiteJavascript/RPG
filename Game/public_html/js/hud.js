@@ -1,0 +1,3 @@
+Quintus.HUD=function(Q){
+    
+};

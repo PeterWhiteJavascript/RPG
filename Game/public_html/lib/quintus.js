@@ -519,9 +519,9 @@ var Quintus = exportTarget[key] = function(opts) {
    @for Quintus
   */
   Q.options = {
-    imagePath: "images/",
-    audioPath: "audio/",
-    dataPath:  "data/",
+    imagePath: "./images/",
+    audioPath: "./audio/",
+    dataPath:  "./data/",
     audioSupported: [ 'mp3','ogg' ],
     sound: true,
     frameTimeLimit: 100,

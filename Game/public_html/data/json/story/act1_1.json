@@ -1,0 +1,31 @@
+{
+    "dialogue":{
+        "bg":"homeland.png",
+        "interaction":[
+            {"text":["Hiya","Testing","Bye"],"asset":"","pos":"right"},
+            {"text":["Yahoo","ASDesting","dwawfawfBye"],"asset":"","pos":"left"}
+        ]
+        
+    },
+    "battle":{
+        "map":"homeland.tmx",
+        "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "enemies":[
+            {},
+            {}
+        ],
+        "interactables":[
+            {}
+        ],
+        "pickups":[
+            {}
+        ]
+    },
+    "menus":{
+        "bg":"homeland.png",
+        "interaction":[
+            {"text":["Battle is complete!","WOW!","On to menus!!!"]}
+        ],
+        "location":"homeland_forest"
+    }
+}
