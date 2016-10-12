@@ -3,70 +3,68 @@ Quintus.SceneFuncs=function(Q){
     Q.startScene = function(scene){
         Q.load("json/story/"+scene+".json",function(){
             var data = Q.assets["json/story/"+scene+".json"];
+            //If there is dialogue
             if(data.dialogue){
-                Q.load("bg/"+data.dialogue.bg,function(){
-                    Q.makeDialogue(scene);
+                //Add the bg/ path to the array of bg's
+                data.dialogue.bg.forEach(function(bg,i){data.dialogue.bg[i] = "bg/"+bg;});
+                //Load the bg assets and create the scene
+                Q.load(data.dialogue.bg.join(','),function(){
                     //Stage the scene
-                    Q.stageScene(scene,{data: data, dialogue: data.dialogue});
+                    Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue});
                 });
-                
             }
             if(data.battle) {
                 Q.loadTMX("tmx/" + data.battle.map, function() {
-                    Q.makeBattle(scene);
+                    //For those occasions where there's no dialogue cutscene, stage the battle scene.
+                    if(!data.dialogue){
+                        Q.stageScene("battle",{data:data,battle:data.battle});
+                    }
                 });
             }
-        });
-    };
-    Q.makeDialogue = function(sceneName){
-        Q.scene(sceneName,function(stage){
-            var dialogueData = stage.options.dialogue;
-            if(dialogueData.bg && dialogueData.bg.length > 0) {
-                stage.insert(new Q.BackgroundImage({asset:"bg/"+dialogueData.bg}));
+            if(data.victory){
+                //Add the bg/ path to the array of bg's
+                data.victory.bg.forEach(function(bg,i){data.victory.bg[i] = "bg/"+bg;});
             }
-            //Show a text box (testing)
-            var textbox = stage.insert(new Q.TextBox());
-            var da = stage.insert(new Q.DialogueArea({w: Q.width-20}));
-            var dialogue = da.insert(new Q.Dialogue({label:"...", align: 'left', x: 10}));
-
-            var interactionIndex = 0;
-            var textIndex = 0;
-            dialogue.nextText = function() {
-                if(textIndex >= dialogueData.interaction[interactionIndex].text.length) {
-                    textIndex = 0;
-                    interactionIndex++;
-                }
-                if(interactionIndex >= dialogueData.interaction.length) {
-                    // todo: How do I decide what's next? What if it isn't a battle?
-                    Q.input.off("confirm", dialogue);
-                    Q.stageScene("battle_"+sceneName,{data:stage.options.data, battle: stage.options.data.battle});
-                    return;
-                }
-                dialogue.p.label = dialogueData.interaction[interactionIndex].text[textIndex];
-                dialogue.p.align = dialogueData.interaction[interactionIndex].pos;
-                if(dialogue.p.align == 'left') {
-                    dialogue.p.x = 10;
-                } else if(dialogue.p.align == 'right') {
-                    dialogue.p.x = Q.width-30;
-                }
-                textIndex++;
-            };
-            dialogue.nextText();
-            Q.input.on("confirm", dialogue, function() {
-                dialogue.nextText();
-            });
+            if(data.defeat){
+                //Add the bg/ path to the array of bg's
+                data.defeat.bg.forEach(function(bg,i){data.defeat.bg[i] = "bg/"+bg;});
+            }
         });
     };
-    Q.makeBattle = function(sceneName){
-        Q.scene("battle_" + sceneName,function(stage){
-            var battleData = stage.options.battle;
-            Q.stageTMX("tmx/"+battleData.map, stage);
-
-            Q.input.on("confirm", stage, function() {
-                // Temporary: press 'enter' to win the battle
-                Q.input.off("confirm", stage);
-                Q.stageScene(sceneName, 1, {data: stage.options.data, dialogue: stage.options.data.menus});
-            });
+    Q.scene("dialogue",function(stage){
+        var dialogueData = stage.options.dialogue;
+        console.log(dialogueData)
+        var bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg[0]}));
+        //The textbox is in charge of all of the functions that need to be run to do custom events.
+        //It also shows the text_box.png
+        var textbox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg[0]}));
+        //The Dialogue Area is the inner area of the text box. It will be transparent later on.
+        textbox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
+        //The Dialogue is the text that is inside the dialogue area
+        textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({label:"...", align: 'left', x: 10}));
+        textbox.nextText();
+        Q.input.on("confirm", textbox, function() {
+            this.nextText();
         });
-    };
+    });
+    Q.scene("battle",function(stage){
+        var battleData = stage.options.battle;
+        Q.stageTMX("tmx/"+battleData.map, stage);
+
+        // Temporary: press 'enter' to win the battle
+        Q.input.on("confirm", stage, function() {
+            Q.input.off("confirm", stage);
+            Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.victory});
+        });
+        // Temporary: press 'esc' to win the battle
+        Q.input.on("esc", stage, function() {
+            Q.input.off("esc", stage);
+            Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.defeat});
+        });
+    });
+    Q.scene("menus",function(stage){
+        //TO DO: Create menus that you can use
+        console.log("Menu time!")
+        console.log(stage.options.menus)
+    });
 };

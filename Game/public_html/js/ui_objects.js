@@ -16,9 +16,81 @@ Quintus.UIObjects=function(Q){
                 x:0,y:0,
                 cx:0,cy:0,
                 type:Q.SPRITE_NONE,
-                asset:"ui/text_box.png"
+                asset:"ui/text_box.png",
+                
+                interactionIndex:0,
+                textIndex:0
             });
             this.p.y=Q.height-this.p.h;
+        },
+        checkTextNum:function(){
+            if(this.p.textIndex >= this.p.dialogueData.interaction[this.p.interactionIndex].text.length) {
+                this.p.textIndex = 0;
+                this.p.interactionIndex++;
+            }
+        },
+        checkInteractionNum:function(){
+            var stage = this.stage;
+            if(this.p.interactionIndex >= this.p.dialogueData.interaction.length) {
+                // todo: How do I decide what's next? What if it isn't a battle?
+                Q.input.off("confirm", this.p.dialogueText);
+                Q.stageScene("battle",0,{data:stage.options.data, battle: stage.options.data.battle});
+                //Clear this stage
+                Q.clearStage(1);
+                return true;
+            }
+        },
+        nextText:function() {
+            //Remove later
+            if(this.p.dialogueData.interaction[this.p.interactionIndex].func){alert("Code is broken. A function should never be tried to run here.");}
+            this.checkTextNum();
+            if(this.checkInteractionNum()){return;};
+            var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
+            this['cycle'+type]();
+        },
+        checkDialogueType:function(interaction){
+            if(interaction.text){
+                return 'Text';
+            } else if(interaction.func){
+                return 'Func';
+            }
+        },
+        cycleText:function(){
+            this.p.dialogueText.p.label = this.p.dialogueData.interaction[this.p.interactionIndex].text[this.p.textIndex];
+            this.p.dialogueText.p.align = this.p.dialogueData.interaction[this.p.interactionIndex].pos;
+            if(this.p.dialogueText.p.align == 'left') {
+                this.p.dialogueText.p.x = 10;
+            } else if(this.p.dialogueText.p.align == 'right') {
+                this.p.dialogueText.p.x = this.p.dialogueArea.p.w-10;
+            }
+            this.p.textIndex++;
+            
+        },
+        cycleFunc:function(){
+            this[this.p.dialogueData.interaction[this.p.interactionIndex].func].apply(this,this.p.dialogueData.interaction[this.p.interactionIndex].props);
+            this.p.interactionIndex++;
+            if(this.checkInteractionNum()){return;};
+            var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
+            this['cycle'+type]();
+        },
+        loadMenus:function(){
+            var stage = this.stage;
+            Q.input.off("confirm", stage);
+            Q.stageScene("menus",1,{data:stage.options.data,menus:stage.options.data.menus});
+        },
+        getProp:function(prop){
+            return this.p[prop];
+        },
+        changeBg:function(bg){
+            this.p.bg = bg;
+            this.p.bgImage.p.asset = bg;
+        },
+        testFunc:function(string,integer,coolFunc,superCoolFunc){
+            console.log("I am a string: "+string);
+            console.log("I am an integer: "+integer);
+            eval(coolFunc);
+            console.log("I am the current background: "+eval(superCoolFunc));
+            
         }
     });
     Q.UI.Container.extend("DialogueArea",{

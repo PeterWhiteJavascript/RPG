@@ -1,9 +1,12 @@
 {
     "dialogue":{
-        "bg":"forest.jpg",
+        "bg":["forest.jpg","city.jpg"],
         "interaction":[
             {"text":["L do you know","Gods of Death","Love Apples?"],"asset":"","pos":"right"},
-            {"text":["Wow","Uhh","Bye!"],"asset":"","pos":"left"}
+            {"text":["Wow","Uhh","Bye!"],"asset":"","pos":"left"},
+            {"func":"changeBg","props":["bg/city.jpg"]},
+            {"func":"testFunc","props":["one",2," console.log('I am a cool JSON string that is evaled');","this.getProp('bg')"]},
+            {"text":["Changed locations :3","On to battle!"],"asset":"","pos":"left"}
         ]
         
     },
@@ -21,11 +24,24 @@
             {}
         ]
     },
-    "menus":{
-        "bg":"",
+    "victory":{
+        "bg":["city.jpg"],
         "interaction":[
-            {"text":["Battle is complete!","WOW!","On to menus!!!"]}
-        ],
-        "location":"homeland_forest"
+            {"text":["Looks like we won the battle!"],"asset":"","pos":"right"},
+            {"func":"loadMenus","props":[]}
+        ]
+    },
+    "defeat":{
+        "bg":["city.jpg"],
+        "interaction":[
+            {"text":["Looks like we LOST the GAME!"],"asset":"","pos":"left"}
+        ]
+    },
+    "menus":{
+        "bg":["city.jpg"],
+        "location":"homeland_forest",
+        "places":[
+            {"name":"shop","level":1,"wares":[["Potion",100],["GoldCoin",2000]]}
+        ]
     }
 }
