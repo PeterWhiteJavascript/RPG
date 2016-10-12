@@ -44,7 +44,6 @@ Q.state.set({
         textSpeed:1,
         //If true, text will automatically go to the next text after the previous one completes.
         autoScroll:false
-
     }
 });
 //When new game is selected, generate a new game state
