@@ -1,6 +1,6 @@
 {
     "dialogue":{
-        "bg":"homeland.png",
+        "bg":"forest.jpg",
         "interaction":[
             {"text":["L do you know","Gods of Death","Love Apples?"],"asset":"","pos":"right"},
             {"text":["Wow","Uhh","Bye!"],"asset":"","pos":"left"}
@@ -22,7 +22,7 @@
         ]
     },
     "menus":{
-        "bg":"homeland.png",
+        "bg":"",
         "interaction":[
             {"text":["Battle is complete!","WOW!","On to menus!!!"]}
         ],

@@ -2,27 +2,28 @@ Quintus.SceneFuncs=function(Q){
     
     Q.startScene = function(scene){
         Q.load("json/story/"+scene+".json",function(){
-            //Get the data from the json file
             var data = Q.assets["json/story/"+scene+".json"];
-            //Make sure that we have dialogue
             if(data.dialogue){
-                //Load the bg
                 Q.load("bg/"+data.dialogue.bg,function(){
-                    //Set up the dialogue scene
                     Q.makeDialogue(scene);
                     //Stage the scene
-                    Q.stageScene(scene,{data:data});
+                    Q.stageScene(scene,{data: data, dialogue: data.dialogue});
                 });
                 
             }
+            if(data.battle) {
+                Q.loadTMX("tmx/" + data.battle.map, function() {
+                    Q.makeBattle(scene);
+                });
+            }
         });
     };
-    Q.makeDialogue = function(sceneName,data){
-        //Create the scene
+    Q.makeDialogue = function(sceneName){
         Q.scene(sceneName,function(stage){
-            var dialogueData = stage.options.data.dialogue;
-            //Show the background image
-            stage.insert(new Q.BackgroundImage({asset:"bg/"+dialogueData.bg}));
+            var dialogueData = stage.options.dialogue;
+            if(dialogueData.bg && dialogueData.bg.length > 0) {
+                stage.insert(new Q.BackgroundImage({asset:"bg/"+dialogueData.bg}));
+            }
             //Show a text box (testing)
             var textbox = stage.insert(new Q.TextBox());
             var da = stage.insert(new Q.DialogueArea({w: Q.width-20}));
@@ -30,16 +31,15 @@ Quintus.SceneFuncs=function(Q){
 
             var interactionIndex = 0;
             var textIndex = 0;
-            Q.input.on("confirm", function() {
+            dialogue.nextText = function() {
                 if(textIndex >= dialogueData.interaction[interactionIndex].text.length) {
                     textIndex = 0;
                     interactionIndex++;
                 }
                 if(interactionIndex >= dialogueData.interaction.length) {
-                    dialogue.p.label = "[End of Dialogue]";
-                    // todo: Go to next scene
-                    interactionIndex = 0;
-                    textIndex = 0;
+                    // todo: How do I decide what's next? What if it isn't a battle?
+                    Q.input.off("confirm", dialogue);
+                    Q.stageScene("battle_"+sceneName,{data:stage.options.data, battle: stage.options.data.battle});
                     return;
                 }
                 dialogue.p.label = dialogueData.interaction[interactionIndex].text[textIndex];
@@ -50,6 +50,22 @@ Quintus.SceneFuncs=function(Q){
                     dialogue.p.x = Q.width-30;
                 }
                 textIndex++;
+            };
+            dialogue.nextText();
+            Q.input.on("confirm", dialogue, function() {
+                dialogue.nextText();
+            });
+        });
+    };
+    Q.makeBattle = function(sceneName){
+        Q.scene("battle_" + sceneName,function(stage){
+            var battleData = stage.options.battle;
+            Q.stageTMX("tmx/"+battleData.map, stage);
+
+            Q.input.on("confirm", stage, function() {
+                // Temporary: press 'enter' to win the battle
+                Q.input.off("confirm", stage);
+                Q.stageScene(sceneName, 1, {data: stage.options.data, dialogue: stage.options.data.menus});
             });
         });
     };

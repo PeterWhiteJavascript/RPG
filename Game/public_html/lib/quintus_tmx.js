@@ -37,10 +37,7 @@ Quintus.TMX = function(Q) {
  };
 
  Q._tmxExtractAssetName = function(result) {
-   var source = result.getAttribute("source"),
-   sourceParts = source.split("/");
-   // only return the last part of the asset string
-   return sourceParts[sourceParts.length - 1];
+   return result.getAttribute("source");
  };
 
 
