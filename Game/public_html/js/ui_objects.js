@@ -26,12 +26,13 @@ Quintus.UIObjects=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                type:Q.SPRITE_NONE,
+                type:Q.SPRITE_UI,
                 label:"",
                 w:Q.width-20,
                 h:95,
                 fill:"yellow"
             });
+            this.p.points = [[0,0],[this.p.w,0],[this.p.w,this.p.h],[0,this.p.h]];
             this.p.y=Q.height-this.p.h-15;
             this.p.x+=10;
         }

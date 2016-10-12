@@ -27,6 +27,8 @@ Quintus.SceneFuncs=function(Q){
             var textbox = stage.insert(new Q.TextBox());
             var da = stage.insert(new Q.DialogueArea());
             da.insert(new Q.Dialogue({label:"hihih"}))
+            da.clicked = function(){console.log("win");};
+            da.on("touch",da,"clicked");
             //textbox.insert(new )
             console.log(textbox)
             console.log(stage.options)
