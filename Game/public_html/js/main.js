@@ -91,5 +91,4 @@ Q.load(files.join(','),function(){
     //For now, just start a new game when we load in. -> main.js
     Q.newGame();
 });
-Q.debug=true;
 });

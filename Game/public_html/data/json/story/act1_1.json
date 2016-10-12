@@ -2,8 +2,8 @@
     "dialogue":{
         "bg":"homeland.png",
         "interaction":[
-            {"text":["Hiya","Testing","Bye"],"asset":"","pos":"right"},
-            {"text":["Yahoo","ASDesting","dwawfawfBye"],"asset":"","pos":"left"}
+            {"text":["L do you know","Gods of Death","Love Apples?"],"asset":"","pos":"right"},
+            {"text":["Wow","Uhh","Bye!"],"asset":"","pos":"left"}
         ]
         
     },
