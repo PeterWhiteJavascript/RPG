@@ -33,7 +33,7 @@
         "bg":"",
         "interaction":[
             {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
-            {"func":"loadMenus","props":[]}
+            {"func":"loadLocation","props":["homeland_forest","pub"]}
         ]
     },
     "defeat":{
@@ -41,13 +41,6 @@
         "interaction":[
             {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},
             {"func":"moreDialogue","props":["testerinoDialogino"]}
-        ]
-    },
-    "menus":{
-        "bg":"bg/city.jpg",
-        "location":"homeland_forest",
-        "places":[
-            {"name":"shop","level":1,"wares":[["Potion",100],["GoldCoin",2000]]}
         ]
     },
     "testerinoDialogino":{

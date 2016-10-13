@@ -1,13 +1,39 @@
 {
     "homeland_forest":{
+        "name":"homeland_forest",
+        "bgs":["bg/pub.jpg","bg/city.jpg"],
+        "start":{
+            "bg":"bg/city.jpg"
+        },
         "shop":{
-            "potion":{"name":"Potion","cost":100}
+            "bg":"bg/shop.jpg",
+            "options":{
+                "buy":{
+                    "potion":{"name":"Potion","cost":100}
+                }
+            }
         },
         "blacksmith":{
-            
+            "bg":"bg/blacksmith.jpg",
+            "options":{
+                "upgrade":{"cost":1000},
+                "repair":{"cost":500}
+            }
         },
         "inn":{
-            "cost":100
+            "bg":"bg/inn.jpg",
+            "options":{
+                "rest":{"cost":100}
+            }
+        },
+        "pub":{
+            "bg":"bg/pub.jpg",
+            "options":{
+                "quests":[
+                    "side_quest1_1"
+                ]
+            }
         }
+        
     }
 }

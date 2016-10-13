@@ -1,0 +1,42 @@
+{
+    "bgs":["bg/forest.jpg"],
+    "chars":["story/l.jpg"],
+    "maps":["tmx/homeland.tmx"],
+    "dialogue":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["Let's help this guy out!","Come on, step it up!"],"asset":["l.jpg",""],"pos":"left"},
+            {"text":["And now there's two of me...","Time to fight!"],"asset":["l.jpg","l.jpg"],"pos":"left"},
+            {"func":"loadBattle","props":[]}
+        ]
+        
+    },
+    "battle":{
+        "map":"tmx/homeland.tmx",
+        "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "enemies":[
+            {},
+            {}
+        ],
+        "interactables":[
+            {}
+        ],
+        "pickups":[
+            {}
+        ]
+    },
+    "victory":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["GG EZ","Back to town"],"asset":[false,"l.jpg"],"pos":"right"},
+            {"func":"loadLocation","props":["homeland_forest","start"]}
+        ]
+    },
+    "defeat":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["LOST the GAME!"],"asset":["l.jpg",false],"pos":"left"},
+            {"func":"doDefeat","props":[]}
+        ]
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "side_quest1_1":{
+        "bgs":["bg/pub.jpg"],
+        "chars":[],
+        "desc":"Help some guy defeat some enemies!",
+        "sceneName":"side_quest1_1",
+        "reward":{"money":100,"items":[["Potion",1],["GoldCoin",1]]},
+        "dialogue":{
+            "bg":"bg/pub.jpg",
+            "interaction":[
+                {"text":["Hi, I need your help defeating these enemies.","It would be cool if you would help."],"asset":[false,false],"pos":"right"},
+                {"func":"confirmation","props":[[{"next":"yes","text":"Sure"},{"next":"no","text":"No Way"},{"next":"maybe","text":"I dunno"}]]}
+            ]
+        },
+        "yes":{
+            "bg":"bg/pub.jpg",
+            "interaction":[
+                {"text":["Thanks!"],"asset":[false,false],"pos":"right"},
+                {"func":"acceptQuest","props":[]}
+            ]
+        },
+        "no":{
+            "bg":"bg/pub.jpg",
+            "interaction":[
+                {"text":["That's too bad..."],"asset":[false,false],"pos":"right"},
+                {"func":"finished","props":[]}
+            ]
+        },
+        "maybe":{
+            "bg":"bg/pub.jpg",
+            "interaction":[
+                {"text":["There is no maybe, baka!"],"asset":[false,false],"pos":"right"},
+                {"func":"finished","props":[]}
+            ]
+        }
+    }
+}

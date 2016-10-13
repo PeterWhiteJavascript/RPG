@@ -8,6 +8,7 @@ Quintus.UIObjects=function(Q){
                 type:Q.SPRITE_NONE,
                 w:Q.width,h:Q.height
             });
+            Q._generatePoints(this,true);
         }
     });
     //The person who is talking in the story
@@ -32,6 +33,8 @@ Quintus.UIObjects=function(Q){
                 interactionIndex:0,
                 textIndex:0
             });
+            //Uncomment if we add touch and set type to Q.SPRITE_UI
+            //Q._generatePoints(this,true);
             this.p.y=Q.height-this.p.h;
         },
         checkTextNum:function(){
@@ -86,10 +89,11 @@ Quintus.UIObjects=function(Q){
             this['cycle'+type]();
         },
         //START JSON FUNCTIONS
-        loadMenus:function(){
+        loadLocation:function(location,menu){
             var stage = this.stage;
-            Q.stageScene("menus",1,{data:stage.options.data,menus:stage.options.data.menus});
-            Q.clearStage(0);
+            Q.stageScene("location",0,{location:Q.state.get("locations")[location],menu:menu});
+            Q.clearStage(1);
+            Q.input.off("confirm",stage);
             return true;
         },
         loadBattle:function(){
@@ -104,13 +108,58 @@ Quintus.UIObjects=function(Q){
         moreDialogue:function(name){
             var stage = this.stage;
             var dialogue = stage.options.data[name];
-            Q.stageScene("dialogue",0,{data:stage.options.data, dialogue:dialogue});
+            Q.stageScene("dialogue",1,{data:stage.options.data, dialogue:dialogue});
             //Clear this stage
             Q.clearStage(1);
             Q.input.off("confirm",stage);
             return true;
         },
-        
+        //Any time the user needs to make a decision during dialogue
+        confirmation:function(options){
+            var stage = this.stage;
+            //Create the options menu box and put it into focus
+            var confirmationBox = stage.insert(new Q.ConfirmBox({maxIndex:options.length-1}));
+            Q.input.off("confirm",stage);
+            Q.input.on("up",confirmationBox,"cycleUp");
+            Q.input.on("down",confirmationBox,"cycleDown");
+            Q.input.on("confirm",confirmationBox,"selectOption");
+            //Display the list of options to choose from
+            options.forEach(function(opt,i){
+                //The text that displays to show the option
+                var confirmOption = confirmationBox.insert(new Q.Dialogue({y:i*20,label:opt.text,next:opt.next}));
+                confirmationBox.p.confirmOptions.push(confirmOption);
+                if(i===0){confirmOption.p.color="red";};
+                //When this option is selected
+                confirmOption.on("selected",function(next){
+                    //If this option is selected, load that dialogue and destroy this confirmation box
+                    Q.stageScene("dialogue",1,{data:stage.options.data, dialogue:stage.options.data[next]});
+                    Q.input.off("up",stage);
+                    Q.input.off("down",stage);
+                    Q.input.off("confirm",stage);
+                });
+            });
+            confirmationBox.fit(10,10);
+            //Disable input for this text box for now while the user selects the option
+            Q.input.off("confirm",stage);
+            return true;
+        },
+        //Accepts a quest that the player has confirmed that they want to do.
+        acceptQuest:function(){
+            var stage = this.stage;
+            var sceneName = stage.options.data.sceneName;
+            var quests = Q.state.get("acceptedQuests");
+            quests[sceneName] = sceneName;
+            //For now, send the user right to the scene!
+            Q.clearStages();
+            Q.startScene(sceneName);
+            return true;
+        },
+        //When the dialogue is finished
+        finished:function(){
+            Q.input.off("confirm",this.stage);
+            Q.clearStages();
+            return(this.loadLocation(Q.state.get("currentLocation").name,Q.state.get("currentMenu")));
+        },
         getProp:function(prop){
             return this.p[prop];
         },
@@ -123,8 +172,45 @@ Quintus.UIObjects=function(Q){
             console.log("I am an integer: "+integer);
             eval(coolFunc);
             console.log("I am the current background: "+eval(superCoolFunc));
+        },
+        doDefeat:function(){
+            //This will run on defeat. Depending on the mode, it will either game over or continue at the point just before the battle. TODO
         }
         //END JSON FUNCTIONS
+    });
+    
+    Q.UI.Container.extend("ConfirmBox",{
+        init:function(p){
+            this._super(p,{
+                x:Q.width/2,y:Q.height/2,
+                cx:0,cy:0,
+                w:300,h:200,
+                type:Q.SPRITE_NONE,
+                fill:"yellow",
+                textIndex:0,
+                confirmOptions:[]
+            });
+            //Q._generatePoints(this,true);
+        },
+        changeOptionColor:function(){
+            this.p.confirmOptions.forEach(function(opt){
+                opt.p.color="black";
+            });
+            this.p.confirmOptions[this.p.textIndex].p.color="red";
+        },
+        cycleUp:function(){
+            this.p.textIndex--;
+            if(this.p.textIndex<0){this.p.textIndex=this.p.maxIndex;};
+            this.changeOptionColor();
+        },
+        cycleDown:function(){
+            this.p.textIndex++;
+            if(this.p.textIndex>this.p.maxIndex){this.p.textIndex=0;};
+            this.changeOptionColor();
+        },
+        selectOption:function(){
+            this.p.confirmOptions[this.p.textIndex].trigger("selected",this.p.confirmOptions[this.p.textIndex].p.next);
+        }
     });
     Q.UI.Container.extend("DialogueArea",{
         init:function(p){
@@ -137,7 +223,7 @@ Quintus.UIObjects=function(Q){
                 h:95,
                 fill:"yellow"
             });
-            this.p.points = [[0,0],[this.p.w,0],[this.p.w,this.p.h],[0,this.p.h]];
+            Q._generatePoints(this,true);
             this.p.y=Q.height-this.p.h-15;
             this.p.x+=10;
         }

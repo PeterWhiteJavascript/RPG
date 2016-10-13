@@ -33,7 +33,7 @@ Q.Graph = Graph;
 //End Constants
 
 //Set up the game state's options
-//The default value will be overridden by data coming from the save file. TODO
+//The default values will be overridden by data coming from the save file. TODO
 Q.state.set({
     options:{
         //If true, BGM will play
@@ -50,12 +50,14 @@ Q.state.set({
 Q.newGame=function(){
     //Set up the game state with default values
     Q.state.set({
-        sceneName:"act1",
-        sceneNum:1
+        //The scene name. This does not have to be 'act', but it does have to match the json.
+        sceneName:"act1",//"side_quest1",
+        //The scene within the act
+        sceneNum:1,
+        //The quests that have been accepted. Array full of strings
+        acceptedQuests:[]
     });
     //Start a scene
-    //The flow for the game is: dialogue -> battle -> menus -> repeat.
-    //startScene is in -> scenes.js
     Q.startScene(Q.state.get("sceneName")+"_"+Q.state.get("sceneNum"));
 };
 var files = [
@@ -71,6 +73,7 @@ var files = [
     //JSON DATA
     "json/data/items.json",
     "json/data/locations.json",
+    "json/data/quests.json",
     //JSON STORY
     "json/story/act1_1.json",
     "json/story/act1_2.json",
@@ -82,9 +85,10 @@ var files = [
 Q.load(files.join(','),function(){
     //Most json data should be stored in Q.state for easy retrieval later.
     Q.state.set("items",Q.assets['json/data/items.json']);
+    //All default values for the locations (used when generating the menus). This value will be modified from the save file, but it is default here on load. This will help keep the save files small as it will only save information that has been changed.
     Q.state.set("locations",Q.assets['json/data/locations.json']);
-    //You can look in the console to see the items from the items.json file.
-    console.log(Q.state.get("items"));
+    //All quests that can be taken by the player at the pub. This value will be modified with data from the save file.
+    Q.state.set("quests",Q.assets['json/data/quests.json']);
     
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();

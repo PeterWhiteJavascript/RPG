@@ -41,6 +41,9 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.battle;
         Q.stageTMX(battleData.map, stage);
         
+        stage.add("viewport");
+        
+        
         // Temporary: press 'enter' to win the battle
         Q.input.on("confirm", stage, function() {
             Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.victory});
@@ -54,9 +57,28 @@ Quintus.SceneFuncs=function(Q){
             Q.input.off("confirm",stage);
         });
     });
-    Q.scene("menus",function(stage){
+    Q.scene("location",function(stage){
+        Q.state.set("currentLocation",stage.options.location);
+        //Set the current menu. Default is 'start'
+        if(!stage.options.menu){alert("No Menu Given in JSON!!!");};
+        Q.state.set("currentMenu",stage.options.menu?stage.options.menu:Q.state.get("currentMenu"));
         //TO DO: Create menus that you can use
-        console.log("Menu time!")
-        console.log(stage.options.menus)
+        console.log(stage.options.location)
+        console.log("Current Menu: "+Q.state.get("currentMenu"));
+        //Load any bgs for this location
+        Q.load(stage.options.location.bgs.join(','),function(){
+            var bgImage = stage.insert(new Q.BackgroundImage({asset:stage.options.location[Q.state.get("currentMenu")].bg}));
+            //For now, let's press enter to select the pub's first quest (this will give an error after beating the first quest as this is not te exact setup that we need)
+            Q.input.on("confirm",stage,function(){
+                var questName = stage.options.location[Q.state.get("currentMenu")].options.quests[0];
+                var data = Q.state.get("quests")[questName];
+                //Make sure the bgs and chars are loaded
+                Q.load(data.bgs.concat(data.chars).join(','),function(){
+                    Q.stageScene("dialogue", 1, {data: data, dialogue: data.dialogue});
+                });
+                console.log("Showing quest: "+questName)
+                Q.input.off("confirm",stage);
+            });
+        });
     });
 };
