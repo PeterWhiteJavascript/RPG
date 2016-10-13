@@ -1,12 +1,14 @@
 {
     "dialogue":{
         "bg":["forest.jpg","city.jpg"],
+        "chars":["l.jpg","shini.jpg"],
         "interaction":[
-            {"text":["L do you know","Gods of Death","Love Apples?"],"asset":"","pos":"right"},
-            {"text":["Wow","Uhh","Bye!"],"asset":"","pos":"left"},
+            {"text":["L do you know","Gods of Death","Love Apples?"],"asset":[false,"shini.jpg"],"pos":"right"},
+            {"text":["Wow","Uhh","Bye!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
             {"func":"changeBg","props":["bg/city.jpg"]},
             {"func":"testFunc","props":["one",2," console.log('I am a cool JSON string that is evaled');","this.getProp('bg')"]},
-            {"text":["Changed locations :3","On to battle!"],"asset":"","pos":"left"}
+            {"text":["Changed locations :3"],"asset":"","pos":"left"},
+            {"text":["Le switcheroo!","On to battle!"],"asset":["shini.jpg","l.jpg"],"pos":"left"}
         ]
         
     },
@@ -25,16 +27,17 @@
         ]
     },
     "victory":{
-        "bg":["city.jpg"],
+        "bg":[""],
         "interaction":[
-            {"text":["Looks like we won the battle!"],"asset":"","pos":"right"},
+            {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
             {"func":"loadMenus","props":[]}
         ]
     },
     "defeat":{
         "bg":["city.jpg"],
         "interaction":[
-            {"text":["Looks like we LOST the GAME!"],"asset":"","pos":"left"}
+            {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},
+            {"func":"loadMenus","props":[]}
         ]
     },
     "menus":{

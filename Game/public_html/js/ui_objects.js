@@ -10,6 +10,17 @@ Quintus.UIObjects=function(Q){
             });
         }
     });
+    //The person who is talking in the story
+    Q.Sprite.extend("StoryImage",{
+        init:function(p){
+            this._super(p,{
+                x:0,y:0,
+                w:200,
+                h:300,
+                type:Q.SPRITE_NONE
+            });
+        }
+    });
     Q.Sprite.extend("TextBox",{
         init:function(p){
             this._super(p,{
@@ -32,8 +43,9 @@ Quintus.UIObjects=function(Q){
         checkInteractionNum:function(){
             var stage = this.stage;
             if(this.p.interactionIndex >= this.p.dialogueData.interaction.length) {
+                if(Q.stage(1).scene.name==="menus"){return true;}
                 // todo: How do I decide what's next? What if it isn't a battle?
-                Q.input.off("confirm", this.p.dialogueText);
+                Q.input.off("confirm",stage);
                 Q.stageScene("battle",0,{data:stage.options.data, battle: stage.options.data.battle});
                 //Clear this stage
                 Q.clearStage(1);
@@ -58,12 +70,24 @@ Quintus.UIObjects=function(Q){
         cycleText:function(){
             this.p.dialogueText.p.label = this.p.dialogueData.interaction[this.p.interactionIndex].text[this.p.textIndex];
             this.p.dialogueText.p.align = this.p.dialogueData.interaction[this.p.interactionIndex].pos;
+            
             if(this.p.dialogueText.p.align == 'left') {
                 this.p.dialogueText.p.x = 10;
             } else if(this.p.dialogueText.p.align == 'right') {
                 this.p.dialogueText.p.x = this.p.dialogueArea.p.w-10;
             }
             this.p.textIndex++;
+            //Update the assets
+            if(this.p.dialogueData.interaction[this.p.interactionIndex].asset[0]){
+                this.p.leftAsset.p.asset = "story/"+this.p.dialogueData.interaction[this.p.interactionIndex].asset[0];
+            } else {
+                this.p.leftAsset.p.asset = "";
+            }
+            if(this.p.dialogueData.interaction[this.p.interactionIndex].asset[1]){
+                this.p.rightAsset.p.asset = "story/"+this.p.dialogueData.interaction[this.p.interactionIndex].asset[1];
+            } else {
+                this.p.rightAsset.p.asset = "";
+            }
             
         },
         cycleFunc:function(){
@@ -75,8 +99,8 @@ Quintus.UIObjects=function(Q){
         },
         loadMenus:function(){
             var stage = this.stage;
-            Q.input.off("confirm", stage);
             Q.stageScene("menus",1,{data:stage.options.data,menus:stage.options.data.menus});
+            Q.clearStage(0);
         },
         getProp:function(prop){
             return this.p[prop];
