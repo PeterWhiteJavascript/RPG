@@ -40,23 +40,10 @@ Quintus.UIObjects=function(Q){
                 this.p.interactionIndex++;
             }
         },
-        checkInteractionNum:function(){
-            var stage = this.stage;
-            if(this.p.interactionIndex >= this.p.dialogueData.interaction.length) {
-                if(Q.stage(1).scene.name==="menus"){return true;}
-                // todo: How do I decide what's next? What if it isn't a battle?
-                Q.input.off("confirm",stage);
-                Q.stageScene("battle",0,{data:stage.options.data, battle: stage.options.data.battle});
-                //Clear this stage
-                Q.clearStage(1);
-                return true;
-            }
-        },
         nextText:function() {
             //Remove later
             if(this.p.dialogueData.interaction[this.p.interactionIndex].func){alert("Code is broken. A function should never be tried to run here.");}
             this.checkTextNum();
-            if(this.checkInteractionNum()){return;};
             var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
             this['cycle'+type]();
         },
@@ -91,17 +78,39 @@ Quintus.UIObjects=function(Q){
             
         },
         cycleFunc:function(){
-            this[this.p.dialogueData.interaction[this.p.interactionIndex].func].apply(this,this.p.dialogueData.interaction[this.p.interactionIndex].props);
+            //If the function finishes this dialogue, it will be true.
+            //This also gets the function that needs to be executed from the JSON
+            if(this[this.p.dialogueData.interaction[this.p.interactionIndex].func].apply(this,this.p.dialogueData.interaction[this.p.interactionIndex].props)){return;};
             this.p.interactionIndex++;
-            if(this.checkInteractionNum()){return;};
             var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
             this['cycle'+type]();
         },
+        //START JSON FUNCTIONS
         loadMenus:function(){
             var stage = this.stage;
             Q.stageScene("menus",1,{data:stage.options.data,menus:stage.options.data.menus});
             Q.clearStage(0);
+            return true;
         },
+        loadBattle:function(){
+            var stage = this.stage;
+            Q.stageScene("battle",0,{data:stage.options.data, battle: stage.options.data.battle});
+            //Clear this stage
+            Q.clearStage(1);
+            Q.input.off("confirm",stage);
+            return true;
+        },
+        //Shows additional dialogue (which will probably be determined by factors such as player choices, how well they did in battle, etc...)
+        moreDialogue:function(name){
+            var stage = this.stage;
+            var dialogue = stage.options.data[name];
+            Q.stageScene("dialogue",0,{data:stage.options.data, dialogue:dialogue});
+            //Clear this stage
+            Q.clearStage(1);
+            Q.input.off("confirm",stage);
+            return true;
+        },
+        
         getProp:function(prop){
             return this.p[prop];
         },
@@ -114,8 +123,8 @@ Quintus.UIObjects=function(Q){
             console.log("I am an integer: "+integer);
             eval(coolFunc);
             console.log("I am the current background: "+eval(superCoolFunc));
-            
         }
+        //END JSON FUNCTIONS
     });
     Q.UI.Container.extend("DialogueArea",{
         init:function(p){

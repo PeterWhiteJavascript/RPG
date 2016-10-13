@@ -1,19 +1,22 @@
 {
+    "bgs":["bg/forest.jpg","bg/city.jpg"],
+    "chars":["story/l.jpg","story/shini.jpg"],
+    "maps":["tmx/homeland.tmx"],
     "dialogue":{
-        "bg":["forest.jpg","city.jpg"],
-        "chars":["l.jpg","shini.jpg"],
+        "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["L do you know","Gods of Death","Love Apples?"],"asset":[false,"shini.jpg"],"pos":"right"},
             {"text":["Wow","Uhh","Bye!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
             {"func":"changeBg","props":["bg/city.jpg"]},
             {"func":"testFunc","props":["one",2," console.log('I am a cool JSON string that is evaled');","this.getProp('bg')"]},
             {"text":["Changed locations :3"],"asset":"","pos":"left"},
-            {"text":["Le switcheroo!","On to battle!"],"asset":["shini.jpg","l.jpg"],"pos":"left"}
+            {"text":["Le switcheroo!","On to battle!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+            {"func":"loadBattle","props":[]}
         ]
         
     },
     "battle":{
-        "map":"homeland.tmx",
+        "map":"tmx/homeland.tmx",
         "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
             {},
@@ -27,24 +30,33 @@
         ]
     },
     "victory":{
-        "bg":[""],
+        "bg":"",
         "interaction":[
             {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
             {"func":"loadMenus","props":[]}
         ]
     },
     "defeat":{
-        "bg":["city.jpg"],
+        "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},
-            {"func":"loadMenus","props":[]}
+            {"func":"moreDialogue","props":["testerinoDialogino"]}
         ]
     },
     "menus":{
-        "bg":["city.jpg"],
+        "bg":"bg/city.jpg",
         "location":"homeland_forest",
         "places":[
             {"name":"shop","level":1,"wares":[["Potion",100],["GoldCoin",2000]]}
+        ]
+    },
+    "testerinoDialogino":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["Since we lost the battle, we get to do this cool scene :)"],"asset":[false,"shini.jpg"],"pos":"right"},
+            {"func":"changeBg","props":["bg/city.jpg"]},
+            {"text":["Wow","Let's do the same battle again!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
+            {"func":"loadBattle","props":[]}
         ]
     }
 }
