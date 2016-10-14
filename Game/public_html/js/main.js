@@ -11,7 +11,8 @@ var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']})
 //Sprites that do not collide with anything are considered sprite_none. 
 //This includes all ui elements, objects that are in the foreground, objects that the player can walk over, etc...
 Q.SPRITE_NONE = 0;
-//sprite_default is for objects that can be collided with normally such as walls, players, 
+//sprite_default is for objects that can be collided with normally such as walls, players 
+//THIS WILL PROBABLY NOT BE USED AS ALL MOVEMENT WILL BE CALCUALTED AND THERE WILL BE NO ROAMING OVERWORLD
 Q.SPRITE_DEFAULT = 1;
 //Each of these sprite types have to do with movement on them, 
 //for example it might take twice as much move to go across swamp compared to grass.
@@ -64,7 +65,8 @@ Q.newGame=function(){
 };
 var files = [
     //IMAGES SPRITES
-    "sprites/player.png",
+    "sprites/Archer.png",
+    "sprites/Barbarian.png",
     //IMAGES UI
     "ui/ui_objects.png",
     "ui/text_box.png",
@@ -98,4 +100,5 @@ Q.load(files.join(','),function(){
     //For now, just start a new game when we load in. -> main.js
     Q.newGame();
 });
+Q.debug=true;
 });

@@ -92,6 +92,7 @@ Quintus.UIObjects=function(Q){
         loadLocation:function(location,menu){
             var stage = this.stage;
             Q.stageScene("location",0,{location:Q.state.get("locations")[location],menu:menu});
+            //Make sure the battle is gone
             Q.clearStage(1);
             Q.input.off("confirm",stage);
             return true;

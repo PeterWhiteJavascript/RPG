@@ -42,11 +42,13 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.battle;
         //Load the tmx tile map
         Q.stageTMX(battleData.map, stage);
+        Q.stageScene("battleHUD",3);
         stage.add("viewport");
-        //Create the top left hud which gives information about the ground (grass,dirt,etc...)
-        var terrainHUD = stage.insert(new Q.TerrainHUD());
-        //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
-        var statsHUD = stage.insert(new Q.StatsHUD());
+        //Display the enemies, interactables, pickups, and placement locations
+        var enemyData = battleData.enemies;
+        enemyData.forEach(function(enm){
+            stage.insert(new Q.Character({loc:enm.loc,unitClass:enm.unitClass,level:enm.level,equipmentLevel:enm.equipmentLevel}));
+        });
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
         //var pointer = stage.insert(new Q.Pointer());
         
@@ -55,13 +57,25 @@ Quintus.SceneFuncs=function(Q){
             Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.victory});
             Q.input.off("esc",stage);
             Q.input.off("confirm",stage);
+            //Make sure the HUD is gone
+            Q.clearStage(3);
         });
         // Temporary: press 'esc' to win the battle
         Q.input.on("esc", stage, function() {
             Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.defeat});
             Q.input.off("esc",stage);
             Q.input.off("confirm",stage);
+            //Make sure the HUD is gone
+            Q.clearStage(3);
         });
+    });
+    Q.scene("battleHUD",function(stage){
+        //Create the top left hud which gives information about the ground (grass,dirt,etc...)
+        var terrainHUD = stage.insert(new Q.TerrainHUD());
+        //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
+        var statsHUD = stage.insert(new Q.StatsHUD());
+        
+        
     });
     Q.scene("location",function(stage){
         Q.state.set("currentLocation",stage.options.location);
