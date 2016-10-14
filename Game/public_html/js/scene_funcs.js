@@ -38,11 +38,17 @@ Quintus.SceneFuncs=function(Q){
         });
     });
     Q.scene("battle",function(stage){
+        //The data that is used for this battle
         var battleData = stage.options.battle;
+        //Load the tmx tile map
         Q.stageTMX(battleData.map, stage);
-        
         stage.add("viewport");
-        
+        //Create the top left hud which gives information about the ground (grass,dirt,etc...)
+        var terrainHUD = stage.insert(new Q.TerrainHUD());
+        //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
+        var statsHUD = stage.insert(new Q.StatsHUD());
+        //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
+        //var pointer = stage.insert(new Q.Pointer());
         
         // Temporary: press 'enter' to win the battle
         Q.input.on("confirm", stage, function() {

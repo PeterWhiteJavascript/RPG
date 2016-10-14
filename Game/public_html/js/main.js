@@ -23,8 +23,10 @@ Q.SPRITE_WATER  = 32;
 
 //Since this is a top-down game, there's no gravity
 Q.gravityY=0;
-//The height of the tiles (the width is the same, so just use tileH)
-Q.tileH = 64;
+//The width of the tiles
+Q.tileW = 32;
+//The height of the tiles
+Q.tileH = 32;
 //Astar functions used for pathfinding
 Q.astar = astar;
 //A necessary component of Astar
@@ -66,6 +68,8 @@ var files = [
     //IMAGES UI
     "ui/ui_objects.png",
     "ui/text_box.png",
+    //IMAGES TILES
+    "tiles/tiles.png",
     //AUDIO SFX
     "sfx/attack.mp3",
     //AUDIO BGM
@@ -77,9 +81,8 @@ var files = [
     //JSON STORY
     "json/story/act1_1.json",
     "json/story/act1_2.json",
-    "json/story/act1_3.json",
+    "json/story/act1_3.json"
     //TMX MAPS
-    "tmx/homeland.tmx"
 ];
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){

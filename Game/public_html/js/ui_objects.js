@@ -158,7 +158,7 @@ Quintus.UIObjects=function(Q){
         finished:function(){
             Q.input.off("confirm",this.stage);
             Q.clearStages();
-            return(this.loadLocation(Q.state.get("currentLocation").name,Q.state.get("currentMenu")));
+            return this.loadLocation(Q.state.get("currentLocation").name,Q.state.get("currentMenu"));
         },
         getProp:function(prop){
             return this.p[prop];
