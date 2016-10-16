@@ -1,0 +1,56 @@
+{
+    "knight":{
+        "name":"Knight",
+        "description":"A cool knight.",
+        "baseStats":{
+            "str":15,
+            "end":12,
+            "dex":8,
+            "wsk":15,
+            "rfl":10
+        }
+    },
+    "vanguard":{
+
+    },
+    "barbarian":{
+        "name":"Barbarian",
+        "description":"A cool barbarian.",
+        "baseStats":{
+            "str":20,
+            "end":15,
+            "dex":5,
+            "wsk":10,
+            "rfl":10
+        }
+
+    },
+    
+    "archer":{
+        "name":"Archer",
+        "description":"A cool archer.",
+        "baseStats":{
+            "str":5,
+            "end":10,
+            "dex":15,
+            "wsk":15,
+            "rfl":15
+        }
+    },
+    "skirmisher":{
+
+    },
+    "assassin":{
+
+    },
+    
+    "healer":{
+
+    },
+    "pyromancer":{
+
+    },
+    "illusionist":{
+
+    }
+}

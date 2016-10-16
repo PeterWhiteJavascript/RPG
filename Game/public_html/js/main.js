@@ -49,6 +49,40 @@ Q.state.set({
         autoScroll:false
     }
 });
+
+//Sort the equipment by rank so it doesn't have to be done every time
+Q.organizeEquipment=function(){
+    var eq = Q.state.get("equipment");
+    //This is the highest rank that we've added in the game
+    var ranks = 2;
+    eq.weaponSorted = [];
+    eq.shieldSorted = [];
+    eq.bodySorted = [];
+    eq.feetSorted = [];
+    eq.accessorySorted = [];
+    
+    var types = ["weapon","shield","body","feet","accessory"];
+    //Loop through each type
+    for(var i=0;i<types.length;i++){
+        //Create the sorted array in the equipment object
+        var srt =  eq[types[i]+"Sorted"] = [];
+        //Loop through the total ranks
+        for(var j=1;j<=ranks;j++){
+            //Create an empty array at this rank at fill it with all euqipment of this rank from this type
+            srt[j-1] = [];
+            var type = types[i];
+            //Get all of the different types of equipment
+            var keys = Object.keys(eq[type]);
+            for(var k=0;k<keys.length;k++){
+                //If the equipment's rank is equal to the current rank, put it into this array
+                if(eq[type][keys[k]].rank===j){
+                    srt[j-1].push(eq[type][keys[k]]);
+                }
+            }
+        }
+    }
+    console.log(eq);
+};
 //When new game is selected, generate a new game state
 Q.newGame=function(){
     //Set up the game state with default values
@@ -65,8 +99,8 @@ Q.newGame=function(){
 };
 var files = [
     //IMAGES SPRITES
-    "sprites/Archer.png",
-    "sprites/Barbarian.png",
+    "sprites/archer.png",
+    "sprites/barbarian.png",
     //IMAGES UI
     "ui/ui_objects.png",
     "ui/text_box.png",
@@ -77,9 +111,11 @@ var files = [
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA
+    "json/data/equipment.json",
     "json/data/items.json",
     "json/data/locations.json",
     "json/data/quests.json",
+    "json/data/character_classes.json",
     //JSON STORY
     "json/story/act1_1.json",
     "json/story/act1_2.json",
@@ -88,13 +124,18 @@ var files = [
 ];
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){
-    //Most json data should be stored in Q.state for easy retrieval later.
+    //All equipment data
+    Q.state.set("equipment",Q.assets['json/data/equipment.json']);
+    //Items that are not equipment. I may make key items seperate.
     Q.state.set("items",Q.assets['json/data/items.json']);
     //All default values for the locations (used when generating the menus). This value will be modified from the save file, but it is default here on load. This will help keep the save files small as it will only save information that has been changed.
     Q.state.set("locations",Q.assets['json/data/locations.json']);
     //All quests that can be taken by the player at the pub. This value will be modified with data from the save file.
     Q.state.set("quests",Q.assets['json/data/quests.json']);
+    //All base settings for character classes
+    Q.state.set("charClasses",Q.assets['json/data/character_classes.json']);
     
+    Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     //For now, just start a new game when we load in. -> main.js

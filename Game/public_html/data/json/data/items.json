@@ -1,18 +1,13 @@
 {
-    "Potion":{
-        "id": "Potion",
+    "potion":{
         "name": "Potion",
-        "effect":["stat",{"curHp":20}],
-        "desc": "Heals 20 hp.",
-        "target": "single",
+        "desc": "Heals 20 hp",
         "kind": "Consumable"
     },
-    "GoldCoin":{
-        "id": "GoldCoin",
+    "goldCoin":{
         "name": "Gold Coin",
-        "effect":["showDesc",{"text":"The gold coin cost a lot."}],
         "desc": "A valuable coin",
-        "target":"",
         "kind":"Key"
     }
+    
 }

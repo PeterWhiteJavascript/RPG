@@ -172,7 +172,7 @@ Quintus.UIObjects=function(Q){
             console.log("I am the current background: "+eval(superCoolFunc));
         },
         doDefeat:function(){
-            //This will run on defeat. Depending on the mode, it will either game over or continue at the point just before the battle. TODO
+            //This will run on defeat. TODO
         }
         //END JSON FUNCTIONS
     });

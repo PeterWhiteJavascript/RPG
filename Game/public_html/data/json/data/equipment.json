@@ -1,0 +1,79 @@
+{
+    "weapon":{
+        "woodenSword":{
+            "name":"Wooden Sword",
+            "desc":"A wooden sword",
+            "rank":1,
+            "weaponType":"sword"
+        },
+        "wetNoodle":{
+            "name":"Wet Noodle",
+            "desc":"A wet noodle",
+            "rank":1,
+            "weaponType":"sword"
+        },
+        "banana":{
+            "name":"Banana",
+            "desc":"A red banana",
+            "rank":1,
+            "weaponType":"sword"
+        },
+        "bronzeSword":{
+            "name":"Bronze Sword",
+            "desc":"A pretty nice bronze sword",
+            "rank":2,
+            "weaponType":"sword"
+        }
+    },
+    "shield":{
+        "potLid":{
+            "name":"Pot Lid",
+            "desc":"The lid of a pot",
+            "rank":1,
+            "weaponType":"shield"
+        },
+        "woodenShield":{
+            "name":"Wooden Shield",
+            "desc":"A wooden shield",
+            "rank":2,
+            "weaponType":"shield"
+        }
+        
+    },
+    "body":{
+        "shirt":{
+            "name":"Shirt",
+            "desc":"A regular 'ol shirt",
+            "rank":1
+        },
+        "leatherArmour":{
+            "name":"Leather Armour",
+            "desc":"Some pretty good armour!",
+            "rank":2
+        }
+    },
+    "feet":{
+        "sandals":{
+            "name":"Sandals",
+            "desc":"Casual footwear",
+            "rank":1
+        },
+        "leatherShoes":{
+            "name":"Leather Shoes",
+            "desc":"Duarable footwear",
+            "rank":2
+        }
+    },
+    "accessory":{
+        "rubyRing":{
+            "name":"Ruby Ring",
+            "desc":"Probably does something",
+            "rank":1
+        },
+        "earmuffs":{
+            "name":"Earmuffs",
+            "desc":"Keeps your ears warm",
+            "rank":2
+        }
+    }
+}

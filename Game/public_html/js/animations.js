@@ -6,8 +6,8 @@ Q.setUpAnimations=function(){
     
     //Sprites
     var toSheet= [
-        ['Archer','Archer.png',24,48,344,352],
-        ['Barbarian','Barbarian.png',24,48,344,352]
+        ['archer','archer.png',24,48,344,352],
+        ['barbarian','barbarian.png',24,48,344,352]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
