@@ -9,29 +9,29 @@
             "bg":"bg/pub.jpg",
             "interaction":[
                 {"text":["Hi, I need your help defeating these enemies.","It would be cool if you would help."],"asset":[false,false],"pos":"right"},
-                {"func":"confirmation","props":[[{"next":"yes","text":"Sure"},{"next":"no","text":"No Way"},{"next":"maybe","text":"I dunno"}]]}
-            ]
-        },
-        "yes":{
-            "bg":"bg/pub.jpg",
-            "interaction":[
-                {"text":["Thanks!"],"asset":[false,false],"pos":"right"},
-                {"func":"acceptQuest","props":[]}
-            ]
-        },
-        "no":{
-            "bg":"bg/pub.jpg",
-            "interaction":[
-                {"text":["That's too bad..."],"asset":[false,false],"pos":"right"},
-                {"func":"finished","props":[]}
-            ]
-        },
-        "maybe":{
-            "bg":"bg/pub.jpg",
-            "interaction":[
-                {"text":["There is no maybe, baka!"],"asset":[false,false],"pos":"right"},
-                {"func":"finished","props":[]}
-            ]
+                {"func":"confirmation","props":[[{"next":"dialogue/yes","text":"Sure"},{"next":"dialogue/no","text":"No Way"},{"next":"dialogue/maybe","text":"I dunno"}]]}
+            ],
+            "yes":{
+                "bg":"bg/pub.jpg",
+                "interaction":[
+                    {"text":["Thanks!"],"asset":[false,false],"pos":"right"},
+                    {"func":"acceptQuest","props":[]}
+                ]
+            },
+            "no":{
+                "bg":"bg/pub.jpg",
+                "interaction":[
+                    {"text":["That's too bad..."],"asset":[false,false],"pos":"right"},
+                    {"func":"finished","props":[]}
+                ]
+            },
+            "maybe":{
+                "bg":"bg/pub.jpg",
+                "interaction":[
+                    {"text":["There is no maybe, baka!"],"asset":[false,false],"pos":"right"},
+                    {"func":"finished","props":[]}
+                ]
+            }
         }
     }
 }

@@ -3,20 +3,84 @@
     "chars":["story/l.jpg","story/shini.jpg"],
     "maps":["homeland.tmx"],
     "dialogue":{
-        "bg":"bg/forest.jpg",
+        "bg":"bg/city.jpg",
         "interaction":[
             {"text":["L do you know","Gods of Death","Love Apples?"],"asset":[false,"shini.jpg"],"pos":"right"},
             {"text":["Wow","Uhh","Bye!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
-            {"func":"changeBg","props":["bg/city.jpg"]},
+            {"func":"changeBg","props":["bg/forest.jpg"]},
             {"func":"testFunc","props":["one",2," console.log('I am a cool JSON string that is evaled');","this.getProp('bg')"]},
-            {"text":["Changed locations :3"],"asset":"","pos":"left"},
-            {"text":["Le switcheroo!","On to battle!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
-            {"func":"loadBattle","props":[]}
-        ]
-        
+            {"text":["Why don't you anwswer some questions just for fun!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+            {"func":"moreDialogue","props":["dialogue/coolQuestions"]}
+        ],
+        "coolQuestions":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["What kind of color do you choose?"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                {"func":"confirmation","props":[[{"next":"dialogue/coolQuestions/yellow","text":"Yellow"},{"next":"dialogue/coolQuestions/red","text":"Red"}]]}
+            ],
+            "yellow":{
+                "bg":"bg/forest.jpg",
+                "interaction":[
+                    {"text":["Yellow is a pretty cool colour!","What's your favourite yellow friut then?"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                    {"func":"confirmation","props":[[{"next":"dialogue/coolQuestions/yellow/yellow_banana","text":"Yellow Banana"},{"next":"dialogue/coolQuestions/yellow/yellow_apple","text":"Yellow Apple"}]]}
+                ],
+                "yellow_banana":{
+                    "bg":"bg/forest.jpg",
+                    "interaction":[
+                        {"text":["Bananas are good!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                        {"func":"moreDialogue","props":["dialogue/coolQuestions/again"]}
+                    ]
+                },
+                "yellow_apple":{
+                    "bg":"bg/forest.jpg",
+                    "interaction":[
+                        {"text":["Yellow apples are THE BEST!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                        {"func":"moreDialogue","props":["dialogue/coolQuestions/again"]}
+                    ]
+                }
+                
+            },
+            "red":{
+                "bg":"bg/forest.jpg",
+                "interaction":[
+                    {"text":["Red is not a very good colour...","What kind of red fruit do you like?"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                    {"func":"confirmation","props":[[{"next":"dialogue/coolQuestions/red/red_banana","text":"Red Banana"},{"next":"dialogue/coolQuestions/red/red_apple","text":"Red Apple"}]]}
+                ],
+                "red_banana":{
+                    "bg":"bg/forest.jpg",
+                    "interaction":[
+                        {"text":["Red Bananas don't even exist..."],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                        {"func":"moreDialogue","props":["dialogue/coolQuestions/again"]}
+                    ]
+                },
+                "red_apple":{
+                    "bg":"bg/forest.jpg",
+                    "interaction":[
+                        {"text":["Red apples are AWESOME, though."],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                        {"func":"moreDialogue","props":["dialogue/coolQuestions/again"]}
+                    ]
+                }
+            },
+            "again":{
+                "bg":"bg/forest.jpg",
+                "interaction":[
+                    {"text":["Do you want to answer these questions again?"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                    {"func":"confirmation","props":[[{"next":"dialogue/coolQuestions","text":"Yes"},{"next":"dialogue/on_to_battle","text":"No"}]]}
+                ]
+            }
+        },
+        "on_to_battle":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Let's go fight some dudes then!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
+                {"func":"loadBattle","props":["battle"]}
+            ]
+        }
     },
     "battle":{
         "map":"homeland.tmx",
+        "winScene":"victory",
+        "defeatScene":"defeat",
         "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
             {"loc":[4,5],"unitClass":"Archer","level":1,"equipmentLevel":1},
@@ -40,16 +104,16 @@
         "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},
-            {"func":"moreDialogue","props":["testerinoDialogino"]}
-        ]
-    },
-    "testerinoDialogino":{
-        "bg":"bg/forest.jpg",
-        "interaction":[
-            {"text":["Since we lost the battle, we get to do this cool scene :)"],"asset":[false,"shini.jpg"],"pos":"right"},
-            {"func":"changeBg","props":["bg/city.jpg"]},
-            {"text":["Wow","Let's do the same battle again!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
-            {"func":"loadBattle","props":[]}
-        ]
+            {"func":"moreDialogue","props":["defeat/testerinoDialogino"]}
+        ],
+        "testerinoDialogino":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Since we lost the battle, we get to do this cool scene :)"],"asset":[false,"shini.jpg"],"pos":"right"},
+                {"func":"changeBg","props":["bg/city.jpg"]},
+                {"text":["Wow","Let's do the same battle again!"],"asset":["l.jpg","shini.jpg"],"pos":"left"},
+                {"func":"loadBattle","props":["battle"]}
+            ]
+        }
     }
 }

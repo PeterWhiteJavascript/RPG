@@ -8,7 +8,7 @@ Quintus.SceneFuncs=function(Q){
                 //If there is dialogue
                 if(data.dialogue){
                     //Stage the scene
-                    Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue});
+                    Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
                 }
                 if(data.battle) {
                     //For those occasions where there's no dialogue cutscene, stage the battle scene.
@@ -20,11 +20,11 @@ Quintus.SceneFuncs=function(Q){
         });
     };
     Q.scene("dialogue",function(stage){
-        var dialogueData = stage.options.dialogue;
+        var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
         var bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
         //The textbox is in charge of all of the functions that need to be run to do custom events.
         //It also shows the text_box.png
-        var textbox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg[0]}));
+        var textbox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg}));
         //The left/right Assets are the characters that are speaking in the dialogue
         textbox.p.leftAsset = stage.insert(new Q.StoryImage({x:100,y:Q.height-textbox.p.h-150}));
         textbox.p.rightAsset = stage.insert(new Q.StoryImage({x:Q.width-100,y:Q.height-textbox.p.h-150,flip:'x'}));
@@ -39,7 +39,7 @@ Quintus.SceneFuncs=function(Q){
     });
     Q.scene("battle",function(stage){
         //The data that is used for this battle
-        var battleData = stage.options.battle;
+        var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
         //Load the tmx tile map
         Q.stageTMX(battleData.map, stage);
         Q.stageScene("battleHUD",3);
@@ -54,7 +54,7 @@ Quintus.SceneFuncs=function(Q){
         
         // Temporary: press 'enter' to win the battle
         Q.input.on("confirm", stage, function() {
-            Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.victory});
+            Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.winScene});
             Q.input.off("esc",stage);
             Q.input.off("confirm",stage);
             //Make sure the HUD is gone
@@ -62,7 +62,7 @@ Quintus.SceneFuncs=function(Q){
         });
         // Temporary: press 'esc' to win the battle
         Q.input.on("esc", stage, function() {
-            Q.stageScene("dialogue", 1, {data: stage.options.data, dialogue: stage.options.data.defeat});
+            Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.defeatScene});
             Q.input.off("esc",stage);
             Q.input.off("confirm",stage);
             //Make sure the HUD is gone
@@ -94,7 +94,7 @@ Quintus.SceneFuncs=function(Q){
                 var data = Q.state.get("quests")[questName];
                 //Make sure the bgs and chars are loaded
                 Q.load(data.bgs.concat(data.chars).join(','),function(){
-                    Q.stageScene("dialogue", 1, {data: data, dialogue: data.dialogue});
+                    Q.stageScene("dialogue", 1, {data: data, path:"dialogue"});
                 });
                 console.log("Showing quest: "+questName)
                 Q.input.off("confirm",stage);

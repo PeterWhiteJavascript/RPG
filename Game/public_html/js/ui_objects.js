@@ -97,21 +97,18 @@ Quintus.UIObjects=function(Q){
             Q.input.off("confirm",stage);
             return true;
         },
-        loadBattle:function(){
+        loadBattle:function(path){
             var stage = this.stage;
-            Q.stageScene("battle",0,{data:stage.options.data, battle: stage.options.data.battle});
+            Q.stageScene("battle",0,{data:stage.options.data, path:path});
             //Clear this stage
             Q.clearStage(1);
             Q.input.off("confirm",stage);
             return true;
         },
         //Shows additional dialogue (which will probably be determined by factors such as player choices, how well they did in battle, etc...)
-        moreDialogue:function(name){
+        moreDialogue:function(path){
             var stage = this.stage;
-            var dialogue = stage.options.data[name];
-            Q.stageScene("dialogue",1,{data:stage.options.data, dialogue:dialogue});
-            //Clear this stage
-            Q.clearStage(1);
+            Q.stageScene("dialogue",1,{data:stage.options.data, path:path});
             Q.input.off("confirm",stage);
             return true;
         },
@@ -131,9 +128,9 @@ Quintus.UIObjects=function(Q){
                 confirmationBox.p.confirmOptions.push(confirmOption);
                 if(i===0){confirmOption.p.color="red";};
                 //When this option is selected
-                confirmOption.on("selected",function(next){
+                confirmOption.on("selected",function(path){
                     //If this option is selected, load that dialogue and destroy this confirmation box
-                    Q.stageScene("dialogue",1,{data:stage.options.data, dialogue:stage.options.data[next]});
+                    Q.stageScene("dialogue",1,{data:stage.options.data, path:path});
                     Q.input.off("up",stage);
                     Q.input.off("down",stage);
                     Q.input.off("confirm",stage);
