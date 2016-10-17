@@ -3,36 +3,82 @@
         "name":"homeland_forest",
         "bgs":["bg/pub.jpg","bg/city.jpg"],
         "start":{
-            "bg":"bg/city.jpg"
+            "bg":"bg/city.jpg",
+            "interaction":[
+                {"text":["Welcome to town."],"asset":[false,false],"pos":"left","skipLast":1},
+                {"func":"confirmation","props":[[
+                    {"next":"shop","text":"General Store"},
+                    {"next":"blacksmith","text":"Blacksmith"},
+                    {"next":"inn","text":"Forest's Fire Inn"},
+                    {"next":"pub","text":"Ann Mc'Sidequest's Pub"}
+                ]]}
+            ]
         },
         "shop":{
-            "bg":"bg/shop.jpg",
-            "options":{
-                "buy":{
-                    "potion":{"name":"Potion","cost":100}
-                }
+            "bg":"bg/pub.jpg",
+            "inventory":{
+                "potion":{"name":"Potion","cost":100}
+            },
+            "interaction":[
+                {"func":"confirmation","props":[[
+                    {"next":"shop/buy","text":"Buy consumer products"},
+                    {"next":"shop/sell","text":"Sell goat antlers"},
+                    {"next":"start","text":"Leave the inn"}
+                ]]}
+            ],
+            "buy":{
+                "interaction":[
+                    {"func":"confirmation","props":[[
+                        {"next":"shop","text":"Nevermind"}
+                    ]]}
+                ]
+            },
+            "sell":{
+                "interaction":[
+                    {"func":"confirmation","props":[[
+                        {"next":"shop","text":"Nevermind"}
+                    ]]}
+                ]
             }
         },
         "blacksmith":{
-            "bg":"bg/blacksmith.jpg",
-            "options":{
-                "upgrade":{"cost":1000},
-                "repair":{"cost":500}
-            }
+            "bg":"bg/pub.jpg",
+            "todo": [
+                "upgrade",
+                "repair"
+            ],
+            "interaction":[
+                {"func":"confirmation","props":[[
+                    {"next":"start","text":"Leave the shop"}
+                ]]}
+            ]
         },
         "inn":{
-            "bg":"bg/inn.jpg",
-            "options":{
-                "rest":{"cost":100}
+            "bg":"bg/city.jpg",
+            "interaction":[
+                {"text":["The inn is warm and inviting."],"asset":[false,false],"pos":"left","skipLast":1},
+                {"func":"confirmation","props":[[
+                    {"next":"inn/sleep","text":"Sleep (0.500 btc)"},
+                    {"next":"start","text":"Leave the inn"}
+                ]]}
+            ],
+            "sleep":{
+                "bg":"bg/pub.jpg",
+                "interaction":[
+                    {"text":["There are no beds yet. What a lame inn."],"asset":[false,false],"pos":"left"},
+                    {"func":"moreDialogue","props":["start"]}
+                ]
             }
         },
         "pub":{
             "bg":"bg/pub.jpg",
-            "options":{
-                "quests":[
-                    "side_quest1_1"
-                ]
-            }
+            "interaction":[
+                {"func":"triggerQuest", "props":["side_quest1_1"]},
+                {"text":["The pub is empty (of quests & guests)."],"asset":[false,false],"pos":"left","skipLast":1},
+                {"func":"confirmation","props":[[
+                    {"next":"start","text":"Leave the pub"}
+                ]]}
+            ]
         }
         
     }

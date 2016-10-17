@@ -38,17 +38,19 @@ Quintus.UIObjects=function(Q){
             this.p.y=Q.height-this.p.h;
         },
         checkTextNum:function(){
-            if(this.p.textIndex >= this.p.dialogueData.interaction[this.p.interactionIndex].text.length) {
+            var currentInteraction = this.p.dialogueData.interaction[this.p.interactionIndex];
+            if(!currentInteraction.text || this.p.textIndex >= currentInteraction.text.length) {
                 this.p.textIndex = 0;
                 this.p.interactionIndex++;
             }
         },
-        nextText:function() {
-            //Remove later
-            if(this.p.dialogueData.interaction[this.p.interactionIndex].func){alert("Code is broken. A function should never be tried to run here.");}
-            this.checkTextNum();
+        next:function() {
             var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
-            this['cycle'+type]();
+            this['cycle' + type]();
+        },
+        nextText:function() {
+            this.checkTextNum();
+            this.next();
         },
         checkDialogueType:function(interaction){
             if(interaction.text){
@@ -58,8 +60,9 @@ Quintus.UIObjects=function(Q){
             }
         },
         cycleText:function(){
-            this.p.dialogueText.p.label = this.p.dialogueData.interaction[this.p.interactionIndex].text[this.p.textIndex];
-            this.p.dialogueText.p.align = this.p.dialogueData.interaction[this.p.interactionIndex].pos;
+            var interaction = this.p.dialogueData.interaction[this.p.interactionIndex];
+            this.p.dialogueText.p.label = interaction.text[this.p.textIndex];
+            this.p.dialogueText.p.align = interaction.pos;
             
             if(this.p.dialogueText.p.align == 'left') {
                 this.p.dialogueText.p.x = 10;
@@ -68,33 +71,35 @@ Quintus.UIObjects=function(Q){
             }
             this.p.textIndex++;
             //Update the assets
-            if(this.p.dialogueData.interaction[this.p.interactionIndex].asset[0]){
-                this.p.leftAsset.p.asset = "story/"+this.p.dialogueData.interaction[this.p.interactionIndex].asset[0];
+            if(interaction.asset[0]){
+                this.p.leftAsset.p.asset = "story/"+interaction.asset[0];
             } else {
                 this.p.leftAsset.p.asset = "";
             }
-            if(this.p.dialogueData.interaction[this.p.interactionIndex].asset[1]){
-                this.p.rightAsset.p.asset = "story/"+this.p.dialogueData.interaction[this.p.interactionIndex].asset[1];
+            if(interaction.asset[1]){
+                this.p.rightAsset.p.asset = "story/"+interaction.asset[1];
             } else {
                 this.p.rightAsset.p.asset = "";
             }
-            
+            // Check if we should run the next line in the action queue immediately without waiting for user confirmation (ie. to open a menu)
+            if(interaction.skipLast && interaction.text.length == this.p.textIndex) {
+                this.nextText();
+            }
         },
         cycleFunc:function(){
             //If the function finishes this dialogue, it will be true.
             //This also gets the function that needs to be executed from the JSON
             if(this[this.p.dialogueData.interaction[this.p.interactionIndex].func].apply(this,this.p.dialogueData.interaction[this.p.interactionIndex].props)){return;};
             this.p.interactionIndex++;
-            var type = this.checkDialogueType(this.p.dialogueData.interaction[this.p.interactionIndex]);
-            this['cycle'+type]();
+            this.next();
         },
         //START JSON FUNCTIONS
         loadLocation:function(location,menu){
             var stage = this.stage;
-            Q.stageScene("location",0,{location:Q.state.get("locations")[location],menu:menu});
-            //Make sure the battle is gone
-            Q.clearStage(1);
             Q.input.off("confirm",stage);
+            //Make sure the battle is gone
+            Q.clearStages();
+            Q.stageScene("location",0,{data:Q.state.get("locations")[location],menu:menu});
             return true;
         },
         loadBattle:function(path){
@@ -129,16 +134,43 @@ Quintus.UIObjects=function(Q){
                 if(i===0){confirmOption.p.color="red";};
                 //When this option is selected
                 confirmOption.on("selected",function(path){
-                    //If this option is selected, load that dialogue and destroy this confirmation box
-                    Q.stageScene("dialogue",1,{data:stage.options.data, path:path});
-                    Q.input.off("up",stage);
-                    Q.input.off("down",stage);
-                    Q.input.off("confirm",stage);
+                    stage.pause();
+                    if(opt.exitStage && Q.stages.length > 1) {
+                        // Pop off the top stage, and unpause the previous one
+                        var lastStage = Q.stages.length - 1;
+                        Q.clearStage(lastStage);
+                        Q.stages[lastStage - 1].unpause();
+                    } else {
+                        Q.stageScene("dialogue", 1, {data: stage.options.data, path: path});
+                    }
                 });
+            });
+            stage.on('pause', confirmationBox, function() {
+                Q.input.off("up",confirmationBox,"cycleUp");
+                Q.input.off("down",confirmationBox,"cycleDown");
+                Q.input.off("confirm",confirmationBox,"selectOption");
+            });
+            stage.on('unpause', confirmationBox, function() {
+                Q.input.on("up",confirmationBox,"cycleUp");
+                Q.input.on("down",confirmationBox,"cycleDown");
+                Q.input.on("confirm",confirmationBox,"selectOption");
             });
             confirmationBox.fit(10,10);
             //Disable input for this text box for now while the user selects the option
             Q.input.off("confirm",stage);
+            return true;
+        },
+        triggerQuest:function(questName){
+            var quests = Q.state.get("acceptedQuests");
+            if(quests[questName]) {
+                // We've already received this quest
+                return;
+            }
+            var data = Q.state.get("quests")[questName];
+            Q.load(data.bgs.concat(data.chars).join(','),function(){
+                Q.clearStages();
+                Q.stageScene("dialogue", 1, {data: data, path: "dialogue"});
+            });
             return true;
         },
         //Accepts a quest that the player has confirmed that they want to do.

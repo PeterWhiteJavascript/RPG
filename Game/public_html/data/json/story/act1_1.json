@@ -6,7 +6,11 @@
         "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Press enter."],"asset":[false,"shini.jpg"],"pos":"right"},
-            {"func":"confirmation","props":[[{"next":"dialogue/on_to_battle","text":"Fight"},{"next":"dialogue/readStuff","text":"Read Stuff"}]]}
+            {"func":"confirmation","props":[[
+                {"next":"skip_to_town","text":"Skip to town"},
+                {"next":"dialogue/on_to_battle","text":"Fight"},
+                {"next":"dialogue/readStuff","text":"Read Stuff"}
+            ]]}
             
         ],
         "readStuff":{
@@ -100,11 +104,17 @@
             {}
         ]
     },
+    "skip_to_town":{
+        "bg":"",
+        "interaction":[
+            {"func":"loadLocation","props":["homeland_forest","start"]}
+        ]
+    },
     "victory":{
         "bg":"",
         "interaction":[
             {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
-            {"func":"loadLocation","props":["homeland_forest","pub"]}
+            {"func":"loadLocation","props":["homeland_forest","start"]}
         ]
     },
     "defeat":{

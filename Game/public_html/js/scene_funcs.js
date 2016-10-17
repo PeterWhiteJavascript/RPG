@@ -32,10 +32,10 @@ Quintus.SceneFuncs=function(Q){
         textbox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
         //The Dialogue is the text that is inside the dialogue area
         textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({label:"...", align: 'left', x: 10}));
-        textbox.nextText();
         Q.input.on("confirm", stage, function() {
             textbox.nextText();
         });
+        textbox.next();
     });
     Q.scene("battle",function(stage){
         //The data that is used for this battle
@@ -93,27 +93,13 @@ Quintus.SceneFuncs=function(Q){
         
     });
     Q.scene("location",function(stage){
-        Q.state.set("currentLocation",stage.options.location);
         //Set the current menu. Default is 'start'
         if(!stage.options.menu){alert("No Menu Given in JSON!!!");};
         Q.state.set("currentMenu",stage.options.menu?stage.options.menu:Q.state.get("currentMenu"));
-        //TO DO: Create menus that you can use
-        console.log(stage.options.location)
-        console.log("Current Menu: "+Q.state.get("currentMenu"));
+        console.log("Current Menu: "+Q.state.get("currentMenu"), stage.options.data);
         //Load any bgs for this location
-        Q.load(stage.options.location.bgs.join(','),function(){
-            var bgImage = stage.insert(new Q.BackgroundImage({asset:stage.options.location[Q.state.get("currentMenu")].bg}));
-            //For now, let's press enter to select the pub's first quest (this will give an error after beating the first quest as this is not te exact setup that we need)
-            Q.input.on("confirm",stage,function(){
-                var questName = stage.options.location[Q.state.get("currentMenu")].options.quests[0];
-                var data = Q.state.get("quests")[questName];
-                //Make sure the bgs and chars are loaded
-                Q.load(data.bgs.concat(data.chars).join(','),function(){
-                    Q.stageScene("dialogue", 1, {data: data, path:"dialogue"});
-                });
-                console.log("Showing quest: "+questName)
-                Q.input.off("confirm",stage);
-            });
+        Q.load(stage.options.data.bgs.join(','),function(){
+            Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});
         });
     });
 };
