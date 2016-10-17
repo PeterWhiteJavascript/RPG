@@ -44,11 +44,26 @@ Quintus.SceneFuncs=function(Q){
         Q.stageTMX(battleData.map, stage);
         Q.stageScene("battleHUD",3);
         stage.add("viewport");
+        //Display alex
+        var allyData = Q.state.get("allies");
+        var allies = [];
+        allyData.forEach(function(ally){
+            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,attacks:ally.attacks,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method});
+            char.add("statCalcs");
+            allies.push(char);
+            
+        });
         //Display the enemies, interactables, pickups, and placement locations
         var enemyData = battleData.enemies;
         enemyData.forEach(function(enm){
-            stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentLevel:enm.equipmentLevel}));
+            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentLevel:enm.equipmentLevel,equipmentType:enm.equipmentType,gender:"male"}));
+            char.add("randomCharacter,statCalcs");
         });
+        
+        //Until the placement code is written, place alex at 3,4
+        allies[0].p.loc = [3,4];
+        stage.insert(allies[0]);
+        console.log(allies[0])
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
         //var pointer = stage.insert(new Q.Pointer());
         

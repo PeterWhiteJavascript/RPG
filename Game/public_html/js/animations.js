@@ -6,8 +6,9 @@ Q.setUpAnimations=function(){
     
     //Sprites
     var toSheet= [
-        ['archer','archer.png',24,48,344,352],
-        ['barbarian','barbarian.png',24,48,344,352]
+        ['archer','archer.png',24,48,6,6,344,352],
+        ['barbarian','barbarian.png',24,48,6,6,344,352],
+        ['knight','knight.png',24,48,6,14,344,352]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -15,10 +16,10 @@ Q.setUpAnimations=function(){
         {
            tilew:toSheet[j][2],
            tileh:toSheet[j][3],
-           sx:0,
-           sy:0,
-           w:toSheet[j][4],
-           h:toSheet[j][5]
+           sx:toSheet[j][4],
+           sy:toSheet[j][5],
+           w:toSheet[j][6],
+           h:toSheet[j][7]
         });
     };
 

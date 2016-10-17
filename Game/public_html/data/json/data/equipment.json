@@ -4,25 +4,89 @@
             "name":"Wooden Sword",
             "desc":"A wooden sword",
             "rank":1,
-            "weaponType":"sword"
+            "equipmentType":"sword",
+            "damageLow":11,
+            "damageHigh":75,
+            "speed":10,
+            "reach":3,
+            "range":1,
+            "wield":25
         },
         "wetNoodle":{
             "name":"Wet Noodle",
             "desc":"A wet noodle",
             "rank":1,
-            "weaponType":"sword"
+            "equipmentType":"sword",
+            "damageLow":1,
+            "damageHigh":100,
+            "speed":20,
+            "reach":10,
+            "range":2,
+            "wield":25
         },
         "banana":{
             "name":"Banana",
             "desc":"A red banana",
             "rank":1,
-            "weaponType":"sword"
+            "equipmentType":"sword",
+            "damageLow":50,
+            "damageHigh":50,
+            "speed":50,
+            "reach":1,
+            "range":1,
+            "wield":50
         },
         "bronzeSword":{
             "name":"Bronze Sword",
             "desc":"A pretty nice bronze sword",
             "rank":2,
-            "weaponType":"sword"
+            "equipmentType":"sword",
+            "damageLow":21,
+            "damageHigh":85,
+            "speed":10,
+            "reach":3,
+            "range":1,
+            "wield":25
+        },
+        
+        "greatAxe":{
+            "name":"Great Axe",
+            "desc":"A large axe",
+            "rank":2,
+            "equipmentType":"axe",
+            "damageLow":31,
+            "damageHigh":80,
+            "speed":10,
+            "reach":2,
+            "wield":35,
+            "range":1,
+            "twoHanded":true
+        },
+        "woodenBow":{
+            "name":"Wooden Bow",
+            "desc":"A standard bow and arrow set",
+            "rank":1,
+            "equipmentType":"bow",
+            "damageLow":1,
+            "damageHigh":55,
+            "speed":20,
+            "reach":1,
+            "wield":45,
+            "range":5,
+            "twoHanded":true
+        },
+        "ironBow":{
+            "name":"Iron Bow",
+            "desc":"A really good bow and arrow set",
+            "rank":2,
+            "equipmentType":"bow",
+            "damageLow":10,
+            "damageHigh":95,
+            "speed":25,
+            "reach":1,
+            "wield":55,
+            "range":6,
+            "twoHanded":true
         }
     },
     "shield":{
@@ -30,13 +94,15 @@
             "name":"Pot Lid",
             "desc":"The lid of a pot",
             "rank":1,
-            "weaponType":"shield"
+            "equipmentType":"shield",
+            "defense":5
         },
         "woodenShield":{
             "name":"Wooden Shield",
             "desc":"A wooden shield",
             "rank":2,
-            "weaponType":"shield"
+            "equipmentType":"shield",
+            "defense":7
         }
         
     },
@@ -44,24 +110,28 @@
         "shirt":{
             "name":"Shirt",
             "desc":"A regular 'ol shirt",
-            "rank":1
+            "rank":1,
+            "defense":3
         },
         "leatherArmour":{
             "name":"Leather Armour",
             "desc":"Some pretty good armour!",
-            "rank":2
+            "rank":2,
+            "defense":10
         }
     },
     "feet":{
         "sandals":{
             "name":"Sandals",
             "desc":"Casual footwear",
-            "rank":1
+            "rank":1,
+            "defense":1
         },
         "leatherShoes":{
             "name":"Leather Shoes",
             "desc":"Duarable footwear",
-            "rank":2
+            "rank":2,
+            "defense":3
         }
     },
     "accessory":{

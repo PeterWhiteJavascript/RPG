@@ -1,0 +1,28 @@
+{
+    "alex":{
+        "name": "Alex",
+        "level":1,
+        "gender":"male",
+        "equipment":{
+            "righthand":["weapon","woodenSword",1],
+            "lefthand":["shield","woodenShield",1],
+            "body":["body","shirt",1],
+            "feet":["feet","sandals",1],
+            "accessory":false
+        },
+        "stats":{
+            "str":10,
+            "end":10,
+            "dex":10,
+            "wsk":10,
+            "rfl":10
+        },
+        "attacks":{
+            "sword":["stab","slash"],
+            "spear":["pierce","puncture"]
+        },
+        "value":50,
+        "method":50,
+        "charClass":"knight"
+    }
+}

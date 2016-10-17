@@ -32,7 +32,8 @@ Q.tileH = 32;
 Q.astar = astar;
 //A necessary component of Astar
 Q.Graph = Graph;
-
+//The highest rank for weapons
+Q.maxEquipmentRank = 2;
 //End Constants
 
 //Set up the game state's options
@@ -54,7 +55,7 @@ Q.state.set({
 Q.organizeEquipment=function(){
     var eq = Q.state.get("equipment");
     //This is the highest rank that we've added in the game
-    var ranks = 2;
+    var ranks = Q.maxEquipmentRank;
     eq.weaponSorted = [];
     eq.shieldSorted = [];
     eq.bodySorted = [];
@@ -84,7 +85,7 @@ Q.organizeEquipment=function(){
     console.log(eq);
 };
 //When new game is selected, generate a new game state
-Q.newGame=function(){
+Q.newGame=function(options){
     //Set up the game state with default values
     Q.state.set({
         //The scene name. This does not have to be 'act', but it does have to match the json.
@@ -94,6 +95,13 @@ Q.newGame=function(){
         //The quests that have been accepted. Array full of strings
         acceptedQuests:[]
     });
+    //The main character's object
+    var alex = Q.state.get("characters").alex;
+    alex.gender = options.gender;
+    var storyAlex = Q.setUpStoryCharacter(alex);
+    Q.state.set("alex",storyAlex);
+    //For now, alex is the only character
+    Q.state.set("allies",[storyAlex]);
     //Start a scene
     Q.startScene(Q.state.get("sceneName")+"_"+Q.state.get("sceneNum"));
 };
@@ -101,6 +109,7 @@ var files = [
     //IMAGES SPRITES
     "sprites/archer.png",
     "sprites/barbarian.png",
+    "sprites/knight.png",
     //IMAGES UI
     "ui/ui_objects.png",
     "ui/text_box.png",
@@ -116,6 +125,8 @@ var files = [
     "json/data/locations.json",
     "json/data/quests.json",
     "json/data/character_classes.json",
+    "json/data/characters.json",
+    "json/data/attacks.json",
     //JSON STORY
     "json/story/act1_1.json",
     "json/story/act1_2.json",
@@ -134,12 +145,15 @@ Q.load(files.join(','),function(){
     Q.state.set("quests",Q.assets['json/data/quests.json']);
     //All base settings for character classes
     Q.state.set("charClasses",Q.assets['json/data/character_classes.json']);
-    
+    //The story characters that you can recruit (including alex)
+    Q.state.set("characters",Q.assets['json/data/characters.json']);
+    //The list of attacks and their effects
+    Q.state.set("attacks",Q.assets['json/data/attacks.json']);
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     //For now, just start a new game when we load in. -> main.js
-    Q.newGame();
+    Q.newGame({gender:"female"});
 });
 //Q.debug=true;
 });
