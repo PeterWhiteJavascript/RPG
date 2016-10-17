@@ -65,8 +65,13 @@ Quintus.QFunctions=function(Q){
     Q.setOption=function(opt,value){
         Q.state.p.options[opt]=value;
     };
-    Q.setXY=function(obj,loc){
-        obj.p.x = loc[0]*Q.tileW+Q.tileW/2;
-        obj.p.y = loc[1]*Q.tileH+Q.tileH/2;
+    //Follows a sprite
+    Q.viewFollow=function(obj,stage){
+        if(!stage){stage=Q.stage(1);};
+        var minX=0;
+        var maxX=(stage.mapWidth*Q.tileW)*stage.viewport.scale;
+        var minY=0;
+        var maxY=(stage.mapHeight*Q.tileH)*stage.viewport.scale;
+        stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
     };
 };

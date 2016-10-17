@@ -7,8 +7,8 @@
         "interaction":[
             {"text":["Press enter."],"asset":[false,"shini.jpg"],"pos":"right"},
             {"func":"confirmation","props":[[
-                {"next":"skip_to_town","text":"Skip to town"},
                 {"next":"dialogue/on_to_battle","text":"Fight"},
+                {"next":"skip_to_town","text":"Skip to town"},
                 {"next":"dialogue/readStuff","text":"Read Stuff"}
             ]]}
             

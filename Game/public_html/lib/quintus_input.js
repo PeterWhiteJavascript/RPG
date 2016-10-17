@@ -66,6 +66,7 @@ Quintus.Input = function(Q) {
     Z: 'fire',
     X: 'action',
     ENTER: 'confirm',
+    SHIFT: 'shift',
     ESC: 'esc',
     P: 'P',
     S: 'S'

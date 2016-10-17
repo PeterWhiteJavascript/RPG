@@ -1,12 +1,178 @@
 Quintus.HUD=function(Q){
+    //The grid that keeps track of all interactable objects in the battle.
+    //Any time an object moves, this will be updated
+    Q.GameObject.extend("BattleGrid",{
+        init:function(p){
+            this.stage = p.stage;
+            this.grid = [];
+            var tilesX = p.stage.mapWidth;
+            var tilesY = p.stage.mapHeight;
+            for(var i=0;i<tilesY;i++){
+                this.grid[i]=[];
+                for(var j=0;j<tilesX;j++){
+                    this.grid[i][j]=false;
+                }
+            }
+            //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
+            this.stage.on("inserted",this,function(itm){
+                if(itm.has("interactable")){
+                    this.setObject(itm.p.loc,itm);
+                }
+            });
+        },
+        getObject:function(loc){
+            return this.grid[loc[1]][loc[0]];
+        },
+        setObject:function(loc,obj){
+            this.grid[loc[1]][loc[0]] = obj;
+        },
+        moveObject:function(from,to,obj){
+            this.removeObject(from);
+            this.addObject(to,obj);
+        },
+        removeObject:function(loc){
+            this.grid[loc[1]][loc[0]] = [];
+        }
+    });
+    //The battle controller holds all battle specific code.
+    Q.GameObject.extend("BattleController",{
+        init:function(p){
+            this.stage = p.stage;
+        },
+        //Run once at the start of battle
+        startBattle:function(){
+            this.turnOrder = this.generateTurnOrder(this.stage.lists["Character"]);
+            this.allies = this.stage.lists[".interactable"].filter(function(char){
+                return char.p.team==="ally"; 
+            });
+            this.enemies = this.stage.lists[".interactable"].filter(function(char){
+                return char.p.team==="enemy"; 
+            });
+            console.log("Turn Order: ");
+            console.log(this.turnOrder);
+            this.startTurn();
+        },
+        //Eventuall check custom win conditions. For now, if there are no players OR no enemies, end it.
+        checkBattleOver:function(){
+            if(this.allies.length===0){
+                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.winScene});
+                Q.input.off("esc",this.stage);
+                Q.input.off("confirm",this.stage);
+                //Make sure the HUD is gone
+                Q.clearStage(3);
+                return;
+            }
+            if(this.enemies.length===0){
+                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.loseScene});
+                Q.input.off("esc",this.stage);
+                Q.input.off("confirm",this.stage);
+                //Make sure the HUD is gone
+                Q.clearStage(3);
+                
+                return;
+            }
+            this.startTurn();
+        },
+        //Starts the character that is first in turn order
+        startTurn:function(){
+            this.turnOrder[0].startTurn();
+        },
+        //When a character ends their turn, run this to cycle the turn order
+        endTurn:function(){
+            var lastTurn = this.turnOrder.shift();
+            this.turnOrder.push(lastTurn);
+            //Check if the battle is over at this point
+            this.checkBattleOver();
+        },
+        //Generates the turn order at the start of the battle
+        generateTurnOrder:function(objects){
+            var turnOrder = [];
+            var sortForSpeed = function(){
+                var topSpeed = objects[0];
+                var idx = 0;
+                for(var i=0;i<objects.length;i++){
+                    if(objects[i].p.totalSpeed>topSpeed.p.totalSpeed){
+                        topSpeed=objects[i];
+                        idx = i;
+                    }
+                }
+                turnOrder.push(topSpeed);
+                objects.splice(idx,1);
+                if(objects.length){
+                    return sortForSpeed();
+                } else {
+                    return turnOrder;
+                }
+            };
+            var tO = sortForSpeed();
+            return tO;
+        },
+        setXY:function(obj){
+            obj.p.x = obj.p.loc[0]*Q.tileW+Q.tileW/2;
+            obj.p.y = obj.p.loc[1]*Q.tileH+Q.tileH/2;
+        },
+        getInteractableAt:function(loc){
+            var target = this.stage.lists[".interactable"].items.filter(function(obj){
+                return obj.p.loc&&obj.p.loc[0]===loc[0]&&obj.p.loc[1]===loc[1];
+            })[0];
+            return target;
+        },
+        getTileType:function(loc){
+            //Prioritize the collision objects
+            var tileLayer = this.stage.lists.TileLayer[1];
+            if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
+                var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type; 
+                 return type?type:"impassable";
+            }
+            //If there's nothing on top, check the ground
+            var tileLayer = this.stage.lists.TileLayer[0];
+            if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
+                 return tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
+            }
+        }
+    });
     Q.UI.Container.extend("TerrainHUD",{
         init:function(p){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:200,h:100,
+                w:250,h:95,
                 type:Q.SPRITE_NONE,
-                fill:"green"
+                fill:"blue",
+                opacity:0.5
+            });
+            this.on("inserted");
+        },
+        inserted:function(){
+            var info = ["Terrain","Move","Buffs"];
+            this.p.stats = [];
+            for(var i=0;i<info.length;i++){
+                this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
+                this.p.stats.push(this.insert(new Q.HUDText({x:this.p.w-10,y:10+i*25,align:"right"})));
+            }
+            this.stage.options.pointer.on("onTerrain",this,"displayTerrain");
+            this.stage.options.pointer.getTerrain();
+            
+        },
+        displayTerrain:function(type){
+            var terrain = Q.state.get("tileTypes")[type];
+            var stats = this.p.stats;
+            var labels = [
+                terrain.name,
+                ""+terrain.move,
+                ""+terrain.buff
+            ];
+            for(var i=0;i<stats.length;i++){
+                stats[i].p.label = labels[i];
+            }
+        }
+    });
+    Q.UI.Text.extend("HUDText",{
+        init:function(p){
+            this._super(p,{
+                label:"",
+                align:'left',
+                size:20
             });
         }
     });
@@ -15,26 +181,64 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:300,h:100,
+                w:220,h:245,
                 type:Q.SPRITE_NONE,
-                fill:"green"
+                fill:"blue",
+                opacity:0.5
             });
             this.p.x=Q.width-this.p.w;
+            this.on("inserted");
+        },
+        inserted:function(){
+            var info = ["Class","Level","HP","Damage","Armour","Speed","Strike","Parry","Critical"];
+            this.p.stats = [];
+            for(var i=0;i<info.length;i++){
+                this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
+                this.p.stats.push(this.insert(new Q.HUDText({x:this.p.w-10,y:10+i*25,align:"right"})));
+            }
+            this.stage.options.pointer.on("onTarget",this,"displayTarget");
+            this.stage.options.pointer.on("offTarget",this,"hideHUD");
+            //Get the pointer to send a target if it is on one when this menu is created
+            this.stage.options.pointer.checkTarget();
+        },
+        displayTarget:function(obj){
+            this.show();
+            if(obj.p.team==="ally") this.p.fill = "blue";
+            if(obj.p.team==="enemy") this.p.fill = "crimson";
+            var stats = this.p.stats;
+            var labels = [
+                ""+obj.p.className,
+                ""+obj.p.level,
+                ""+obj.p.hp,
+                ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
+                ""+obj.p.armour,
+                ""+obj.p.totalSpeed,
+                ""+obj.p.strike,
+                ""+obj.p.parry,
+                ""+obj.p.criticalChance
+            ];
+            for(var i=0;i<stats.length;i++){
+                stats[i].p.label = labels[i];
+            }
+            
+        },
+        hideHUD:function(){
+            this.hide();
         }
     });
     //Work in Progress (Copied from my other project)
     Q.Sprite.extend("Pointer",{
         init: function(p) {
             this._super(p, {
-                sheet:"objects",
-                frame:4,
+                sheet:"ui_pointer",
+                frame:0,
                 type:Q.SPRITE_NONE,
-                w:Q.tileH,h:Q.tileH,
                 
                 guide:[],
                 movTiles:[],
                 
-                stepDistance:Q.tileH,
+                stepDistanceX:Q.tileW,
+                stepDistanceY:Q.tileH,
                 stepDelay:0.2,
                 stepWait:0,
                 
@@ -43,158 +247,54 @@ Quintus.HUD=function(Q){
                 
                 locsTo:[]
             });
+            this.on("inserted");
         },
-        initialize:function(){
-            var pos = Q.setXY(this.p.loc[0],this.p.loc[1]);
-            this.p.x = pos[0];
-            this.p.y = pos[1];
-            this.p.z=this.p.y+Q.tileH/2;
-            this.p.destX = this.p.x;
-            this.p.destY = this.p.y;
-            this.p.diffX=0;
-            this.p.diffY=0;
-            this.moveGuide(0,0);
-            this.on("unflash",this,"unFlashObjs");
-            this.on("finished");
-            this.showName(this.p.name);
+        inserted:function(){
+            this.stage.BatCon.setXY(this);
+            Q._generatePoints(this,true);
         },
-        showName:function(name){
-            this.p.username = Q.stage(1).insert(new Q.UI.Container({x:this.p.x,y:this.p.y-this.p.h,z:100000}));
-            this.p.username.insert(new Q.UI.Text({label:name,z:100000,size:20}));
-            this.p.username.fit(2,2);
+        getTerrain:function(){
+            var type = this.stage.BatCon.getTileType(this.p.loc);
+            this.trigger("onTerrain",type);
         },
-        //This function displays the attack area and moves with the pointer
-        createAttackArea:function(areas){
-            this.p.attackAreas=areas;
-            for(i=0;i<areas.length;i++){
-                this.p.guide.push(Q.stage(1).insert(new Q.PathBox({loc:[this.p.loc[0]+areas[i][0],this.p.loc[1]+areas[i][1]]})));
-            }
-        },
-        //Clears the guide that shows where you can place a player at the start of the scene
-        clearStartGuide:function(){
-            if(this.p.startGuide.length>0){
-                for(i=0;i<this.p.startGuide.length;i++){
-                    this.p.startGuide[i].destroy();
-                }
-            }
-        },
-        validPointerLoc:function(){
-            var guide = this.p.player.p.guide;
-            var valid = false;
-            for(i=0;i<guide.length;i++){
-                if(guide[i].p.loc[0]===this.p.loc[0]&&guide.p.loc[1]===this.p.loc[1]){
-                    valid = true;
-                }
-            }
-            return valid;
-        },
-        clearGuide:function(){
+        checkTarget:function(){
             var p = this.p;
-            if(p.guide&&p.guide.length>0){
-                for(i=0;i<p.guide.length;i++){
-                    p.guide[i].destroy();
-                }
-            }
-            this.p.guide=[];
-        },
-        finished:function(){
-            this.trigger("unflash");
-            if(this.p.user.p.player){
-                this.p.user.p.player.clearGuide();
-            }
-            this.clearGuide();
-            Q.clearStage(3);
-            this.stage.remove(this);
-            this.stage.remove(this.p.username);
-        },
-        flashObjs:function(guide){
-            var obj = Q.getTarget(guide.p.x,guide.p.y);
-            if(obj&&this.p.user.p.player.checkValidTarget(obj,this.p.attack)&&this.p.user.p.player.checkValidAttackTarget(obj)){
-                obj.flash();
-                this.p.flashObjs.push(obj);
-            }
-        },
-        unFlashObjs:function(){
-            if(this.p.flashObjs.length>0){
-                for(i=0;i<this.p.flashObjs.length;i++){
-                    this.p.flashObjs[i].stopFlash();
-                }
-            }
-        },
-        moveGuide:function(dir,sd){
-            var guide = this.p.guide;
-            this.unFlashObjs();
-            this.p.flashObjs=[];
-            if(guide.length>0){
-                for(var i=0;i<guide.length;i++){
-                    guide[i].p[dir]+=sd;
-                    this.flashObjs(guide[i]);
-                }
+            p.target=this.stage.BattleGrid.getObject(p.loc);
+            if(p.target){
+                this.trigger("onTarget",p.target);
+            } else {
+                this.trigger("offTarget");
             }
         },
         //Checks to see if we're going off the map and stop it.
         checkValidLoc:function(loc){
-            if(loc[0]<0||loc[1]<0||loc[0]>=Q.state.get("mapWidth")||loc[1]>=Q.state.get("mapHeight")){
+            if(loc[0]<0||loc[1]<0||loc[0]>=this.stage.mapWidth||loc[1]>=this.stage.mapHeight){
                 return false;
             }
             return loc;
         },
-        compareLocs:function(loc){
-            //Compare the locs and determine the movement
-            var inputs = {};
-            var pLoc = this.p.loc;
-            switch(true){
-                case pLoc[0]>loc[0]:
-                    inputs.left=true;
-                    break;
-                case pLoc[0]<loc[0]:
-                    inputs.right=true;
-                    break;
-            }
-            switch(true){
-                case pLoc[1]>loc[1]:
-                    inputs.up=true;
-                    break;
-                case pLoc[1]<loc[1]:
-                    inputs.down=true;
-                    break;
-            }
-            return inputs;
-        },
-        move:function(loc){
-            if(!this.p.stepping){
-                var inputs = this.compareLocs(loc);
-                this.checkInputs(inputs);
-            } else {
-                this.p.locsTo.push(loc);
-            }
-        },
         //Do the logic for the directional inputs that were pressed
-        checkInputs:function(input){
+        checkInputs:function(){
             var p = this.p;
-            var loc;
+            var input = Q.inputs;
             var newLoc = [p.loc[0],p.loc[1]];
             if(input['up']){
-                p.diffY = -p.stepDistance;
-                this.moveGuide('y',p.diffY);
+                p.diffY = -p.stepDistanceY;
                 newLoc[1]--;
             } else if(input['down']){
-                p.diffY = p.stepDistance;
-                this.moveGuide('y',p.diffY);
+                p.diffY = p.stepDistanceY;
                 newLoc[1]++;
             }
             if(input['right']){
-                p.diffX = p.stepDistance;
-                this.moveGuide('x',p.diffX);
+                p.diffX = p.stepDistanceX;
                 newLoc[0]++;
             } else if(input['left']){
-                p.diffX = -p.stepDistance;
-                this.moveGuide('x',p.diffX);
+                p.diffX = -p.stepDistanceX;
                 newLoc[0]--;
             }
-            var loc = this.checkValidLoc(newLoc);
+            var validLoc = this.checkValidLoc(newLoc);
             //If there's a loc and the loc was changed
-            if(loc&&(newLoc[0]!==p.loc[0]||newLoc[1]!==p.loc[1])){
+            if(validLoc&&(newLoc[0]!==p.loc[0]||newLoc[1]!==p.loc[1])){
                 p.stepping = true;
                 p.origX = p.x;
                 p.origY = p.y;
@@ -203,132 +303,30 @@ Quintus.HUD=function(Q){
                 p.stepWait = p.stepDelay;
                 //Set the loc right away and not when the pointer gets to the location
                 p.loc = newLoc;
-                p.target=Q.getTargetAt(p.loc[0],p.loc[1]);
-                if(p.target){
-                    if(Q.state.get("watchingTurn")||p.user.controlled()){
-                        p.target.showCard();
-                    }
-                } else {
-                    if(Q.state.get("watchingTurn")||p.user.controlled()){
-                        p.user.checkClearStage(3);
-                    }
-                }
+                this.getTerrain();
+                this.checkTarget();
             } else {
                 p.diffX = 0;
                 p.diffY = 0;
             }
         },
-        //Figure out if we're interacting of pressing back before checking the movement
-        processInputs:function(input){
-            var p = this.p;
-            //Don't process the inputs while moving
-            if(!p.stepping&&!this.p.noInteract&&!this.p.noBack){
-                if(input['interact']){
-                    if(p.target){
-                        //If we're attacking
-                        if(p.attack&&p.user.p.player.checkValidTarget(p.target,p.attack)){
-                            //p.user.loadAttackPrediction(p.attack,p.target);
-                        } 
-                        //If we're not attacking, load the full menu of the target
-                        else if(!p.user.p.player.checkValidTarget(p.target,p.user.p.player.attack)){
-                            //p.user.loadFullMenu(p.target);
-                        }
-                        Q.inputs['interact']=false;
-                    } else {
-                        this.trigger("inputsInteract");
-                    }
-                    Q.state.get("playerConnection").socket.emit("playerInputs",{playerId:this.p.user.p.playerId,inputs:{interact:true,time:input.time}});
-                    this.p.noInteract = true;
-                    setTimeout(function(){
-                        p.noInteract=false;
-                    },100);
-                    Q.inputs['interact']=false;
-                    return;
-                } else if(input['back']){
-                    this.trigger("inputsBack");
-                    Q.state.get("playerConnection").socket.emit("playerInputs",{playerId:this.p.user.p.playerId,inputs:{back:true,time:input.time}});
-                    this.p.noBack = true;
-                    setTimeout(function(){
-                        p.noBack=false;
-                    },100);
-                    Q.inputs['back']=false;
-                    return;
-                }
-                this.checkInputs(input);
-                Q.state.get("playerConnection").socket.emit("playerInputs",{playerId:this.p.user.p.playerId,inputs:input});
-                //console.log(this.p.loc)
-            }
-        },
         step:function(dt){
-            this.p.z=this.p.y+Q.tileH/2;
-            var p = this.p,
-                moved = false;
+            var p = this.p;
+            p.z=p.y+Q.tileH/2;
             p.stepWait -= dt;
             if(p.stepping) {
                 p.x += p.diffX * dt / p.stepDelay;
                 p.y += p.diffY * dt / p.stepDelay;
-                p.username.p.x = p.x;
-                p.username.p.y = p.y-p.h;
             }
             if(p.stepWait > 0) { return;}
             if(p.stepping) {
                 p.x = p.destX;
                 p.y = p.destY;
-                p.username.p.x = p.x;
-                p.username.p.y = p.y-p.h;
             }
             p.stepping = false;
             p.diffX = 0;
             p.diffY = 0;
-            if(p.locsTo.length){
-                this.move(p.locsTo[0]);
-                p.locsTo.splice(0,1);
-            }
-        }
-    });
-    
-     Q.Sprite.extend("PathBox",{
-        init: function(p){
-            this._super(p,{
-                sheet:"objects",
-                frame:5,
-                w:Q.tileH,h:Q.tileH,
-                opacity:0.3,
-                radius:0,
-                type:Q.SPRITE_INTERACTABLE
-            });
-            if(!this.p.x||!this.p.y){
-                var pos = Q.setXY(this.p.loc[0],this.p.loc[1]);
-                this.p.x = pos[0];
-                this.p.y = pos[1];
-            }
-            this.p.z=this.p.y-Q.tileH/2;
-            if(!this.p.loc){
-                this.p.loc = Q.getLoc(this.p.x,this.p.y);
-            }
-            this.on("step",this,function(){this.p.z=this.p.y-Q.tileH/2;});
-        }
-    });
-    
-    Q.UI.Text.extend("NameText",{
-        init: function(p){
-            this._super(p,{
-                color:"white",
-                size:30,
-                outlineWidth:3,
-                type:Q.SPRITE_NONE,
-                label:"Aipom"
-            });
-            this.p.x-=this.p.w/2;
-            this.setLabel();
-            Q.state.on("change.currentTilesLeft",this,"setLabel");
-        },
-        changeCurChar:function(){
-            this.p.curChar=Q.state.get("turnOrder")[Q.state.get("currentCharacterTurn")];
-            this.setLabel();
-        },
-        setLabel:function(){
-            this.p.label="Moves left: "+this.p.curChar.p.myTurnTiles;
+            this.checkInputs();
         }
     });
 };

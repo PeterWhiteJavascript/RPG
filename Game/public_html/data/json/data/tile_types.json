@@ -1,0 +1,30 @@
+{
+    "impassable":{
+        "name":"Impassable",
+        "move":"-",
+        "buff":""
+    },
+    "grass":{
+        "name":"Grass",
+        "move":1,
+        "buff":""
+    },
+    "dirt":{
+        "name":"Dirt",
+        "move":1,
+        "buff":""
+    },
+    "sand":{
+        "name":"Sand",
+        "move":2,
+        "buff":"Speed -2",
+        "effect":{"stat":"totalSpeed","amount":-2}
+    },
+    "water":{
+        "name":"Water",
+        "move":2,
+        "buff":"Armour +2",
+        "required":"waterWalk",
+        "effect":{"stat":"armour","amount":2}
+    }
+}

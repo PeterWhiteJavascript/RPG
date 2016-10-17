@@ -42,13 +42,19 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
         //Load the tmx tile map
         Q.stageTMX(battleData.map, stage);
-        Q.stageScene("battleHUD",3);
+        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+        //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
+        stage.BattleGrid = new Q.BattleGrid({stage:stage});
+        //The battle controller holds all battle specific functions
+        stage.BatCon = new Q.BattleController({stage:stage});
         stage.add("viewport");
+        stage.viewport.scale = 2;
         //Display alex
         var allyData = Q.state.get("allies");
         var allies = [];
         allyData.forEach(function(ally){
-            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,attacks:ally.attacks,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method});
+            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,attacks:ally.attacks,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
             char.add("statCalcs");
             allies.push(char);
             
@@ -56,17 +62,21 @@ Quintus.SceneFuncs=function(Q){
         //Display the enemies, interactables, pickups, and placement locations
         var enemyData = battleData.enemies;
         enemyData.forEach(function(enm){
-            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentLevel:enm.equipmentLevel,equipmentType:enm.equipmentType,gender:"male"}));
+            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentLevel:enm.equipmentLevel,equipmentType:enm.equipmentType,gender:"male",team:"enemy"}));
             char.add("randomCharacter,statCalcs");
         });
         
         //Until the placement code is written, place alex at 3,4
         allies[0].p.loc = [3,4];
         stage.insert(allies[0]);
-        console.log(allies[0])
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        //var pointer = stage.insert(new Q.Pointer());
+        var pointer = stage.insert(new Q.Pointer({loc:[3,4]}));
         
+        //Default to following the pointer
+        Q.viewFollow(pointer,stage);
+        
+        //Display the hud which shows character and terrain information
+        Q.stageScene("battleHUD",3,{pointer:pointer});
         // Temporary: press 'enter' to win the battle
         Q.input.on("confirm", stage, function() {
             Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.winScene});
@@ -83,6 +93,7 @@ Quintus.SceneFuncs=function(Q){
             //Make sure the HUD is gone
             Q.clearStage(3);
         });
+        stage.BatCon.startBattle();
     });
     Q.scene("battleHUD",function(stage){
         //Create the top left hud which gives information about the ground (grass,dirt,etc...)

@@ -38,7 +38,7 @@
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["LOST the GAME!"],"asset":["l.jpg",false],"pos":"left"},
-            {"func":"doDefeat","props":[]}
+            {"func":"doDefeat","props":["THIS FUNCTION IS NOT DONE YET"]}
         ]
     }
 }

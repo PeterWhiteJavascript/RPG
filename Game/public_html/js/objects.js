@@ -95,6 +95,7 @@ Quintus.Objects=function(Q){
     });
     Q.component("statCalcs",{
         added:function(){
+            this.entity.p.className = Q.state.get("charClasses")[this.entity.p.charClass].name;
             this.entity.p.hp = this.entity.p.stats.end*10;
             this.entity.p.totalDamageLow = this.getDamageLow();
             this.entity.p.totalDamageHigh = this.getDamageHigh();
@@ -149,6 +150,12 @@ Quintus.Objects=function(Q){
             return right+left+body+feet+accessory; 
         }
     });
+    //Given to characters, interactables, and pickups
+    Q.component("interactable",{
+        added:function(){
+            
+        }
+    });
     Q.Sprite.extend("Character",{
         init:function(p){
             this._super(p,{
@@ -161,8 +168,8 @@ Quintus.Objects=function(Q){
             //Quintus components
             this.add("2d, animation");
             //Custom components
-            this.add("animations");
-            var t = this;
+            this.add("animations,interactable");
+            /*var t = this;
             setTimeout(function(){
                 console.log(t.p.charClass+"'s Equipment: ");
                 console.log(t.p.equipment);
@@ -177,14 +184,24 @@ Quintus.Objects=function(Q){
                 console.log("Critical Chance: "+t.p.criticalChance);
                 console.log("Armour: "+t.p.armour);
                 console.log("---------------------------");
-            },1);
+            },1);*/
             this.on("inserted");
         },
         //Will run when this character is inserted into the stage (whether it be placement by the user, or when inserting enemies)
         inserted:function(){
-            Q.setXY(this,this.p.loc);
+            this.stage.BatCon.setXY(this);
             this.playStand(this.p.dir);
             Q._generatePoints(this,true);
+        },
+        startTurn:function(){
+            console.log("It's my turn! I am the "+this.p.className+".");
+            if(this.p.team==="enemy"){
+                console.log("Since there's no AI written, the turn is skipped!");
+                this.stage.BatCon.endTurn();
+            }
+        },
+        endTurn:function(){
+            
         }
     
     });
