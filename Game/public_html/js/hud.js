@@ -50,6 +50,9 @@ Quintus.HUD=function(Q){
             });
             console.log("Turn Order: ");
             console.log(this.turnOrder);
+            //Get the pointer to send a target if it is on one when this menu is created
+            var pointer = this.stage.pointer;
+            pointer.checkTarget();
             this.startTurn();
         },
         //Eventuall check custom win conditions. For now, if there are no players OR no enemies, end it.
@@ -181,7 +184,7 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:220,h:245,
+                w:220,h:270,
                 type:Q.SPRITE_NONE,
                 fill:"blue",
                 opacity:0.5
@@ -190,7 +193,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","HP","Damage","Armour","Speed","Strike","Parry","Critical"];
+            var info = ["Class","Level","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical"];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -198,8 +201,6 @@ Quintus.HUD=function(Q){
             }
             this.stage.options.pointer.on("onTarget",this,"displayTarget");
             this.stage.options.pointer.on("offTarget",this,"hideHUD");
-            //Get the pointer to send a target if it is on one when this menu is created
-            this.stage.options.pointer.checkTarget();
         },
         displayTarget:function(obj){
             this.show();
@@ -210,6 +211,7 @@ Quintus.HUD=function(Q){
                 ""+obj.p.className,
                 ""+obj.p.level,
                 ""+obj.p.hp,
+                ""+obj.p.sp,
                 ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
                 ""+obj.p.armour,
                 ""+obj.p.totalSpeed,
@@ -248,6 +250,7 @@ Quintus.HUD=function(Q){
                 locsTo:[]
             });
             this.on("inserted");
+            this.on("checkInputs");
         },
         inserted:function(){
             this.stage.BatCon.setXY(this);
@@ -273,10 +276,23 @@ Quintus.HUD=function(Q){
             }
             return loc;
         },
+        addControls:function(){
+            this.on("checkInputs");
+        },
+        displayCharacterMenu:function(){
+            Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:this.stage.BatCon.turnOrder[0],pointer:this});
+            this.off("checkInputs");
+        },
         //Do the logic for the directional inputs that were pressed
         checkInputs:function(){
             var p = this.p;
             var input = Q.inputs;
+            //If we're trying to load a menu
+            if(input['confirm']){
+                if(p.target){this.displayCharacterMenu();}
+                Q.inputs['confirm']=false;
+                return;
+            }
             var newLoc = [p.loc[0],p.loc[1]];
             if(input['up']){
                 p.diffY = -p.stepDistanceY;
@@ -326,7 +342,48 @@ Quintus.HUD=function(Q){
             p.stepping = false;
             p.diffX = 0;
             p.diffY = 0;
-            this.checkInputs();
+            this.trigger("checkInputs");
+        }
+    });
+    
+    Q.UI.Container.extend("ActionMenu",{
+        init: function(p) {
+            this._super(p, {
+                w:200,h:300,
+                cx:0,cy:0,
+                fill:"blue",
+                opacity:0.5
+            });
+            this.p.x = Q.width-this.p.w;
+            this.p.y = Q.height-this.p.h;
+            this.on("inserted");
+        },
+        inserted:function(){
+            this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:"ACTIONS",size:30}));
+            var options;
+            if(this.p.active){
+                options = ["Move","Attack","Skill","Item","Status","End Turn"];
+            } else {
+                options = ["Status"];
+            }
+            console.log(this.p.active)
+            for(var i=0;i<options.length;i++){
+                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0}));
+                cont.insert(new Q.UI.Text({x:cont.p.w/2,y:8,label:options[i],cx:0}));
+            }
+        }
+    });
+    //Contains the character's full information
+    Q.UI.Container.extend("StatsMenu",{
+        init: function(p) {
+            this._super(p, {
+                w:Q.width/2,h:Q.height/2,
+                cx:0,cy:0,
+                fill:"black",
+                opacity:0.5
+            });
+            this.p.x = Q.width/2-this.p.w/2;
+            this.p.y = Q.height/2-this.p.h/2;
         }
     });
 };

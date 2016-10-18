@@ -32,7 +32,9 @@ Q.state.set({
         //The speed at which the text cycles on screen (1,2, or 3)
         textSpeed:1,
         //If true, text will automatically go to the next text after the previous one completes.
-        autoScroll:false
+        autoScroll:false,
+        //How fast the cursor moves in battle
+        cursorSpeed:2
     }
 });
 
@@ -143,6 +145,17 @@ Q.load(files.join(','),function(){
     Q.setUpAnimations();
     //For now, just start a new game when we load in. -> main.js
     Q.newGame({gender:"female"});
+    //Make it so that you can open the options menu at all times
+    //For now, press space or z to load
+    Q.input.on("fire",function(){
+        if(!Q.stage(4)){
+            Q.pauseAllStages();
+            Q.stageScene("optionsMenu",4);
+        } else  {
+            Q.clearStage(4);
+            Q.unpauseAllStages();
+        }
+    });
 });
 //Q.debug=true;
 });

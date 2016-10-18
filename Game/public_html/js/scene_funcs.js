@@ -32,11 +32,15 @@ Quintus.SceneFuncs=function(Q){
         textbox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
         //The Dialogue is the text that is inside the dialogue area
         textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({label:"...", align: 'left', x: 10}));
-        Q.input.on("confirm", stage, function() {
-            textbox.nextText();
+        
+        stage.on("step",function(){
+            if(Q.inputs['confirm']){
+                textbox.nextText();
+                Q.inputs['confirm']=false;
+            }
         });
         textbox.next();
-    });
+    }); 
     Q.scene("battle",function(stage){
         //The data that is used for this battle
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
@@ -70,13 +74,14 @@ Quintus.SceneFuncs=function(Q){
         allies[0].p.loc = [3,4];
         stage.insert(allies[0]);
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        var pointer = stage.insert(new Q.Pointer({loc:[3,4]}));
+        stage.pointer = stage.insert(new Q.Pointer({loc:[3,4]}));
         
         //Default to following the pointer
-        Q.viewFollow(pointer,stage);
+        Q.viewFollow(stage.pointer,stage);
         
         //Display the hud which shows character and terrain information
-        Q.stageScene("battleHUD",3,{pointer:pointer});
+        Q.stageScene("battleHUD",3,{pointer:stage.pointer});
+        /*
         // Temporary: press 'enter' to win the battle
         Q.input.on("confirm", stage, function() {
             Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.winScene});
@@ -93,7 +98,79 @@ Quintus.SceneFuncs=function(Q){
             //Make sure the HUD is gone
             Q.clearStage(3);
         });
+        */
         stage.BatCon.startBattle();
+    });
+    //Displayed when selecting a character in battle
+    Q.scene("characterMenu",function(stage){
+        var target = stage.options.target;
+        var active = stage.options.currentTurn;
+        if(target===active){
+            stage.insert(new Q.ActionMenu({target:target,active:true}));
+            console.log("You've selected the active character!")
+        } else {
+            stage.insert(new Q.ActionMenu({target:target}));
+            console.log("It's not this character's turn!")
+        }
+        stage.on("step",function(){
+            if(Q.inputs['esc']){
+                stage.options.pointer.addControls();
+                //Make sure the characterMenu is gone
+                Q.clearStage(2);
+                Q.inputs['esc']=false;
+            }
+        });
+    });
+    //Displayed when pressing the menu button at any time.
+    Q.scene("optionsMenu",function(stage){
+        var menu = stage.insert(new Q.UI.Container({w:Q.width/2,h:Q.height/2,cx:0,cy:0,fill:"blue",opacity:0.5}));
+        menu.p.x = Q.width/2-menu.p.w/2;
+        menu.p.y = Q.height/2-menu.p.h/2;
+        var title = menu.insert(new Q.UI.Text({x:menu.p.w/2,y:15,label:"OPTIONS",size:30}));
+        var texts = ["Music","Sound","Text Speed","Auto Scroll","Cursor Speed"];
+        var vals = Q.state.get("options");
+        var values = ["musicEnabled","soundEnabled","textSpeed","autoScroll","cursorSpeed"];
+        var options = [];
+        for(var i=0;i<texts.length;i++){
+            var option = menu.insert(new Q.UI.Container({x:10,y:50+i*40,fill:"red",w:menu.p.w-20,h:40,cx:0,cy:0,radius:0,value:vals[values[i]]}));
+            option.insert(new Q.UI.Text({align:"left",x:10,y:8,label:texts[i]}));
+            option.val = option.insert(new Q.UI.Text({align:"right",x:option.p.w-10,y:8,label:""+vals[values[i]]}));
+            if(i===0){
+                option.p.fill = "green";
+            }
+            options.push(option);
+        }
+        var optionNum = 0;
+        var optsFuncs  = [
+            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
+            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
+            function(opt){opt.p.value++;if(opt.p.value>3){opt.p.value=1;}},
+            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
+            function(opt){opt.p.value++;if(opt.p.value>3){opt.p.value=1;}}
+        ];
+        stage.on("step",function(){
+            if(Q.inputs['confirm']){
+                //Run the proper function
+                optsFuncs[optionNum](options[optionNum]);
+                vals[values[optionNum]] = options[optionNum].p.value;
+                options[optionNum].val.p.label = ""+vals[values[optionNum]];
+                Q.inputs['confirm']=false;
+                return;
+            }
+            if(Q.inputs['up']){
+                options[optionNum].p.fill="red";
+                optionNum--;
+                if(optionNum<0){optionNum=options.length-1;};
+                options[optionNum].p.fill="green";
+                Q.inputs['up']=false;
+            } else if(Q.inputs['down']){
+                options[optionNum].p.fill="red";
+                optionNum++;
+                if(optionNum>=options.length){optionNum=0;};
+                options[optionNum].p.fill="green";
+                Q.inputs['down']=false;
+            }
+        });
     });
     Q.scene("battleHUD",function(stage){
         //Create the top left hud which gives information about the ground (grass,dirt,etc...)

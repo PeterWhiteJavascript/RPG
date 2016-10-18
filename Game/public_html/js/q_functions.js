@@ -74,4 +74,16 @@ Quintus.QFunctions=function(Q){
         var maxY=(stage.mapHeight*Q.tileH)*stage.viewport.scale;
         stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
     };
+    Q.pauseAllStages = function(){
+        Q.stages.forEach(function(st){
+            if(!st) return;
+            st.pause();
+        });
+    };
+    Q.unpauseAllStages = function(){
+        Q.stages.forEach(function(st){
+            if(!st) return;
+            st.unpause();
+        });
+    };
 };

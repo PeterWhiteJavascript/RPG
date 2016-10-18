@@ -95,15 +95,27 @@ Quintus.Objects=function(Q){
     });
     Q.component("statCalcs",{
         added:function(){
-            this.entity.p.className = Q.state.get("charClasses")[this.entity.p.charClass].name;
-            this.entity.p.hp = this.entity.p.stats.end*10;
-            this.entity.p.totalDamageLow = this.getDamageLow();
-            this.entity.p.totalDamageHigh = this.getDamageHigh();
-            this.entity.p.totalSpeed = this.getSpeed();
-            this.entity.p.strike = this.getStrike();
-            this.entity.p.parry = this.getParry();
-            this.entity.p.criticalChance = this.getCriticalChance();
-            this.entity.p.armour = this.getArmour();
+            var p = this.entity.p;
+            var base = Q.state.get("charClasses")[p.charClass].baseStats;
+            p.className = Q.state.get("charClasses")[p.charClass].name;
+            p.hp = this.getHp(base);
+            p.sp = this.getSp(base);
+            p.totalDamageLow = this.getDamageLow();
+            p.totalDamageHigh = this.getDamageHigh();
+            p.totalSpeed = this.getSpeed();
+            p.strike = this.getStrike();
+            p.parry = this.getParry();
+            p.criticalChance = this.getCriticalChance();
+            p.armour = this.getArmour();
+        },
+        getHp:function(base){
+            var p = this.entity.p;
+            //Every 5 levels, get a stat boost. every 10 levels, get a big stat boost
+            return Math.floor(Math.ceil(p.level/5)*(base.end+base.str)+Math.ceil(p.level/10)*(p.stats.str+p.stats.end))+1;
+        },
+        getSp:function(base){
+            var p = this.entity.p;
+            return Math.floor(Math.ceil(p.level/10)*(base.dex+p.stats.dex))+1;
         },
         //Calculate damage based on attack + weapon1 +weapon2
         getDamageLow:function(){
