@@ -144,6 +144,12 @@
             "name":"Earmuffs",
             "desc":"Keeps your ears warm",
             "rank":2
+        },
+        "movementCharm":{
+            "name":"Movement Charm",
+            "desc":"Makes you move further!",
+            "rank":2,
+            "move":1
         }
     }
 }

@@ -1,4 +1,59 @@
 Quintus.Objects=function(Q){
+    //Any items that are equipped by a character are removed as they are saved in the character's equipment.
+    //The save file does not include items in the bag that are equipped by characters.
+    Q.GameObject.extend("Bag",{
+        init:function(data){
+            this.fillBag(data.items);
+        },
+        //When the bag is created, fill it with the given items
+        fillBag:function(data){
+            var bagItems = {};
+            var items = Q.state.get("items");
+            var equipment = Q.state.get("equipment");
+            var keys = Object.keys(data);
+            keys.forEach(function(key){
+                if(key === "consumable" || key === "key"){
+                    bagItems[key]=[];
+                    //Loop through the category
+                    data[key].forEach(function(k){
+                        var id = k[0];
+                        var itemKeys = Object.keys(items[id]);
+                        var newItem = {amount:k[1]};
+                        itemKeys.forEach(function(ik){
+                            newItem[ik] = items[id][ik];
+                        });
+                        bagItems[key].push(newItem);
+                    });
+                    
+                } else {
+                    bagItems[key]=[];
+                    //Loop through the category
+                    data[key].forEach(function(k){
+                        var id = k[0];
+                        var equipKeys = Object.keys(equipment[key][id]);
+                        var newEquipment = {amount:k[1]};
+                        equipKeys.forEach(function(ek){
+                            newEquipment[ek] = equipment[key][id][ek];
+                        });
+                        bagItems[key].push(newEquipment);
+                    });
+                }
+            });
+            this.items = bagItems;
+        },
+        addItem:function(itm,type){
+            
+        },
+        removeItem:function(itm,type){
+            
+        },
+        increaseItem:function(itm,type){
+            
+        },
+        decreaseItem:function(itm,type){
+            
+        }
+    });
     //Adds more control over what animations are playing.
     Q.component("animations", {
         added:function(){
@@ -26,15 +81,14 @@ Quintus.Objects=function(Q){
     Q.component("randomCharacter",{
         added:function(){
             var t = this.entity;
-            //Equipment level is random enemy only as it is used for generating equipment at that level
-            if(t.p.equipmentLevel){
+            if(t.p.equipmentRank){
                 this.randomizeEquipment();
             }
             t.p.stats = this.generateCharStats();
         },
         randomizeEquipment:function(){
             var p = this.entity.p;
-            var el = p.equipmentLevel;
+            var el = p.equipmentRank;
             var equipment = Q.state.get("equipment");
             var types = ["weapon","shield","body","feet","accessory"];
             
@@ -45,7 +99,6 @@ Quintus.Objects=function(Q){
                 if(lv===0) lv=1;
                 if(lv>Q.maxEquipmentRank) lv = Q.maxEquipmentRank;
                 var eq = equipment[type+"Sorted"][lv-1][Math.floor(Math.random()*equipment[type+"Sorted"][lv-1].length)];
-                eq.level = lv+Math.floor(Math.random()*2)-1;
                 return eq;
             }
             p.equipment={
@@ -98,6 +151,7 @@ Quintus.Objects=function(Q){
             var p = this.entity.p;
             var base = Q.state.get("charClasses")[p.charClass].baseStats;
             p.className = Q.state.get("charClasses")[p.charClass].name;
+            p.move = this.getMove(Q.state.get("charClasses")[p.charClass].move);
             p.hp = this.getHp(base);
             p.sp = this.getSp(base);
             p.totalDamageLow = this.getDamageLow();
@@ -107,6 +161,13 @@ Quintus.Objects=function(Q){
             p.parry = this.getParry();
             p.criticalChance = this.getCriticalChance();
             p.armour = this.getArmour();
+            p.range = this.getRange();
+        },
+        getMove:function(base){
+            var body = this.entity.p.equipment.body.move?this.entity.p.equipment.body.move:0;
+            var feet = this.entity.p.equipment.feet.move?this.entity.p.equipment.feet.move:0;
+            var accessory = this.entity.p.equipment.accessory.move?this.entity.p.equipment.accessory.move:0;
+            return base+body+feet+accessory;
         },
         getHp:function(base){
             var p = this.entity.p;
@@ -160,6 +221,12 @@ Quintus.Objects=function(Q){
             var feet = this.entity.p.equipment.feet.defense?this.entity.p.equipment.feet.defense:0;
             var accessory = this.entity.p.equipment.accessory.defense?this.entity.p.equipment.accessory.defense:0;
             return right+left+body+feet+accessory; 
+        },
+        getRange:function(){
+            var right = this.entity.p.equipment.righthand.range?this.entity.p.equipment.righthand.range:0;
+            var left = this.entity.p.equipment.lefthand.range?this.entity.p.equipment.lefthand.range:0;
+            var accessory = this.entity.p.equipment.accessory.range?this.entity.p.equipment.accessory.range:0;
+            return (right>left?right:left)+accessory; 
         }
     });
     //Given to characters, interactables, and pickups
@@ -214,6 +281,15 @@ Quintus.Objects=function(Q){
         },
         endTurn:function(){
             
+        },
+        //Move this character to a location based on the passed path
+        moveAlong:function(path){
+            var newLoc = [path[path.length-1].x,path[path.length-1].y];
+            this.stage.BattleGrid.moveObject(this.p.loc,newLoc,this);
+            this.p.loc = newLoc;
+            this.stage.BatCon.setXY(this);
+            this.stage.pointer.on("checkConfirm");
+            this.stage.pointer.checkTarget();
         }
     
     });

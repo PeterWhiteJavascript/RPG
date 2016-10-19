@@ -22,7 +22,7 @@ Q.maxEquipmentRank = 2;
 //End Constants
 
 //Set up the game state's options
-//The default values will be overridden by data coming from the save file. TODO
+//The default values will be overridden by data coming from the save file.
 Q.state.set({
     options:{
         //If true, BGM will play
@@ -69,18 +69,17 @@ Q.organizeEquipment=function(){
             }
         }
     }
-    console.log(eq);
 };
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
     //Set up the game state with default values
     Q.state.set({
         //The scene name. This does not have to be 'act', but it does have to match the json.
-        sceneName:"act1",//"side_quest1",
-        //The scene within the act
-        sceneNum:1,
+        sceneName:"act1_1",//"side_quest1",
         //The quests that have been accepted. Array full of strings
-        acceptedQuests:[]
+        acceptedQuests:[],
+        //The current day. Affects when story quests trigger
+        day:1
     });
     //The main character's object
     var alex = Q.state.get("characters").alex;
@@ -90,7 +89,26 @@ Q.newGame=function(options){
     //For now, alex is the only character
     Q.state.set("allies",[storyAlex]);
     //Start a scene
-    Q.startScene(Q.state.get("sceneName")+"_"+Q.state.get("sceneNum"));
+    Q.startScene(Q.state.get("sceneName"));
+};
+//Start the game from the save data
+Q.startGame=function(save){
+    Q.state.set({
+        sceneName:save.sceneName,
+        week:save.week,
+        options:save.options,
+        accepctedQuests:save.acceptedQuests
+    });
+    var storyChars = [];
+    save.allies.forEach(function(ally){
+        storyChars.push(Q.setUpStoryCharacter(ally));
+    });
+    Q.state.set("alex",storyChars.filter(function(ally){return ally.name==="Alex";})[0]);
+    Q.state.set("allies",storyChars);
+    //Set up the Bag.
+    Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
+    
+    Q.startScene(Q.state.get("sceneName"));
 };
 var files = [
     //IMAGES SPRITES
@@ -119,8 +137,11 @@ var files = [
     //JSON STORY
     "json/story/act1_1.json",
     "json/story/act1_2.json",
-    "json/story/act1_3.json"
-    //TMX MAPS
+    "json/story/act1_3.json",
+    //THE SAMPLE SAVE DATA
+    "json/data/sample_save_data.json"
+    
+    
 ];
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){
@@ -128,9 +149,9 @@ Q.load(files.join(','),function(){
     Q.state.set("equipment",Q.assets['json/data/equipment.json']);
     //Items that are not equipment. I may make key items seperate.
     Q.state.set("items",Q.assets['json/data/items.json']);
-    //All default values for the locations (used when generating the menus). This value will be modified from the save file, but it is default here on load. This will help keep the save files small as it will only save information that has been changed.
+    //All default values for the locations (used when generating the menus).
     Q.state.set("locations",Q.assets['json/data/locations.json']);
-    //All quests that can be taken by the player at the pub. This value will be modified with data from the save file.
+    //All quests that can be taken by the player at the pub.
     Q.state.set("quests",Q.assets['json/data/quests.json']);
     //All base settings for character classes
     Q.state.set("charClasses",Q.assets['json/data/character_classes.json']);
@@ -144,7 +165,8 @@ Q.load(files.join(','),function(){
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     //For now, just start a new game when we load in. -> main.js
-    Q.newGame({gender:"female"});
+    //Q.newGame({gender:"female"});
+    Q.startGame(Q.assets['json/data/sample_save_data.json']);
     //Make it so that you can open the options menu at all times
     //For now, press space or z to load
     Q.input.on("fire",function(){

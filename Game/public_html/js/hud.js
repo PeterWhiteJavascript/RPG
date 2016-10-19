@@ -28,10 +28,10 @@ Quintus.HUD=function(Q){
         },
         moveObject:function(from,to,obj){
             this.removeObject(from);
-            this.addObject(to,obj);
+            this.setObject(to,obj);
         },
         removeObject:function(loc){
-            this.grid[loc[1]][loc[0]] = [];
+            this.grid[loc[1]][loc[0]] = false;
         }
     });
     //The battle controller holds all battle specific code.
@@ -48,8 +48,6 @@ Quintus.HUD=function(Q){
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="enemy"; 
             });
-            console.log("Turn Order: ");
-            console.log(this.turnOrder);
             //Get the pointer to send a target if it is on one when this menu is created
             var pointer = this.stage.pointer;
             pointer.checkTarget();
@@ -184,7 +182,7 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:220,h:270,
+                w:220,h:320,
                 type:Q.SPRITE_NONE,
                 fill:"blue",
                 opacity:0.5
@@ -193,7 +191,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical"];
+            var info = ["Class","Level","Move","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical","Range"];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -210,6 +208,7 @@ Quintus.HUD=function(Q){
             var labels = [
                 ""+obj.p.className,
                 ""+obj.p.level,
+                ""+obj.p.move,
                 ""+obj.p.hp,
                 ""+obj.p.sp,
                 ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
@@ -217,7 +216,8 @@ Quintus.HUD=function(Q){
                 ""+obj.p.totalSpeed,
                 ""+obj.p.strike,
                 ""+obj.p.parry,
-                ""+obj.p.criticalChance
+                ""+obj.p.criticalChance,
+                ""+obj.p.range
             ];
             for(var i=0;i<stats.length;i++){
                 stats[i].p.label = labels[i];
@@ -228,7 +228,6 @@ Quintus.HUD=function(Q){
             this.hide();
         }
     });
-    //Work in Progress (Copied from my other project)
     Q.Sprite.extend("Pointer",{
         init: function(p) {
             this._super(p, {
@@ -251,6 +250,7 @@ Quintus.HUD=function(Q){
             });
             this.on("inserted");
             this.on("checkInputs");
+            this.on("checkConfirm");
         },
         inserted:function(){
             this.stage.BatCon.setXY(this);
@@ -280,19 +280,24 @@ Quintus.HUD=function(Q){
             this.on("checkInputs");
         },
         displayCharacterMenu:function(){
+            if(!this.p.target) return;
             Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:this.stage.BatCon.turnOrder[0],pointer:this});
             this.off("checkInputs");
+            this.off("checkConfirm");
+        },
+        checkConfirm:function(){
+            var input = Q.inputs;
+            //If we're trying to load a menu
+            if(input['confirm']){console.log("di it")
+                this.displayCharacterMenu();
+                input['confirm']=false;
+                return;
+            }
         },
         //Do the logic for the directional inputs that were pressed
         checkInputs:function(){
             var p = this.p;
             var input = Q.inputs;
-            //If we're trying to load a menu
-            if(input['confirm']){
-                if(p.target){this.displayCharacterMenu();}
-                Q.inputs['confirm']=false;
-                return;
-            }
             var newLoc = [p.loc[0],p.loc[1]];
             if(input['up']){
                 p.diffY = -p.stepDistanceY;
@@ -343,6 +348,7 @@ Quintus.HUD=function(Q){
             p.diffX = 0;
             p.diffY = 0;
             this.trigger("checkInputs");
+            this.trigger("checkConfirm");
         }
     });
     
@@ -357,20 +363,91 @@ Quintus.HUD=function(Q){
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
             this.on("inserted");
+            this.on("step",this,"checkInputs");
+        },
+        cycle:function(to){
+            this.p.conts[this.p.selected].p.fill="red";
+            this.p.selected=to;
+            this.p.conts[this.p.selected].p.fill="green";
         },
         inserted:function(){
             this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:"ACTIONS",size:30}));
             var options;
+            var funcs;
             if(this.p.active){
                 options = ["Move","Attack","Skill","Item","Status","End Turn"];
+                funcs = ["loadMove","loadAttack","loadSkills","loadItems","loadStatus","loadEndTurn"];
             } else {
                 options = ["Status"];
+                funcs = ["loadStatus"];
             }
-            console.log(this.p.active)
+            this.p.selected = 0;
+            this.p.conts = [];
             for(var i=0;i<options.length;i++){
-                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0}));
+                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
                 cont.insert(new Q.UI.Text({x:cont.p.w/2,y:8,label:options[i],cx:0}));
+                this.p.conts.push(cont);
             }
+            this.cycle(this.p.selected);
+        },
+        checkInputs:function(){
+            if(Q.inputs['up']){
+                var to=this.p.selected-1;
+                if(this.p.selected===0){to=this.p.conts.length-1;}
+                this.cycle(to);
+                Q.inputs['up']=false;
+            } else if(Q.inputs['down']){
+                var to=this.p.selected+1;
+                if(this.p.selected===this.p.conts.length-1){to=0;}
+                this.cycle(to);
+                Q.inputs['down']=false;
+            }
+            if(Q.inputs['confirm']){
+                this[this.p.conts[this.p.selected].p.func]();
+                Q.inputs['confirm']=false;
+            }
+            if(Q.inputs['esc']){
+                this.stage.options.pointer.addControls();
+                this.stage.options.pointer.on("checkConfirm");
+                //Make sure the characterMenu is gone
+                Q.clearStage(2);
+                Q.inputs['esc']=false;
+            }
+        },
+        //Shows the move grid
+        loadMove:function(){
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"move"}));
+            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
+            this.off("step",this,"checkInputs");
+            this.hide();
+            this.stage.options.pointer.addControls();
+        },
+        //Shows the attack grid
+        loadAttack:function(){
+            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
+            this.off("step");
+            this.hide();
+        },
+        //Loads the special skills menu
+        loadSkills:function(){
+            
+        },
+        //Loads the items menu
+        loadItems:function(){
+            
+        },
+        //Loads the large menu that displays all stats for this character
+        loadStatus:function(){
+            
+        },
+        //Loads the directional arrows so the user can decide which direction to face
+        loadEndTurn:function(){
+            //For now, end the turn without giving direction.
+            this.stage.options.pointer.stage.BatCon.endTurn();
+            this.stage.options.pointer.addControls();
+            Q.clearStage(2);
+            //this.off("step");
+            //this.hide();
         }
     });
     //Contains the character's full information
@@ -384,6 +461,181 @@ Quintus.HUD=function(Q){
             });
             this.p.x = Q.width/2-this.p.w/2;
             this.p.y = Q.height/2-this.p.h/2;
+        }
+    });
+    
+    Q.UI.Container.extend("RangeGrid",{
+        init:function(p){
+            this._super(p,{
+                guide:[]
+            });
+            this.on("inserted");
+            this.on("step");
+        },
+        inserted:function(){
+            var target = this.p.target;
+            //Insert all of the squares
+            switch(this.p.kind){
+                case "move":
+                    //Loop through the target's move the get the move range
+                    this.getMoveRange(target);
+                    break;
+                case "attack":
+                    
+                    break;
+                //Used for skills that have a weird range (eg 'T' shape)
+                case "custom":
+                    
+                    break;
+                    
+            }
+        },
+        fullDestroy:function(){
+            this.p.guide.forEach(function(itm){
+                itm.destroy();
+            });
+            this.destroy();
+        },
+        getWalkMatrix:function(){
+            var tileTypes = Q.state.get("tileTypes");
+            var target = this.p.target;
+            function getWalkable(){
+                var move = tileTypes[target.stage.BatCon.getTileType([i_walk,j_walk])].move;
+                return move?move:10000;
+            }
+            function getTarget(){
+                return target.stage.BattleGrid.getObject([i_walk,j_walk]);
+            }
+            var cM=[];
+            var stage = target.stage;
+            for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
+                var costRow = [];
+                for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
+                    var cost = getWalkable();
+                    var objOn = getTarget();
+                    //Allow walking over allies
+                    if(objOn&&objOn.p.team===this.p.team){objOn=false;};
+                    //If there's still no enemy on the sqaure, get the tileCost
+                    if(!objOn){
+                        costRow.push(cost);
+                    } else {
+                        costRow.push(10000);
+                    }
+
+                }
+                cM.push(costRow);
+            }
+            return cM;
+         },
+        //Gets the fastest path to a certain location
+        //loc   - the current location of the object that is moving
+        //toLoc - [x,y]
+        //prop  - search using a maximum cost (movement uses maximum cost during battles)
+        //score - if prop:'maxScore' is set, this the maxScore. 
+        getPath:function(loc,toLoc,prop,score,gr){
+            //Set up a graph for this movement
+            var graph = gr?gr:new Q.Graph(this.getWalkMatrix());
+            var start = graph.grid[loc[0]][loc[1]];
+            var end = graph.grid[toLoc[0]][toLoc[1]];
+            var result;
+            if(prop==="maxScore"){
+                result = Q.astar.search(graph, start, end,{maxScore:score});
+            } else {
+                result = Q.astar.search(graph, start, end);
+            }
+            return result;
+        },
+        getMoveRange:function(target){
+            var loc = target.p.loc;
+            var mov = target.p.move;
+            var minTile = 0;
+            var maxTileRow = target.stage.mapHeight;
+            var maxTileCol = target.stage.mapWidth;
+            var rows=mov*2+1,
+                cols=mov*2+1,
+                tileStartX=loc[0]-mov,
+                tileStartY=loc[1]-mov;
+            var dif=0;
+
+            if(loc[0]-mov<minTile){
+                dif = cols-(mov+1+loc[0]);
+                cols-=dif;
+                tileStartX=mov+1-cols+loc[0];
+            }
+            if(loc[0]+mov>=maxTileCol){
+                dif = cols-(maxTileCol-loc[0]+mov);
+                cols-=dif;
+            }
+            if(loc[1]-mov<minTile){
+                dif = rows-(mov+1+loc[1]);
+                rows-=dif;
+                tileStartY=mov+1-rows+loc[1];
+            }
+            if(loc[1]+mov>=maxTileRow){
+                dif = rows-(maxTileRow-loc[1]+mov);
+                rows-=dif;
+            }
+
+            if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
+            if(cols+tileStartX>=maxTileCol){cols=maxTileCol-tileStartX;};
+            var movTiles=[];
+            //Get all possible move locations that are within the bounds
+            var graph = new Q.Graph(this.getWalkMatrix());
+            for(var i=tileStartX;i<tileStartX+cols;i++){
+                for(var j=tileStartY;j<tileStartY+rows;j++){
+                    if(graph.grid[i][j].weight<10000){
+                        movTiles.push(graph.grid[i][j]);
+                    }
+                }
+            }
+            //If there is at least one place to move
+            if(movTiles.length){
+                //Loop through the possible tiles
+                for(var i=0;i<movTiles.length;i++){
+                    var path = this.getPath(loc,[movTiles[i].x,movTiles[i].y],"maxScore",mov,graph);
+                    var pathCost = 0;
+                    for(var j=0;j<path.length;j++){
+                        pathCost+=path[j].weight;
+                    }
+                    if(path.length>0&&path.length<=mov&&pathCost<=mov){
+                        this.p.guide.push(this.insert(new Q.RangeTile({x:movTiles[i].x*Q.tileW+Q.tileW/2,y:movTiles[i].y*Q.tileH+Q.tileH/2,loc:[movTiles[i].x,movTiles[i].y]})));
+                    }
+                }
+            //If there's nowhere to move
+            } else {
+                
+            }
+        },
+        //Checks if we've selected a tile
+        checkValidPointerLoc:function(){
+            var loc = this.p.target.stage.pointer.p.loc;
+            var valid = false;
+            this.p.guide.forEach(function(tile){
+                if(tile.p.loc[0]===loc[0]&&tile.p.loc[1]===loc[1]){
+                    valid=true;
+                }
+            });
+            if(valid) return true;
+            return false;
+        },
+        step:function(){
+            if(Q.inputs['confirm']){
+                if(this.checkValidPointerLoc()){
+                    this.p.target.moveAlong(this.getPath(this.p.target.p.loc,this.p.target.stage.pointer.p.loc,"maxScore",this.p.target.p.move));
+                    this.fullDestroy();
+                }
+                Q.inputs['confirm']=false;
+            }
+        }
+    });
+    Q.Sprite.extend("RangeTile",{
+        init:function(p){
+            this._super(p,{
+                sheet:"range_tile",
+                frame:0,
+                opacity:0.3,
+                w:Q.tileW,h:Q.tileH
+            });
         }
     });
 };

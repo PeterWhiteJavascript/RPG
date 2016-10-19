@@ -2,12 +2,14 @@
     "potion":{
         "name": "Potion",
         "desc": "Heals 20 hp",
-        "kind": "Consumable"
+        "kind": "Consumable",
+        "effect":""
     },
     "goldCoin":{
         "name": "Gold Coin",
         "desc": "A valuable coin",
-        "kind":"Key"
+        "kind":"Key",
+        "effect":""
     }
     
 }

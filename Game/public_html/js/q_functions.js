@@ -8,7 +8,6 @@ Quintus.QFunctions=function(Q){
             keys.forEach(function(key){
                 if(equipmentData[key]){
                     eq[key] = equipment[equipmentData[key][0]][equipmentData[key][1]];
-                    eq[key].level = equipmentData[key][2];
                 } else {
                     eq[key] = {};
                 }

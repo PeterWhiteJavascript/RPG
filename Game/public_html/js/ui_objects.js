@@ -178,7 +178,7 @@ Quintus.UIObjects=function(Q){
             var stage = this.stage;
             var sceneName = stage.options.data.sceneName;
             var quests = Q.state.get("acceptedQuests");
-            quests[sceneName] = sceneName;
+            quests[sceneName] = {name:sceneName,completed:false};
             //For now, send the user right to the scene!
             Q.clearStages();
             Q.startScene(sceneName);

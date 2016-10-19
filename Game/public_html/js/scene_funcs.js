@@ -66,39 +66,21 @@ Quintus.SceneFuncs=function(Q){
         //Display the enemies, interactables, pickups, and placement locations
         var enemyData = battleData.enemies;
         enemyData.forEach(function(enm){
-            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentLevel:enm.equipmentLevel,equipmentType:enm.equipmentType,gender:"male",team:"enemy"}));
+            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy"}));
             char.add("randomCharacter,statCalcs");
         });
         
-        //Until the placement code is written, place alex at 3,4
-        allies[0].p.loc = [3,4];
+        //Until the placement code is written, place alex at 4,6
+        allies[0].p.loc = [4,6];
         stage.insert(allies[0]);
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        stage.pointer = stage.insert(new Q.Pointer({loc:[3,4]}));
+        stage.pointer = stage.insert(new Q.Pointer({loc:[4,6]}));
         
         //Default to following the pointer
         Q.viewFollow(stage.pointer,stage);
         
         //Display the hud which shows character and terrain information
         Q.stageScene("battleHUD",3,{pointer:stage.pointer});
-        /*
-        // Temporary: press 'enter' to win the battle
-        Q.input.on("confirm", stage, function() {
-            Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.winScene});
-            Q.input.off("esc",stage);
-            Q.input.off("confirm",stage);
-            //Make sure the HUD is gone
-            Q.clearStage(3);
-        });
-        // Temporary: press 'esc' to win the battle
-        Q.input.on("esc", stage, function() {
-            Q.stageScene("dialogue", 1, {data: stage.options.data,path:stage.options.battleData.defeatScene});
-            Q.input.off("esc",stage);
-            Q.input.off("confirm",stage);
-            //Make sure the HUD is gone
-            Q.clearStage(3);
-        });
-        */
         stage.BatCon.startBattle();
     });
     //Displayed when selecting a character in battle
@@ -107,19 +89,9 @@ Quintus.SceneFuncs=function(Q){
         var active = stage.options.currentTurn;
         if(target===active){
             stage.insert(new Q.ActionMenu({target:target,active:true}));
-            console.log("You've selected the active character!")
         } else {
             stage.insert(new Q.ActionMenu({target:target}));
-            console.log("It's not this character's turn!")
         }
-        stage.on("step",function(){
-            if(Q.inputs['esc']){
-                stage.options.pointer.addControls();
-                //Make sure the characterMenu is gone
-                Q.clearStage(2);
-                Q.inputs['esc']=false;
-            }
-        });
     });
     //Displayed when pressing the menu button at any time.
     Q.scene("optionsMenu",function(stage){

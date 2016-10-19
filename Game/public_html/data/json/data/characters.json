@@ -4,11 +4,11 @@
         "level":1,
         "gender":"male",
         "equipment":{
-            "righthand":["weapon","woodenSword",1],
-            "lefthand":["shield","woodenShield",1],
-            "body":["body","shirt",1],
-            "feet":["feet","sandals",1],
-            "accessory":false
+            "righthand":["weapon","woodenSword"],
+            "lefthand":["shield","woodenShield"],
+            "body":["body","shirt"],
+            "feet":["feet","sandals"],
+            "accessory":["accessory","movementCharm"]
         },
         "stats":{
             "str":10,

@@ -8,7 +8,8 @@
             "dex":8,
             "wsk":15,
             "rfl":10
-        }
+        },
+        "move":4
     },
     "vanguard":{
         "name":"Vanguard",
@@ -19,7 +20,8 @@
             "dex":8,
             "wsk":15,
             "rfl":10
-        }
+        },
+        "move":4
     },
     "barbarian":{
         "name":"Barbarian",
@@ -30,8 +32,8 @@
             "dex":5,
             "wsk":10,
             "rfl":10
-        }
-
+        },
+        "move":4
     },
     
     "archer":{
@@ -43,7 +45,8 @@
             "dex":15,
             "wsk":15,
             "rfl":15
-        }
+        },
+        "move":4
     },
     "skirmisher":{
         "name":"Skirmisher",
@@ -54,8 +57,8 @@
             "dex":15,
             "wsk":5,
             "rfl":5
-        }
-
+        },
+        "move":4
     },
     "assassin":{
         "name":"Assassin",
@@ -66,7 +69,8 @@
             "dex":25,
             "wsk":25,
             "rfl":25
-        }
+        },
+        "move":5
     },
     
     "healer":{
@@ -78,8 +82,8 @@
             "dex":20,
             "wsk":10,
             "rfl":20
-        }
-
+        },
+        "move":3
     },
     "pyromancer":{
         "name":"Pyromancer",
@@ -90,7 +94,8 @@
             "dex":19,
             "wsk":20,
             "rfl":20
-        }
+        },
+        "move":3
 
     },
     "illusionist":{
@@ -102,7 +107,7 @@
             "dex":15,
             "wsk":15,
             "rfl":25
-        }
-
+        },
+        "move":3
     }
 }

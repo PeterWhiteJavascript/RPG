@@ -17,8 +17,8 @@
         "defeatScene":"defeat",
         "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
-            {"loc":[8,5],"charClass":"archer","level":1,"equipmentLevel":1},
-            {"loc":[8,4],"charClass":"barbarian","level":1,"equipmentLevel":1}
+            {"loc":[8,5],"charClass":"archer","level":1,"equipmentRank":1},
+            {"loc":[8,4],"charClass":"barbarian","level":1,"equipmentRank":1}
         ],
         "interactables":[
             {}
