@@ -241,7 +241,8 @@ Quintus.Objects=function(Q){
                 w:20,h:30,
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
-                dir:"left"
+                dir:"left",
+                z:10
             });
             this.p.sheet = this.p.charClass;
             //Quintus components
@@ -273,24 +274,90 @@ Quintus.Objects=function(Q){
             Q._generatePoints(this,true);
         },
         startTurn:function(){
+            //Get the grid for walking from this position
+            this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
+            //Get the grid for attacking from this position
+            this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
+            //Set to true when the character moves
+            this.p.didMove = false;
+            //Set to true when the character attacks
+            this.p.attacked = false;
             console.log("It's my turn! I am the "+this.p.className+".");
             if(this.p.team==="enemy"){
                 console.log("Since there's no AI written, the turn is skipped!");
                 this.stage.BatCon.endTurn();
             }
         },
-        endTurn:function(){
-            
+        //Run when attacking
+        checkEndTurn:function(){
+            if(this.p.didMove&&this.p.attacked){
+                this.stage.BatCon.endTurn();
+            } else {
+                this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
+                this.stage.pointer.p.loc = this.p.loc;
+                this.stage.pointer.reset();
+            }
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
             this.stage.BattleGrid.moveObject(this.p.loc,newLoc,this);
+            //Store the old loc in the moved variable. This wil allow for redo-s
+            this.p.didMove = this.p.loc;
+            //Set the new loc
             this.p.loc = newLoc;
             this.stage.BatCon.setXY(this);
             this.stage.pointer.on("checkConfirm");
             this.stage.pointer.checkTarget();
-        }
+            //If this character hasn't attacked yet this turn, generate a new attackgraph
+            if(!this.p.attacked){
+                this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
+                this.stage.pointer.p.loc = this.p.loc;
+                this.stage.BatCon.setXY(this.stage.pointer);
+            } else {
+                this.stage.BatCon.endTurn();
+            }
+        },
+        //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
+        previewAttackTarget:function(targetLoc){
+            var target = this.stage.BattleGrid.getObject(targetLoc);
+            Q.stageScene("attackPreview",2,{attacker:this,defender:target});
+        },
+        getMatrix:function(matrixType){
+            var tileTypes = Q.state.get("tileTypes");
+            var cM=[];
+            var stage = this.stage;
+            function getWalkable(){
+                var move = tileTypes[stage.BatCon.getTileType([i_walk,j_walk])].move;
+                return move?move:10000;
+            }
+            function getTarget(){
+                return stage.BattleGrid.getObject([i_walk,j_walk]);
+            }
+            for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
+                var costRow = [];
+                for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
+                    var cost = 1;
+                    var objOn = false;
+                    //If we're walking, enemies are impassable
+                    if(matrixType==="walk"){
+                        cost = getWalkable();
+                        objOn = getTarget();
+                        //Allow walking over allies
+                        if(objOn&&objOn.p.team===this.p.team){objOn=false;};
+                    }
+                    //If there's still no enemy on the sqaure, get the tileCost
+                    if(!objOn){
+                        costRow.push(cost);
+                    } else {
+                        costRow.push(10000);
+                    }
+
+                }
+                cM.push(costRow);
+            }
+            return cM;
+         }
     
     });
 };

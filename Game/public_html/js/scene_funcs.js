@@ -82,7 +82,8 @@ Quintus.SceneFuncs=function(Q){
         //Display the hud which shows character and terrain information
         Q.stageScene("battleHUD",3,{pointer:stage.pointer});
         stage.BatCon.startBattle();
-    });
+        
+    },{sort:true});
     //Displayed when selecting a character in battle
     Q.scene("characterMenu",function(stage){
         var target = stage.options.target;
@@ -92,6 +93,11 @@ Quintus.SceneFuncs=function(Q){
         } else {
             stage.insert(new Q.ActionMenu({target:target}));
         }
+    });
+    Q.scene("attackPreview",function(stage){
+        var attacker = stage.options.attacker;
+        var defender = stage.options.defender;
+        var preview = stage.insert(new Q.AttackPreviewBox({attacker:attacker,defender:defender}));
     });
     //Displayed when pressing the menu button at any time.
     Q.scene("optionsMenu",function(stage){

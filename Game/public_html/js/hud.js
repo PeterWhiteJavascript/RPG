@@ -82,6 +82,22 @@ Quintus.HUD=function(Q){
         endTurn:function(){
             var lastTurn = this.turnOrder.shift();
             this.turnOrder.push(lastTurn);
+            //Remove the pointer if it's not an ally's turn
+            if(this.turnOrder[0].p.team!=="ally"&&this.stage.pointer){
+                this.stage.pointer.destroy();
+                this.stage.pointer = false;
+                //Follow the AI object
+                Q.viewFollow(this.turnOrder[0],this.stage);
+            } else {
+                if(!this.stage.pointer){
+                    this.stage.pointer = this.stage.insert(new Q.Pointer({loc:this.turnOrder[0].p.loc}));
+                    Q.viewFollow(this.stage.pointer,this.stage);
+                } else {
+                    this.stage.pointer.p.loc = this.turnOrder[0].p.loc;
+                    this.setXY(this.stage.pointer);
+                }
+                this.stage.pointer.checkTarget();
+            }
             //Check if the battle is over at this point
             this.checkBattleOver();
         },
@@ -260,6 +276,12 @@ Quintus.HUD=function(Q){
             var type = this.stage.BatCon.getTileType(this.p.loc);
             this.trigger("onTerrain",type);
         },
+        reset:function(){
+            this.stage.BatCon.setXY(this);
+            this.checkTarget();
+            this.addControls();
+            this.on("checkConfirm");
+        },
         checkTarget:function(){
             var p = this.p;
             p.target=this.stage.BattleGrid.getObject(p.loc);
@@ -288,7 +310,7 @@ Quintus.HUD=function(Q){
         checkConfirm:function(){
             var input = Q.inputs;
             //If we're trying to load a menu
-            if(input['confirm']){console.log("di it")
+            if(input['confirm']){
                 this.displayCharacterMenu();
                 input['confirm']=false;
                 return;
@@ -416,7 +438,7 @@ Quintus.HUD=function(Q){
         },
         //Shows the move grid
         loadMove:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"move"}));
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
@@ -424,9 +446,11 @@ Quintus.HUD=function(Q){
         },
         //Shows the attack grid
         loadAttack:function(){
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.off("step");
+            this.off("step",this,"checkInputs");
             this.hide();
+            this.stage.options.pointer.addControls();
         },
         //Loads the special skills menu
         loadSkills:function(){
@@ -444,7 +468,6 @@ Quintus.HUD=function(Q){
         loadEndTurn:function(){
             //For now, end the turn without giving direction.
             this.stage.options.pointer.stage.BatCon.endTurn();
-            this.stage.options.pointer.addControls();
             Q.clearStage(2);
             //this.off("step");
             //this.hide();
@@ -476,12 +499,12 @@ Quintus.HUD=function(Q){
             var target = this.p.target;
             //Insert all of the squares
             switch(this.p.kind){
-                case "move":
+                case "walk":
                     //Loop through the target's move the get the move range
-                    this.getMoveRange(target);
+                    this.getTileRange(target.p.loc,target.p.move,target.p[this.p.kind+"Matrix"]);
                     break;
                 case "attack":
-                    
+                    this.getTileRange(target.p.loc,target.p.range,target.p[this.p.kind+"Matrix"]);
                     break;
                 //Used for skills that have a weird range (eg 'T' shape)
                 case "custom":
@@ -496,45 +519,13 @@ Quintus.HUD=function(Q){
             });
             this.destroy();
         },
-        getWalkMatrix:function(){
-            var tileTypes = Q.state.get("tileTypes");
-            var target = this.p.target;
-            function getWalkable(){
-                var move = tileTypes[target.stage.BatCon.getTileType([i_walk,j_walk])].move;
-                return move?move:10000;
-            }
-            function getTarget(){
-                return target.stage.BattleGrid.getObject([i_walk,j_walk]);
-            }
-            var cM=[];
-            var stage = target.stage;
-            for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
-                var costRow = [];
-                for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
-                    var cost = getWalkable();
-                    var objOn = getTarget();
-                    //Allow walking over allies
-                    if(objOn&&objOn.p.team===this.p.team){objOn=false;};
-                    //If there's still no enemy on the sqaure, get the tileCost
-                    if(!objOn){
-                        costRow.push(cost);
-                    } else {
-                        costRow.push(10000);
-                    }
-
-                }
-                cM.push(costRow);
-            }
-            return cM;
-         },
         //Gets the fastest path to a certain location
         //loc   - the current location of the object that is moving
         //toLoc - [x,y]
         //prop  - search using a maximum cost (movement uses maximum cost during battles)
         //score - if prop:'maxScore' is set, this the maxScore. 
-        getPath:function(loc,toLoc,prop,score,gr){
+        getPath:function(loc,toLoc,prop,score,graph){
             //Set up a graph for this movement
-            var graph = gr?gr:new Q.Graph(this.getWalkMatrix());
             var start = graph.grid[loc[0]][loc[1]];
             var end = graph.grid[toLoc[0]][toLoc[1]];
             var result;
@@ -545,60 +536,57 @@ Quintus.HUD=function(Q){
             }
             return result;
         },
-        getMoveRange:function(target){
-            var loc = target.p.loc;
-            var mov = target.p.move;
+        getTileRange:function(loc,stat,graph){
             var minTile = 0;
-            var maxTileRow = target.stage.mapHeight;
-            var maxTileCol = target.stage.mapWidth;
-            var rows=mov*2+1,
-                cols=mov*2+1,
-                tileStartX=loc[0]-mov,
-                tileStartY=loc[1]-mov;
+            var maxTileRow = graph.grid[0].length;
+            var maxTileCol = graph.grid.length;
+            var rows=stat*2+1,
+                cols=stat*2+1,
+                tileStartX=loc[0]-stat,
+                tileStartY=loc[1]-stat;
             var dif=0;
 
-            if(loc[0]-mov<minTile){
-                dif = cols-(mov+1+loc[0]);
+            if(loc[0]-stat<minTile){
+                dif = cols-(stat+1+loc[0]);
                 cols-=dif;
-                tileStartX=mov+1-cols+loc[0];
+                tileStartX=stat+1-cols+loc[0];
             }
-            if(loc[0]+mov>=maxTileCol){
-                dif = cols-(maxTileCol-loc[0]+mov);
+            if(loc[0]+stat>=maxTileCol){
+                dif = cols-(maxTileCol-loc[0]+stat);
                 cols-=dif;
             }
-            if(loc[1]-mov<minTile){
-                dif = rows-(mov+1+loc[1]);
+            if(loc[1]-stat<minTile){
+                dif = rows-(stat+1+loc[1]);
                 rows-=dif;
-                tileStartY=mov+1-rows+loc[1];
+                tileStartY=stat+1-rows+loc[1];
             }
-            if(loc[1]+mov>=maxTileRow){
-                dif = rows-(maxTileRow-loc[1]+mov);
+            if(loc[1]+stat>=maxTileRow){
+                dif = rows-(maxTileRow-loc[1]+stat);
                 rows-=dif;
             }
 
             if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
             if(cols+tileStartX>=maxTileCol){cols=maxTileCol-tileStartX;};
-            var movTiles=[];
+            var statTiles=[];
             //Get all possible move locations that are within the bounds
-            var graph = new Q.Graph(this.getWalkMatrix());
             for(var i=tileStartX;i<tileStartX+cols;i++){
                 for(var j=tileStartY;j<tileStartY+rows;j++){
                     if(graph.grid[i][j].weight<10000){
-                        movTiles.push(graph.grid[i][j]);
+                        statTiles.push(graph.grid[i][j]);
                     }
                 }
             }
             //If there is at least one place to move
-            if(movTiles.length){
+            if(statTiles.length){
                 //Loop through the possible tiles
-                for(var i=0;i<movTiles.length;i++){
-                    var path = this.getPath(loc,[movTiles[i].x,movTiles[i].y],"maxScore",mov,graph);
+                for(var i=0;i<statTiles.length;i++){
+                    var path = this.getPath(loc,[statTiles[i].x,statTiles[i].y],"maxScore",stat,graph);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
                     }
-                    if(path.length>0&&path.length<=mov&&pathCost<=mov){
-                        this.p.guide.push(this.insert(new Q.RangeTile({x:movTiles[i].x*Q.tileW+Q.tileW/2,y:movTiles[i].y*Q.tileH+Q.tileH/2,loc:[movTiles[i].x,movTiles[i].y]})));
+                    if(path.length>0&&path.length<=stat&&pathCost<=stat){
+                        this.p.guide.push(this.insert(new Q.RangeTile({x:statTiles[i].x*Q.tileW+Q.tileW/2,y:statTiles[i].y*Q.tileH+Q.tileH/2,loc:[statTiles[i].x,statTiles[i].y]})));
                     }
                 }
             //If there's nowhere to move
@@ -621,7 +609,21 @@ Quintus.HUD=function(Q){
         step:function(){
             if(Q.inputs['confirm']){
                 if(this.checkValidPointerLoc()){
-                    this.p.target.moveAlong(this.getPath(this.p.target.p.loc,this.p.target.stage.pointer.p.loc,"maxScore",this.p.target.p.move));
+                    var stage = this.p.target.stage;
+                    switch(this.p.kind){
+                        case "walk":
+                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,stage.pointer.p.loc,"maxScore",this.p.target.p.move,this.p.target.p[this.p.kind+"Matrix"]));
+                            break;
+                        case "attack":
+                            //Make sure there's a target there
+                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
+                                this.p.target.previewAttackTarget(stage.pointer.p.loc);
+                                stage.pointer.off("checkInputs");
+                                stage.pointer.off("checkConfirm");
+                            } else {return;}
+                            break;
+                    }
+                    
                     this.fullDestroy();
                 }
                 Q.inputs['confirm']=false;
@@ -634,8 +636,126 @@ Quintus.HUD=function(Q){
                 sheet:"range_tile",
                 frame:0,
                 opacity:0.3,
-                w:Q.tileW,h:Q.tileH
+                w:Q.tileW,h:Q.tileH,
+                type:Q.SPRITE_NONE
             });
+        }
+    });
+    Q.UI.Container.extend("AttackPreviewBox",{
+        init:function(p){
+            this._super(p,{
+                opacity:0.3,
+                cx:0,cy:0,
+                w:400,h:200,
+                type:Q.SPRITE_NONE,
+                fill:"blue"
+            });
+            this.p.x = Q.width/2-this.p.w/2;
+            this.p.y = Q.height/2-this.p.h/2;
+            this.on("inserted");
+        },
+        getBlow:function(attackNum,attacker,defendNum,defender){
+            var result = {
+                hit:false,
+                crit:false,
+                block:false
+            };
+            if(attackNum<=attacker.p.crit){
+                result.crit = true;
+            } else if(attackNum<=attacker.p.strike){
+                result.hit = true;
+            }
+            
+            if(defendNum<=defender.p.parry){
+                result.block = true;
+            }
+            
+            return result;
+        },
+        processResult:function(result){
+            //If the attack crit
+            if(result.crit){
+                //Successful Blow
+                if(result.block){
+                    this.successfulBlow(result);
+                } 
+                //Critical Blow
+                else {
+                    this.criticalBlow(result);
+                }
+            } 
+            //If the attack hit
+            else if(result.hit){
+                //Glancing Blow
+                if(result.block){
+                    this.glancingBlow(result);
+                }
+                //Successful Blow
+                else {
+                    this.successfulBlow(result);
+                }
+            } 
+            //If the attack missed
+            else {
+                //Counter Chance
+                if(result.block){
+                    this.counterChance(result);
+                }
+                //Miss
+                else {
+                    this.miss(result);
+                }
+            }
+        },
+        successfulBlow:function(result){
+            console.log("Successful blow!")
+            console.log(result);
+        },
+        criticalBlow:function(result){
+            console.log("Critical blow!")
+            console.log(result);
+            
+        },
+        glancingBlow:function(result){
+            console.log("Glancing blow!")
+            console.log(result);
+            
+        },
+        counterChance:function(result){
+            console.log("Counter chance!")
+            var temp = this.p.attacker;
+            this.p.attacker = this.p.defender;
+            this.p.defender = temp;
+            console.log(this.p.attacker.p.charClass);
+            console.log(result);
+            
+        },
+        miss:function(result){
+            console.log("Miss...")
+            console.log(result);
+            
+        },
+        doAttack:function(){
+            //Compute the attack
+            this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
+            Q.clearStage(2);
+        },
+        inserted:function(){
+            //This will need to be thought out more thoroughly.
+            var atkPercent = this.p.attacker.p.strike;
+            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
+            var missChance = "Pretty high, I guess";
+            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
+            
+            
+        },
+        step:function(){
+            if(Q.inputs['confirm']){
+                this.p.attacker.p.attacked = true;
+                this.p.attacker.checkEndTurn();
+                this.doAttack();
+                Q.inputs['confirm']=false;
+            }
         }
     });
 };
