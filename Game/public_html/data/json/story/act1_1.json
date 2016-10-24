@@ -92,7 +92,7 @@
         "map":"homeland.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
-        "placementSquares":[[3,1],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "placementSquares":[[17,18],[3,2],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
             {"loc":[17,19],"charClass":"archer","level":1,"equipmentRank":2,"equipmentType":"bow"},
             {"loc":[14,19],"charClass":"barbarian","level":2,"equipmentRank":1}

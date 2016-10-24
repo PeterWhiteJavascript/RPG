@@ -5,7 +5,7 @@
         "start":{
             "bg":"bg/city.jpg",
             "interaction":[
-                {"text":["Welcome to town."],"asset":[false,false],"pos":"left","skipLast":1},
+                {"text":["You have arrived in town."],"asset":[false,false],"pos":"left","skipLast":1},
                 {"func":"confirmation","props":[[
                     {"next":"shop","text":"General Store"},
                     {"next":"blacksmith","text":"Blacksmith"},
@@ -20,6 +20,7 @@
                 "potion":{"name":"Potion","cost":100}
             },
             "interaction":[
+                {"text":["Welcome to the shop!"],"asset":[false,false],"pos":"left","skipLast":1},
                 {"func":"confirmation","props":[[
                     {"next":"shop/buy","text":"Buy consumer products"},
                     {"next":"shop/sell","text":"Sell goat antlers"},
@@ -28,6 +29,7 @@
             ],
             "buy":{
                 "interaction":[
+                {"text":["Buy something."],"asset":[false,false],"pos":"left","skipLast":1},
                     {"func":"confirmation","props":[[
                         {"next":"shop","text":"Nevermind"}
                     ]]}
@@ -35,6 +37,7 @@
             },
             "sell":{
                 "interaction":[
+                {"text":["Sell something."],"asset":[false,false],"pos":"left","skipLast":1},
                     {"func":"confirmation","props":[[
                         {"next":"shop","text":"Nevermind"}
                     ]]}
@@ -48,8 +51,9 @@
                 "repair"
             ],
             "interaction":[
+                {"text":["You've come to forge some weapons?"],"asset":[false,false],"pos":"left","skipLast":1},
                 {"func":"confirmation","props":[[
-                    {"next":"start","text":"Leave the shop"}
+                    {"next":"start","text":"Leave the blacksmith"}
                 ]]}
             ]
         },
@@ -73,7 +77,7 @@
         "pub":{
             "bg":"bg/pub.jpg",
             "interaction":[
-                {"func":"triggerQuest", "props":["side_quest1_1"]},
+                {"func":"triggerQuest", "props":["side_quest2_1"]},
                 {"text":["The pub is empty (of quests & guests)."],"asset":[false,false],"pos":"left","skipLast":1},
                 {"func":"confirmation","props":[[
                     {"next":"start","text":"Leave the pub"}

@@ -240,7 +240,6 @@ Quintus.Objects=function(Q){
         extend:{
             takeDamage:function(dmg){
                 if(dmg<=0){dmg=1;};
-                console.log("Did "+dmg+" damage.");
                 this.p.hp-=dmg;
                 if(this.p.hp<=0){
                     this.stage.BattleGrid.removeObject(this.p.loc);
@@ -307,14 +306,6 @@ Quintus.Objects=function(Q){
                     t.stage.BatCon.endTurn();
                 },500);
             }
-        },
-        //Run when attacking
-        checkEndTurn:function(){
-            if(this.p.didMove&&this.p.didAction){
-                this.stage.BatCon.endTurn();
-                return true;
-            }
-            return false;
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){

@@ -36,6 +36,15 @@ Quintus.UIObjects=function(Q){
             //Uncomment if we add touch and set type to Q.SPRITE_UI
             //Q._generatePoints(this,true);
             this.p.y=Q.height-this.p.h;
+            this.on("step",this,"checkInputs");
+        },
+        checkInputs:function(){
+            if(Q.inputs['confirm']){
+                if(this.p.dialogueText.interact()){
+                    this.nextText();
+                };
+                Q.inputs['confirm']=false;
+            }
         },
         checkTextNum:function(){
             var currentInteraction = this.p.dialogueData.interaction[this.p.interactionIndex];
@@ -60,9 +69,8 @@ Quintus.UIObjects=function(Q){
             }
         },
         cycleText:function(){
-            console.log(this.p.interactionIndex)
             var interaction = this.p.dialogueData.interaction[this.p.interactionIndex];
-            this.p.dialogueText.p.label = interaction.text[this.p.textIndex];
+            this.p.dialogueText.setNewText(interaction.text[this.p.textIndex]);
             this.p.dialogueText.p.align = interaction.pos;
             
             if(this.p.dialogueText.p.align == 'left') {
@@ -97,7 +105,6 @@ Quintus.UIObjects=function(Q){
         //START JSON FUNCTIONS
         loadLocation:function(location,menu){
             var stage = this.stage;
-            Q.input.off("confirm",stage);
             //Make sure the battle is gone
             Q.clearStages();
             Q.stageScene("location",0,{data:Q.state.get("locations")[location],menu:menu});
@@ -108,57 +115,20 @@ Quintus.UIObjects=function(Q){
             Q.stageScene("battle",0,{data:stage.options.data, path:path});
             //Clear this stage
             Q.clearStage(1);
-            Q.input.off("confirm",stage);
             return true;
         },
         //Shows additional dialogue (which will probably be determined by factors such as player choices, how well they did in battle, etc...)
         moreDialogue:function(path){
             var stage = this.stage;
             Q.stageScene("dialogue",1,{data:stage.options.data, path:path});
-            Q.input.off("confirm",stage);
             return true;
         },
         //Any time the user needs to make a decision during dialogue
         confirmation:function(options){
             var stage = this.stage;
             //Create the options menu box and put it into focus
-            var confirmationBox = stage.insert(new Q.ConfirmBox({maxIndex:options.length-1}));
-            Q.input.off("confirm",stage);
-            Q.input.on("up",confirmationBox,"cycleUp");
-            Q.input.on("down",confirmationBox,"cycleDown");
-            Q.input.on("confirm",confirmationBox,"selectOption");
-            //Display the list of options to choose from
-            options.forEach(function(opt,i){
-                //The text that displays to show the option
-                var confirmOption = confirmationBox.insert(new Q.Dialogue({y:i*20,label:opt.text,next:opt.next}));
-                confirmationBox.p.confirmOptions.push(confirmOption);
-                if(i===0){confirmOption.p.color="red";};
-                //When this option is selected
-                confirmOption.on("selected",function(path){
-                    stage.pause();
-                    if(opt.exitStage && Q.stages.length > 1) {
-                        // Pop off the top stage, and unpause the previous one
-                        var lastStage = Q.stages.length - 1;
-                        Q.clearStage(lastStage);
-                        Q.stages[lastStage - 1].unpause();
-                    } else {
-                        Q.stageScene("dialogue", 1, {data: stage.options.data, path: path});
-                    }
-                });
-            });
-            stage.on('pause', confirmationBox, function() {
-                Q.input.off("up",confirmationBox,"cycleUp");
-                Q.input.off("down",confirmationBox,"cycleDown");
-                Q.input.off("confirm",confirmationBox,"selectOption");
-            });
-            stage.on('unpause', confirmationBox, function() {
-                Q.input.on("up",confirmationBox,"cycleUp");
-                Q.input.on("down",confirmationBox,"cycleDown");
-                Q.input.on("confirm",confirmationBox,"selectOption");
-            });
-            confirmationBox.fit(10,10);
-            //Disable input for this text box for now while the user selects the option
-            Q.input.off("confirm",stage);
+            stage.insert(new Q.ConfirmBox({maxIndex:options.length-1,options:options}));
+            this.off("step",this,"checkInputs");
             return true;
         },
         triggerQuest:function(questName){
@@ -182,12 +152,6 @@ Quintus.UIObjects=function(Q){
             Q.clearStages();
             Q.startScene(quest);
             return true;
-        },
-        //When the dialogue is finished
-        finished:function(){
-            Q.input.off("confirm",this.stage);
-            Q.clearStages();
-            return this.loadLocation(Q.state.get("currentLocation").name,Q.state.get("currentMenu"));
         },
         getProp:function(prop){
             return this.p[prop];
@@ -217,9 +181,35 @@ Quintus.UIObjects=function(Q){
                 type:Q.SPRITE_NONE,
                 fill:"yellow",
                 textIndex:0,
-                confirmOptions:[]
+                confirmOptions:[],
+                z:100
             });
             //Q._generatePoints(this,true);
+            this.on("inserted");
+        },
+        inserted:function(){
+            var options = this.p.options;
+            var box = this;
+            //Display the list of options to choose from
+            options.forEach(function(opt,i){
+                //The text that displays to show the option
+                var confirmOption = box.insert(new Q.UI.Text({y:i*20,label:opt.text,next:opt.next}));
+                box.p.confirmOptions.push(confirmOption);
+                if(i===0){confirmOption.p.color="red";};
+                //When this option is selected
+                confirmOption.on("selected",function(path){
+                    this.stage.pause();
+                    if(opt.exitStage && Q.stages.length > 1) {
+                        // Pop off the top stage, and unpause the previous one
+                        var lastStage = Q.stages.length - 1;
+                        Q.clearStage(lastStage);
+                        Q.stages[lastStage - 1].unpause();
+                    } else {
+                        Q.stageScene("dialogue", 1, {data: box.stage.options.data, path: path});
+                    }
+                });
+            });
+            this.fit(10,10);
         },
         changeOptionColor:function(){
             this.p.confirmOptions.forEach(function(opt){
@@ -239,6 +229,18 @@ Quintus.UIObjects=function(Q){
         },
         selectOption:function(){
             this.p.confirmOptions[this.p.textIndex].trigger("selected",this.p.confirmOptions[this.p.textIndex].p.next);
+        },
+        step:function(){
+            if(Q.inputs['up']){
+                this.cycleUp();
+                Q.inputs['up']=false;
+            } else if(Q.inputs['down']){
+                this.cycleDown();
+                Q.inputs['down']=false;
+            } else if(Q.inputs['confirm']){
+                this.selectOption();
+                Q.inputs['confirm']=false;
+            }
         }
     });
     Q.UI.Container.extend("DialogueArea",{
@@ -263,8 +265,42 @@ Quintus.UIObjects=function(Q){
                 x:0,y:0,
                 cx:0,cy:0,
                 type:Q.SPRITE_NONE,
-                label:""
+                label:"_",
+                charNum:0,
+                time:0,
+                speed:Q.state.get("options").textSpeed
             });
+            this.setNewText(this.p.text);
+        },
+        setNewText:function(text){
+            this.p.text = text;
+            this.p.charNum=0;
+            this.p.time=0;
+            this.p.label = this.p.text[this.p.charNum];
+            this.on("step",this,"streamCharacters");
+        },
+        streamCharacters:function(){
+            this.p.time++;
+            if(this.p.time>=this.p.speed){
+                this.p.time=0;
+                this.p.charNum++;
+                if(this.p.charNum>=this.p.text.length){
+                    this.off("step",this,"streamCharacters");
+                    return;
+                }
+                this.p.label+=this.p.text[this.p.charNum];
+                Q.playSound("text_stream.mp3");
+            }
+        },
+        interact:function(){
+            var done = false;
+            if(this.p.label.length>=this.p.text.length){
+                done=true;
+            } else {
+                this.p.label=this.p.text;
+                this.off("step",this,"streamCharacters");
+            }
+            return done;
         }
     });
 };

@@ -121,7 +121,8 @@ var files = [
     //IMAGES TILES
     "tiles/tiles.png",
     //AUDIO SFX
-    "sfx/attack.mp3",
+    //"sfx/attack.mp3",
+    "sfx/text_stream.mp3",
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA

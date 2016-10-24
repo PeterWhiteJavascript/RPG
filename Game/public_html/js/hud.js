@@ -57,15 +57,11 @@ Quintus.HUD=function(Q){
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
             if(this.allies.length===0){
-                Q.input.off("esc",this.stage);
-                Q.input.off("confirm",this.stage);
                 Q.clearStages();
                 Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.loseScene});
                 return true;
             }
             if(this.enemies.length===0){
-                Q.input.off("esc",this.stage);
-                Q.input.off("confirm",this.stage);
                 Q.clearStages();
                 Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.winScene});
                 return true;
@@ -693,6 +689,24 @@ Quintus.HUD=function(Q){
             this.p.x = Q.width/2-this.p.w/2;
             this.p.y = Q.height/2-this.p.h/2;
             this.on("inserted");
+            this.on("step",this,"checkInputs");
+        },
+        checkInputs:function(){
+            if(Q.inputs['confirm']){
+                this.p.text = [];
+                this.p.attacker.p.didAction = true;
+                var turnEnded = this.p.attacker.p.didMove?true:false;
+                this.doAttack(turnEnded);
+                if(!turnEnded){
+                    this.p.attacker.p.walkMatrix = new Q.Graph(this.p.attacker.getMatrix("walk"));
+                }
+                this.off("step",this,"checkInputs");
+                Q.inputs['confirm']=false;
+            } else if(Q.inputs['esc']){
+                this.destroy();
+                this.stage.ActionMenu.loadAttack();
+                Q.inputs['esc']=false;
+            }
         },
         getBlow:function(attackNum,attacker,defendNum,defender){
             var result = {
@@ -748,26 +762,28 @@ Quintus.HUD=function(Q){
             }
         },
         successfulBlow:function(result){
-            console.log("Successful blow!");
             var attacker = this.p.attacker;
             var defender = this.p.defender;
             var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
             defender.takeDamage(damage);
-            console.log(result);
+            if(result.hit) this.p.text.push(this.p.attacker.p.charClass+" hit "+this.p.defender.p.charClass+".");
+            if(result.crit) this.p.text.push(this.p.attacker.p.charClass+" went critical, but "+this.p.defender.p.charClass+" defended well!");
+            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
         },
         criticalBlow:function(result){
-            console.log("Critical blow!");
             var attacker = this.p.attacker;
             var defender = this.p.defender;
             var damage = attacker.p.totalDamageHigh;
             defender.takeDamage(damage);
             var rand = Math.ceil(Math.random()*100);
-            if(rand<=attacker.p.totalSpeed){this.calcAttack();}
-            console.log(result);
-            
+            this.p.text.push(this.p.attacker.p.charClass+" hit a critical blow against "+this.p.defender.p.charClass+".");
+            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
+            if(rand<=attacker.p.totalSpeed){
+                this.p.text.push(this.p.attacker.p.charClass+" was so fast, they got another attack in!");
+                this.calcAttack();
+            }
         },
         glancingBlow:function(result){
-            console.log("Glancing blow!");
             var attacker = this.p.attacker;
             var defender = this.p.defender;
             var weapons = [];
@@ -776,26 +792,23 @@ Quintus.HUD=function(Q){
             var rand = Math.floor(Math.random()*weapons.length);
             var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
             defender.takeDamage(damage);
-            console.log(result);
-            
+            this.p.text.push(this.p.attacker.p.charClass+" hit a glancing blow against "+this.p.defender.p.charClass+".");
+            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
         },
         counterChance:function(result){
-            console.log("Counter chance!");
             var temp = this.p.attacker;
             this.p.attacker = this.p.defender;
             this.p.defender = temp;
+            this.p.text.push(this.p.attacker.p.charClass+" countered "+this.p.defender.p.charClass+"!");
             this.calcAttack();
-            console.log(result);
-            
         },
         miss:function(result){
-            console.log("Miss...");
+            this.p.text.push(this.p.attacker.p.charClass+" missed "+this.p.defender.p.charClass+"...");
             var rand = Math.ceil(Math.random()*100);
             if(rand<=this.p.attacker.p.totalSpeed){
+                this.p.text.push(this.p.attacker.p.charClass+" got an extra attack!");
                 this.calcAttack();
             }
-            console.log(result);
-            
         },
         calcAttack:function(){
             this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
@@ -804,15 +817,17 @@ Quintus.HUD=function(Q){
             //Compute the attack
             this.calcAttack();
             if(turnEnded){
-                Q.clearStage(2);
+                this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){Q.stage(0).BatCon.endTurn();}}));
             } else {
                 this.destroy();
-                //Set the Action menu to the top
-                this.stage.ActionMenu.cycle(0);
-                //Show the action menu
-                this.stage.ActionMenu.show();
-                this.stage.ActionMenu.on("step","checkInputs");
-                this.p.attacker.stage.pointer.snapTo(this.p.attacker);
+                this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){
+                    //Set the Action menu to the top
+                    Q.stage(2).ActionMenu.cycle(0);
+                    //Show the action menu
+                    Q.stage(2).ActionMenu.show();
+                    Q.stage(2).ActionMenu.on("step","checkInputs");
+                    Q.stage(0).pointer.snapTo(Q.stage(0).BatCon.turnOrder[0]);
+                }}));
             }
         },
         inserted:function(){
@@ -826,22 +841,38 @@ Quintus.HUD=function(Q){
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
             
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
+        }
+    });
+    //The in-battle dialogue equivalent
+    Q.Sprite.extend("BattleTextBox",{
+        init:function(p){
+            this._super(p,{
+                x:0,y:0,
+                cx:0,cy:0,
+                asset:"ui/text_box.png",
+                textIndex:0
+            });
+            this.p.y=Q.height-this.p.h;
+            this.on("inserted");
+            this.on("step",this,"checkInputs");
         },
-        step:function(){
+        nextText:function(){
+            this.p.textIndex++;
+            if(this.p.textIndex>=this.p.text.length){this.destroy();this.p.dialogueArea.destroy();this.p.callback();return;};
+            this.p.dialogueText.setNewText(this.p.text[this.p.textIndex]);
+        },
+        checkInputs:function(){
             if(Q.inputs['confirm']){
-                this.p.attacker.p.didAction = true;
-                var turnEnded = this.p.attacker.checkEndTurn();
-                this.doAttack(turnEnded);
-                if(!turnEnded){
-                    this.p.attacker.p.walkMatrix = new Q.Graph(this.p.attacker.getMatrix("walk"));
-                }
+                if(this.p.dialogueText.interact()){
+                    this.nextText();
+                };
                 Q.inputs['confirm']=false;
-            } else if(Q.inputs['esc']){
-                this.destroy();
-                this.stage.ActionMenu.loadAttack();
-                Q.inputs['esc']=false;
             }
-            
+        },
+        inserted:function(){
+            this.p.dialogueArea = this.stage.insert(new Q.DialogueArea({w:Q.width-20}));
+            console.log(this.p.text)
+            this.p.dialogueText = this.p.dialogueArea.insert(new Q.Dialogue({text:this.p.text[this.p.textIndex], align: 'left', x: 10}));
         }
     });
 };

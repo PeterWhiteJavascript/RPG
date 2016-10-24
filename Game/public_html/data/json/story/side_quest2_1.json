@@ -1,0 +1,45 @@
+{
+    "bgs":["bg/forest.jpg"],
+    "chars":["story/l.jpg"],
+    "maps":["homeland.tmx"],
+    "dialogue":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["This is side quest 2_1!"],"asset":["l.jpg",false],"pos":"left"},
+            {"func":"loadBattle","props":["battle"]}
+        ]
+        
+    },
+    "battle":{
+        "map":"homeland.tmx",
+        "winScene":"victory",
+        "loseScene":"defeat",
+        "placementSquares":[[7,6],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "enemies":[
+            {"loc":[8,5],"charClass":"archer","level":1,"equipmentRank":1},
+            {"loc":[8,6],"charClass":"barbarian","level":1,"equipmentRank":1},
+            {"loc":[8,7],"charClass":"barbarian","level":1,"equipmentRank":1},
+            {"loc":[8,8],"charClass":"barbarian","level":1,"equipmentRank":1}
+        ],
+        "interactables":[
+            {}
+        ],
+        "pickups":[
+            {}
+        ]
+    },
+    "victory":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["GG EZ","Back to town"],"asset":[false,"l.jpg"],"pos":"right"},
+            {"func":"loadLocation","props":["homeland_forest","start"]}
+        ]
+    },
+    "defeat":{
+        "bg":"bg/forest.jpg",
+        "interaction":[
+            {"text":["LOST the GAME!"],"asset":["l.jpg",false],"pos":"left"},
+            {"func":"doDefeat","props":["THIS FUNCTION IS NOT DONE YET"]}
+        ]
+    }
+}

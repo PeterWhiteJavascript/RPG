@@ -64,7 +64,7 @@
     "acceptedQuests":{
         "side_quest1_1":{
             "name":"side_quest1_1",
-            "completed":true
+            "completed":false
         }
     }
 }

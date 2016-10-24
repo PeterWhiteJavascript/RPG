@@ -21,7 +21,6 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("dialogue",function(stage){
         var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
-        console.log(dialogueData)
         var bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
         //The textbox is in charge of all of the functions that need to be run to do custom events.
         //It also shows the text_box.png
@@ -32,14 +31,7 @@ Quintus.SceneFuncs=function(Q){
         //The Dialogue Area is the inner area of the text box. It will be transparent later on.
         textbox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
         //The Dialogue is the text that is inside the dialogue area
-        textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({label:"...", align: 'left', x: 10}));
-        
-        stage.on("step",function(){
-            if(Q.inputs['confirm']){
-                textbox.nextText();
-                Q.inputs['confirm']=false;
-            }
-        });
+        textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
         textbox.next();
     }); 
     Q.scene("battle",function(stage){
@@ -58,11 +50,11 @@ Quintus.SceneFuncs=function(Q){
         //Display alex
         var allyData = Q.state.get("allies");
         var allies = [];
-        allyData.forEach(function(ally){
+        allyData.forEach(function(ally,i){
             var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,attacks:ally.attacks,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
             char.add("statCalcs");
             allies.push(char);
-            
+            char.p.loc = battleData.placementSquares[i];
         });
         //Display the enemies, interactables, pickups, and placement locations
         var enemyData = battleData.enemies;
@@ -71,11 +63,9 @@ Quintus.SceneFuncs=function(Q){
             char.add("randomCharacter,statCalcs");
         });
         
-        //Until the placement code is written, place alex at 4,6
-        allies[0].p.loc = [14,17];
         stage.insert(allies[0]);
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        stage.pointer = stage.insert(new Q.Pointer({loc:[4,6]}));
+        stage.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
         
         //Default to following the pointer
         Q.viewFollow(stage.pointer,stage);
