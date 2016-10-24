@@ -60,6 +60,7 @@ Quintus.UIObjects=function(Q){
             }
         },
         cycleText:function(){
+            console.log(this.p.interactionIndex)
             var interaction = this.p.dialogueData.interaction[this.p.interactionIndex];
             this.p.dialogueText.p.label = interaction.text[this.p.textIndex];
             this.p.dialogueText.p.align = interaction.pos;
@@ -174,14 +175,12 @@ Quintus.UIObjects=function(Q){
             return true;
         },
         //Accepts a quest that the player has confirmed that they want to do.
-        acceptQuest:function(){
-            var stage = this.stage;
-            var sceneName = stage.options.data.sceneName;
+        acceptQuest:function(quest){
             var quests = Q.state.get("acceptedQuests");
-            quests[sceneName] = {name:sceneName,completed:false};
+            quests[quest] = {name:quest,completed:false};
             //For now, send the user right to the scene!
             Q.clearStages();
-            Q.startScene(sceneName);
+            Q.startScene(quest);
             return true;
         },
         //When the dialogue is finished

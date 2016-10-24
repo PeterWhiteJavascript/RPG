@@ -152,6 +152,7 @@ Quintus.Objects=function(Q){
             var base = Q.state.get("charClasses")[p.charClass].baseStats;
             p.className = Q.state.get("charClasses")[p.charClass].name;
             p.move = this.getMove(Q.state.get("charClasses")[p.charClass].move);
+            p.maxHp = this.getHp(base);
             p.hp = this.getHp(base);
             p.sp = this.getSp(base);
             p.totalDamageLow = this.getDamageLow();
@@ -235,6 +236,20 @@ Quintus.Objects=function(Q){
             
         }
     });
+    Q.component("combatant",{
+        extend:{
+            takeDamage:function(dmg){
+                if(dmg<=0){dmg=1;};
+                console.log("Did "+dmg+" damage.");
+                this.p.hp-=dmg;
+                if(this.p.hp<=0){
+                    this.stage.BattleGrid.removeObject(this.p.loc);
+                    this.stage.BatCon.removeFromBattle(this);
+                    this.destroy();
+                }
+            }
+        }
+    });
     Q.Sprite.extend("Character",{
         init:function(p){
             this._super(p,{
@@ -248,7 +263,7 @@ Quintus.Objects=function(Q){
             //Quintus components
             this.add("2d, animation");
             //Custom components
-            this.add("animations,interactable");
+            this.add("animations,interactable,combatant");
             /*var t = this;
             setTimeout(function(){
                 console.log(t.p.charClass+"'s Equipment: ");
@@ -281,22 +296,25 @@ Quintus.Objects=function(Q){
             //Set to true when the character moves
             this.p.didMove = false;
             //Set to true when the character attacks
-            this.p.attacked = false;
-            console.log("It's my turn! I am the "+this.p.className+".");
+            this.p.didAction = false;
+            var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
+            exc.add("tween");
+            exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
+            
             if(this.p.team==="enemy"){
-                console.log("Since there's no AI written, the turn is skipped!");
-                this.stage.BatCon.endTurn();
+                var t = this;
+                setTimeout(function(){
+                    t.stage.BatCon.endTurn();
+                },500);
             }
         },
         //Run when attacking
         checkEndTurn:function(){
-            if(this.p.didMove&&this.p.attacked){
+            if(this.p.didMove&&this.p.didAction){
                 this.stage.BatCon.endTurn();
-            } else {
-                this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
-                this.stage.pointer.p.loc = this.p.loc;
-                this.stage.pointer.reset();
+                return true;
             }
+            return false;
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
@@ -310,10 +328,11 @@ Quintus.Objects=function(Q){
             this.stage.pointer.on("checkConfirm");
             this.stage.pointer.checkTarget();
             //If this character hasn't attacked yet this turn, generate a new attackgraph
-            if(!this.p.attacked){
+            if(!this.p.didAction){
                 this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
                 this.stage.pointer.p.loc = this.p.loc;
                 this.stage.BatCon.setXY(this.stage.pointer);
+                Q.stage(2).ActionMenu.p.conts[0].p.fill="gray";
             } else {
                 this.stage.BatCon.endTurn();
             }
@@ -321,7 +340,7 @@ Quintus.Objects=function(Q){
         //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
         previewAttackTarget:function(targetLoc){
             var target = this.stage.BattleGrid.getObject(targetLoc);
-            Q.stageScene("attackPreview",2,{attacker:this,defender:target});
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,defender:target}));
         },
         getMatrix:function(matrixType){
             var tileTypes = Q.state.get("tileTypes");

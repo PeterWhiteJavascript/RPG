@@ -97,7 +97,7 @@ Q.startGame=function(save){
         sceneName:save.sceneName,
         week:save.week,
         options:save.options,
-        accepctedQuests:save.acceptedQuests
+        acceptedQuests:save.acceptedQuests
     });
     var storyChars = [];
     save.allies.forEach(function(ally){

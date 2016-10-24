@@ -21,6 +21,7 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("dialogue",function(stage){
         var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
+        console.log(dialogueData)
         var bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
         //The textbox is in charge of all of the functions that need to be run to do custom events.
         //It also shows the text_box.png
@@ -71,7 +72,7 @@ Quintus.SceneFuncs=function(Q){
         });
         
         //Until the placement code is written, place alex at 4,6
-        allies[0].p.loc = [4,6];
+        allies[0].p.loc = [14,17];
         stage.insert(allies[0]);
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
         stage.pointer = stage.insert(new Q.Pointer({loc:[4,6]}));
@@ -89,15 +90,10 @@ Quintus.SceneFuncs=function(Q){
         var target = stage.options.target;
         var active = stage.options.currentTurn;
         if(target===active){
-            stage.insert(new Q.ActionMenu({target:target,active:true}));
+            stage.ActionMenu = stage.insert(new Q.ActionMenu({target:target,active:true}));
         } else {
-            stage.insert(new Q.ActionMenu({target:target}));
+            stage.ActionMenu = stage.insert(new Q.ActionMenu({target:target}));
         }
-    });
-    Q.scene("attackPreview",function(stage){
-        var attacker = stage.options.attacker;
-        var defender = stage.options.defender;
-        var preview = stage.insert(new Q.AttackPreviewBox({attacker:attacker,defender:defender}));
     });
     //Displayed when pressing the menu button at any time.
     Q.scene("optionsMenu",function(stage){
@@ -155,8 +151,6 @@ Quintus.SceneFuncs=function(Q){
         var terrainHUD = stage.insert(new Q.TerrainHUD());
         //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
         var statsHUD = stage.insert(new Q.StatsHUD());
-        
-        
     });
     Q.scene("location",function(stage){
         //Set the current menu. Default is 'start'

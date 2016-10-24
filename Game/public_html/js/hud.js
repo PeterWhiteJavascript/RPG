@@ -51,55 +51,54 @@ Quintus.HUD=function(Q){
             //Get the pointer to send a target if it is on one when this menu is created
             var pointer = this.stage.pointer;
             pointer.checkTarget();
+            Q.viewFollow(this.turnOrder[0],this.stage);
             this.startTurn();
         },
-        //Eventuall check custom win conditions. For now, if there are no players OR no enemies, end it.
+        //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
             if(this.allies.length===0){
-                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.winScene});
                 Q.input.off("esc",this.stage);
                 Q.input.off("confirm",this.stage);
-                //Make sure the HUD is gone
-                Q.clearStage(3);
-                return;
+                Q.clearStages();
+                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.loseScene});
+                return true;
             }
             if(this.enemies.length===0){
-                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.loseScene});
                 Q.input.off("esc",this.stage);
                 Q.input.off("confirm",this.stage);
-                //Make sure the HUD is gone
-                Q.clearStage(3);
-                
-                return;
+                Q.clearStages();
+                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.winScene});
+                return true;
             }
-            this.startTurn();
         },
         //Starts the character that is first in turn order
         startTurn:function(){
             this.turnOrder[0].startTurn();
+            //Remove the pointer if it's not an ally's turn
+            if(this.turnOrder[0].p.team!=="ally"&&this.stage.pointer){
+                this.stage.pointer.hide();
+                this.stage.pointer.off("checkInputs");
+                this.stage.pointer.off("checkConfirm");
+                this.stage.pointer.trigger("offTarget");
+                //Follow the AI object
+                Q.viewFollow(this.turnOrder[0],this.stage);
+            } else {
+                if(this.stage.pointer.p.hidden){
+                    this.stage.pointer.reset();
+                    Q.viewFollow(this.stage.pointer,this.stage);
+                }
+                this.stage.pointer.p.loc = this.turnOrder[0].p.loc;
+                this.setXY(this.stage.pointer);
+                this.stage.pointer.checkTarget();
+            }
         },
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
             var lastTurn = this.turnOrder.shift();
             this.turnOrder.push(lastTurn);
-            //Remove the pointer if it's not an ally's turn
-            if(this.turnOrder[0].p.team!=="ally"&&this.stage.pointer){
-                this.stage.pointer.destroy();
-                this.stage.pointer = false;
-                //Follow the AI object
-                Q.viewFollow(this.turnOrder[0],this.stage);
-            } else {
-                if(!this.stage.pointer){
-                    this.stage.pointer = this.stage.insert(new Q.Pointer({loc:this.turnOrder[0].p.loc}));
-                    Q.viewFollow(this.stage.pointer,this.stage);
-                } else {
-                    this.stage.pointer.p.loc = this.turnOrder[0].p.loc;
-                    this.setXY(this.stage.pointer);
-                }
-                this.stage.pointer.checkTarget();
-            }
             //Check if the battle is over at this point
-            this.checkBattleOver();
+            if(this.checkBattleOver()) return; 
+            this.startTurn();
         },
         //Generates the turn order at the start of the battle
         generateTurnOrder:function(objects){
@@ -123,6 +122,15 @@ Quintus.HUD=function(Q){
             };
             var tO = sortForSpeed();
             return tO;
+        },
+        removeFromBattle:function(obj){
+            if(obj.p.team==="ally"){
+                this.allies.splice(this.allies.indexOf(this.allies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
+            } else if(obj.p.team==="enemy"){
+                this.enemies.splice(this.enemies.indexOf(this.enemies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
+            }
+            this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
+            this.checkBattleOver();
         },
         setXY:function(obj){
             obj.p.x = obj.p.loc[0]*Q.tileW+Q.tileW/2;
@@ -225,7 +233,7 @@ Quintus.HUD=function(Q){
                 ""+obj.p.className,
                 ""+obj.p.level,
                 ""+obj.p.move,
-                ""+obj.p.hp,
+                ""+obj.p.hp+"/"+obj.p.maxHp,
                 ""+obj.p.sp,
                 ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
                 ""+obj.p.armour,
@@ -265,12 +273,20 @@ Quintus.HUD=function(Q){
                 locsTo:[]
             });
             this.on("inserted");
-            this.on("checkInputs");
-            this.on("checkConfirm");
+            this.hide();
         },
         inserted:function(){
             this.stage.BatCon.setXY(this);
             Q._generatePoints(this,true);
+        },
+        //Makes the pointer go to a certain object
+        snapTo:function(obj){
+            this.p.loc = obj.p.loc;
+            this.p.diffX = 0;
+            this.p.diffY = 0;
+            this.p.stepping=false;
+            this.stage.BatCon.setXY(this);
+            this.checkTarget();
         },
         getTerrain:function(){
             var type = this.stage.BatCon.getTileType(this.p.loc);
@@ -280,6 +296,7 @@ Quintus.HUD=function(Q){
             this.stage.BatCon.setXY(this);
             this.checkTarget();
             this.addControls();
+            this.show();
             this.on("checkConfirm");
         },
         checkTarget:function(){
@@ -307,6 +324,7 @@ Quintus.HUD=function(Q){
             this.off("checkInputs");
             this.off("checkConfirm");
         },
+        //Check confirm only runs when the user is moving around the pointer without any menu selection
         checkConfirm:function(){
             var input = Q.inputs;
             //If we're trying to load a menu
@@ -314,6 +332,9 @@ Quintus.HUD=function(Q){
                 this.displayCharacterMenu();
                 input['confirm']=false;
                 return;
+            } else if(input['esc']){
+                this.snapTo(this.stage.BatCon.turnOrder[0]);
+                input['esc']=false;
             }
         },
         //Do the logic for the directional inputs that were pressed
@@ -391,6 +412,8 @@ Quintus.HUD=function(Q){
             this.p.conts[this.p.selected].p.fill="red";
             this.p.selected=to;
             this.p.conts[this.p.selected].p.fill="green";
+            if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";};
+            if(this.p.target.p.didAction){this.p.conts[1].p.fill="gray";};
         },
         inserted:function(){
             this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:"ACTIONS",size:30}));
@@ -410,17 +433,21 @@ Quintus.HUD=function(Q){
                 cont.insert(new Q.UI.Text({x:cont.p.w/2,y:8,label:options[i],cx:0}));
                 this.p.conts.push(cont);
             }
+            if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";this.p.selected=1;}
+            else if(this.p.target.p.didAction){this.p.conts[1].p.fill="gray";};
             this.cycle(this.p.selected);
         },
         checkInputs:function(){
             if(Q.inputs['up']){
                 var to=this.p.selected-1;
-                if(this.p.selected===0){to=this.p.conts.length-1;}
+                if(this.p.target.p.didMove&&to===0||this.p.target.p.didAction&&to===1){to--;};
+                if(this.p.selected===0||to<0){to=this.p.conts.length-1;}
                 this.cycle(to);
                 Q.inputs['up']=false;
             } else if(Q.inputs['down']){
                 var to=this.p.selected+1;
-                if(this.p.selected===this.p.conts.length-1){to=0;}
+                if(this.p.target.p.didMove&&to===0||this.p.target.p.didAction&&to===1){to++;};
+                if(this.p.selected>=this.p.conts.length-1){this.p.selected=this.p.conts.length-1;to=0;if(this.p.target.p.didMove){to++;}};
                 this.cycle(to);
                 Q.inputs['down']=false;
             }
@@ -438,19 +465,23 @@ Quintus.HUD=function(Q){
         },
         //Shows the move grid
         loadMove:function(){
+            if(this.p.target.p.didMove){return;};
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
             this.stage.options.pointer.addControls();
+            this.stage.options.pointer.snapTo(this.p.target);
         },
         //Shows the attack grid
         loadAttack:function(){
+            if(this.p.target.p.didAction){return;};
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
             this.stage.options.pointer.addControls();
+            this.stage.options.pointer.snapTo(this.p.target);
         },
         //Loads the special skills menu
         loadSkills:function(){
@@ -627,8 +658,17 @@ Quintus.HUD=function(Q){
                     this.fullDestroy();
                 }
                 Q.inputs['confirm']=false;
+            } else if(Q.inputs['esc']){
+                Q.stage(2).ActionMenu.show();
+                Q.stage(2).ActionMenu.on("step","checkInputs");
+                this.stage.pointer.snapTo(this.p.target);
+                this.stage.pointer.off("checkInputs");
+                this.stage.pointer.off("checkConfirm");
+                this.fullDestroy();
+                Q.inputs['esc']=false;
             }
-        }
+        } 
+        
     });
     Q.Sprite.extend("RangeTile",{
         init:function(p){
@@ -708,37 +748,72 @@ Quintus.HUD=function(Q){
             }
         },
         successfulBlow:function(result){
-            console.log("Successful blow!")
+            console.log("Successful blow!");
+            var attacker = this.p.attacker;
+            var defender = this.p.defender;
+            var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
+            defender.takeDamage(damage);
             console.log(result);
         },
         criticalBlow:function(result){
-            console.log("Critical blow!")
+            console.log("Critical blow!");
+            var attacker = this.p.attacker;
+            var defender = this.p.defender;
+            var damage = attacker.p.totalDamageHigh;
+            defender.takeDamage(damage);
+            var rand = Math.ceil(Math.random()*100);
+            if(rand<=attacker.p.totalSpeed){this.calcAttack();}
             console.log(result);
             
         },
         glancingBlow:function(result){
-            console.log("Glancing blow!")
+            console.log("Glancing blow!");
+            var attacker = this.p.attacker;
+            var defender = this.p.defender;
+            var weapons = [];
+            if(attacker.p.equipment.righthand.damageLow){weapons.push(attacker.p.equipment.righthand);}
+            if(attacker.p.equipment.lefthand.damageLow){weapons.push(attacker.p.equipment.lefthand);}
+            var rand = Math.floor(Math.random()*weapons.length);
+            var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
+            defender.takeDamage(damage);
             console.log(result);
             
         },
         counterChance:function(result){
-            console.log("Counter chance!")
+            console.log("Counter chance!");
             var temp = this.p.attacker;
             this.p.attacker = this.p.defender;
             this.p.defender = temp;
-            console.log(this.p.attacker.p.charClass);
+            this.calcAttack();
             console.log(result);
             
         },
         miss:function(result){
-            console.log("Miss...")
+            console.log("Miss...");
+            var rand = Math.ceil(Math.random()*100);
+            if(rand<=this.p.attacker.p.totalSpeed){
+                this.calcAttack();
+            }
             console.log(result);
             
         },
-        doAttack:function(){
-            //Compute the attack
+        calcAttack:function(){
             this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
-            Q.clearStage(2);
+        },
+        doAttack:function(turnEnded){
+            //Compute the attack
+            this.calcAttack();
+            if(turnEnded){
+                Q.clearStage(2);
+            } else {
+                this.destroy();
+                //Set the Action menu to the top
+                this.stage.ActionMenu.cycle(0);
+                //Show the action menu
+                this.stage.ActionMenu.show();
+                this.stage.ActionMenu.on("step","checkInputs");
+                this.p.attacker.stage.pointer.snapTo(this.p.attacker);
+            }
         },
         inserted:function(){
             //This will need to be thought out more thoroughly.
@@ -746,16 +821,27 @@ Quintus.HUD=function(Q){
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
             var missChance = "Pretty high, I guess";
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
+            var damageLow = this.p.attacker.p.totalDamageLow-this.p.defender.p.armour;
+            var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.defender.p.armour;
+            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
             
-            
+            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
         },
         step:function(){
             if(Q.inputs['confirm']){
-                this.p.attacker.p.attacked = true;
-                this.p.attacker.checkEndTurn();
-                this.doAttack();
+                this.p.attacker.p.didAction = true;
+                var turnEnded = this.p.attacker.checkEndTurn();
+                this.doAttack(turnEnded);
+                if(!turnEnded){
+                    this.p.attacker.p.walkMatrix = new Q.Graph(this.p.attacker.getMatrix("walk"));
+                }
                 Q.inputs['confirm']=false;
+            } else if(Q.inputs['esc']){
+                this.destroy();
+                this.stage.ActionMenu.loadAttack();
+                Q.inputs['esc']=false;
             }
+            
         }
     });
 };

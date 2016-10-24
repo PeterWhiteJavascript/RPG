@@ -14,5 +14,13 @@
         "sy":0,
         "w":32,
         "h":32
+    },
+    "turn_start_exclamation_mark":{
+        "tilew":32,
+        "tileh":32,
+        "sx":64,
+        "sy":0,
+        "w":32,
+        "h":32
     }
 }
