@@ -8,7 +8,7 @@
             "gender":"female",
             "equipment":{
                 "righthand":["weapon","woodenSword"],
-                "lefthand":["shield","woodenShield"],
+                "lefthand":["weapon","woodenSpear"],
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
                 "accessory":["accessory","movementCharm"]
@@ -20,9 +20,9 @@
                 "wsk":23,
                 "rfl":29
             },
-            "attacks":{
-                "sword":["stab","slash"],
-                "spear":["pierce","puncture"]
+            "skills":{
+                "sword":["stab","slash","whirlwind"],
+                "spear":["pierce","puncture","push"]
             },
             "value":20,
             "method":80,

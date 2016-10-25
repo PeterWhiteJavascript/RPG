@@ -51,7 +51,7 @@ Quintus.SceneFuncs=function(Q){
         var allyData = Q.state.get("allies");
         var allies = [];
         allyData.forEach(function(ally,i){
-            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,attacks:ally.attacks,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
+            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
             char.add("statCalcs");
             allies.push(char);
             char.p.loc = battleData.placementSquares[i];
@@ -146,7 +146,6 @@ Quintus.SceneFuncs=function(Q){
         //Set the current menu. Default is 'start'
         if(!stage.options.menu){alert("No Menu Given in JSON!!!");};
         Q.state.set("currentMenu",stage.options.menu?stage.options.menu:Q.state.get("currentMenu"));
-        console.log("Current Menu: "+Q.state.get("currentMenu"), stage.options.data);
         //Load any bgs for this location
         Q.load(stage.options.data.bgs.join(','),function(){
             Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});

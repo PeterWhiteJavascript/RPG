@@ -17,9 +17,9 @@
             "wsk":10,
             "rfl":10
         },
-        "attacks":{
+        "skills":{
             "sword":["stab","slash"],
-            "spear":["pierce","puncture"]
+            "spear":["pierce","puncture","push"]
         },
         "value":50,
         "method":50,

@@ -132,7 +132,7 @@ var files = [
     "json/data/quests.json",
     "json/data/character_classes.json",
     "json/data/characters.json",
-    "json/data/attacks.json",
+    "json/data/skills.json",
     "json/data/ui_objects.json",
     "json/data/tile_types.json",
     //JSON STORY
@@ -158,8 +158,8 @@ Q.load(files.join(','),function(){
     Q.state.set("charClasses",Q.assets['json/data/character_classes.json']);
     //The story characters that you can recruit (including alex)
     Q.state.set("characters",Q.assets['json/data/characters.json']);
-    //The list of attacks and their effects
-    Q.state.set("attacks",Q.assets['json/data/attacks.json']);
+    //The list of skills and their effects
+    Q.state.set("skills",Q.assets['json/data/skills.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
     Q.organizeEquipment();

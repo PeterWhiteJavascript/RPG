@@ -62,6 +62,18 @@
             "range":1,
             "twoHanded":true
         },
+        "woodenSpear":{
+            "name":"Wooden Spear",
+            "desc":"A wooden spear",
+            "rank":1,
+            "equipmentType":"spear",
+            "damageLow":11,
+            "damageHigh":51,
+            "speed":10,
+            "reach":10,
+            "range":2,
+            "wield":25
+        },
         "woodenBow":{
             "name":"Wooden Bow",
             "desc":"A standard bow and arrow set",

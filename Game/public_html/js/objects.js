@@ -85,6 +85,7 @@ Quintus.Objects=function(Q){
                 this.randomizeEquipment();
             }
             t.p.stats = this.generateCharStats();
+            t.p.skills = this.generateSkills();
         },
         randomizeEquipment:function(){
             var p = this.entity.p;
@@ -144,6 +145,14 @@ Quintus.Objects=function(Q){
                 wsk:Math.floor(Math.random()*lv+base.wsk*(lv/3)+1),
                 rfl:Math.floor(Math.random()*lv+base.rfl*(lv/3)+1)
             };
+        },
+        generateSkills:function(){
+            var allSkills = Q.state.get("skills");
+            var p = this.entity.p;
+            p.skills = {};
+            //To do: Come up with a way to give reasonable skills
+            p.skills[p.equipment.righthand.equipmentType] = allSkills[p.equipment.righthand.equipmentType];
+            p.skills[p.equipment.lefthand.equipmentType] = allSkills[p.equipment.lefthand.equipmentType];
         }
     });
     Q.component("statCalcs",{
@@ -154,6 +163,7 @@ Quintus.Objects=function(Q){
             p.move = this.getMove(Q.state.get("charClasses")[p.charClass].move);
             p.maxHp = this.getHp(base);
             p.hp = this.getHp(base);
+            p.maxSp = this.getSp(base);
             p.sp = this.getSp(base);
             p.totalDamageLow = this.getDamageLow();
             p.totalDamageHigh = this.getDamageHigh();
@@ -323,7 +333,6 @@ Quintus.Objects=function(Q){
                 this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
                 this.stage.pointer.p.loc = this.p.loc;
                 this.stage.BatCon.setXY(this.stage.pointer);
-                Q.stage(2).ActionMenu.p.conts[0].p.fill="gray";
             } else {
                 this.stage.BatCon.endTurn();
             }
@@ -332,6 +341,16 @@ Quintus.Objects=function(Q){
         previewAttackTarget:function(targetLoc){
             var target = this.stage.BattleGrid.getObject(targetLoc);
             Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,defender:target}));
+        },
+        previewDoSkill:function(targetLoc,skill){
+            var targets = [];
+            if(skill.aoe){
+                targets = this.stage.BattleGrid.getObjectsAround(targetLoc,skill.aoe);
+                console.log(targets)
+            } else {
+                targets[0] = this.stage.BattleGrid.getObject(targetLoc);
+            }
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,defender:targets[0],skill:skill,targets:targets}));
         },
         getMatrix:function(matrixType){
             var tileTypes = Q.state.get("tileTypes");

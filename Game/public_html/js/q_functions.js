@@ -14,17 +14,24 @@ Quintus.QFunctions=function(Q){
             });
             return eq;
         }
-        function getAttacks(attackData){
-            var attacks = Q.state.get("attacks");
-            var keys = Object.keys(attackData);
-            var at = {};
+        function getSkills(skillsData){
+            var skills = Q.state.get("skills");
+            var keys = Object.keys(skillsData);
+            var sk = {
+                dagger:{},
+                sword:{},
+                axe:{},
+                spear:{},
+                bow:{},
+                shield:{}
+            };
             keys.forEach(function(key){
-                at[key] = {};
-                for(var i=0;i<attackData[key].length;i++){
-                    at[key][attackData[key][i]]=attacks[key][attackData[key][i]];
+                sk[key] = {};
+                for(var i=0;i<skillsData[key].length;i++){
+                    sk[key][skillsData[key][i]]=skills[key][skillsData[key][i]];
                 }
             });
-            return at; 
+            return sk; 
         }
         var char = {
             name:data.name,
@@ -33,11 +40,10 @@ Quintus.QFunctions=function(Q){
             stats:data.stats,
             charClass:data.charClass,
             equipment:getEquipment(data.equipment),
-            attacks:getAttacks(data.attacks),
+            skills:getSkills(data.skills),
             value:data.value,
             method:data.method
         };
-        console.log(char)
         return char;
     };
     //Value scale of 1-100

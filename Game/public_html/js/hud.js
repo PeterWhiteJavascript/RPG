@@ -32,6 +32,58 @@ Quintus.HUD=function(Q){
         },
         removeObject:function(loc){
             this.grid[loc[1]][loc[0]] = false;
+        },
+        getObjectsAround:function(loc,area){
+            var objects = [];
+            var radius = area[1];
+            switch(area[0]){
+                case "normal":
+                    var bounds = this.getBounds(loc,radius);
+                    for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
+                        for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                            var object = this.getObject([i,j]);
+                            if(object) objects.push(object);
+                        }
+                    }
+                    break;
+                case "corners":
+                    
+                    break;
+            }
+            return objects;
+        },
+        getBounds:function(loc,num){
+            var maxTileRow = this.grid[0].length;
+            var maxTileCol = this.grid.length;
+            var minTile = 0;
+            var rows=num*2+1,
+                cols=num*2+1,
+                tileStartX=loc[0]-num,
+                tileStartY=loc[1]-num;
+            var dif=0;
+
+            if(loc[0]-num<minTile){
+                dif = cols-(num+1+loc[0]);
+                cols-=dif;
+                tileStartX=num+1-cols+loc[0];
+            }
+            if(loc[0]+num>=maxTileCol){
+                dif = cols-(maxTileCol-loc[0]+num);
+                cols-=dif;
+            }
+            if(loc[1]-num<minTile){
+                dif = rows-(num+1+loc[1]);
+                rows-=dif;
+                tileStartY=num+1-rows+loc[1];
+            }
+            if(loc[1]+num>=maxTileRow){
+                dif = rows-(maxTileRow-loc[1]+num);
+                rows-=dif;
+            }
+
+            if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
+            if(cols+tileStartX>=maxTileCol){cols=maxTileCol-tileStartX;};
+            return {tileStartX:tileStartX,tileStartY:tileStartY,rows:rows,cols:cols};
         }
     });
     //The battle controller holds all battle specific code.
@@ -150,7 +202,19 @@ Quintus.HUD=function(Q){
             if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
                  return tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
             }
+        },
+        attackFuncs:{
+            pull:function(tiles,target,user){
+                
+            },
+            push:function(tiles,target,user){
+                console.log(target)
+            },
+            blind:function(target){
+
+            }
         }
+        
     });
     Q.UI.Container.extend("TerrainHUD",{
         init:function(p){
@@ -230,7 +294,7 @@ Quintus.HUD=function(Q){
                 ""+obj.p.level,
                 ""+obj.p.move,
                 ""+obj.p.hp+"/"+obj.p.maxHp,
-                ""+obj.p.sp,
+                ""+obj.p.sp+"/"+obj.p.maxSp,
                 ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
                 ""+obj.p.armour,
                 ""+obj.p.totalSpeed,
@@ -397,53 +461,109 @@ Quintus.HUD=function(Q){
                 w:200,h:300,
                 cx:0,cy:0,
                 fill:"blue",
-                opacity:0.5
+                opacity:0.5,
+                menuNum:0,
+                titles:["ACTIONS","ACTIONS","SKILLS"],
+                options:[["Move","Attack","Skill","Item","Status","End Turn"],["Status"],[]],
+                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadItems","loadStatus","loadEndTurn"],["loadStatus"],[]],
+                conts:[]
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
-            this.on("inserted");
+            this.on("inserted","displayMenu");
             this.on("step",this,"checkInputs");
+            if(!this.p.active){
+                this.p.menuNum=1;
+            } else {
+                var target = this.p.target;
+                var opts = [];
+                var funcs = [];
+                var skills = [];
+                //Set possible skills
+                var rh = target.p.equipment.righthand;
+                var lh = target.p.equipment.lefthand;
+                
+                if(rh){
+                    var keys = Object.keys(target.p.skills[rh.equipmentType]);
+                    keys.forEach(function(key){
+                        opts.push(target.p.skills[rh.equipmentType][key].name);
+                        funcs.push("loadSkills");
+                        skills.push(target.p.skills[rh.equipmentType][key]);
+                    });
+                }
+                if(lh){
+                    var keys = Object.keys(target.p.skills[lh.equipmentType]);
+                    keys.forEach(function(key){
+                        opts.push(target.p.skills[lh.equipmentType][key].name);
+                        funcs.push("loadSkills");
+                        skills.push(target.p.skills[lh.equipmentType][key]);
+                    });
+                }
+                this.p.options[2]=opts;
+                this.p.funcs[2]=funcs;
+                this.p.skills=skills;
+            }
         },
         cycle:function(to){
             this.p.conts[this.p.selected].p.fill="red";
             this.p.selected=to;
             this.p.conts[this.p.selected].p.fill="green";
-            if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";};
-            if(this.p.target.p.didAction){this.p.conts[1].p.fill="gray";};
+            this.checkGray();
         },
-        inserted:function(){
-            this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:"ACTIONS",size:30}));
-            var options;
-            var funcs;
-            if(this.p.active){
-                options = ["Move","Attack","Skill","Item","Status","End Turn"];
-                funcs = ["loadMove","loadAttack","loadSkills","loadItems","loadStatus","loadEndTurn"];
-            } else {
-                options = ["Status"];
-                funcs = ["loadStatus"];
+        checkGray:function(){
+            if(this.p.menuNum===0){
+                if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";};
+                if(this.p.target.p.didAction){
+                    this.p.conts[1].p.fill="gray";
+                    this.p.conts[2].p.fill="gray";
+                    this.p.conts[3].p.fill="gray";
+                };
             }
+        },
+        destroyConts:function(){
+            this.p.conts.forEach(function(cont){
+                cont.destroy();
+            });
+        },
+        displayMenu:function(){
+            if(this.p.title) this.p.title.destroy();
+            if(this.p.conts.length) this.destroyConts();
+            this.p.title = this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:this.p.titles[this.p.menuNum],size:30}));
+            var options = this.p.options[this.p.menuNum];
+            var funcs = this.p.funcs[this.p.menuNum];
             this.p.selected = 0;
+            if(this.p.target.p.didMove&&this.p.menuNum===0) this.p.selected++;
             this.p.conts = [];
             for(var i=0;i<options.length;i++){
                 var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
                 cont.insert(new Q.UI.Text({x:cont.p.w/2,y:8,label:options[i],cx:0}));
                 this.p.conts.push(cont);
             }
-            if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";this.p.selected=1;}
-            else if(this.p.target.p.didAction){this.p.conts[1].p.fill="gray";};
             this.cycle(this.p.selected);
+        },
+        checkInBoundsUp:function(to){
+            if(this.p.selected===0||to<0){
+                to=this.p.options[this.p.menuNum].length-1;
+            }
+            return to;
+        },
+        checkInBoundsDown:function(to){
+            if(this.p.selected>=this.p.options[this.p.menuNum].length-1){
+                this.p.selected=this.p.options[this.p.menuNum].length-1;to=0;
+            };
+            return to;
         },
         checkInputs:function(){
             if(Q.inputs['up']){
-                var to=this.p.selected-1;
-                if(this.p.target.p.didMove&&to===0||this.p.target.p.didAction&&to===1){to--;};
-                if(this.p.selected===0||to<0){to=this.p.conts.length-1;}
+                var to=this.checkInBoundsUp(this.p.selected-1);
+                while(this.p.conts[to]&&this.p.conts[to].p.fill==="gray"){to--;}
+                to=this.checkInBoundsUp(to);
                 this.cycle(to);
                 Q.inputs['up']=false;
             } else if(Q.inputs['down']){
-                var to=this.p.selected+1;
-                if(this.p.target.p.didMove&&to===0||this.p.target.p.didAction&&to===1){to++;};
-                if(this.p.selected>=this.p.conts.length-1){this.p.selected=this.p.conts.length-1;to=0;if(this.p.target.p.didMove){to++;}};
+                var to=this.checkInBoundsDown(this.p.selected+1);
+                while(this.p.conts[to]&&this.p.conts[to].p.fill==="gray"){to++;}
+                to=this.checkInBoundsDown(to);
                 this.cycle(to);
                 Q.inputs['down']=false;
             }
@@ -461,7 +581,6 @@ Quintus.HUD=function(Q){
         },
         //Shows the move grid
         loadMove:function(){
-            if(this.p.target.p.didMove){return;};
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
@@ -471,7 +590,6 @@ Quintus.HUD=function(Q){
         },
         //Shows the attack grid
         loadAttack:function(){
-            if(this.p.target.p.didAction){return;};
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
@@ -480,8 +598,18 @@ Quintus.HUD=function(Q){
             this.stage.options.pointer.snapTo(this.p.target);
         },
         //Loads the special skills menu
+        loadSkillsMenu:function(){
+            this.p.menuNum=2;
+            this.displayMenu();
+        },
+        //Show the attack grid for the skill
         loadSkills:function(){
-            
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"skill",skill:this.p.skills[this.p.selected]}));
+            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
+            this.off("step",this,"checkInputs");
+            this.hide();
+            this.stage.options.pointer.addControls();
+            this.stage.options.pointer.snapTo(this.p.target);
         },
         //Loads the items menu
         loadItems:function(){
@@ -528,14 +656,23 @@ Quintus.HUD=function(Q){
             switch(this.p.kind){
                 case "walk":
                     //Loop through the target's move the get the move range
-                    this.getTileRange(target.p.loc,target.p.move,target.p[this.p.kind+"Matrix"]);
+                    this.getTileRange(target.p.loc,target.p.move,target.p["walkMatrix"]);
                     break;
                 case "attack":
-                    this.getTileRange(target.p.loc,target.p.range,target.p[this.p.kind+"Matrix"]);
+                    this.getTileRange(target.p.loc,target.p.range,target.p["attackMatrix"]);
                     break;
                 //Used for skills that have a weird range (eg 'T' shape)
-                case "custom":
-                    
+                case "skill":
+                    var skill = this.p.skill;
+                    switch(skill.range[0]){
+                        case "normal":
+                            this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"]);
+                            break;
+                        //No diagonal attack
+                        case "straight":
+                            this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"],skill.range[0]);
+                            break;
+                    }
                     break;
                     
             }
@@ -545,6 +682,11 @@ Quintus.HUD=function(Q){
                 itm.destroy();
             });
             this.destroy();
+        },
+        process:{
+            straight:function(){
+                console.log("to do: straight")
+            }
         },
         //Gets the fastest path to a certain location
         //loc   - the current location of the object that is moving
@@ -563,57 +705,31 @@ Quintus.HUD=function(Q){
             }
             return result;
         },
-        getTileRange:function(loc,stat,graph){
-            var minTile = 0;
-            var maxTileRow = graph.grid[0].length;
-            var maxTileCol = graph.grid.length;
-            var rows=stat*2+1,
-                cols=stat*2+1,
-                tileStartX=loc[0]-stat,
-                tileStartY=loc[1]-stat;
-            var dif=0;
-
-            if(loc[0]-stat<minTile){
-                dif = cols-(stat+1+loc[0]);
-                cols-=dif;
-                tileStartX=stat+1-cols+loc[0];
-            }
-            if(loc[0]+stat>=maxTileCol){
-                dif = cols-(maxTileCol-loc[0]+stat);
-                cols-=dif;
-            }
-            if(loc[1]-stat<minTile){
-                dif = rows-(stat+1+loc[1]);
-                rows-=dif;
-                tileStartY=stat+1-rows+loc[1];
-            }
-            if(loc[1]+stat>=maxTileRow){
-                dif = rows-(maxTileRow-loc[1]+stat);
-                rows-=dif;
-            }
-
-            if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
-            if(cols+tileStartX>=maxTileCol){cols=maxTileCol-tileStartX;};
-            var statTiles=[];
+        getTileRange:function(loc,stat,graph,special){
+            var bounds = this.stage.BattleGrid.getBounds(loc,stat);
+            var tiles=[];
             //Get all possible move locations that are within the bounds
-            for(var i=tileStartX;i<tileStartX+cols;i++){
-                for(var j=tileStartY;j<tileStartY+rows;j++){
+            for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
+                for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
                     if(graph.grid[i][j].weight<10000){
-                        statTiles.push(graph.grid[i][j]);
+                        tiles.push(graph.grid[i][j]);
                     }
                 }
             }
+            if(special){
+                this.process[special](tiles);
+            }
             //If there is at least one place to move
-            if(statTiles.length){
+            if(tiles.length){
                 //Loop through the possible tiles
-                for(var i=0;i<statTiles.length;i++){
-                    var path = this.getPath(loc,[statTiles[i].x,statTiles[i].y],"maxScore",stat,graph);
+                for(var i=0;i<tiles.length;i++){
+                    var path = this.getPath(loc,[tiles[i].x,tiles[i].y],"maxScore",stat,graph);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
                     }
                     if(path.length>0&&path.length<=stat&&pathCost<=stat){
-                        this.p.guide.push(this.insert(new Q.RangeTile({x:statTiles[i].x*Q.tileW+Q.tileW/2,y:statTiles[i].y*Q.tileH+Q.tileH/2,loc:[statTiles[i].x,statTiles[i].y]})));
+                        this.p.guide.push(this.insert(new Q.RangeTile({x:tiles[i].x*Q.tileW+Q.tileW/2,y:tiles[i].y*Q.tileH+Q.tileH/2,loc:[tiles[i].x,tiles[i].y]})));
                     }
                 }
             //If there's nowhere to move
@@ -648,6 +764,15 @@ Quintus.HUD=function(Q){
                                 stage.pointer.off("checkInputs");
                                 stage.pointer.off("checkConfirm");
                             } else {return;}
+                            break;
+                        case "skill":
+                            //Make sure there's a target there
+                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
+                                this.p.target.previewDoSkill(stage.pointer.p.loc,this.p.skill);
+                                stage.pointer.off("checkInputs");
+                                stage.pointer.off("checkConfirm");
+                            } else {return;}
+                            
                             break;
                     }
                     
@@ -810,19 +935,42 @@ Quintus.HUD=function(Q){
                 this.calcAttack();
             }
         },
-        calcAttack:function(){
-            this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
+        calcAttack:function(skill){
+            if(skill){
+                var t = this;
+                t.p.attacker.p.sp-=skill.cost;
+                //Loop through each of the targets
+                this.p.targets.forEach(function(target){
+                    //If the skill is damaging
+                    if(skill.damageLow&&skill.damageHigh){
+                        t.processResult(t.getBlow(Math.ceil(Math.random()*100),t.p.attacker,Math.ceil(Math.random()*100),target));
+                    }
+                    if(skill.effect){
+                        var rand = Math.ceil(Math.random()*skill.effect.accuracy);
+                        if(rand<=skill.effect.accuracy){
+                            var props = skill.effect.props;
+                            props.push(target,t.p.attacker);
+                            Q.stage(0).BatCon.attackFuncs[skill.effect.func].apply(t,props);
+                            t.p.text.push(t.p.attacker.p.charClass+" did a special effect with the skill.");
+                        } else {
+                            t.p.text.push(t.p.attacker.p.charClass+" missed doing a special effect with the skill.");
+                        }
+                    }
+                });
+            } else {
+                this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
+            }
         },
         doAttack:function(turnEnded){
             //Compute the attack
-            this.calcAttack();
+            this.calcAttack(this.p.skill);
+            this.destroy();
             if(turnEnded){
                 this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){Q.stage(0).BatCon.endTurn();}}));
             } else {
-                this.destroy();
                 this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){
-                    //Set the Action menu to the top
-                    Q.stage(2).ActionMenu.cycle(0);
+                    Q.stage(2).ActionMenu.p.menuNum = 0;
+                    Q.stage(2).ActionMenu.displayMenu();
                     //Show the action menu
                     Q.stage(2).ActionMenu.show();
                     Q.stage(2).ActionMenu.on("step","checkInputs");
@@ -831,15 +979,30 @@ Quintus.HUD=function(Q){
             }
         },
         inserted:function(){
-            //This will need to be thought out more thoroughly.
-            var atkPercent = this.p.attacker.p.strike;
-            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
-            var missChance = "Pretty high, I guess";
-            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
-            var damageLow = this.p.attacker.p.totalDamageLow-this.p.defender.p.armour;
-            var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.defender.p.armour;
-            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
-            
+            if(this.p.skill){
+                if(this.p.skill.damageLow&&this.p.skill.damageHigh){
+                    var atkPercent = this.p.attacker.p.strike;
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
+                    var missChance = "Pretty high, I guess";
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
+                    var damageLow = this.p.attacker.p.totalDamageLow+this.p.skill.damageLow-this.p.defender.p.armour;
+                    var damageHigh = this.p.attacker.p.totalDamageHigh+this.p.skill.damageHigh-this.p.defender.p.armour;
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:70,label:"The skill's name is "+this.p.skill.name+".",size:12,cx:0,cy:0,align:"center"}));
+                }
+                if(this.p.skill.effect){
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
+                }
+            } else {
+                //This will need to be thought out more thoroughly.
+                var atkPercent = this.p.attacker.p.strike;
+                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
+                var missChance = "Pretty high, I guess";
+                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
+                var damageLow = this.p.attacker.p.totalDamageLow-this.p.defender.p.armour;
+                var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.defender.p.armour;
+                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
+            }
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
         }
     });
@@ -871,7 +1034,6 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             this.p.dialogueArea = this.stage.insert(new Q.DialogueArea({w:Q.width-20}));
-            console.log(this.p.text)
             this.p.dialogueText = this.p.dialogueArea.insert(new Q.Dialogue({text:this.p.text[this.p.textIndex], align: 'left', x: 10}));
         }
     });
