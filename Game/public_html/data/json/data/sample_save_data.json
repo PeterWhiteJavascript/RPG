@@ -21,12 +21,39 @@
                 "rfl":29
             },
             "skills":{
-                "sword":["stab","slash","whirlwind"],
+                "sword":["whirlwind","superwhirlwind"],
                 "spear":["pierce","puncture","push"]
             },
             "value":20,
             "method":80,
             "charClass":"knight"
+        },
+        {
+            "name": "Peter",
+            "level":90,
+            "gender":"male",
+            "equipment":{
+                "righthand":["weapon","opBow"],
+                "lefthand":false,
+                "body":["body","shirt"],
+                "feet":["feet","sandals"],
+                "accessory":["accessory","movementCharm"]
+            },
+            "stats":{
+                "str":80,
+                "end":100,
+                "dex":75,
+                "wsk":50,
+                "rfl":78
+            },
+            "skills":{
+                "sword":["stab","slash","whirlwind","superwhirlwind"],
+                "spear":["pierce","push"],
+                "bow":["shoot","blind","sonicboom","crosshair"]
+            },
+            "value":40,
+            "method":60,
+            "charClass":"archer"
         }
     ],
     "inventory":{

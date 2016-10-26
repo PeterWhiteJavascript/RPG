@@ -36,8 +36,16 @@
             "cost":12,
             "damageLow":50,
             "damageHigh":60,
-            "range":["normal",0],
-            "aoe":["normal",1]
+            "range":["self",0],
+            "aoe":["normal",1,"excludeCenter"]
+        },
+        "superwhirlwind":{
+            "name":"Super Whirlwind",
+            "cost":22,
+            "damageLow":20,
+            "damageHigh":50,
+            "range":["self",0],
+            "aoe":["normal",2]
         }
     },
     "axe":{
@@ -61,12 +69,10 @@
         "pierce":{
             "name":"Pierce",
             "cost":6,
-            "damageLow":20,
-            "damageHigh":70,
             "range":["straight",2],
             "effect":{
                 "func":"pierce",
-                "props":[2],
+                "props":[20,50,2],
                 "accuracy":80
             }
         },
@@ -84,6 +90,22 @@
         }
     },
     "bow":{
+        "sonicboom":{
+            "name":"Sonic Boom!",
+            "cost":20,
+            "damageLow":999,
+            "damageHigh":999,
+            "range":["normal",6],
+            "aoe":["corners",1]
+        },
+        "crosshair":{
+            "name":"Crosshair",
+            "cost":20,
+            "damageLow":999,
+            "damageHigh":999,
+            "range":["normal",6],
+            "aoe":["normal",1]
+        },
         "shoot":{
             "name":"Shoot",
             "cost":4,
@@ -94,8 +116,6 @@
         "blind":{
             "name":"Blind",
             "cost":8,
-            "damageLow":10,
-            "damageHigh":40,
             "range":["normal",3],
             "effect":{
                 "func":"changeStatus",
@@ -108,10 +128,10 @@
         "defend":{
             "name":"Defend",
             "cost":1,
-            "range":["normal",0],
+            "range":["self",0],
             "effect":{
                 "func":"changeStatus",
-                "props":["defensive",1],
+                "props":["sturdy",1],
                 "accuracy":100
             }
         }

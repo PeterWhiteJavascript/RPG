@@ -1,11 +1,11 @@
 {
     "bgs":["bg/forest.jpg","bg/city.jpg"],
-    "chars":["story/l.jpg","story/shini.jpg"],
+    "chars":["story/l.jpg","story/shini.jpg","story/pyro.png"],
     "maps":["homeland.tmx"],
     "dialogue":{
         "bg":"bg/city.jpg",
         "interaction":[
-            {"text":["Press enter."],"asset":[false,"shini.jpg"],"pos":"right"},
+            {"text":["Press enter."],"asset":[false,"pyro.png"],"pos":"right"},
             {"func":"confirmation","props":[[
                 {"next":"dialogue/on_to_battle","text":"Fight"},
                 {"next":"skip_to_town","text":"Skip to town"},
@@ -92,9 +92,12 @@
         "map":"homeland.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
-        "placementSquares":[[17,18],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "placementSquares":[[17,18],[20,18],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
             {"loc":[17,19],"charClass":"archer","level":1,"equipmentRank":2,"equipmentType":"bow"},
+            {"loc":[16,19],"charClass":"archer","level":20,"equipmentRank":2,"equipmentType":"bow"},
+            {"loc":[16,18],"charClass":"archer","level":1,"equipmentRank":2,"equipmentType":"bow"},
+            {"loc":[16,17],"charClass":"archer","level":1,"equipmentRank":2,"equipmentType":"bow"},
             {"loc":[14,19],"charClass":"barbarian","level":2,"equipmentRank":1}
         ],
         "interactables":[

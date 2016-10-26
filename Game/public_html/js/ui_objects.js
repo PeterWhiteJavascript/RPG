@@ -107,6 +107,7 @@ Quintus.UIObjects=function(Q){
             var stage = this.stage;
             //Make sure the battle is gone
             Q.clearStages();
+            this.destroy();
             Q.stageScene("location",0,{data:Q.state.get("locations")[location],menu:menu});
             return true;
         },
@@ -270,7 +271,6 @@ Quintus.UIObjects=function(Q){
                 time:0,
                 speed:Q.state.get("options").textSpeed
             });
-            this.setNewText(this.p.text);
         },
         setNewText:function(text){
             this.p.text = text;
@@ -289,7 +289,9 @@ Quintus.UIObjects=function(Q){
                     return;
                 }
                 this.p.label+=this.p.text[this.p.charNum];
-                Q.playSound("text_stream.mp3");
+                //if(this.p.charNum%2===0){
+                    Q.playSound("text_stream.mp3");
+                //}
             }
         },
         interact:function(){

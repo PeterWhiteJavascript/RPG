@@ -99,6 +99,19 @@
             "wield":55,
             "range":6,
             "twoHanded":true
+        },
+        "opBow":{
+            "name":"Overpowered Bow",
+            "desc":"The bow is OP!",
+            "rank":2,
+            "equipmentType":"bow",
+            "damageLow":999,
+            "damageHigh":999,
+            "speed":99,
+            "reach":99,
+            "wield":99,
+            "range":10,
+            "twoHanded":true
         }
     },
     "shield":{

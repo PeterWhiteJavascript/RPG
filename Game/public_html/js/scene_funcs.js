@@ -63,7 +63,9 @@ Quintus.SceneFuncs=function(Q){
             char.add("randomCharacter,statCalcs");
         });
         
-        stage.insert(allies[0]);
+        allies.forEach(function(ally){
+            stage.insert(ally);
+        });
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
         stage.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
         

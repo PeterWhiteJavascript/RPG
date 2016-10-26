@@ -36,9 +36,19 @@ Quintus.HUD=function(Q){
         getObjectsAround:function(loc,area){
             var objects = [];
             var radius = area[1];
+            var bounds = this.getBounds(loc,radius);
             switch(area[0]){
+                //Diamond shape
                 case "normal":
-                    var bounds = this.getBounds(loc,radius);
+                    for(var i=-radius;i<radius+1;i++){
+                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                            var object = this.getObject([loc[0]+i,loc[1]+j-(radius-Math.abs(i))]);
+                            if(object) objects.push(object);
+                        }
+                    }
+                    break;
+                    //Square shape
+                case "corners":
                     for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
                         for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
                             var object = this.getObject([i,j]);
@@ -46,15 +56,20 @@ Quintus.HUD=function(Q){
                         }
                     }
                     break;
-                case "corners":
-                    
-                    break;
+            }
+            //Don't include the middle square
+            if(area[2]==="excludeCenter"){
+                objects.forEach(function(obj,i){
+                    if(obj.p.loc[0]===loc[0]&&obj.p.loc[1]===loc[1]){
+                        objects.splice(i,1);
+                    }
+                });
             }
             return objects;
         },
         getBounds:function(loc,num){
-            var maxTileRow = this.grid[0].length;
-            var maxTileCol = this.grid.length;
+            var maxTileRow = this.grid.length;
+            var maxTileCol = this.grid[0].length;
             var minTile = 0;
             var rows=num*2+1,
                 cols=num*2+1,
@@ -80,16 +95,16 @@ Quintus.HUD=function(Q){
                 dif = rows-(maxTileRow-loc[1]+num);
                 rows-=dif;
             }
-
-            if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
             if(cols+tileStartX>=maxTileCol){cols=maxTileCol-tileStartX;};
-            return {tileStartX:tileStartX,tileStartY:tileStartY,rows:rows,cols:cols};
+            if(rows+tileStartY>=maxTileRow){rows=maxTileRow-tileStartY;};
+            return {tileStartX:tileStartX,tileStartY:tileStartY,rows:rows,cols:cols,maxTileRow:maxTileRow,maxTileCol:maxTileCol};
         }
     });
     //The battle controller holds all battle specific code.
     Q.GameObject.extend("BattleController",{
         init:function(p){
             this.stage = p.stage;
+            this.markedForRemoval = [];
         },
         //Run once at the start of battle
         startBattle:function(){
@@ -131,10 +146,8 @@ Quintus.HUD=function(Q){
                 //Follow the AI object
                 Q.viewFollow(this.turnOrder[0],this.stage);
             } else {
-                if(this.stage.pointer.p.hidden){
-                    this.stage.pointer.reset();
-                    Q.viewFollow(this.stage.pointer,this.stage);
-                }
+                this.stage.pointer.reset();
+                Q.viewFollow(this.stage.pointer,this.stage);
                 this.stage.pointer.p.loc = this.turnOrder[0].p.loc;
                 this.setXY(this.stage.pointer);
                 this.stage.pointer.checkTarget();
@@ -144,6 +157,7 @@ Quintus.HUD=function(Q){
         endTurn:function(){
             var lastTurn = this.turnOrder.shift();
             this.turnOrder.push(lastTurn);
+            this.removeMarked();
             //Check if the battle is over at this point
             if(this.checkBattleOver()) return; 
             this.startTurn();
@@ -171,14 +185,26 @@ Quintus.HUD=function(Q){
             var tO = sortForSpeed();
             return tO;
         },
+        //When an object is destroyed, mark them for removal at the end of the turn
+        markForRemoval:function(obj){
+            this.markedForRemoval.push(obj);
+        },
+        removeMarked:function(){
+            if(this.markedForRemoval.length){
+                for(var i=0;i<this.markedForRemoval.length;i++){
+                    this.removeFromBattle(this.markedForRemoval[i]);
+                }
+                this.markedForRemoval = [];
+            }
+        },
+        //Removes the object from battle (at end of turn)
         removeFromBattle:function(obj){
+            this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             if(obj.p.team==="ally"){
                 this.allies.splice(this.allies.indexOf(this.allies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             } else if(obj.p.team==="enemy"){
                 this.enemies.splice(this.enemies.indexOf(this.enemies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             }
-            this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
-            this.checkBattleOver();
         },
         setXY:function(obj){
             obj.p.x = obj.p.loc[0]*Q.tileW+Q.tileW/2;
@@ -204,14 +230,59 @@ Quintus.HUD=function(Q){
             }
         },
         attackFuncs:{
+            //This will only be called on the enemy that has been selected.
+            //Calculate any affected units here based on the difference between the user and target's loc + range
+            pierce:function(damageLow,damageHigh,range,target,user){
+                
+            },
             pull:function(tiles,target,user){
                 
             },
+            //pushes a target
             push:function(tiles,target,user){
-                console.log(target)
+                var tileTo = [];
+                //Pushing in the y direction
+                if(user.p.loc[0]===target.p.loc[0]){
+                    //Pushing to the up
+                    if(user.p.loc[1]-target.p.loc[1]>0){
+                        tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
+                    } 
+                    //Pushing down
+                    else {
+                        tileTo = [target.p.loc[0],target.p.loc[1]+tiles];
+                    }
+                }
+                //Pushing in the x direction
+                else if(user.p.loc[1]===target.p.loc[1]){
+                    //Pushing left
+                    if(user.p.loc[0]-target.p.loc[0]>0){
+                        tileTo = [target.p.loc[0]-tiles,target.p.loc[1]];
+                    } 
+                    //Pushing right
+                    else {
+                        tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
+                    }
+                }
+                //Make sure there's no object or impassable tile where the target will be pushed to.
+                //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
+                if(!user.stage.BattleGrid.getObject(tileTo)&&user.stage.BatCon.getTileType(tileTo)!=="impassable"){
+                    user.stage.BattleGrid.moveObject(target.p.loc,tileTo,target);
+                    console.log("did it!")
+                    target.p.loc = tileTo;
+                    user.stage.BatCon.setXY(target);
+                };
             },
-            blind:function(target){
-
+            changeStatus:function(status,turns,target,user){
+                var num = turns;
+                if(Q._isArray(turns)){
+                    num = Math.floor(Math.random()*turns[1])+turns[0];
+                }
+                var curStatus = target.hasStatus(status);
+                if(curStatus){
+                    curStatus.turns = curStatus.turns>num?num:curStatus.turns;
+                } else {
+                    target.addStatus(status,num);
+                }
             }
         }
         
@@ -310,6 +381,59 @@ Quintus.HUD=function(Q){
         },
         hideHUD:function(){
             this.hide();
+        }
+    });
+    Q.component("AOEGuide",{
+        added:function(){
+            this.getAOERange(this.entity.p.loc,this.entity.p.skill.aoe);
+        },
+        moveTiles:function(to){
+            this.aoeTiles.forEach(function(tile){
+                tile.p.loc = [tile.p.relative[0]+to[0],tile.p.relative[1]+to[1]];
+                Q.stage(0).BatCon.setXY(tile);
+            });
+        },
+        destroyGuide:function(){
+            var stage = this.entity.stage;
+            this.aoeTiles.forEach(function(tile){
+                stage.remove(tile);
+            });
+            this.entity.p.skill=false;
+            this.entity.del("AOEGuide");
+        },
+        getAOERange:function(loc,aoe){
+            var area = aoe[0];
+            var radius = aoe[1];
+            var special = aoe[2];
+            var aoeTiles = this.aoeTiles =[];
+            var bounds = Q.stage(0).BattleGrid.getBounds(loc,radius);
+            switch(area){
+                //Diamond shape
+                case "normal":
+                    for(var i=-radius;i<radius+1;i++){
+                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
+                        }
+                    }
+                    break;
+                    //Square shape
+                case "corners":
+                    for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
+                        for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
+                        }
+                    }
+                    break;
+            }
+            //Don't include the middle square
+            if(special==="excludeCenter"){
+                aoeTiles.forEach(function(obj,i){
+                    if(obj.p.loc[0]===loc[0]&&obj.p.loc[1]===loc[1]){
+                        aoeTiles[i].destroy();
+                        aoeTiles.splice(i,1);
+                    }
+                });
+            }
         }
     });
     Q.Sprite.extend("Pointer",{
@@ -450,6 +574,7 @@ Quintus.HUD=function(Q){
             p.stepping = false;
             p.diffX = 0;
             p.diffY = 0;
+            if(this.has("AOEGuide")) this.AOEGuide.moveTiles(this.p.loc);
             this.trigger("checkInputs");
             this.trigger("checkConfirm");
         }
@@ -482,20 +607,19 @@ Quintus.HUD=function(Q){
                 //Set possible skills
                 var rh = target.p.equipment.righthand;
                 var lh = target.p.equipment.lefthand;
-                
-                if(rh){
+                if(rh.equipmentType){
                     var keys = Object.keys(target.p.skills[rh.equipmentType]);
                     keys.forEach(function(key){
                         opts.push(target.p.skills[rh.equipmentType][key].name);
-                        funcs.push("loadSkills");
+                        funcs.push("loadSkill");
                         skills.push(target.p.skills[rh.equipmentType][key]);
                     });
                 }
-                if(lh){
+                if(lh.equipmentType){
                     var keys = Object.keys(target.p.skills[lh.equipmentType]);
                     keys.forEach(function(key){
                         opts.push(target.p.skills[lh.equipmentType][key].name);
-                        funcs.push("loadSkills");
+                        funcs.push("loadSkill");
                         skills.push(target.p.skills[lh.equipmentType][key]);
                     });
                 }
@@ -603,13 +727,19 @@ Quintus.HUD=function(Q){
             this.displayMenu();
         },
         //Show the attack grid for the skill
-        loadSkills:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"skill",skill:this.p.skills[this.p.selected]}));
+        loadSkill:function(){
+            var skill = this.p.skills[this.p.selected];
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"skill",skill:skill}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
             this.stage.options.pointer.addControls();
             this.stage.options.pointer.snapTo(this.p.target);
+            if(!skill.aoe){
+                skill.aoe = ["normal",0];
+            }
+            this.stage.options.pointer.p.skill = skill;
+            this.stage.options.pointer.add("AOEGuide");
         },
         //Loads the items menu
         loadItems:function(){
@@ -645,7 +775,7 @@ Quintus.HUD=function(Q){
     Q.UI.Container.extend("RangeGrid",{
         init:function(p){
             this._super(p,{
-                guide:[]
+                moveGuide:[]
             });
             this.on("inserted");
             this.on("step");
@@ -665,6 +795,9 @@ Quintus.HUD=function(Q){
                 case "skill":
                     var skill = this.p.skill;
                     switch(skill.range[0]){
+                        case "self":
+                            this.p.moveGuide.push(this.insert(new Q.RangeTile({x:target.p.loc[0]*Q.tileW+Q.tileW/2,y:target.p.loc[1]*Q.tileH+Q.tileH/2,loc:[target.p.loc[0],target.p.loc[1]]})));
+                            break;
                         case "normal":
                             this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"]);
                             break;
@@ -674,18 +807,23 @@ Quintus.HUD=function(Q){
                             break;
                     }
                     break;
-                    
             }
         },
         fullDestroy:function(){
-            this.p.guide.forEach(function(itm){
+            this.p.moveGuide.forEach(function(itm){
                 itm.destroy();
             });
             this.destroy();
         },
         process:{
-            straight:function(){
-                console.log("to do: straight")
+            straight:function(tiles,center){
+                for(var i=0;i<tiles.length;i++){
+                    if(tiles[i].x!==center[0]&&tiles[i].y!==center[1]){
+                        tiles.splice(i,1);
+                        i--;
+                    }
+                }
+                return tiles;
             }
         },
         //Gets the fastest path to a certain location
@@ -717,7 +855,7 @@ Quintus.HUD=function(Q){
                 }
             }
             if(special){
-                this.process[special](tiles);
+                tiles = this.process[special](tiles,loc);
             }
             //If there is at least one place to move
             if(tiles.length){
@@ -729,7 +867,7 @@ Quintus.HUD=function(Q){
                         pathCost+=path[j].weight;
                     }
                     if(path.length>0&&path.length<=stat&&pathCost<=stat){
-                        this.p.guide.push(this.insert(new Q.RangeTile({x:tiles[i].x*Q.tileW+Q.tileW/2,y:tiles[i].y*Q.tileH+Q.tileH/2,loc:[tiles[i].x,tiles[i].y]})));
+                        this.p.moveGuide.push(this.insert(new Q.RangeTile({x:tiles[i].x*Q.tileW+Q.tileW/2,y:tiles[i].y*Q.tileH+Q.tileH/2,loc:[tiles[i].x,tiles[i].y]})));
                     }
                 }
             //If there's nowhere to move
@@ -741,7 +879,7 @@ Quintus.HUD=function(Q){
         checkValidPointerLoc:function(){
             var loc = this.p.target.stage.pointer.p.loc;
             var valid = false;
-            this.p.guide.forEach(function(tile){
+            this.p.moveGuide.forEach(function(tile){
                 if(tile.p.loc[0]===loc[0]&&tile.p.loc[1]===loc[1]){
                     valid=true;
                 }
@@ -755,6 +893,9 @@ Quintus.HUD=function(Q){
                     var stage = this.p.target.stage;
                     switch(this.p.kind){
                         case "walk":
+                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
+                                return;                            
+                            }
                             this.p.target.moveAlong(this.getPath(this.p.target.p.loc,stage.pointer.p.loc,"maxScore",this.p.target.p.move,this.p.target.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
@@ -767,7 +908,7 @@ Quintus.HUD=function(Q){
                             break;
                         case "skill":
                             //Make sure there's a target there
-                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
+                            if(stage.BattleGrid.getObjectsAround(stage.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0])){
                                 this.p.target.previewDoSkill(stage.pointer.p.loc,this.p.skill);
                                 stage.pointer.off("checkInputs");
                                 stage.pointer.off("checkConfirm");
@@ -775,8 +916,8 @@ Quintus.HUD=function(Q){
                             
                             break;
                     }
-                    
                     this.fullDestroy();
+                    if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
                 }
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
@@ -786,6 +927,8 @@ Quintus.HUD=function(Q){
                 this.stage.pointer.off("checkInputs");
                 this.stage.pointer.off("checkConfirm");
                 this.fullDestroy();
+                if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
+                
                 Q.inputs['esc']=false;
             }
         } 
@@ -802,6 +945,18 @@ Quintus.HUD=function(Q){
             });
         }
     });
+    Q.Sprite.extend("AOETile",{
+        init:function(p){
+            this._super(p,{
+                sheet:"aoe_tile",
+                frame:0,
+                opacity:0.8,
+                w:Q.tileW,h:Q.tileH,
+                type:Q.SPRITE_NONE
+            });
+            Q.stage(0).BatCon.setXY(this);
+        }
+    });
     Q.UI.Container.extend("AttackPreviewBox",{
         init:function(p){
             this._super(p,{
@@ -812,7 +967,7 @@ Quintus.HUD=function(Q){
                 fill:"blue"
             });
             this.p.x = Q.width/2-this.p.w/2;
-            this.p.y = Q.height/2-this.p.h/2;
+            this.p.y = 0;
             this.on("inserted");
             this.on("step",this,"checkInputs");
         },
@@ -829,7 +984,12 @@ Quintus.HUD=function(Q){
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
                 this.destroy();
-                this.stage.ActionMenu.loadAttack();
+                if(this.p.skill){
+                if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
+                    this.stage.ActionMenu.loadSkill();
+                } else {
+                    this.stage.ActionMenu.loadAttack();
+                }
                 Q.inputs['esc']=false;
             }
         },
@@ -849,126 +1009,172 @@ Quintus.HUD=function(Q){
                 result.block = true;
             }
             
-            return result;
+            return {attacker:attacker,defender:defender,result:result};
         },
-        processResult:function(result){
+        processSkillResult:function(obj){
+            var attacker = obj.attacker;
+            var defender = obj.defender;
+            var result = obj.result;
+            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
+            //Miss
+            if(result.block||result.miss){
+                this.p.text.push(attacker.p.charClass+attacker.p.id+" missed "+defender.p.charClass+defender.p.id+"...");
+            } else {
+                this.successfulBlow(attacker,defender,result);
+            }
+        },
+        processResult:function(obj){
+            var attacker = obj.attacker;
+            var defender = obj.defender;
+            var result = obj.result;
+            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
             //If the attack crit
             if(result.crit){
                 //Successful Blow
                 if(result.block){
-                    this.successfulBlow(result);
+                    this.successfulBlow(attacker,defender,result);
                 } 
                 //Critical Blow
                 else {
-                    this.criticalBlow(result);
+                    this.criticalBlow(attacker,defender,result);
                 }
             } 
             //If the attack hit
             else if(result.hit){
                 //Glancing Blow
                 if(result.block){
-                    this.glancingBlow(result);
+                    this.glancingBlow(attacker,defender,result);
                 }
                 //Successful Blow
                 else {
-                    this.successfulBlow(result);
+                    this.successfulBlow(attacker,defender,result);
                 }
             } 
             //If the attack missed
             else {
                 //Counter Chance
                 if(result.block){
-                    this.counterChance(result);
+                    this.counterChance(attacker,defender,result);
                 }
                 //Miss
                 else {
-                    this.miss(result);
+                    this.miss(attacker,defender,result);
                 }
             }
         },
-        successfulBlow:function(result){
-            var attacker = this.p.attacker;
-            var defender = this.p.defender;
+        processSelfTarget:function(attacker,defender,result){
+            if(result.block){
+                this.p.text.push(attacker.p.charClass+" avoided taking damage.");
+            }
+            else if(result.hit||result.crit){
+                var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
+                attacker.takeDamage(damage);
+                this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage to themself.");
+                if(attacker.p.hp<=0){
+                    this.p.text.push(defender.p.charClass+defender.p.id+" was killed by their own attack!");
+                }  
+            }
+        },
+        successfulBlow:function(attacker,defender,result){
             var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
             defender.takeDamage(damage);
-            if(result.hit) this.p.text.push(this.p.attacker.p.charClass+" hit "+this.p.defender.p.charClass+".");
-            if(result.crit) this.p.text.push(this.p.attacker.p.charClass+" went critical, but "+this.p.defender.p.charClass+" defended well!");
-            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
+            if(result.hit) this.p.text.push(attacker.p.charClass+attacker.p.id+" hit "+defender.p.charClass+defender.p.id+".");
+            if(result.crit) this.p.text.push(attacker.p.charClass+attacker.p.id+" went critical, but "+defender.p.charClass+defender.p.id+" defended well!");
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
+            if(defender.p.hp<=0){
+                this.p.text.push(defender.p.charClass+" was defeated.");
+            }  
         },
-        criticalBlow:function(result){
-            var attacker = this.p.attacker;
-            var defender = this.p.defender;
+        criticalBlow:function(attacker,defender,result){
             var damage = attacker.p.totalDamageHigh;
             defender.takeDamage(damage);
             var rand = Math.ceil(Math.random()*100);
-            this.p.text.push(this.p.attacker.p.charClass+" hit a critical blow against "+this.p.defender.p.charClass+".");
-            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
-            if(rand<=attacker.p.totalSpeed){
-                this.p.text.push(this.p.attacker.p.charClass+" was so fast, they got another attack in!");
-                this.calcAttack();
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" hit a critical blow against "+defender.p.charClass+defender.p.id+".");
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
+            if(defender.p.hp<=0){
+                this.p.text.push(defender.p.charClass+" was defeated.");
+            }  
+            else if(rand<=attacker.p.totalSpeed){
+                this.p.text.push(attacker.p.charClass+attacker.p.id+" was so fast, they got another attack in!");
+                this.calcAttack(attacker,defender);
             }
         },
-        glancingBlow:function(result){
-            var attacker = this.p.attacker;
-            var defender = this.p.defender;
+        glancingBlow:function(attacker,defender,result){
             var weapons = [];
             if(attacker.p.equipment.righthand.damageLow){weapons.push(attacker.p.equipment.righthand);}
             if(attacker.p.equipment.lefthand.damageLow){weapons.push(attacker.p.equipment.lefthand);}
             var rand = Math.floor(Math.random()*weapons.length);
             var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
             defender.takeDamage(damage);
-            this.p.text.push(this.p.attacker.p.charClass+" hit a glancing blow against "+this.p.defender.p.charClass+".");
-            this.p.text.push(this.p.attacker.p.charClass+" did "+damage+" damage.");
-        },
-        counterChance:function(result){
-            var temp = this.p.attacker;
-            this.p.attacker = this.p.defender;
-            this.p.defender = temp;
-            this.p.text.push(this.p.attacker.p.charClass+" countered "+this.p.defender.p.charClass+"!");
-            this.calcAttack();
-        },
-        miss:function(result){
-            this.p.text.push(this.p.attacker.p.charClass+" missed "+this.p.defender.p.charClass+"...");
-            var rand = Math.ceil(Math.random()*100);
-            if(rand<=this.p.attacker.p.totalSpeed){
-                this.p.text.push(this.p.attacker.p.charClass+" got an extra attack!");
-                this.calcAttack();
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" hit a glancing blow against "+defender.p.charClass+defender.p.id+".");
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
+            if(defender.p.hp<=0){
+                this.p.text.push(defender.p.charClass+defender.p.id+" was defeated.");
             }
         },
-        calcAttack:function(skill){
-            if(skill){
+        counterChance:function(attacker,defender,result){
+            if(defender.p.hp<=0){return;};
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" tried to attack "+defender.p.charClass+defender.p.id+", but");
+            this.p.text.push(defender.p.charClass+defender.p.id+" countered "+attacker.p.charClass+attacker.p.id+"!");
+            //TO DO: Check range for counter so defender can't attack further than their range.
+            this.calcAttack(defender,attacker);
+        },
+        miss:function(attacker,defender,result){
+            this.p.text.push(attacker.p.charClass+attacker.p.id+" missed "+defender.p.charClass+defender.p.id+"...");
+            var rand = Math.ceil(Math.random()*100);
+            if(rand<=attacker.p.totalSpeed){
+                this.p.text.push(attacker.p.charClass+attacker.p.id+" got an extra attack!");
+                this.calcAttack(attacker,defender);
+            }
+        },
+        calcAttack:function(attacker,defender){
+            if(this.p.skill){
+                var skill = this.p.skill;
                 var t = this;
-                t.p.attacker.p.sp-=skill.cost;
+                attacker.p.sp-=skill.cost;
                 //Loop through each of the targets
                 this.p.targets.forEach(function(target){
+                    if(attacker.p.hp<=0) return;
+                    var blow = t.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),target);
                     //If the skill is damaging
                     if(skill.damageLow&&skill.damageHigh){
-                        t.processResult(t.getBlow(Math.ceil(Math.random()*100),t.p.attacker,Math.ceil(Math.random()*100),target));
+                        if(attacker.p.id===target.p.id){
+                            t.processSelfTarget(blow.attacker,blow.defender,blow.result);
+                        } else {
+                            t.processSkillResult(blow);
+                        }
+                        
                     }
                     if(skill.effect){
                         var rand = Math.ceil(Math.random()*skill.effect.accuracy);
                         if(rand<=skill.effect.accuracy){
-                            var props = skill.effect.props;
-                            props.push(target,t.p.attacker);
+                            var props = skill.effect.props.slice();
+                            props.push(target,attacker);
                             Q.stage(0).BatCon.attackFuncs[skill.effect.func].apply(t,props);
-                            t.p.text.push(t.p.attacker.p.charClass+" did a special effect with the skill.");
+                            t.p.text.push(attacker.p.charClass+attacker.p.id+" did a special effect with the skill.");
                         } else {
-                            t.p.text.push(t.p.attacker.p.charClass+" missed doing a special effect with the skill.");
+                            t.p.text.push(attacker.p.charClass+attacker.p.id+" missed doing a special effect with the skill.");
                         }
                     }
                 });
             } else {
-                this.processResult(this.getBlow(Math.ceil(Math.random()*100),this.p.attacker,Math.ceil(Math.random()*100),this.p.defender));
+                this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender));
             }
         },
         doAttack:function(turnEnded){
             //Compute the attack
-            this.calcAttack(this.p.skill);
+            this.calcAttack(this.p.attacker,this.p.defender);
             this.destroy();
             if(turnEnded){
                 this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){Q.stage(0).BatCon.endTurn();}}));
             } else {
                 this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){
+                    if(Q.stage(0).BatCon.turnOrder[0].p.hp<=0){
+                        Q.stage(0).BatCon.endTurn();
+                        return;
+                    }
+                    Q.stage(0).BatCon.removeMarked();
+                    if(Q.stage(0).BatCon.checkBattleOver()) return;
                     Q.stage(2).ActionMenu.p.menuNum = 0;
                     Q.stage(2).ActionMenu.displayMenu();
                     //Show the action menu
@@ -989,12 +1195,13 @@ Quintus.HUD=function(Q){
                     var damageHigh = this.p.attacker.p.totalDamageHigh+this.p.skill.damageHigh-this.p.defender.p.armour;
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:70,label:"The skill's name is "+this.p.skill.name+".",size:12,cx:0,cy:0,align:"center"}));
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"It is targetting "+this.p.targets.length+" targets.",size:12,cx:0,cy:0,align:"center"}));
                 }
                 if(this.p.skill.effect){
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:110,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
                 }
             } else {
-                //This will need to be thought out more thoroughly.
+                //This accuracy will need to be thought out more thoroughly.
                 var atkPercent = this.p.attacker.p.strike;
                 this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
                 var missChance = "Pretty high, I guess";
@@ -1013,7 +1220,7 @@ Quintus.HUD=function(Q){
                 x:0,y:0,
                 cx:0,cy:0,
                 asset:"ui/text_box.png",
-                textIndex:0
+                textIndex:-1
             });
             this.p.y=Q.height-this.p.h;
             this.on("inserted");
@@ -1035,6 +1242,7 @@ Quintus.HUD=function(Q){
         inserted:function(){
             this.p.dialogueArea = this.stage.insert(new Q.DialogueArea({w:Q.width-20}));
             this.p.dialogueText = this.p.dialogueArea.insert(new Q.Dialogue({text:this.p.text[this.p.textIndex], align: 'left', x: 10}));
+            this.nextText();
         }
     });
 };

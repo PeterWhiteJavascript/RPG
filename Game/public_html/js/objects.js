@@ -253,10 +253,20 @@ Quintus.Objects=function(Q){
                 this.p.hp-=dmg;
                 if(this.p.hp<=0){
                     this.stage.BattleGrid.removeObject(this.p.loc);
-                    this.stage.BatCon.removeFromBattle(this);
+                    this.stage.BatCon.markForRemoval(this);
                     this.destroy();
                 }
+            },
+            hasStatus:function(name){
+                return this.p.status[name];
+            },
+            addStatus:function(name,turns){
+                this.p.status[name] = {name:name,turns:turns};
+            },
+            removeStatus:function(name){
+                this.p.status[name] = false;
             }
+            
         }
     });
     Q.Sprite.extend("Character",{
@@ -266,7 +276,11 @@ Quintus.Objects=function(Q){
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
                 dir:"left",
-                z:10
+                z:10,
+                status:{
+                    sturdy:false,
+                    blind:false
+                }
             });
             this.p.sheet = this.p.charClass;
             //Quintus components
@@ -298,6 +312,8 @@ Quintus.Objects=function(Q){
             Q._generatePoints(this,true);
         },
         startTurn:function(){
+            //TO DO: Loop through status and lower a turn from each that exists
+            
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
             //Get the grid for attacking from this position
@@ -346,7 +362,6 @@ Quintus.Objects=function(Q){
             var targets = [];
             if(skill.aoe){
                 targets = this.stage.BattleGrid.getObjectsAround(targetLoc,skill.aoe);
-                console.log(targets)
             } else {
                 targets[0] = this.stage.BattleGrid.getObject(targetLoc);
             }
