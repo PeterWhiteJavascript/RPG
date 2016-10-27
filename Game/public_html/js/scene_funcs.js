@@ -42,9 +42,9 @@ Quintus.SceneFuncs=function(Q){
         stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
         stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
         //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
-        stage.BattleGrid = new Q.BattleGrid({stage:stage});
+        Q.BattleGrid = new Q.BattleGrid({stage:stage});
         //The battle controller holds all battle specific functions
-        stage.BatCon = new Q.BattleController({stage:stage});
+        Q.BatCon = new Q.BattleController({stage:stage});
         stage.add("viewport");
         stage.viewport.scale = 2;
         //Display alex
@@ -67,14 +67,14 @@ Quintus.SceneFuncs=function(Q){
             stage.insert(ally);
         });
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        stage.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
+        Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
         
         //Default to following the pointer
-        Q.viewFollow(stage.pointer,stage);
+        Q.viewFollow(Q.pointer,stage);
         
         //Display the hud which shows character and terrain information
-        Q.stageScene("battleHUD",3,{pointer:stage.pointer});
-        stage.BatCon.startBattle();
+        Q.stageScene("battleHUD",3,{pointer:Q.pointer});
+        Q.BatCon.startBattle();
         
     },{sort:true});
     //Displayed when selecting a character in battle

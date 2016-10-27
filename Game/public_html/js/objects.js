@@ -86,6 +86,7 @@ Quintus.Objects=function(Q){
             }
             t.p.stats = this.generateCharStats();
             t.p.skills = this.generateSkills();
+            t.p.name = Q.state.get("charClasses")[t.p.charClass].name+t.p.id;
         },
         randomizeEquipment:function(){
             var p = this.entity.p;
@@ -248,12 +249,19 @@ Quintus.Objects=function(Q){
     });
     Q.component("combatant",{
         extend:{
-            takeDamage:function(dmg){
+            //Displays the miss dynamic number
+            showMiss:function(){
+                this.stage.insert(new Q.DynamicNumber({color:"#fff", x:this.p.x,y:this.p.y-16, text:"Miss!"}));
+            },
+            //This object takes damage and checks if it is defeated. Also displays dynamic number
+            takeDamage:function(dmg,des){
+                console.log(dmg,des)
                 if(dmg<=0){dmg=1;};
                 this.p.hp-=dmg;
+                this.stage.insert(new Q.DynamicNumber({color:"#fff", x:this.p.x,y:this.p.y-16, text:"-"+dmg}));
                 if(this.p.hp<=0){
-                    this.stage.BattleGrid.removeObject(this.p.loc);
-                    this.stage.BatCon.markForRemoval(this);
+                    Q.BattleGrid.removeObject(this.p.loc);
+                    Q.BatCon.markForRemoval(this);
                     this.destroy();
                 }
             },
@@ -307,7 +315,7 @@ Quintus.Objects=function(Q){
         },
         //Will run when this character is inserted into the stage (whether it be placement by the user, or when inserting enemies)
         inserted:function(){
-            this.stage.BatCon.setXY(this);
+            Q.BatCon.setXY(this);
             this.playStand(this.p.dir);
             Q._generatePoints(this,true);
         },
@@ -327,56 +335,55 @@ Quintus.Objects=function(Q){
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
             
             if(this.p.team==="enemy"){
-                var t = this;
                 setTimeout(function(){
-                    t.stage.BatCon.endTurn();
+                    Q.BatCon.endTurn();
                 },500);
             }
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
-            this.stage.BattleGrid.moveObject(this.p.loc,newLoc,this);
+            Q.BattleGrid.moveObject(this.p.loc,newLoc,this);
             //Store the old loc in the moved variable. This wil allow for redo-s
             this.p.didMove = this.p.loc;
             //Set the new loc
             this.p.loc = newLoc;
-            this.stage.BatCon.setXY(this);
-            this.stage.pointer.on("checkConfirm");
-            this.stage.pointer.checkTarget();
+            Q.BatCon.setXY(this);
+            Q.pointer.on("checkConfirm");
+            Q.pointer.checkTarget();
             //If this character hasn't attacked yet this turn, generate a new attackgraph
             if(!this.p.didAction){
                 this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
-                this.stage.pointer.p.loc = this.p.loc;
-                this.stage.BatCon.setXY(this.stage.pointer);
+                Q.pointer.p.loc = this.p.loc;
+                Q.BatCon.setXY(Q.pointer);
             } else {
-                this.stage.BatCon.endTurn();
+                Q.BatCon.endTurn();
             }
         },
         //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
         previewAttackTarget:function(targetLoc){
-            var target = this.stage.BattleGrid.getObject(targetLoc);
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,defender:target}));
+            var target = Q.BattleGrid.getObject(targetLoc);
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,targets:[target]}));
         },
         previewDoSkill:function(targetLoc,skill){
             var targets = [];
             if(skill.aoe){
-                targets = this.stage.BattleGrid.getObjectsAround(targetLoc,skill.aoe);
+                targets = Q.BattleGrid.getObjectsAround(targetLoc,skill.aoe);
             } else {
-                targets[0] = this.stage.BattleGrid.getObject(targetLoc);
+                targets[0] = Q.BattleGrid.getObject(targetLoc);
             }
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,defender:targets[0],skill:skill,targets:targets}));
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,targets:targets,skill:skill}));
         },
         getMatrix:function(matrixType){
             var tileTypes = Q.state.get("tileTypes");
             var cM=[];
             var stage = this.stage;
             function getWalkable(){
-                var move = tileTypes[stage.BatCon.getTileType([i_walk,j_walk])].move;
+                var move = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])].move;
                 return move?move:10000;
             }
             function getTarget(){
-                return stage.BattleGrid.getObject([i_walk,j_walk]);
+                return Q.BattleGrid.getObject([i_walk,j_walk]);
             }
             for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
                 var costRow = [];

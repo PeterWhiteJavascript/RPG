@@ -100,11 +100,269 @@ Quintus.HUD=function(Q){
             return {tileStartX:tileStartX,tileStartY:tileStartY,rows:rows,cols:cols,maxTileRow:maxTileRow,maxTileCol:maxTileCol};
         }
     });
+    Q.component("attackFuncs",{
+        added:function(){
+            this.text = [];
+        },
+        getBlow:function(attackNum,attacker,defendNum,defender){
+            var result = {
+                hit:false,
+                crit:false,
+                block:false
+            };
+            if(attackNum<=attacker.p.crit){
+                result.crit = true;
+            } else if(attackNum<=attacker.p.strike){
+                result.hit = true;
+            }
+
+            if(defendNum<=defender.p.parry){
+                result.block = true;
+            }
+
+            return {attacker:attacker,defender:defender,result:result};
+        },
+        processSkillResult:function(obj){
+            var attacker = obj.attacker;
+            var defender = obj.defender;
+            var result = obj.result;
+            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
+            //Miss
+            if(result.block||result.miss){
+                this.text.push({func:"showMiss",obj:defender,props:[]},attacker.p.name+attacker.p.id+" missed "+defender.p.name+"...");
+            } else {
+                this.successfulBlow(attacker,defender,result);
+            }
+        },
+        processResult:function(obj){
+            var attacker = obj.attacker;
+            var defender = obj.defender;
+            var result = obj.result;
+            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
+            //If the attack crit
+            if(result.crit){
+                //Successful Blow
+                if(result.block){
+                    this.successfulBlow(attacker,defender,result);
+                } 
+                //Critical Blow
+                else {
+                    this.criticalBlow(attacker,defender,result);
+                }
+            } 
+            //If the attack hit
+            else if(result.hit){
+                //Glancing Blow
+                if(result.block){
+                    this.glancingBlow(attacker,defender,result);
+                }
+                //Successful Blow
+                else {
+                    this.successfulBlow(attacker,defender,result);
+                }
+            } 
+            //If the attack missed
+            else {
+                //Counter Chance
+                if(result.block){
+                    this.counterChance(attacker,defender,result);
+                }
+                //Miss
+                else {
+                    this.miss(attacker,defender,result);
+                }
+            }
+        },
+        processSelfTarget:function(attacker,defender,result){
+            if(result.block){
+                this.text.push(attacker.p.name+" avoided taking damage.");
+            }
+            else if(result.hit||result.crit){
+                var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
+                this.text.push({func:"takeDamage",obj:attacker,props:[damage]},attacker.p.name+" did "+damage+" damage to themself.");
+                if(attacker.p.hp<=0){
+                    this.text.push(defender.p.name+" was killed by their own attack!");
+                }  
+            }
+        },
+        successfulBlow:function(attacker,defender,result){
+            var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
+            if(result.hit) this.text.push(attacker.p.name+" hit "+defender.p.name+".");
+            if(result.crit) this.text.push(attacker.p.name+" went critical, but "+defender.p.name+" defended well!");
+            this.text.push({func:"takeDamage",obj:defender,props:[damage]},attacker.p.name+" did "+damage+" damage to "+defender.p.name+".");
+            if(defender.p.hp<=0){
+                this.text.push(defender.p.name+" was defeated.");
+            }  
+        },
+        criticalBlow:function(attacker,defender,result){
+            var damage = attacker.p.totalDamageHigh;
+            var rand = Math.ceil(Math.random()*100);
+            this.text.push(attacker.p.name+" hit a critical blow against "+defender.p.name+".");
+            this.text.push({func:"takeDamage",obj:defender,props:[damage]},attacker.p.name+" did "+damage+" damage to "+defender.p.name+".");
+            if(defender.p.hp<=0){
+                this.text.push(defender.p.name+" was defeated.");
+            }  
+            else if(rand<=attacker.p.totalSpeed){
+                this.text.push(attacker.p.name+" was so fast, they got another attack in!");
+                this.calcAttack(attacker,defender);
+            }
+        },
+        glancingBlow:function(attacker,defender,result){
+            var weapons = [];
+            if(attacker.p.equipment.righthand.damageLow){weapons.push(attacker.p.equipment.righthand);}
+            if(attacker.p.equipment.lefthand.damageLow){weapons.push(attacker.p.equipment.lefthand);}
+            var rand = Math.floor(Math.random()*weapons.length);
+            var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
+            this.text.push(attacker.p.name+" hit a glancing blow against "+defender.p.name+".");
+            this.text.push({func:"takeDamage",obj:defender,props:[damage]},attacker.p.name+" did "+damage+" damage.");
+            if(defender.p.hp<=0){
+                this.text.push(defender.p.name+" was defeated.");
+            }
+        },
+        counterChance:function(attacker,defender,result){
+            if(defender.p.hp<=0){return;};
+            this.text.push(attacker.p.name+" tried to attack "+defender.p.name+", but");
+            this.text.push(defender.p.name+" countered "+attacker.p.name+"!");
+            //TO DO: Check range for counter so defender can't attack further than their range.
+            this.calcAttack(defender,attacker);
+        },
+        miss:function(attacker,defender,result){
+            this.text.push({func:"showMiss",obj:defender,props:[]},attacker.p.name+" missed "+defender.p.name+"...");
+            var rand = Math.ceil(Math.random()*100);
+            if(rand<=attacker.p.totalSpeed){
+                this.text.push(attacker.p.name+" got an extra attack!");
+                this.calcAttack(attacker,defender);
+            }
+        },
+        calcAttack:function(attacker,defender,skill){
+            if(skill){
+                if(attacker.p.hp<=0) return;
+                var blow = this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender);
+                //If the skill is damaging
+                if(skill.damageLow&&skill.damageHigh){
+                    if(attacker.p.id===defender.p.id){
+                        this.processSelfTarget(blow.attacker,blow.defender,blow.result);
+                    } else {
+                        this.processSkillResult(blow);
+                    }
+
+                }
+                if(skill.effect){
+                    var rand = Math.ceil(Math.random()*skill.effect.accuracy);
+                    if(rand<=skill.effect.accuracy){
+                        var props = skill.effect.props.slice();
+                        props.push(defender,attacker);
+                        this.skillFuncs[skill.effect.func].apply(this,props);
+                        this.text.push(attacker.p.name+" did a special effect with the skill.");
+                    } else {
+                        this.text.push(attacker.p.name+" missed doing a special effect with the skill.");
+                    }
+                }
+                
+            } else {
+                this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender));
+            }
+        },
+        doAttack:function(attacker,targets,skill,turnEnded){
+            this.text = [];
+            attacker.p.didAction = true;
+            if(skill){
+                attacker.p.sp-=skill.cost;
+            }
+            //Compute the attack
+            for(var i=0;i<targets.length;i++){
+                this.calcAttack(attacker,targets[i],skill);
+            }
+            if(turnEnded){
+                Q.stage(2).insert(new Q.BattleTextBox({text:this.text,callback:function(){Q.BatCon.endTurn();}}));
+            } else {
+                Q.stage(2).insert(new Q.BattleTextBox({text:this.text,callback:function(){
+                    if(Q.BatCon.turnOrder[0].p.hp<=0){
+                        Q.BatCon.endTurn();
+                        return;
+                    }
+                    //Remove any characters that have been defeated
+                    Q.BatCon.removeMarked();
+                    //Check if there's either no more enemies, or no more allies
+                    if(Q.BatCon.checkBattleOver()) return;
+                    //Get the new walk matrix since objects may have moved
+                    attacker.p.walkMatrix = new Q.Graph(attacker.getMatrix("walk"));
+                    //Set the menu to the start
+                    Q.stage(2).ActionMenu.p.menuNum = 0;
+                    //Display the menu
+                    Q.stage(2).ActionMenu.displayMenu();
+                    //Unhide the action menu
+                    Q.stage(2).ActionMenu.show();
+                    //Enable inputs on the menu
+                    Q.stage(2).ActionMenu.on("step","checkInputs");
+                    //Snap the pointer to the current character
+                    Q.pointer.snapTo(Q.BatCon.turnOrder[0]);
+                }}));
+            }
+        }
+    });
+    Q.component("skillFuncs",{
+        //This will only be called on the enemy that has been selected.
+        //Calculate any affected units here based on the difference between the user and target's loc + range
+        pierce:function(damageLow,damageHigh,range,target,user){
+
+        },
+        pull:function(tiles,target,user){
+
+        },
+        //pushes a target
+        push:function(tiles,target,user){
+            var tileTo = [];
+            //Pushing in the y direction
+            if(user.p.loc[0]===target.p.loc[0]){
+                //Pushing to the up
+                if(user.p.loc[1]-target.p.loc[1]>0){
+                    tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
+                } 
+                //Pushing down
+                else {
+                    tileTo = [target.p.loc[0],target.p.loc[1]+tiles];
+                }
+            }
+            //Pushing in the x direction
+            else if(user.p.loc[1]===target.p.loc[1]){
+                //Pushing left
+                if(user.p.loc[0]-target.p.loc[0]>0){
+                    tileTo = [target.p.loc[0]-tiles,target.p.loc[1]];
+                } 
+                //Pushing right
+                else {
+                    tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
+                }
+            }
+            //Make sure there's no object or impassable tile where the target will be pushed to.
+            //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.getTileType(tileTo)!=="impassable"){
+                Q.BattleGrid.moveObject(target.p.loc,tileTo,target);
+                target.p.loc = tileTo;
+                Q.BatCon.setXY(target);
+            };
+        },
+        changeStatus:function(status,turns,target,user){
+            var num = turns;
+            if(Q._isArray(turns)){
+                num = Math.floor(Math.random()*turns[1])+turns[0];
+            }
+            var curStatus = target.hasStatus(status);
+            if(curStatus){
+                curStatus.turns = curStatus.turns>num?num:curStatus.turns;
+            } else {
+                target.addStatus(status,num);
+            }
+        }
+    });
     //The battle controller holds all battle specific code.
     Q.GameObject.extend("BattleController",{
         init:function(p){
             this.stage = p.stage;
+            //Any characters that have their hp reduced to 0 or under get removed all at once (they get destroyed when they're killed, but only removed here after)
             this.markedForRemoval = [];
+            this.add("attackFuncs,skillFuncs");
         },
         //Run once at the start of battle
         startBattle:function(){
@@ -116,7 +374,7 @@ Quintus.HUD=function(Q){
                 return char.p.team==="enemy"; 
             });
             //Get the pointer to send a target if it is on one when this menu is created
-            var pointer = this.stage.pointer;
+            var pointer = Q.pointer;
             pointer.checkTarget();
             Q.viewFollow(this.turnOrder[0],this.stage);
             this.startTurn();
@@ -138,19 +396,19 @@ Quintus.HUD=function(Q){
         startTurn:function(){
             this.turnOrder[0].startTurn();
             //Remove the pointer if it's not an ally's turn
-            if(this.turnOrder[0].p.team!=="ally"&&this.stage.pointer){
-                this.stage.pointer.hide();
-                this.stage.pointer.off("checkInputs");
-                this.stage.pointer.off("checkConfirm");
-                this.stage.pointer.trigger("offTarget");
+            if(this.turnOrder[0].p.team!=="ally"&&Q.pointer){
+                Q.pointer.hide();
+                Q.pointer.off("checkInputs");
+                Q.pointer.off("checkConfirm");
+                Q.pointer.trigger("offTarget");
                 //Follow the AI object
                 Q.viewFollow(this.turnOrder[0],this.stage);
             } else {
-                this.stage.pointer.reset();
-                Q.viewFollow(this.stage.pointer,this.stage);
-                this.stage.pointer.p.loc = this.turnOrder[0].p.loc;
-                this.setXY(this.stage.pointer);
-                this.stage.pointer.checkTarget();
+                Q.pointer.reset();
+                Q.viewFollow(Q.pointer,this.stage);
+                Q.pointer.p.loc = this.turnOrder[0].p.loc;
+                this.setXY(Q.pointer);
+                Q.pointer.checkTarget();
             }
         },
         //When a character ends their turn, run this to cycle the turn order
@@ -228,64 +486,7 @@ Quintus.HUD=function(Q){
             if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
                  return tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
             }
-        },
-        attackFuncs:{
-            //This will only be called on the enemy that has been selected.
-            //Calculate any affected units here based on the difference between the user and target's loc + range
-            pierce:function(damageLow,damageHigh,range,target,user){
-                
-            },
-            pull:function(tiles,target,user){
-                
-            },
-            //pushes a target
-            push:function(tiles,target,user){
-                var tileTo = [];
-                //Pushing in the y direction
-                if(user.p.loc[0]===target.p.loc[0]){
-                    //Pushing to the up
-                    if(user.p.loc[1]-target.p.loc[1]>0){
-                        tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
-                    } 
-                    //Pushing down
-                    else {
-                        tileTo = [target.p.loc[0],target.p.loc[1]+tiles];
-                    }
-                }
-                //Pushing in the x direction
-                else if(user.p.loc[1]===target.p.loc[1]){
-                    //Pushing left
-                    if(user.p.loc[0]-target.p.loc[0]>0){
-                        tileTo = [target.p.loc[0]-tiles,target.p.loc[1]];
-                    } 
-                    //Pushing right
-                    else {
-                        tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
-                    }
-                }
-                //Make sure there's no object or impassable tile where the target will be pushed to.
-                //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
-                if(!user.stage.BattleGrid.getObject(tileTo)&&user.stage.BatCon.getTileType(tileTo)!=="impassable"){
-                    user.stage.BattleGrid.moveObject(target.p.loc,tileTo,target);
-                    console.log("did it!")
-                    target.p.loc = tileTo;
-                    user.stage.BatCon.setXY(target);
-                };
-            },
-            changeStatus:function(status,turns,target,user){
-                var num = turns;
-                if(Q._isArray(turns)){
-                    num = Math.floor(Math.random()*turns[1])+turns[0];
-                }
-                var curStatus = target.hasStatus(status);
-                if(curStatus){
-                    curStatus.turns = curStatus.turns>num?num:curStatus.turns;
-                } else {
-                    target.addStatus(status,num);
-                }
-            }
         }
-        
     });
     Q.UI.Container.extend("TerrainHUD",{
         init:function(p){
@@ -306,8 +507,8 @@ Quintus.HUD=function(Q){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
                 this.p.stats.push(this.insert(new Q.HUDText({x:this.p.w-10,y:10+i*25,align:"right"})));
             }
-            this.stage.options.pointer.on("onTerrain",this,"displayTerrain");
-            this.stage.options.pointer.getTerrain();
+            Q.pointer.on("onTerrain",this,"displayTerrain");
+            Q.pointer.getTerrain();
             
         },
         displayTerrain:function(type){
@@ -352,8 +553,8 @@ Quintus.HUD=function(Q){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
                 this.p.stats.push(this.insert(new Q.HUDText({x:this.p.w-10,y:10+i*25,align:"right"})));
             }
-            this.stage.options.pointer.on("onTarget",this,"displayTarget");
-            this.stage.options.pointer.on("offTarget",this,"hideHUD");
+            Q.pointer.on("onTarget",this,"displayTarget");
+            Q.pointer.on("offTarget",this,"hideHUD");
         },
         displayTarget:function(obj){
             this.show();
@@ -390,7 +591,7 @@ Quintus.HUD=function(Q){
         moveTiles:function(to){
             this.aoeTiles.forEach(function(tile){
                 tile.p.loc = [tile.p.relative[0]+to[0],tile.p.relative[1]+to[1]];
-                Q.stage(0).BatCon.setXY(tile);
+                Q.BatCon.setXY(tile);
             });
         },
         destroyGuide:function(){
@@ -406,7 +607,7 @@ Quintus.HUD=function(Q){
             var radius = aoe[1];
             var special = aoe[2];
             var aoeTiles = this.aoeTiles =[];
-            var bounds = Q.stage(0).BattleGrid.getBounds(loc,radius);
+            var bounds = Q.BattleGrid.getBounds(loc,radius);
             switch(area){
                 //Diamond shape
                 case "normal":
@@ -460,7 +661,7 @@ Quintus.HUD=function(Q){
             this.hide();
         },
         inserted:function(){
-            this.stage.BatCon.setXY(this);
+            Q.BatCon.setXY(this);
             Q._generatePoints(this,true);
         },
         //Makes the pointer go to a certain object
@@ -469,15 +670,15 @@ Quintus.HUD=function(Q){
             this.p.diffX = 0;
             this.p.diffY = 0;
             this.p.stepping=false;
-            this.stage.BatCon.setXY(this);
+            Q.BatCon.setXY(this);
             this.checkTarget();
         },
         getTerrain:function(){
-            var type = this.stage.BatCon.getTileType(this.p.loc);
+            var type = Q.BatCon.getTileType(this.p.loc);
             this.trigger("onTerrain",type);
         },
         reset:function(){
-            this.stage.BatCon.setXY(this);
+            Q.BatCon.setXY(this);
             this.checkTarget();
             this.addControls();
             this.show();
@@ -485,7 +686,7 @@ Quintus.HUD=function(Q){
         },
         checkTarget:function(){
             var p = this.p;
-            p.target=this.stage.BattleGrid.getObject(p.loc);
+            p.target=Q.BattleGrid.getObject(p.loc);
             if(p.target){
                 this.trigger("onTarget",p.target);
             } else {
@@ -504,7 +705,7 @@ Quintus.HUD=function(Q){
         },
         displayCharacterMenu:function(){
             if(!this.p.target) return;
-            Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:this.stage.BatCon.turnOrder[0],pointer:this});
+            Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:Q.BatCon.turnOrder[0],pointer:this});
             this.off("checkInputs");
             this.off("checkConfirm");
         },
@@ -517,7 +718,7 @@ Quintus.HUD=function(Q){
                 input['confirm']=false;
                 return;
             } else if(input['esc']){
-                this.snapTo(this.stage.BatCon.turnOrder[0]);
+                this.snapTo(Q.BatCon.turnOrder[0]);
                 input['esc']=false;
             }
         },
@@ -696,8 +897,8 @@ Quintus.HUD=function(Q){
                 Q.inputs['confirm']=false;
             }
             if(Q.inputs['esc']){
-                this.stage.options.pointer.addControls();
-                this.stage.options.pointer.on("checkConfirm");
+                Q.pointer.addControls();
+                Q.pointer.on("checkConfirm");
                 //Make sure the characterMenu is gone
                 Q.clearStage(2);
                 Q.inputs['esc']=false;
@@ -709,8 +910,8 @@ Quintus.HUD=function(Q){
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
-            this.stage.options.pointer.addControls();
-            this.stage.options.pointer.snapTo(this.p.target);
+            Q.pointer.addControls();
+            Q.pointer.snapTo(this.p.target);
         },
         //Shows the attack grid
         loadAttack:function(){
@@ -718,8 +919,8 @@ Quintus.HUD=function(Q){
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
-            this.stage.options.pointer.addControls();
-            this.stage.options.pointer.snapTo(this.p.target);
+            Q.pointer.addControls();
+            Q.pointer.snapTo(this.p.target);
         },
         //Loads the special skills menu
         loadSkillsMenu:function(){
@@ -733,13 +934,13 @@ Quintus.HUD=function(Q){
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
-            this.stage.options.pointer.addControls();
-            this.stage.options.pointer.snapTo(this.p.target);
+            Q.pointer.addControls();
+            Q.pointer.snapTo(this.p.target);
             if(!skill.aoe){
                 skill.aoe = ["normal",0];
             }
-            this.stage.options.pointer.p.skill = skill;
-            this.stage.options.pointer.add("AOEGuide");
+            Q.pointer.p.skill = skill;
+            Q.pointer.add("AOEGuide");
         },
         //Loads the items menu
         loadItems:function(){
@@ -752,7 +953,7 @@ Quintus.HUD=function(Q){
         //Loads the directional arrows so the user can decide which direction to face
         loadEndTurn:function(){
             //For now, end the turn without giving direction.
-            this.stage.options.pointer.stage.BatCon.endTurn();
+            Q.BatCon.endTurn();
             Q.clearStage(2);
             //this.off("step");
             //this.hide();
@@ -844,7 +1045,7 @@ Quintus.HUD=function(Q){
             return result;
         },
         getTileRange:function(loc,stat,graph,special){
-            var bounds = this.stage.BattleGrid.getBounds(loc,stat);
+            var bounds = Q.BattleGrid.getBounds(loc,stat);
             var tiles=[];
             //Get all possible move locations that are within the bounds
             for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
@@ -877,7 +1078,7 @@ Quintus.HUD=function(Q){
         },
         //Checks if we've selected a tile
         checkValidPointerLoc:function(){
-            var loc = this.p.target.stage.pointer.p.loc;
+            var loc = Q.pointer.p.loc;
             var valid = false;
             this.p.moveGuide.forEach(function(tile){
                 if(tile.p.loc[0]===loc[0]&&tile.p.loc[1]===loc[1]){
@@ -893,41 +1094,41 @@ Quintus.HUD=function(Q){
                     var stage = this.p.target.stage;
                     switch(this.p.kind){
                         case "walk":
-                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
+                            if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 return;                            
                             }
-                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,stage.pointer.p.loc,"maxScore",this.p.target.p.move,this.p.target.p[this.p.kind+"Matrix"]));
+                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,Q.pointer.p.loc,"maxScore",this.p.target.p.move,this.p.target.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
                             //Make sure there's a target there
-                            if(stage.BattleGrid.getObject(stage.pointer.p.loc)){
-                                this.p.target.previewAttackTarget(stage.pointer.p.loc);
-                                stage.pointer.off("checkInputs");
-                                stage.pointer.off("checkConfirm");
+                            if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                                this.p.target.previewAttackTarget(Q.pointer.p.loc);
+                                Q.pointer.off("checkInputs");
+                                Q.pointer.off("checkConfirm");
                             } else {return;}
                             break;
                         case "skill":
                             //Make sure there's a target there
-                            if(stage.BattleGrid.getObjectsAround(stage.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0])){
-                                this.p.target.previewDoSkill(stage.pointer.p.loc,this.p.skill);
-                                stage.pointer.off("checkInputs");
-                                stage.pointer.off("checkConfirm");
+                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0])){
+                                this.p.target.previewDoSkill(Q.pointer.p.loc,this.p.skill);
+                                Q.pointer.off("checkInputs");
+                                Q.pointer.off("checkConfirm");
                             } else {return;}
                             
                             break;
                     }
                     this.fullDestroy();
-                    if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
+                    if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
                 }
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
                 Q.stage(2).ActionMenu.show();
                 Q.stage(2).ActionMenu.on("step","checkInputs");
-                this.stage.pointer.snapTo(this.p.target);
-                this.stage.pointer.off("checkInputs");
-                this.stage.pointer.off("checkConfirm");
+                Q.pointer.snapTo(this.p.target);
+                Q.pointer.off("checkInputs");
+                Q.pointer.off("checkConfirm");
                 this.fullDestroy();
-                if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
+                if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
                 
                 Q.inputs['esc']=false;
             }
@@ -954,7 +1155,7 @@ Quintus.HUD=function(Q){
                 w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE
             });
-            Q.stage(0).BatCon.setXY(this);
+            Q.BatCon.setXY(this);
         }
     });
     Q.UI.Container.extend("AttackPreviewBox",{
@@ -973,19 +1174,18 @@ Quintus.HUD=function(Q){
         },
         checkInputs:function(){
             if(Q.inputs['confirm']){
-                this.p.text = [];
-                this.p.attacker.p.didAction = true;
-                var turnEnded = this.p.attacker.p.didMove?true:false;
-                this.doAttack(turnEnded);
-                if(!turnEnded){
-                    this.p.attacker.p.walkMatrix = new Q.Graph(this.p.attacker.getMatrix("walk"));
-                }
+                var attacker = this.p.attacker;
+                var targets = this.p.targets;
+                var skill = this.p.skill;
+                var turnEnded = attacker.p.didMove?true:false;
+                Q.BatCon.attackFuncs.doAttack(attacker,targets,skill,turnEnded);
                 this.off("step",this,"checkInputs");
+                this.destroy();
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
                 this.destroy();
                 if(this.p.skill){
-                if(Q.stage(0).pointer.has("AOEGuide")) Q.stage(0).pointer.AOEGuide.destroyGuide();
+                if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
                     this.stage.ActionMenu.loadSkill();
                 } else {
                     this.stage.ActionMenu.loadAttack();
@@ -993,210 +1193,21 @@ Quintus.HUD=function(Q){
                 Q.inputs['esc']=false;
             }
         },
-        getBlow:function(attackNum,attacker,defendNum,defender){
-            var result = {
-                hit:false,
-                crit:false,
-                block:false
-            };
-            if(attackNum<=attacker.p.crit){
-                result.crit = true;
-            } else if(attackNum<=attacker.p.strike){
-                result.hit = true;
-            }
-            
-            if(defendNum<=defender.p.parry){
-                result.block = true;
-            }
-            
-            return {attacker:attacker,defender:defender,result:result};
-        },
-        processSkillResult:function(obj){
-            var attacker = obj.attacker;
-            var defender = obj.defender;
-            var result = obj.result;
-            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
-            //Miss
-            if(result.block||result.miss){
-                this.p.text.push(attacker.p.charClass+attacker.p.id+" missed "+defender.p.charClass+defender.p.id+"...");
-            } else {
-                this.successfulBlow(attacker,defender,result);
-            }
-        },
-        processResult:function(obj){
-            var attacker = obj.attacker;
-            var defender = obj.defender;
-            var result = obj.result;
-            if(attacker.p.hp<=0||defender.p.hp<=0){return;};
-            //If the attack crit
-            if(result.crit){
-                //Successful Blow
-                if(result.block){
-                    this.successfulBlow(attacker,defender,result);
-                } 
-                //Critical Blow
-                else {
-                    this.criticalBlow(attacker,defender,result);
-                }
-            } 
-            //If the attack hit
-            else if(result.hit){
-                //Glancing Blow
-                if(result.block){
-                    this.glancingBlow(attacker,defender,result);
-                }
-                //Successful Blow
-                else {
-                    this.successfulBlow(attacker,defender,result);
-                }
-            } 
-            //If the attack missed
-            else {
-                //Counter Chance
-                if(result.block){
-                    this.counterChance(attacker,defender,result);
-                }
-                //Miss
-                else {
-                    this.miss(attacker,defender,result);
-                }
-            }
-        },
-        processSelfTarget:function(attacker,defender,result){
-            if(result.block){
-                this.p.text.push(attacker.p.charClass+" avoided taking damage.");
-            }
-            else if(result.hit||result.crit){
-                var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
-                attacker.takeDamage(damage);
-                this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage to themself.");
-                if(attacker.p.hp<=0){
-                    this.p.text.push(defender.p.charClass+defender.p.id+" was killed by their own attack!");
-                }  
-            }
-        },
-        successfulBlow:function(attacker,defender,result){
-            var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
-            defender.takeDamage(damage);
-            if(result.hit) this.p.text.push(attacker.p.charClass+attacker.p.id+" hit "+defender.p.charClass+defender.p.id+".");
-            if(result.crit) this.p.text.push(attacker.p.charClass+attacker.p.id+" went critical, but "+defender.p.charClass+defender.p.id+" defended well!");
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
-            if(defender.p.hp<=0){
-                this.p.text.push(defender.p.charClass+" was defeated.");
-            }  
-        },
-        criticalBlow:function(attacker,defender,result){
-            var damage = attacker.p.totalDamageHigh;
-            defender.takeDamage(damage);
-            var rand = Math.ceil(Math.random()*100);
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" hit a critical blow against "+defender.p.charClass+defender.p.id+".");
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
-            if(defender.p.hp<=0){
-                this.p.text.push(defender.p.charClass+" was defeated.");
-            }  
-            else if(rand<=attacker.p.totalSpeed){
-                this.p.text.push(attacker.p.charClass+attacker.p.id+" was so fast, they got another attack in!");
-                this.calcAttack(attacker,defender);
-            }
-        },
-        glancingBlow:function(attacker,defender,result){
-            var weapons = [];
-            if(attacker.p.equipment.righthand.damageLow){weapons.push(attacker.p.equipment.righthand);}
-            if(attacker.p.equipment.lefthand.damageLow){weapons.push(attacker.p.equipment.lefthand);}
-            var rand = Math.floor(Math.random()*weapons.length);
-            var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
-            defender.takeDamage(damage);
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" hit a glancing blow against "+defender.p.charClass+defender.p.id+".");
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" did "+damage+" damage.");
-            if(defender.p.hp<=0){
-                this.p.text.push(defender.p.charClass+defender.p.id+" was defeated.");
-            }
-        },
-        counterChance:function(attacker,defender,result){
-            if(defender.p.hp<=0){return;};
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" tried to attack "+defender.p.charClass+defender.p.id+", but");
-            this.p.text.push(defender.p.charClass+defender.p.id+" countered "+attacker.p.charClass+attacker.p.id+"!");
-            //TO DO: Check range for counter so defender can't attack further than their range.
-            this.calcAttack(defender,attacker);
-        },
-        miss:function(attacker,defender,result){
-            this.p.text.push(attacker.p.charClass+attacker.p.id+" missed "+defender.p.charClass+defender.p.id+"...");
-            var rand = Math.ceil(Math.random()*100);
-            if(rand<=attacker.p.totalSpeed){
-                this.p.text.push(attacker.p.charClass+attacker.p.id+" got an extra attack!");
-                this.calcAttack(attacker,defender);
-            }
-        },
-        calcAttack:function(attacker,defender){
-            if(this.p.skill){
-                var skill = this.p.skill;
-                var t = this;
-                attacker.p.sp-=skill.cost;
-                //Loop through each of the targets
-                this.p.targets.forEach(function(target){
-                    if(attacker.p.hp<=0) return;
-                    var blow = t.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),target);
-                    //If the skill is damaging
-                    if(skill.damageLow&&skill.damageHigh){
-                        if(attacker.p.id===target.p.id){
-                            t.processSelfTarget(blow.attacker,blow.defender,blow.result);
-                        } else {
-                            t.processSkillResult(blow);
-                        }
-                        
-                    }
-                    if(skill.effect){
-                        var rand = Math.ceil(Math.random()*skill.effect.accuracy);
-                        if(rand<=skill.effect.accuracy){
-                            var props = skill.effect.props.slice();
-                            props.push(target,attacker);
-                            Q.stage(0).BatCon.attackFuncs[skill.effect.func].apply(t,props);
-                            t.p.text.push(attacker.p.charClass+attacker.p.id+" did a special effect with the skill.");
-                        } else {
-                            t.p.text.push(attacker.p.charClass+attacker.p.id+" missed doing a special effect with the skill.");
-                        }
-                    }
-                });
-            } else {
-                this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender));
-            }
-        },
-        doAttack:function(turnEnded){
-            //Compute the attack
-            this.calcAttack(this.p.attacker,this.p.defender);
-            this.destroy();
-            if(turnEnded){
-                this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){Q.stage(0).BatCon.endTurn();}}));
-            } else {
-                this.stage.insert(new Q.BattleTextBox({text:this.p.text,callback:function(){
-                    if(Q.stage(0).BatCon.turnOrder[0].p.hp<=0){
-                        Q.stage(0).BatCon.endTurn();
-                        return;
-                    }
-                    Q.stage(0).BatCon.removeMarked();
-                    if(Q.stage(0).BatCon.checkBattleOver()) return;
-                    Q.stage(2).ActionMenu.p.menuNum = 0;
-                    Q.stage(2).ActionMenu.displayMenu();
-                    //Show the action menu
-                    Q.stage(2).ActionMenu.show();
-                    Q.stage(2).ActionMenu.on("step","checkInputs");
-                    Q.stage(0).pointer.snapTo(Q.stage(0).BatCon.turnOrder[0]);
-                }}));
-            }
-        },
         inserted:function(){
+            //If the attack is a skill, display different information
             if(this.p.skill){
                 if(this.p.skill.damageLow&&this.p.skill.damageHigh){
                     var atkPercent = this.p.attacker.p.strike;
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
                     var missChance = "Pretty high, I guess";
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
-                    var damageLow = this.p.attacker.p.totalDamageLow+this.p.skill.damageLow-this.p.defender.p.armour;
-                    var damageHigh = this.p.attacker.p.totalDamageHigh+this.p.skill.damageHigh-this.p.defender.p.armour;
+                    var damageLow = this.p.attacker.p.totalDamageLow+this.p.skill.damageLow-this.p.targets[0].p.armour;
+                    var damageHigh = this.p.attacker.p.totalDamageHigh+this.p.skill.damageHigh-this.p.targets[0].p.armour;
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:70,label:"The skill's name is "+this.p.skill.name+".",size:12,cx:0,cy:0,align:"center"}));
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"It is targetting "+this.p.targets.length+" targets.",size:12,cx:0,cy:0,align:"center"}));
                 }
+                //The the skill has an effect, display some info on it
                 if(this.p.skill.effect){
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:110,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
                 }
@@ -1206,8 +1217,8 @@ Quintus.HUD=function(Q){
                 this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
                 var missChance = "Pretty high, I guess";
                 this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
-                var damageLow = this.p.attacker.p.totalDamageLow-this.p.defender.p.armour;
-                var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.defender.p.armour;
+                var damageLow = this.p.attacker.p.totalDamageLow-this.p.targets[0].p.armour;
+                var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.targets[0].p.armour;
                 this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
             }
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
@@ -1228,6 +1239,11 @@ Quintus.HUD=function(Q){
         },
         nextText:function(){
             this.p.textIndex++;
+            while(Q._isObject(this.p.text[this.p.textIndex])){
+                var text = this.p.text[this.p.textIndex];
+                text.obj[text.func].apply(text.obj,text.props);
+                this.p.textIndex++;
+            }
             if(this.p.textIndex>=this.p.text.length){this.destroy();this.p.dialogueArea.destroy();this.p.callback();return;};
             this.p.dialogueText.setNewText(this.p.text[this.p.textIndex]);
         },
@@ -1243,6 +1259,36 @@ Quintus.HUD=function(Q){
             this.p.dialogueArea = this.stage.insert(new Q.DialogueArea({w:Q.width-20}));
             this.p.dialogueText = this.p.dialogueArea.insert(new Q.Dialogue({text:this.p.text[this.p.textIndex], align: 'left', x: 10}));
             this.nextText();
+        }
+    });
+    
+    Q.Sprite.extend("DynamicNumber", {
+        init:function(p){
+            //For bigger boxes, set the w and h values when creating
+            //12 is the default size since it's used for the damage box
+            this._super(p, {
+                color: "black",
+                w: 14,
+                h: 14,
+                type:Q.SPRITE_NONE,
+                collisionMask:Q.SPRITE_NONE,
+                opacity:1,
+                size:12,
+                text:"",
+                fill:"white",
+                z:100
+            });
+            this.p.x-=this.p.w;
+            this.add("tween");
+            this.animate({ y:this.p.y-Q.tileH, opacity: 0 }, 2, Q.Easing.Quadratic.Out )
+                .chain({ angle:   0 }, 5.2, { callback: function() { this.destroy(); } });
+        },
+
+
+        draw: function(ctx){
+            ctx.fillStyle = this.p.color;
+            ctx.font      = 'Bold 15px Arial';
+            ctx.fillText(this.p.text, 0,0);
         }
     });
 };
