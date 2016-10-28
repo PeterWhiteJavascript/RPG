@@ -65,10 +65,13 @@ Quintus.HUD=function(Q){
             obj.p.zocTiles = [];
             for(var i=-zoc;i<zoc+1;i++){
                 for(var j=0;j<((zoc*2+1)-Math.abs(i*2));j++){
+                    //Don't add a tile if it is impassable
+                    if(Q.BatCon.getTileType([loc[0]+i,loc[1]+j-(zoc-Math.abs(i))])==="impassable") continue;
                     //Don't allow the center tile
                     if(i===0&&loc[1]+j-(zoc-Math.abs(i))===loc[1]) continue;
                     //Don't add a tile if there already is one
-                    if(grid[loc[0]+i][loc[1]+j-(zoc-Math.abs(i))]) continue;
+                    if(grid[loc[1]+j-(zoc-Math.abs(i))][loc[0]+i]) continue;
+                    
                     //Keep a reference to the ZOC tiles in each object and also here
                     var tile = this.stage.insert(new Q.ZOCTile({loc:[loc[0]+i,loc[1]+j-(zoc-Math.abs(i))]}));
                     grid[tile.p.loc[1]][tile.p.loc[0]] = tile;
@@ -275,11 +278,7 @@ Quintus.HUD=function(Q){
             }
         },
         glancingBlow:function(attacker,defender,result){
-            var weapons = [];
-            if(attacker.p.equipment.righthand.damageLow){weapons.push(attacker.p.equipment.righthand);}
-            if(attacker.p.equipment.lefthand.damageLow){weapons.push(attacker.p.equipment.lefthand);}
-            var rand = Math.floor(Math.random()*weapons.length);
-            var damage = Math.floor(Math.random()*(weapons[rand].damageHigh-weapons[rand].damageLow)+weapons[rand].damageLow)-defender.p.armour;
+            var damage = Math.floor((Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour/10);
             this.text.push(attacker.p.name+" hit a glancing blow against "+defender.p.name+".");
             this.text.push({func:"takeDamage",obj:defender,props:[damage]},attacker.p.name+" did "+damage+" damage.");
             if(defender.p.hp<=0){
@@ -1094,19 +1093,6 @@ Quintus.HUD=function(Q){
                 }
                 return tiles;
             }
-        },
-        //Loop through the path and get rid of any tiles that are after going across an enemy ZOC
-        processZOC:function(otherTeam,path){
-            //Skip the last path as you can walk 1 square onto ZOC
-            for(var i=path.length-2;i>0;i--){
-                var at = path[i];
-                //If there is an enemy ZOC here, cut the path short
-                if(Q.BattleGrid.getZOC(otherTeam,[at.y,at.x])){
-                    console.log("Can't go to "+at.x,at.y)
-                    //return [];
-                };
-            };
-            return path;
         },
         //Gets the fastest path to a certain location 
         getPath:function(loc,toLoc,graph){

@@ -92,13 +92,17 @@
         "map":"homeland.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
-        "placementSquares":[[14,17],[18,18],[3,3],[4,1],[4,2],[4,3]],
+        "placementSquares":[[10,9],[11,9],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
-            {"loc":[17,21],"charClass":"archer","level":1,"equipmentRank":2,"equipmentType":"bow"},
-            {"loc":[16,21],"charClass":"archer","level":20,"equipmentRank":2,"equipmentType":"bow"},
-            {"loc":[16,18],"charClass":"barbarian","level":1,"equipmentRank":2},
-            {"loc":[16,17],"charClass":"barbarian","level":1,"equipmentRank":2},
-            {"loc":[14,19],"charClass":"barbarian","level":2,"equipmentRank":1}
+            {"loc":[10,7],"charClass":"archer","level":1,"equipmentRank":2},
+            {"loc":[9,8],"charClass":"barbarian","level":2,"equipmentRank":1},
+            {"loc":[9,2],"charClass":"archer","level":2,"equipmentRank":1},
+            {"loc":[10,2],"charClass":"archer","level":2,"equipmentRank":1},
+            {"loc":[11,2],"charClass":"archer","level":2,"equipmentRank":1},
+            {"loc":[9,3],"charClass":"barbarian","level":2,"equipmentRank":1},
+            {"loc":[10,3],"charClass":"barbarian","level":2,"equipmentRank":1},
+            {"loc":[11,3],"charClass":"barbarian","level":2,"equipmentRank":1},
+            {"loc":[11,14],"charClass":"knight","level":2,"equipmentRank":1}
         ],
         "interactables":[
             {}
