@@ -27,7 +27,17 @@ Q.setUpAnimations=function(){
     var walkRate = 1/6;
     Q.animations("Character", {
         standingleft:{ frames: [1,2], rate:standRate},
-        walkingleft:{ frames: [1,2,3], rate:walkRate}
+        walkingleft:{ frames: [1,2,3], rate:walkRate},
+        
+        standingright:{ frames: [5,6], rate:standRate},
+        walkingright:{ frames: [5,6,7], rate:walkRate},
+        
+        standingup:{ frames: [5,6], rate:standRate},
+        walkingup:{ frames: [5,6,7], rate:walkRate},
+        
+        standingdown:{ frames: [1,2], rate:standRate},
+        walkingdown:{ frames: [1,2,3], rate:walkRate}
+        
         
     });
 };

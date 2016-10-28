@@ -278,6 +278,142 @@ Quintus.Objects=function(Q){
             
         }
     });
+    Q.component("autoMove", {
+        added: function() {
+            var p = this.entity.p;
+            p.stepX = Q.tileW;
+            p.stepY = Q.tileH;
+            if(!p.stepDelay) { p.stepDelay = 0.3; }
+            p.stepWait = 0;
+            p.stepping=false;
+            this.entity.on("step",this,"step");
+            p.walkPath = this.moveAlong(p.calcPath);
+            p.calcPath=false;
+        },
+
+        atDest:function(){
+            var p = this.entity.p;
+            p.loc = p.destLoc;
+            Q.BatCon.setXY(this.entity);
+            this.entity.trigger("doneAutoMove");
+            this.entity.trigger("atDest");
+            this.entity.playStand(p.dir);
+            this.entity.del("autoMove");
+        },
+        moveAlong:function(to){
+            if(!to){this.atDest();return;};
+            var p = this.entity.p;
+            var walkPath=[];
+            var curLoc = {x:p.loc[0],y:p.loc[1]};
+            var going = to.length;
+            for(var i=0;i<going;i++){
+                var path = [];
+                //Going right
+                if(to[i].x>curLoc.x){
+                    path.push("right");
+                //Going left
+                } else if(to[i].x<curLoc.x){
+                    path.push("left");
+                //Stay same
+                } else {
+                    path.push(false);
+                }
+                //Going down
+                if(to[i].y>curLoc.y){
+                    path.push("down");
+
+                //Going up
+                } else if(to[i].y<curLoc.y){
+                    path.push("up");
+                //Stay same
+                } else {
+                    path.push(false);
+                }
+                walkPath.push(path);
+
+                curLoc=to[i];
+
+            }
+            if(walkPath.length===0||(walkPath[0][0]===false&&walkPath[0][1]===false&&walkPath.length===1)){this.atDest();return;};
+            return walkPath;
+        },
+
+        step: function(dt) {
+            var p = this.entity.p;
+            p.stepWait -= dt;
+            if(p.stepping) {
+                p.x += p.diffX * dt / p.stepDelay;
+                p.y += p.diffY * dt / p.stepDelay;
+            }
+
+            if(p.stepWait > 0) {return; }
+            //At destination
+            if(p.stepping) {
+                p.x = p.destX;
+                p.y = p.destY;
+                p.walkPath.shift();
+                this.entity.trigger("atDest");
+                if(p.walkPath.length===0){
+                    this.atDest();
+                    return;
+                }
+            }
+            p.stepping = false;
+
+            p.diffX = 0;
+            p.diffY = 0;
+            //p.walkPath = [["left","up"],["left",false],[false,"up"],["right","down"]]
+            if(p.walkPath[0][0]==="left") {
+                p.diffX = -p.stepX;
+            } else if(p.walkPath[0][0]==="right") {
+                p.diffX = p.stepX;
+            } else if(p.walkPath[0][1]==="up") {
+                p.diffY = -p.stepY;
+            } else if(p.walkPath[0][1]==="down"){
+                p.diffY = p.stepY;
+            }
+            //Run the first time
+            if(p.diffX || p.diffY ){
+                p.destX = p.x + p.diffX;
+                p.destY = p.y + p.diffY;
+                p.stepping = true;
+                p.origX = p.x;
+                p.origY = p.y;
+
+                p.stepWait = p.stepDelay;
+                p.stepped=true;
+
+                //If we have passed all of the checks and are moving
+                if(p.stepping){
+                    p.dir="";
+                    switch(p.walkPath[0][1]){
+                        case "up":
+                            p.dir="up";
+                            p.flip = false;
+                            break;
+                        case "down":
+                            p.dir="down";
+                            p.flip = 'x';
+                            break;
+                    }
+                    if(p.dir.length===0){
+                        switch(p.walkPath[0][0]){
+                            case "right":
+                                p.dir+="right";
+                                p.flip = 'x';
+                                break;
+                            case "left":
+                                p.dir+="left";
+                                p.flip = false;
+                                break;
+                        }
+                    }
+                    //Play the correct direction walking animation
+                    this.entity.playWalk(p.dir);
+                };
+            }
+        }
+    });
     Q.Sprite.extend("Character",{
         init:function(p){
             this._super(p,{
@@ -343,23 +479,31 @@ Quintus.Objects=function(Q){
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
+            Q.pointer.off("checkInputs");
+            Q.pointer.off("checkConfirm");
+            
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
             Q.BattleGrid.moveObject(this.p.loc,newLoc,this);
-            //Store the old loc in the moved variable. This wil allow for redo-s
+            //Store the old loc in the moved variable. This will allow for redo-s
             this.p.didMove = this.p.loc;
-            //Set the new loc
-            this.p.loc = newLoc;
-            Q.BatCon.setXY(this);
-            Q.pointer.on("checkConfirm");
-            Q.pointer.checkTarget();
-            //If this character hasn't attacked yet this turn, generate a new attackgraph
-            if(!this.p.didAction){
-                this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
-                Q.pointer.p.loc = this.p.loc;
-                Q.BatCon.setXY(Q.pointer);
-            } else {
-                Q.BatCon.endTurn();
-            }
+            this.p.calcPath = path;
+            this.p.destLoc = newLoc;
+            this.add("autoMove");
+            var t = this;
+            this.on("doneAutoMove",function(){
+                Q.pointer.on("checkInputs");
+                Q.pointer.on("checkConfirm");
+                Q.pointer.checkTarget();
+                //If this character hasn't attacked yet this turn, generate a new attackgraph
+                if(!t.p.didAction){
+                    t.p.attackMatrix = new Q.Graph(t.getMatrix("attack"));
+                    Q.pointer.p.loc = t.p.loc;
+                    Q.BatCon.setXY(Q.pointer);
+                } else {
+                    Q.BatCon.endTurn();
+                }
+                t.off("doneAutoMove");
+            });
         },
         //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
         previewAttackTarget:function(targetLoc){
