@@ -1133,7 +1133,10 @@ Quintus.HUD=function(Q){
                         } 
                         //If the path includes a single ZOC tile
                         else if(pathCost>=1000) {
-                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
+                            //Only include this path if the last tile is the ZOC tile
+                            if(path[path.length-1].weight===1000){
+                                this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
+                            }
                         }
                     }
                 }
