@@ -174,6 +174,7 @@ Quintus.Objects=function(Q){
             p.criticalChance = this.getCriticalChance();
             p.armour = this.getArmour();
             p.range = this.getRange();
+            p.zoc = Q.state.get("charClasses")[p.charClass].zoc;
         },
         getMove:function(base){
             var body = this.entity.p.equipment.body.move?this.entity.p.equipment.body.move:0;
@@ -378,32 +379,40 @@ Quintus.Objects=function(Q){
             var tileTypes = Q.state.get("tileTypes");
             var cM=[];
             var stage = this.stage;
+            var otherTeam = this.p.team==="enemy"?"ally":"enemy";
             function getWalkable(){
                 var move = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])].move;
-                return move?move:10000;
+                return move?move:1000000;
             }
             function getTarget(){
                 return Q.BattleGrid.getObject([i_walk,j_walk]);
+            }
+            function getZOC(){
+                return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
             }
             for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
                 var costRow = [];
                 for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
                     var cost = 1;
                     var objOn = false;
+                    var zocOn = false;
                     //If we're walking, enemies are impassable
                     if(matrixType==="walk"){
                         cost = getWalkable();
                         objOn = getTarget();
+                        if(!objOn) zocOn = getZOC();
+                        
                         //Allow walking over allies
                         if(objOn&&objOn.p.team===this.p.team){objOn=false;};
                     }
                     //If there's still no enemy on the sqaure, get the tileCost
-                    if(!objOn){
-                        costRow.push(cost);
+                    if(objOn){
+                        costRow.push(1000000);
+                    } else if(zocOn){
+                        costRow.push(1000);
                     } else {
-                        costRow.push(10000);
+                        costRow.push(cost);
                     }
-
                 }
                 cM.push(costRow);
             }

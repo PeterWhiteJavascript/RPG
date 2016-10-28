@@ -5,20 +5,86 @@ Quintus.HUD=function(Q){
         init:function(p){
             this.stage = p.stage;
             this.grid = [];
+            this.allyZocGrid = [];
+            this.enemyZocGrid = [];
             var tilesX = p.stage.mapWidth;
             var tilesY = p.stage.mapHeight;
             for(var i=0;i<tilesY;i++){
                 this.grid[i]=[];
+                this.allyZocGrid[i]=[];
+                this.enemyZocGrid[i]=[];
                 for(var j=0;j<tilesX;j++){
                     this.grid[i][j]=false;
+                    this.allyZocGrid[i][j]=false;
+                    this.enemyZocGrid[i][j]=false;
                 }
             }
             //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
-            this.stage.on("inserted",this,function(itm){
+            Q.stage(0).on("inserted",this,function(itm){
                 if(itm.has("interactable")){
+                    //Place the object in the grid
                     this.setObject(itm.p.loc,itm);
+                    //If the object has ZOC, create the tiles
+                    if(itm.p.zoc) this.setZOC(itm.p.loc,itm);
                 }
             });
+        },
+        //Returns the correct grid
+        getGrid:function(obj){
+            return obj.p.team==="enemy"?this.enemyZocGrid:this.allyZocGrid;
+        },
+        showZOC:function(team){
+            var objs = this.stage.lists[".interactable"].filter(function(char){
+                return char.p.team===team&&char.p.zoc; 
+            });
+            if(!objs) return;
+            objs.forEach(function(obj){
+                obj.p.zocTiles.forEach(function(tile){
+                    tile.show();
+                });
+            });
+        },
+        hideZOC:function(team){
+            var objs = this.stage.lists[".interactable"].filter(function(char){
+                return char.p.team===team&&char.p.zoc; 
+            });
+            
+            if(!objs) return;
+            objs.forEach(function(obj){
+                obj.p.zocTiles.forEach(function(tile){
+                    tile.hide();
+                });
+            });
+        },
+        getZOC:function(team,loc){
+            return this[team+"ZocGrid"][loc[1]][loc[0]];
+        },
+        setZOC:function(loc,obj){
+            var zoc = obj.p.zoc;
+            var grid = this.getGrid(obj);
+            obj.p.zocTiles = [];
+            for(var i=-zoc;i<zoc+1;i++){
+                for(var j=0;j<((zoc*2+1)-Math.abs(i*2));j++){
+                    //Don't allow the center tile
+                    if(i===0&&loc[1]+j-(zoc-Math.abs(i))===loc[1]) continue;
+                    //Don't add a tile if there already is one
+                    if(grid[loc[0]+i][loc[1]+j-(zoc-Math.abs(i))]) continue;
+                    //Keep a reference to the ZOC tiles in each object and also here
+                    var tile = this.stage.insert(new Q.ZOCTile({loc:[loc[0]+i,loc[1]+j-(zoc-Math.abs(i))]}));
+                    grid[tile.p.loc[1]][tile.p.loc[0]] = tile;
+                    obj.p.zocTiles.push(tile);
+                }
+            }
+        },
+        moveZOC:function(to,obj){
+            var grid = this.getGrid(obj);
+            //First, remove the current ZOC
+            obj.p.zocTiles.forEach(function(tile){
+                grid[tile.p.loc[1]][tile.p.loc[0]] = false;
+                tile.destroy();
+            });
+            //Then, create a new ZOC for this object
+            this.setZOC(to,obj);
         },
         getObject:function(loc){
             return this.grid[loc[1]][loc[0]];
@@ -27,6 +93,7 @@ Quintus.HUD=function(Q){
             this.grid[loc[1]][loc[0]] = obj;
         },
         moveObject:function(from,to,obj){
+            if(obj.p.zoc) this.moveZOC(to,obj);
             this.removeObject(from);
             this.setObject(to,obj);
         },
@@ -904,8 +971,9 @@ Quintus.HUD=function(Q){
                 Q.inputs['esc']=false;
             }
         },
-        //Shows the move grid
+        //Shows the move grid and zoc
         loadMove:function(){
+            Q.BattleGrid.showZOC(this.p.team==="enemy"?"ally":"enemy");
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
@@ -997,7 +1065,7 @@ Quintus.HUD=function(Q){
                     var skill = this.p.skill;
                     switch(skill.range[0]){
                         case "self":
-                            this.p.moveGuide.push(this.insert(new Q.RangeTile({x:target.p.loc[0]*Q.tileW+Q.tileW/2,y:target.p.loc[1]*Q.tileH+Q.tileH/2,loc:[target.p.loc[0],target.p.loc[1]]})));
+                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[target.p.loc[0],target.p.loc[1]]})));
                             break;
                         case "normal":
                             this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"]);
@@ -1027,23 +1095,27 @@ Quintus.HUD=function(Q){
                 return tiles;
             }
         },
-        //Gets the fastest path to a certain location
-        //loc   - the current location of the object that is moving
-        //toLoc - [x,y]
-        //prop  - search using a maximum cost (movement uses maximum cost during battles)
-        //score - if prop:'maxScore' is set, this the maxScore. 
-        getPath:function(loc,toLoc,prop,score,graph){
-            //Set up a graph for this movement
+        //Loop through the path and get rid of any tiles that are after going across an enemy ZOC
+        processZOC:function(otherTeam,path){
+            //Skip the last path as you can walk 1 square onto ZOC
+            for(var i=path.length-2;i>0;i--){
+                var at = path[i];
+                //If there is an enemy ZOC here, cut the path short
+                if(Q.BattleGrid.getZOC(otherTeam,[at.y,at.x])){
+                    console.log("Can't go to "+at.x,at.y)
+                    //return [];
+                };
+            };
+            return path;
+        },
+        //Gets the fastest path to a certain location 
+        getPath:function(loc,toLoc,graph){
             var start = graph.grid[loc[0]][loc[1]];
             var end = graph.grid[toLoc[0]][toLoc[1]];
-            var result;
-            if(prop==="maxScore"){
-                result = Q.astar.search(graph, start, end,{maxScore:score});
-            } else {
-                result = Q.astar.search(graph, start, end);
-            }
-            return result;
+            return Q.astar.search(graph, start, end);
         },
+        //TODO: Don't use maxScore for movement grid ZOC costs 1000. 
+        //After getting the paths, if the path cost is greater than 1000, make sure that we haven't been through an impassable or two ZOC.
         getTileRange:function(loc,stat,graph,special){
             var bounds = Q.BattleGrid.getBounds(loc,stat);
             var tiles=[];
@@ -1062,13 +1134,21 @@ Quintus.HUD=function(Q){
             if(tiles.length){
                 //Loop through the possible tiles
                 for(var i=0;i<tiles.length;i++){
-                    var path = this.getPath(loc,[tiles[i].x,tiles[i].y],"maxScore",stat,graph);
+                    //Get the path and then slice it if it goes across enemy ZOC
+                    var path = this.getPath(loc,[tiles[i].x,tiles[i].y],graph);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
                     }
-                    if(path.length>0&&path.length<=stat&&pathCost<=stat){
-                        this.p.moveGuide.push(this.insert(new Q.RangeTile({x:tiles[i].x*Q.tileW+Q.tileW/2,y:tiles[i].y*Q.tileH+Q.tileH/2,loc:[tiles[i].x,tiles[i].y]})));
+                    if(path.length>0&&path.length<=stat&&pathCost<=stat+1000){
+                        //If the path is normal
+                        if(pathCost<=stat){
+                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
+                        } 
+                        //If the path includes a single ZOC tile
+                        else if(pathCost>=1000) {
+                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
+                        }
                     }
                 }
             //If there's nowhere to move
@@ -1097,7 +1177,10 @@ Quintus.HUD=function(Q){
                             if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 return;                            
                             }
-                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,Q.pointer.p.loc,"maxScore",this.p.target.p.move,this.p.target.p[this.p.kind+"Matrix"]));
+                            //Hide the zoc
+                            Q.BattleGrid.hideZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
+                            //Make the character move to the spot
+                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,Q.pointer.p.loc,this.p.target.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
                             //Make sure there's a target there
@@ -1122,6 +1205,8 @@ Quintus.HUD=function(Q){
                 }
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
+                //Hide the zoc
+                Q.BattleGrid.hideZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
                 Q.stage(2).ActionMenu.show();
                 Q.stage(2).ActionMenu.on("step","checkInputs");
                 Q.pointer.snapTo(this.p.target);
@@ -1144,6 +1229,7 @@ Quintus.HUD=function(Q){
                 w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE
             });
+            Q.BatCon.setXY(this);
         }
     });
     Q.Sprite.extend("AOETile",{
@@ -1154,6 +1240,19 @@ Quintus.HUD=function(Q){
                 opacity:0.8,
                 w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE
+            });
+            Q.BatCon.setXY(this);
+        }
+    });
+    Q.Sprite.extend("ZOCTile",{
+        init:function(p){
+            this._super(p,{
+                sheet:"zoc_tile",
+                frame:0,
+                opacity:0.8,
+                w:Q.tileW,h:Q.tileH,
+                type:Q.SPRITE_NONE,
+                hidden:true
             });
             Q.BatCon.setXY(this);
         }

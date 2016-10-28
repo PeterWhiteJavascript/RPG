@@ -58,13 +58,19 @@ Quintus.SceneFuncs=function(Q){
         });
         //Display the enemies, interactables, pickups, and placement locations
         var enemyData = battleData.enemies;
+        var enemies = [];
         enemyData.forEach(function(enm){
-            var char = stage.insert(new Q.Character({loc:enm.loc,charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy"}));
+            var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy"});
             char.add("randomCharacter,statCalcs");
+            enemies.push(char);
+            char.p.loc = enm.loc;
         });
         
         allies.forEach(function(ally){
             stage.insert(ally);
+        });
+        enemies.forEach(function(enemy){
+            stage.insert(enemy);
         });
         //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
         Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
