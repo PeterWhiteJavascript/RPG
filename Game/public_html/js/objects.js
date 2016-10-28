@@ -71,9 +71,11 @@ Quintus.Objects=function(Q){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("walking"+this.p.dir);
             },
-            playAttack:function(dir){
+            playAttack:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("attacking"+this.p.dir);
+                //Temporary cool flip
+                this.animate({angle:this.p.angle+360},1,{callback:function(){callback();}});
             }
         }
     });
@@ -248,33 +250,108 @@ Quintus.Objects=function(Q){
             
         }
     });
+    //Any functions that are run because of skills are here as well
     Q.component("combatant",{
         extend:{
+            pushed:function(tileTo){
+                var posTo = Q.BatCon.getXY(tileTo);
+                this.hideStatusDisplay();
+                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
+                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
+                    this.p.loc = tileTo;
+                    Q.BatCon.setXY(this);
+                    this.revealStatusDisplay();
+                }});
+            },
             //Displays the miss dynamic number
             showMiss:function(){
-                this.stage.insert(new Q.DynamicNumber({color:"#fff", x:this.p.x,y:this.p.y-16, text:"Miss!"}));
+                this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!"}));
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
-            takeDamage:function(dmg,des){
-                console.log(dmg,des)
+            takeDamage:function(dmg){
                 if(dmg<=0){dmg=1;};
                 this.p.hp-=dmg;
-                this.stage.insert(new Q.DynamicNumber({color:"#fff", x:this.p.x,y:this.p.y-16, text:"-"+dmg}));
+                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg}));
                 if(this.p.hp<=0){
+                    Q.BattleGrid.removeZOC(this);
                     Q.BattleGrid.removeObject(this.p.loc);
                     Q.BatCon.markForRemoval(this);
                     this.destroy();
                 }
             },
+            addStatus:function(name,turns){
+                if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
+                else {this.p.statusDisplay.p.status.push(name);}
+                this.p.status[name] = {name:name,turns:turns};
+            },
+            doAttackAnim:function(defender,damage){
+                this.faceTarget(defender.p.loc);
+                var callback;
+                if(damage){
+                    callback = function(){defender.takeDamage(damage);};
+                } else {
+                    callback = function(){defender.showMiss();};
+                }
+                this.playAttack(this.p.dir,callback);
+            },
+            
+            advanceStatus:function(){
+                var status = this.p.status;
+                var keys = Object.keys(status);
+                for(var i=0;i<keys.length;i++){
+                    var st = status[keys[i]];
+                    if(st){
+                        st.turns--;
+                        if(st.turns===0){
+                            status[keys[i]]=false;
+                            this.p.statusDisplay.removeStatus(st.name);
+                        }
+                    }
+                }
+            },
             hasStatus:function(name){
                 return this.p.status[name];
             },
-            addStatus:function(name,turns){
-                this.p.status[name] = {name:name,turns:turns};
-            },
             removeStatus:function(name){
                 this.p.status[name] = false;
-            }
+                this.p.statusDisplay.removeStatus(name);
+            },
+            hideStatusDisplay:function(){
+                if(this.p.statusDisplay) this.p.statusDisplay.hide();
+            },
+            revealStatusDisplay:function(){
+                if(this.p.statusDisplay) this.p.statusDisplay.reveal();
+            },
+            faceTarget:function(tLoc){
+                var pLoc = this.p.loc;
+                var xDif = tLoc[0]-pLoc[0];
+                var yDif = tLoc[1]-pLoc[1];
+                if(xDif===0&&yDif===0){return this.p.dir;};
+                var newDir = "";
+                switch(true){
+                    case yDif<0:
+                        newDir+="up";
+                        this.p.flip=false;
+                        break
+                    case yDif>0:
+                        newDir+="down";
+                        this.p.flip='x';
+                        break;
+                }
+                if(newDir.length===0){
+                    switch(true){
+                        case xDif<0:
+                            newDir+="left";
+                        this.p.flip=false;
+                            break
+                        case xDif>0:
+                            newDir+="right";
+                            this.p.flip='x';
+                            break;
+                    }
+                }
+                this.p.dir = newDir;
+            },
             
         }
     });
@@ -424,12 +501,13 @@ Quintus.Objects=function(Q){
                 z:10,
                 status:{
                     sturdy:false,
-                    blind:false
+                    blind:false,
+                    poisoned:false
                 }
             });
             this.p.sheet = this.p.charClass;
             //Quintus components
-            this.add("2d, animation");
+            this.add("2d, animation, tween");
             //Custom components
             this.add("animations,interactable,combatant");
             /*var t = this;
@@ -457,8 +535,10 @@ Quintus.Objects=function(Q){
             Q._generatePoints(this,true);
         },
         startTurn:function(){
-            //TO DO: Loop through status and lower a turn from each that exists
-            
+            //This will be put in a 'process status at start of turn' function
+            if(this.p.status.poisoned) this.takeDamage(Math.floor(this.p.maxHp/8));
+            if(this.p.hp<=0) Q.BatCon.endTurn();
+            this.advanceStatus();
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
             //Get the grid for attacking from this position
@@ -471,16 +551,12 @@ Quintus.Objects=function(Q){
             exc.add("tween");
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
             
-            if(this.p.team==="enemy"){
-                setTimeout(function(){
-                    Q.BatCon.endTurn();
-                },500);
-            }
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
             Q.pointer.off("checkInputs");
             Q.pointer.off("checkConfirm");
+            this.hideStatusDisplay();
             
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
             Q.BattleGrid.moveObject(this.p.loc,newLoc,this);
@@ -494,6 +570,7 @@ Quintus.Objects=function(Q){
                 Q.pointer.on("checkInputs");
                 Q.pointer.on("checkConfirm");
                 Q.pointer.checkTarget();
+                this.revealStatusDisplay();
                 //If this character hasn't attacked yet this turn, generate a new attackgraph
                 if(!t.p.didAction){
                     t.p.attackMatrix = new Q.Graph(t.getMatrix("attack"));

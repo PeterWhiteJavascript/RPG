@@ -28,15 +28,19 @@ Q.setUpAnimations=function(){
     Q.animations("Character", {
         standingleft:{ frames: [1,2], rate:standRate},
         walkingleft:{ frames: [1,2,3], rate:walkRate},
+        attackingleft:{ frames: [1,2,3,3,2,1], rate:walkRate,trigger:"doneAttack"},
         
         standingright:{ frames: [5,6], rate:standRate},
         walkingright:{ frames: [5,6,7], rate:walkRate},
+        attackingright:{ frames: [5,6,7,7,6,5], rate:walkRate,trigger:"doneAttack"},
         
         standingup:{ frames: [5,6], rate:standRate},
         walkingup:{ frames: [5,6,7], rate:walkRate},
+        attackingup:{ frames: [5,6,7,7,6,5], rate:walkRate,trigger:"doneAttack"},
         
         standingdown:{ frames: [1,2], rate:standRate},
-        walkingdown:{ frames: [1,2,3], rate:walkRate}
+        walkingdown:{ frames: [1,2,3], rate:walkRate},
+        attackingdown:{ frames: [1,2,3,3,2,1], rate:walkRate,trigger:"doneAttack"}
         
         
     });

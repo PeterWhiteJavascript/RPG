@@ -8,21 +8,22 @@
             "gender":"female",
             "equipment":{
                 "righthand":["weapon","woodenSword"],
-                "lefthand":["weapon","woodenSpear"],
+                "lefthand":["shield","woodenShield"],
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":20,
-                "end":26,
-                "dex":27,
-                "wsk":23,
-                "rfl":29
+                "str":1120,
+                "end":1126,
+                "dex":1127,
+                "wsk":1123,
+                "rfl":1129
             },
             "skills":{
                 "sword":["whirlwind","superwhirlwind"],
-                "spear":["pierce","puncture","push"]
+                "spear":["pierce","puncture","push"],
+                "shield":["defend"]
             },
             "value":20,
             "method":80,
@@ -49,7 +50,7 @@
             "skills":{
                 "sword":["stab","slash","whirlwind","superwhirlwind"],
                 "spear":["pierce","push"],
-                "bow":["shoot","blind","sonicboom","crosshair"]
+                "bow":["shoot","blind","sonicboom","crosshair","poison"]
             },
             "value":40,
             "method":60,

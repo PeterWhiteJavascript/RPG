@@ -122,6 +122,16 @@
                 "props":["blind",[1,3]],
                 "accuracy":50
             }
+        },
+        "poison":{
+            "name":"Poison",
+            "cost":8,
+            "range":["normal",3],
+            "effect":{
+                "func":"changeStatus",
+                "props":["poisoned",[1,3]],
+                "accuracy":75
+            }
         }
     },
     "shield":{
