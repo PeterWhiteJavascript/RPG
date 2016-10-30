@@ -150,6 +150,9 @@ Quintus.SceneFuncs=function(Q){
         //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
         var statsHUD = stage.insert(new Q.StatsHUD());
     });
+    Q.scene("battleText",function(stage){
+        Q.stage(2).insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));
+    });
     Q.scene("location",function(stage){
         //Set the current menu. Default is 'start'
         if(!stage.options.menu){alert("No Menu Given in JSON!!!");};

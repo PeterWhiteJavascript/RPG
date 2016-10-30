@@ -508,9 +508,9 @@ Quintus.HUD=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
             }
             if(turnEnded){
-                Q.stage(2).insert(new Q.BattleTextBox({text:this.text,callback:function(){Q.BatCon.endTurn();}}));
+                Q.stageScene("battleText",2,{text:this.text,callback:function(){Q.BatCon.endTurn();}});
             } else {
-                Q.stage(2).insert(new Q.BattleTextBox({text:this.text,callback:function(){
+                Q.stageScene("battleText",2,{text:this.text,callback:function(){
                     if(Q.BatCon.turnOrder[0].p.hp<=0){
                         Q.BatCon.endTurn();
                         return;
@@ -521,17 +521,13 @@ Quintus.HUD=function(Q){
                     if(Q.BatCon.checkBattleOver()) return;
                     //Get the new walk matrix since objects may have moved
                     attacker.p.walkMatrix = new Q.Graph(attacker.getMatrix("walk"));
-                    //Set the menu to the start
-                    Q.stage(2).ActionMenu.p.menuNum = 0;
-                    //Display the menu
-                    Q.stage(2).ActionMenu.displayMenu();
-                    //Unhide the action menu
-                    Q.stage(2).ActionMenu.show();
-                    //Enable inputs on the menu
-                    Q.stage(2).ActionMenu.on("step","checkInputs");
                     //Snap the pointer to the current character
                     Q.pointer.snapTo(Q.BatCon.turnOrder[0]);
-                }}));
+                    //If the current character is not AI
+                    if(Q.BatCon.turnOrder[0].p.team!=="enemy"){
+                        Q.pointer.displayCharacterMenu();
+                    }
+                }});
             }
         }
     });
@@ -1162,8 +1158,6 @@ Quintus.HUD=function(Q){
             var end = graph.grid[toLoc[0]][toLoc[1]];
             return Q.astar.search(graph, start, end);
         },
-        //TODO: Don't use maxScore for movement grid ZOC costs 1000. 
-        //After getting the paths, if the path cost is greater than 1000, make sure that we haven't been through an impassable or two ZOC.
         getTileRange:function(loc,stat,graph,special){
             var bounds = Q.BattleGrid.getBounds(loc,stat);
             var tiles=[];

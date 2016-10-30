@@ -267,11 +267,14 @@ Quintus.Objects=function(Q){
             showMiss:function(){
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!"}));
             },
+            //Displays the damage dynamic number
+            showDamage:function(dmg){
+                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg}));  
+            },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             takeDamage:function(dmg){
                 if(dmg<=0){dmg=1;};
                 this.p.hp-=dmg;
-                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg}));
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
                     Q.BattleGrid.removeObject(this.p.loc);
@@ -288,9 +291,10 @@ Quintus.Objects=function(Q){
                 this.faceTarget(defender.p.loc);
                 var callback;
                 if(damage){
-                    callback = function(){defender.takeDamage(damage);};
+                    defender.takeDamage(damage);
+                    callback = function(){defender.showDamage(damage);};
                 } else {
-                    callback = function(){defender.showMiss();};
+                    callback = function(){defender.showMiss(damage);};
                 }
                 this.playAttack(this.p.dir,callback);
             },

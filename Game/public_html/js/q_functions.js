@@ -72,7 +72,7 @@ Quintus.QFunctions=function(Q){
     };
     //Follows a sprite
     Q.viewFollow=function(obj,stage){
-        if(!stage){stage=Q.stage(1);};
+        if(!stage){stage=Q.stage(0);};
         var minX=0;
         var maxX=(stage.mapWidth*Q.tileW)*stage.viewport.scale;
         var minY=0;
