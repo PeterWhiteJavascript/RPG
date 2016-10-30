@@ -145,6 +145,11 @@ var astar = {
         node.visited = false;
         node.closed = false;
         node.parent = null;
+    },
+    sumPathWeight:function(path) {
+        return path.reduce((total, elem) => {
+            return total + elem.weight;
+        }, 0);
     }
 };
 

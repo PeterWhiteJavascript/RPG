@@ -576,6 +576,9 @@ Quintus.Objects=function(Q){
                     t.p.attackMatrix = new Q.Graph(t.getMatrix("attack"));
                     Q.pointer.p.loc = t.p.loc;
                     Q.BatCon.setXY(Q.pointer);
+                    if(this.p.team==="enemy") {
+                        this.trigger("startAIAction");
+                    }
                 } else {
                     Q.BatCon.endTurn();
                 }

@@ -14,11 +14,11 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":1120,
-                "end":1126,
-                "dex":1127,
-                "wsk":1123,
-                "rfl":1129
+                "str":80,
+                "end":100,
+                "dex":75,
+                "wsk":50,
+                "rfl":78
             },
             "skills":{
                 "sword":["whirlwind","superwhirlwind"],
@@ -31,7 +31,7 @@
         },
         {
             "name": "Peter",
-            "level":90,
+            "level":3,
             "gender":"male",
             "equipment":{
                 "righthand":["weapon","opBow"],

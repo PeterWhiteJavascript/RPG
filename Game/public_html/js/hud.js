@@ -224,9 +224,7 @@ Quintus.HUD=function(Q){
                 Q.pointer.trigger("offTarget");
                 //Follow the AI object
                 Q.viewFollow(this.turnOrder[0],this.stage);
-                setTimeout(function(){
-                    Q.BatCon.endTurn();
-                },500);
+                Q.CharacterAI(this.turnOrder[0]);
             } else {
                 Q.pointer.reset();
                 Q.viewFollow(Q.pointer,this.stage);
@@ -414,8 +412,11 @@ Quintus.HUD=function(Q){
             }
             return damage;
         },
+        calcBlowDamage:function(attacker, defender, float) {
+            return Math.floor(float*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow) + attacker.p.totalDamageLow)-defender.p.armour;
+        },
         successfulBlow:function(attacker,defender,result){
-            var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour;
+            var damage = this.calcBlowDamage(attacker, defender, Math.random());
             
             this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,damage]});if(result.hit) this.text.push(attacker.p.name+" hit "+defender.p.name+".");
             if(result.crit) this.text.push(attacker.p.name+" went critical, but "+defender.p.name+" defended well!");
