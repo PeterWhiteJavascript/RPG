@@ -83,7 +83,7 @@
     },
     
     "options":{
-        "musicEnabled":true,
+        "musicEnabled":false,
         "musicVolume":20,
         "soundEnabled":true,
         "soundVolume":100,

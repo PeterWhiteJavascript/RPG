@@ -4,22 +4,24 @@ Quintus.SceneFuncs=function(Q){
         Q.load("json/story/"+scene+".json",function(){
             var data = Q.assets["json/story/"+scene+".json"];
             //Load the bg assets and create the scene
-            Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).concat(data.music).join(','), function() {
-                //If there is dialogue
-                if(data.dialogue){
-                    Q.playMusic(data.dialogue.music,function(){
-                        //Stage the scene
-                        Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
-                    });
-                }
-                if(data.battle) {
-                    //For those occasions where there's no dialogue cutscene, stage the battle scene.
-                    if(!data.dialogue){
-                        Q.playMusic(data.battle.music,function(){
-                                Q.stageScene("battle",0,{data:data,battle:data.battle});
+            Q.loadMusic(data.music.join(','),function(){
+                Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                    //If there is dialogue
+                    if(data.dialogue){
+                        Q.playMusic(data.dialogue.music,function(){
+                            //Stage the scene
+                            Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
                         });
                     }
-                }
+                    if(data.battle) {
+                        //For those occasions where there's no dialogue cutscene, stage the battle scene.
+                        if(!data.dialogue){
+                            Q.playMusic(data.battle.music,function(){
+                                    Q.stageScene("battle",0,{data:data,battle:data.battle});
+                            });
+                        }
+                    }
+                });
             });
         });
     };

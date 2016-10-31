@@ -89,7 +89,7 @@ Quintus.Objects=function(Q){
             },
             playSonicBoom:function(dir,callback,targets){
                 this.playAttack(dir);
-                var boom = Q.stage(0).insert(new Q.DynamicAnim({sheet:"SonicBoom",sprite:"SonicBoom",frame:0,loc:Q.pointer.p.loc,z:101}));
+                var boom = Q.stage(0).insert(new Q.DynamicAnim({sheet:"SonicBoom",sprite:"SonicBoom",frame:0,loc:Q.pointer.p.loc,z:this.p.z}));
                 boom.on("doneAttack",function(){
                     if(callback) callback();
                     boom.destroy();
@@ -102,8 +102,9 @@ Quintus.Objects=function(Q){
                 targets.forEach(function(target){
                     locs.push(target.p.loc);
                 });
+                var z = this.p.z;
                 locs.forEach(function(loc,idx){
-                    var wind = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Whirlwind",sprite:"Whirlwind",frame:0,loc:loc,z:101}));
+                    var wind = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Whirlwind",sprite:"Whirlwind",frame:0,loc:loc,z:z}));
                     wind.on("doneAttack",function(){
                         if(idx===0){
                             if(callback) callback();
@@ -302,11 +303,11 @@ Quintus.Objects=function(Q){
             //Displays the miss dynamic number
             showMiss:function(){
                 this.playMiss(this.p.dir);
-                this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!"}));
+                this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
             },
             //Displays the damage dynamic number
             showDamage:function(dmg){
-                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg}));  
+                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             takeDamage:function(dmg){
@@ -457,6 +458,7 @@ Quintus.Objects=function(Q){
             if(p.stepping) {
                 p.x += p.diffX * dt / p.stepDelay;
                 p.y += p.diffY * dt / p.stepDelay;
+                p.z=p.y;
             }
 
             if(p.stepWait > 0) {return; }

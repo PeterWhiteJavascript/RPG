@@ -5,7 +5,6 @@ Q.stopMusic=function(music){
 };
 
 Q.playMusic=function(music,callback){
-    console.log(Q.audio)
     if(Q.state.get("options").musicEnabled){
         var loadedMusic = Q.state.get("loadedMusic");
         var ld = loadedMusic.filter(function(songName){
@@ -41,7 +40,15 @@ Q.playSound=function(sound,callback){
     }
     if(callback){callback();}
 };
-
+//Does a normal Q.load, but also checks if music is enabled before loading.
+//This allows you to not load music while testing.
+Q.loadMusic=function(music,callback){
+    if(Q.state.get("options").musicEnabled){
+        Q.load(music,callback);
+    } else {
+        callback();
+    }
+};
     
 };
 

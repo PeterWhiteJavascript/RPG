@@ -70,8 +70,6 @@ Quintus.HUD=function(Q){
                     if(Q.BatCon.getTileType([loc[0]+i,loc[1]+j-(zoc-Math.abs(i))])==="impassable") continue;
                     //Don't allow the center tile
                     if(i===0&&loc[1]+j-(zoc-Math.abs(i))===loc[1]) continue;
-                    //Don't add a tile if there already is one
-                    if(grid[loc[1]+j-(zoc-Math.abs(i))][loc[0]+i]) continue;
                     
                     //Keep a reference to the ZOC tiles in each object and also here
                     var tile = this.stage.insert(new Q.ZOCTile({loc:[loc[0]+i,loc[1]+j-(zoc-Math.abs(i))]}));
@@ -405,12 +403,12 @@ Quintus.HUD=function(Q){
             else if(result.hit||result.crit){
                 damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
                 this.text.push({func:"showDamage",obj:defender,props:[damage]});
+                attacker.takeDamage(damage);
                 //Show an animation if the user of the skill kills themselves
                 if(attacker.p.hp<=0){
                     
                 }  
             }
-            attacker.takeDamage(damage);
             return damage;
         },
         calcBlowDamage:function(attacker, defender, float) {
@@ -999,8 +997,8 @@ Quintus.HUD=function(Q){
             return to;
         },
         checkInBoundsDown:function(to){
-            if(this.p.selected>=this.p.options[this.p.menuNum].length-1){
-                this.p.selected=this.p.options[this.p.menuNum].length-1;to=0;
+            if(to>this.p.options[this.p.menuNum].length-1){
+                to=0;
             };
             return to;
         },
@@ -1428,7 +1426,6 @@ Quintus.HUD=function(Q){
             this._super(p, {
                 type:Q.SPRITE_NONE,
                 collisionMask:Q.SPRITE_NONE,
-                z:99,
                 status:[],
                 statusNum:0,
                 time:0,
@@ -1437,6 +1434,7 @@ Quintus.HUD=function(Q){
                 frame:0
             });
             this.setPos();
+            this.p.z = this.p.char.p.z;
             this.displayStatus();
         },
         setPos:function(){
@@ -1493,8 +1491,7 @@ Quintus.HUD=function(Q){
                 opacity:1,
                 size:12,
                 text:"",
-                fill:"white",
-                z:100
+                fill:"white"
             });
             Q.BatCon.setXY(this);
             this.add("tween");
