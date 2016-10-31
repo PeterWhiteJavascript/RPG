@@ -2,7 +2,9 @@
     "bgs":["bg/forest.jpg","bg/city.jpg"],
     "chars":["story/l.jpg","story/shini.jpg","story/pyro.png"],
     "maps":["homeland.tmx"],
+    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
     "dialogue":{
+        "music":"the_usual.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Press enter."],"asset":[false,"pyro.png"],"pos":"right"},
@@ -89,20 +91,21 @@
         }
     },
     "battle":{
+        "music":"battle.mp3",
         "map":"homeland.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
         "placementSquares":[[10,9],[11,9],[3,3],[4,1],[4,2],[4,3]],
         "enemies":[
-            {"loc":[10,7],"charClass":"archer","level":1,"equipmentRank":2},
-            {"loc":[9,8],"charClass":"barbarian","level":2,"equipmentRank":1},
-            {"loc":[9,2],"charClass":"archer","level":2,"equipmentRank":1},
-            {"loc":[10,2],"charClass":"archer","level":2,"equipmentRank":1},
-            {"loc":[11,2],"charClass":"archer","level":2,"equipmentRank":1},
-            {"loc":[9,3],"charClass":"barbarian","level":2,"equipmentRank":1},
-            {"loc":[10,3],"charClass":"barbarian","level":2,"equipmentRank":1},
-            {"loc":[11,3],"charClass":"barbarian","level":2,"equipmentRank":1},
-            {"loc":[11,14],"charClass":"knight","level":2,"equipmentRank":1}
+            {"loc":[10,7],"charClass":"archer","level":1,"equipmentRank":2,"dir":"down"},
+            {"loc":[9,8],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"right"},
+            {"loc":[9,2],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[10,2],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[11,2],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[9,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[10,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[11,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
+            {"loc":[11,14],"charClass":"knight","level":2,"equipmentRank":1,"dir":"up"}
         ],
         "interactables":[
             {}
@@ -118,6 +121,7 @@
         ]
     },
     "victory":{
+        "music":"the_usual.mp3",
         "bg":"",
         "interaction":[
             {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
@@ -125,6 +129,7 @@
         ]
     },
     "defeat":{
+        "music":"the_usual.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},

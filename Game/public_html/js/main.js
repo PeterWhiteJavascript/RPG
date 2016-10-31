@@ -27,15 +27,21 @@ Q.state.set({
     options:{
         //If true, BGM will play
         musicEnabled:true,
+        musicVolume:100,
         //If true, SFX will play
         soundEnabled:true,
+        soundVolume:100,
         //The speed at which the text cycles on screen (1,2, or 3)
         textSpeed:1,
         //If true, text will automatically go to the next text after the previous one completes.
         autoScroll:false,
         //How fast the cursor moves in battle
         cursorSpeed:2
-    }
+    },
+    //Which tunes have been loaded (so that we don't load music twice)
+    loadedMusic:[],
+    //The current music
+    currentMusic:""
 });
 
 //Sort the equipment by rank so it doesn't have to be done every time
@@ -120,9 +126,19 @@ var files = [
     "ui/text_box.png",
     //IMAGES TILES
     "tiles/tiles.png",
+    //ANIMATIONS
+    "animations/SonicBoom.png",
+    "animations/Whirlwind.png",
     //AUDIO SFX
-    //"sfx/attack.mp3",
+    "sfx/confirm.mp3",
+    "sfx/dying.mp3",
+    "sfx/explosion.mp3",
+    "sfx/hit1.mp3",
+    "sfx/inflict_status.mp3",
+    "sfx/shooting.mp3",
+    "sfx/slashing.mp3",
     "sfx/text_stream.mp3",
+    "sfx/whirlwind.mp3",
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA
@@ -141,8 +157,6 @@ var files = [
     "json/story/act1_3.json",
     //THE SAMPLE SAVE DATA
     "json/data/sample_save_data.json"
-    
-    
 ];
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){

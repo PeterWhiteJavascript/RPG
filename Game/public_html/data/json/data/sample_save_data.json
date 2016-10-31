@@ -34,7 +34,7 @@
             "level":3,
             "gender":"male",
             "equipment":{
-                "righthand":["weapon","opBow"],
+                "righthand":["weapon","woodenBow"],
                 "lefthand":false,
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
@@ -83,8 +83,10 @@
     },
     
     "options":{
-        "musicEnabled":false,
+        "musicEnabled":true,
+        "musicVolume":20,
         "soundEnabled":true,
+        "soundVolume":100,
         "textSpeed":3,
         "autoScroll":true,
         "cursorSpeed":3

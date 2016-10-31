@@ -2,7 +2,9 @@
     "bgs":["bg/forest.jpg"],
     "chars":["story/l.jpg"],
     "maps":["homeland.tmx"],
+    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
     "dialogue":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["Let's help this guy out!","Come on, step it up!"],"asset":["l.jpg",false],"pos":"left"},
@@ -12,6 +14,7 @@
         
     },
     "battle":{
+        "music":"battle.mp3",
         "map":"homeland.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
@@ -28,6 +31,7 @@
         ]
     },
     "victory":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["GG EZ","Back to town"],"asset":[false,"l.jpg"],"pos":"right"},
@@ -35,6 +39,7 @@
         ]
     },
     "defeat":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["LOST the GAME!"],"asset":["l.jpg",false],"pos":"left"},

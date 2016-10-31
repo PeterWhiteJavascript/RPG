@@ -4,16 +4,20 @@ Quintus.SceneFuncs=function(Q){
         Q.load("json/story/"+scene+".json",function(){
             var data = Q.assets["json/story/"+scene+".json"];
             //Load the bg assets and create the scene
-            Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+            Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).concat(data.music).join(','), function() {
                 //If there is dialogue
                 if(data.dialogue){
-                    //Stage the scene
-                    Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
+                    Q.playMusic(data.dialogue.music,function(){
+                        //Stage the scene
+                        Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
+                    });
                 }
                 if(data.battle) {
                     //For those occasions where there's no dialogue cutscene, stage the battle scene.
                     if(!data.dialogue){
-                        Q.stageScene("battle",0,{data:data,battle:data.battle});
+                        Q.playMusic(data.battle.music,function(){
+                                Q.stageScene("battle",0,{data:data,battle:data.battle});
+                        });
                     }
                 }
             });
@@ -37,50 +41,54 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("battle",function(stage){
         //The data that is used for this battle
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
-        //Load the tmx tile map
-        Q.stageTMX(battleData.map, stage);
-        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-        //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
-        Q.BattleGrid = new Q.BattleGrid({stage:stage});
-        //The battle controller holds all battle specific functions
-        Q.BatCon = new Q.BattleController({stage:stage});
-        stage.add("viewport");
-        stage.viewport.scale = 2;
-        //Display alex
-        var allyData = Q.state.get("allies");
-        var allies = [];
-        allyData.forEach(function(ally,i){
-            var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
-            char.add("statCalcs");
-            allies.push(char);
-            char.p.loc = battleData.placementSquares[i];
+        var music = battleData.music;
+        if(!music) music = Q.state.get("currentMusic"); 
+        Q.playMusic(music,function(){
+            //Load the tmx tile map
+            Q.stageTMX(battleData.map, stage);
+            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+            //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
+            Q.BattleGrid = new Q.BattleGridObject({stage:stage});
+            //The battle controller holds all battle specific functions
+            Q.BatCon = new Q.BattleController({stage:stage});
+            stage.add("viewport");
+            stage.viewport.scale = 2;
+            //Display alex
+            var allyData = Q.state.get("allies");
+            var allies = [];
+            allyData.forEach(function(ally,i){
+                var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
+                char.add("statCalcs");
+                allies.push(char);
+                char.p.loc = battleData.placementSquares[i];
+            });
+            //Display the enemies, interactables, pickups, and placement locations
+            var enemyData = battleData.enemies;
+            var enemies = [];
+            enemyData.forEach(function(enm){
+                var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy",dir:enm.dir?enm.dir:"left"});
+                char.add("randomCharacter,statCalcs");
+                enemies.push(char);
+                char.p.loc = enm.loc;
+            });
+
+            allies.forEach(function(ally){
+                stage.insert(ally);
+            });
+            enemies.forEach(function(enemy){
+                stage.insert(enemy);
+            });
+            //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
+            Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
+
+            //Default to following the pointer
+            Q.viewFollow(Q.pointer,stage);
+
+            //Display the hud which shows character and terrain information
+            Q.stageScene("battleHUD",3,{pointer:Q.pointer});
+            Q.BatCon.startBattle();
         });
-        //Display the enemies, interactables, pickups, and placement locations
-        var enemyData = battleData.enemies;
-        var enemies = [];
-        enemyData.forEach(function(enm){
-            var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy"});
-            char.add("randomCharacter,statCalcs");
-            enemies.push(char);
-            char.p.loc = enm.loc;
-        });
-        
-        allies.forEach(function(ally){
-            stage.insert(ally);
-        });
-        enemies.forEach(function(enemy){
-            stage.insert(enemy);
-        });
-        //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-        Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
-        
-        //Default to following the pointer
-        Q.viewFollow(Q.pointer,stage);
-        
-        //Display the hud which shows character and terrain information
-        Q.stageScene("battleHUD",3,{pointer:Q.pointer});
-        Q.BatCon.startBattle();
         
     },{sort:true});
     //Displayed when selecting a character in battle
@@ -151,7 +159,7 @@ Quintus.SceneFuncs=function(Q){
         var statsHUD = stage.insert(new Q.StatsHUD());
     });
     Q.scene("battleText",function(stage){
-        Q.stage(2).insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));
+        stage.insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));
     });
     Q.scene("location",function(stage){
         //Set the current menu. Default is 'start'
@@ -159,7 +167,9 @@ Quintus.SceneFuncs=function(Q){
         Q.state.set("currentMenu",stage.options.menu?stage.options.menu:Q.state.get("currentMenu"));
         //Load any bgs for this location
         Q.load(stage.options.data.bgs.join(','),function(){
-            Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});
+            Q.playMusic(stage.options.data[stage.options.menu].music,function(){
+                Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});
+            });
         });
     });
 };

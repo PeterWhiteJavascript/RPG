@@ -5,6 +5,7 @@ Q.stopMusic=function(music){
 };
 
 Q.playMusic=function(music,callback){
+    console.log(Q.audio)
     if(Q.state.get("options").musicEnabled){
         var loadedMusic = Q.state.get("loadedMusic");
         var ld = loadedMusic.filter(function(songName){

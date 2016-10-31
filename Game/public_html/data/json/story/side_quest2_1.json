@@ -1,8 +1,10 @@
 {
     "bgs":["bg/forest.jpg"],
     "chars":["story/l.jpg"],
-    "maps":["homeland.tmx"],
+    "maps":["le_forest.tmx"],
+    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
     "dialogue":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["This is side quest 2_1!"],"asset":["l.jpg",false],"pos":"left"},
@@ -11,15 +13,16 @@
         
     },
     "battle":{
-        "map":"homeland.tmx",
+        "music":"battle.mp3",
+        "map":"le_forest.tmx",
         "winScene":"victory",
         "loseScene":"defeat",
-        "placementSquares":[[7,6],[3,2],[3,3],[4,1],[4,2],[4,3]],
+        "placementSquares":[[5,4],[4,5],[4,4],[5,5],[4,2],[4,3]],
         "enemies":[
-            {"loc":[8,5],"charClass":"archer","level":1,"equipmentRank":1},
-            {"loc":[8,6],"charClass":"barbarian","level":1,"equipmentRank":1},
-            {"loc":[8,7],"charClass":"barbarian","level":1,"equipmentRank":1},
-            {"loc":[8,8],"charClass":"barbarian","level":1,"equipmentRank":1}
+            {"loc":[12,7],"charClass":"archer","level":1,"equipmentRank":1},
+            {"loc":[12,8],"charClass":"archer","level":1,"equipmentRank":1},
+            {"loc":[11,6],"charClass":"barbarian","level":1,"equipmentRank":1},
+            {"loc":[11,9],"charClass":"barbarian","level":1,"equipmentRank":1}
         ],
         "interactables":[
             {}
@@ -29,6 +32,7 @@
         ]
     },
     "victory":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["GG EZ","Back to town"],"asset":[false,"l.jpg"],"pos":"right"},
@@ -36,6 +40,7 @@
         ]
     },
     "defeat":{
+        "music":"the_usual.mp3",
         "bg":"bg/forest.jpg",
         "interaction":[
             {"text":["LOST the GAME!"],"asset":["l.jpg",false],"pos":"left"},

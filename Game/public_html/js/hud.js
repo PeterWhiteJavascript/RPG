@@ -1,7 +1,7 @@
 Quintus.HUD=function(Q){
     //The grid that keeps track of all interactable objects in the battle.
     //Any time an object moves, this will be updated
-    Q.GameObject.extend("BattleGrid",{
+    Q.GameObject.extend("BattleGridObject",{
         init:function(p){
             this.stage = p.stage;
             this.grid = [];
@@ -194,9 +194,6 @@ Quintus.HUD=function(Q){
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="enemy"; 
             });
-            //Get the pointer to send a target if it is on one when this menu is created
-            var pointer = Q.pointer;
-            pointer.checkTarget();
             Q.viewFollow(this.turnOrder[0],this.stage);
             this.startTurn();
         },
@@ -230,7 +227,7 @@ Quintus.HUD=function(Q){
                 Q.viewFollow(Q.pointer,this.stage);
                 Q.pointer.p.loc = this.turnOrder[0].p.loc;
                 this.setXY(Q.pointer);
-                Q.pointer.p.target = this.turnOrder[0];
+                Q.pointer.checkTarget();
                 //Display the menu on turn start
                 Q.pointer.displayCharacterMenu();
             }
@@ -275,6 +272,7 @@ Quintus.HUD=function(Q){
             if(this.markedForRemoval.length){
                 for(var i=0;i<this.markedForRemoval.length;i++){
                     this.removeFromBattle(this.markedForRemoval[i]);
+                    this.markedForRemoval[i].destroy();
                 }
                 this.markedForRemoval = [];
             }
@@ -354,7 +352,7 @@ Quintus.HUD=function(Q){
             if(attacker.p.hp<=0||defender.p.hp<=0){return;};
             //Miss
             if(result.block||result.miss){
-                this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,0]},attacker.p.name+" missed "+defender.p.name+".");
+                this.text.push({func:"showMiss",obj:defender,props:[]});
             } else {
                 damage = this.successfulBlow(attacker,defender,result);
             }
@@ -400,16 +398,19 @@ Quintus.HUD=function(Q){
             }
         },
         processSelfTarget:function(attacker,defender,result){
+            var damage = 0;
             if(result.block){
-                this.text.push({func:"doAttackAnim",obj:attacker,props:[attacker,damage]});
+                this.text.push({func:"showMiss",obj:defender,props:[]});
             }
             else if(result.hit||result.crit){
-                var damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
-                this.text.push({func:"doAttackAnim",obj:attacker,props:[attacker,damage]});
+                damage = Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour;
+                this.text.push({func:"showDamage",obj:defender,props:[damage]});
+                //Show an animation if the user of the skill kills themselves
                 if(attacker.p.hp<=0){
-                    this.text.push(attacker.p.name+" was killed by their own attack!");
+                    
                 }  
             }
+            attacker.takeDamage(damage);
             return damage;
         },
         calcBlowDamage:function(attacker, defender, float) {
@@ -417,51 +418,40 @@ Quintus.HUD=function(Q){
         },
         successfulBlow:function(attacker,defender,result){
             var damage = this.calcBlowDamage(attacker, defender, Math.random());
-            
-            this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,damage]});if(result.hit) this.text.push(attacker.p.name+" hit "+defender.p.name+".");
-            if(result.crit) this.text.push(attacker.p.name+" went critical, but "+defender.p.name+" defended well!");
-            if(defender.p.hp<=0){
-                this.text.push(defender.p.name+" was defeated.");
-            }  
+            this.text.push({func:"showDamage",obj:defender,props:[damage]});
+            defender.takeDamage(damage);
             return damage;
         },
         criticalBlow:function(attacker,defender,result){
             var damage = attacker.p.totalDamageHigh;
             var rand = Math.ceil(Math.random()*100);
-            this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,damage]});
-            this.text.push(attacker.p.name+" hit a critical blow against "+defender.p.name+".");
-            if(defender.p.hp<=0){
-                this.text.push(defender.p.name+" was defeated.");
-            }  
-            else if(rand<=attacker.p.totalSpeed){
-                this.text.push(attacker.p.name+" was so fast, they got another attack in!");
+            this.text.push({func:"showDamage",obj:defender,props:[damage]});
+            if(rand<=attacker.p.totalSpeed&&defender.p.hp>0){
                 this.calcAttack(attacker,defender);
             }
+            defender.takeDamage(damage);
             return damage;
         },
         glancingBlow:function(attacker,defender,result){
             var damage = Math.floor(((Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-defender.p.armour)/10);
-            
-            this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,damage]});
-            this.text.push(attacker.p.name+" hit a glancing blow against "+defender.p.name+".");
-            if(defender.p.hp<=0){
-                this.text.push(defender.p.name+" was defeated.");
-            }
+            this.text.push({func:"showDamage",obj:defender,props:[damage]});
+            defender.takeDamage(damage);
             return damage;
         },
         counterChance:function(attacker,defender,result){
             if(defender.p.hp<=0){return;};
-            this.text.push(attacker.p.name+" tried to attack "+defender.p.name+", but");
-            this.text.push(defender.p.name+" countered "+attacker.p.name+"!");
+            this.text.push({func:"showMiss",obj:defender,props:[]});
+            //this.text.push(attacker.p.name+" tried to attack "+defender.p.name+", but");
+            //this.text.push(defender.p.name+" countered "+attacker.p.name+"!");
             //TO DO: Check range for counter so defender can't attack further than their range.
             this.calcAttack(defender,attacker);
             return 0;
         },
         miss:function(attacker,defender,result){
-            this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,0]});
+            this.text.push({func:"showMiss",obj:defender,props:[]});
             var rand = Math.ceil(Math.random()*100);
             if(rand<=attacker.p.totalSpeed){
-                this.text.push(attacker.p.name+" got an extra attack!");
+                //this.text.push(attacker.p.name+" got an extra attack!");
                 this.calcAttack(attacker,defender);
             }
             return 0;
@@ -499,35 +489,54 @@ Quintus.HUD=function(Q){
         },
         doAttack:function(attacker,targets,skill,turnEnded){
             this.text = [];
+            var anim = "Attack";
+            var sound = "slashing";
             attacker.p.didAction = true;
             if(skill){
                 attacker.p.sp-=skill.cost;
+                if(skill.anim) anim = skill.anim;
+                if(skill.sound) sound = skill.sound;
             }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
                 this.calcAttack(attacker,targets[i],skill);
             }
+            var t = this;
             if(turnEnded){
-                Q.stageScene("battleText",2,{text:this.text,callback:function(){Q.BatCon.endTurn();}});
-            } else {
-                Q.stageScene("battleText",2,{text:this.text,callback:function(){
-                    if(Q.BatCon.turnOrder[0].p.hp<=0){
+                attacker.doAttackAnim(targets,anim,sound,function(){
+                    for(var i=0;i<t.text.length;i++){
+                        t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
+                    }
+                    setTimeout(function(){
                         Q.BatCon.endTurn();
-                        return;
+                    },500);
+                });
+                
+            } else {
+                attacker.doAttackAnim(targets,anim,sound,function(){
+                    for(var i=0;i<t.text.length;i++){
+                        t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
                     }
-                    //Remove any characters that have been defeated
-                    Q.BatCon.removeMarked();
-                    //Check if there's either no more enemies, or no more allies
-                    if(Q.BatCon.checkBattleOver()) return;
-                    //Get the new walk matrix since objects may have moved
-                    attacker.p.walkMatrix = new Q.Graph(attacker.getMatrix("walk"));
-                    //Snap the pointer to the current character
-                    Q.pointer.snapTo(Q.BatCon.turnOrder[0]);
-                    //If the current character is not AI
-                    if(Q.BatCon.turnOrder[0].p.team!=="enemy"){
-                        Q.pointer.displayCharacterMenu();
-                    }
-                }});
+                    
+                    setTimeout(function(){
+                        if(Q.BatCon.turnOrder[0].p.hp<=0){
+                            Q.BatCon.endTurn();
+                            return;
+                        }
+                        //Remove any characters that have been defeated
+                        Q.BatCon.removeMarked();
+                        //Check if there's either no more enemies, or no more allies
+                        if(Q.BatCon.checkBattleOver()) return;
+                        //Get the new walk matrix since objects may have moved
+                        attacker.p.walkMatrix = new Q.Graph(attacker.getMatrix("walk"));
+                        //Snap the pointer to the current character
+                        Q.pointer.snapTo(Q.BatCon.turnOrder[0]);
+                        //If the current character is not AI
+                        if(Q.BatCon.turnOrder[0].p.team!=="enemy"){
+                            Q.pointer.displayCharacterMenu();
+                        }
+                    },500);
+                });
             }
         }
     });
@@ -576,9 +585,9 @@ Quintus.HUD=function(Q){
             if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.getTileType(tileTo)!=="impassable"){
                 text.push({func:"pushed",obj:target,props:[tileTo]});
                 if(tiles===1){
-                    text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tile!");
+                    //text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tile!");
                 } else {
-                    text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tiles!");
+                    //text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tiles!");
                 }
             };
             return text;
@@ -592,10 +601,10 @@ Quintus.HUD=function(Q){
             var curStatus = target.hasStatus(status);
             if(curStatus){
                 curStatus.turns = curStatus.turns>num?num:curStatus.turns;
-                text.push(target.p.name+"'s "+status+" has been extended!");
+                //text.push(target.p.name+"'s "+status+" has been extended!");
             } else {
                 text.push({func:"addStatus",obj:target,props:[status,num]});
-                text.push(target.p.name+" was given "+status+" status.");
+                //text.push(target.p.name+" was given "+status+" status.");
             }
             return text;
         }
@@ -1237,7 +1246,7 @@ Quintus.HUD=function(Q){
                             break;
                         case "skill":
                             //Make sure there's a target there
-                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0])){
+                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0]).length){
                                 this.p.target.previewDoSkill(Q.pointer.p.loc,this.p.skill);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
@@ -1390,7 +1399,12 @@ Quintus.HUD=function(Q){
                 text.obj[text.func].apply(text.obj,text.props);
                 this.p.textIndex++;
             }
-            if(this.p.textIndex>=this.p.text.length){this.destroy();this.p.dialogueArea.destroy();this.p.callback();return;};
+            if(this.p.textIndex>=this.p.text.length){
+                this.destroy();
+                this.p.dialogueArea.destroy();
+                this.p.callback();
+                return;
+            };
             this.p.dialogueText.setNewText(this.p.text[this.p.textIndex]);
         },
         checkInputs:function(){
@@ -1492,6 +1506,16 @@ Quintus.HUD=function(Q){
             ctx.fillStyle = this.p.color;
             ctx.font      = 'Bold 15px Arial';
             ctx.fillText(this.p.text, -this.p.w/2,0);
+        }
+    });
+    Q.Sprite.extend("DynamicAnim", {
+        init:function(p){
+            this._super(p, {
+                type:Q.SPRITE_NONE,
+                collisionMask:Q.SPRITE_NONE
+            });
+            Q.BatCon.setXY(this);
+            this.add("animation");
         }
     });
 };

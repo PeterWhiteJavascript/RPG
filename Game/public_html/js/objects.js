@@ -71,11 +71,47 @@ Quintus.Objects=function(Q){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("walking"+this.p.dir);
             },
-            playAttack:function(dir,callback){
+            playMiss:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("missed"+dir);
+                var to = [this.p.x-16,this.p.y];
+                this.animate({x:to[0], y:to[1]}, .2, Q.Easing.Quadratic.Out)
+                        .chain({x:this.p.x,y:this.p.y},.2,Q.Easing.Quadratic.Out);
+            },
+            playAttack:function(dir,callback,targets){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("attacking"+this.p.dir);
-                //Temporary cool flip
-                this.animate({angle:this.p.angle+360},1,{callback:function(){callback();}});
+                this.on("doneAttack",function(){
+                    this.playStand(this.p.dir);
+                    this.off("doneAttack");
+                    if(callback) callback();
+                });
+            },
+            playSonicBoom:function(dir,callback,targets){
+                this.playAttack(dir);
+                var boom = Q.stage(0).insert(new Q.DynamicAnim({sheet:"SonicBoom",sprite:"SonicBoom",frame:0,loc:Q.pointer.p.loc,z:101}));
+                boom.on("doneAttack",function(){
+                    if(callback) callback();
+                    boom.destroy();
+                });
+                boom.play("booming");
+            },
+            playWhirlwind:function(dir,callback,targets){
+                this.playAttack(dir);
+                var locs = [];
+                targets.forEach(function(target){
+                    locs.push(target.p.loc);
+                });
+                locs.forEach(function(loc,idx){
+                    var wind = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Whirlwind",sprite:"Whirlwind",frame:0,loc:loc,z:101}));
+                    wind.on("doneAttack",function(){
+                        if(idx===0){
+                            if(callback) callback();
+                        }
+                        wind.destroy();
+                    });
+                    wind.play("winding");
+                });
             }
         }
     });
@@ -265,6 +301,7 @@ Quintus.Objects=function(Q){
             },
             //Displays the miss dynamic number
             showMiss:function(){
+                this.playMiss(this.p.dir);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!"}));
             },
             //Displays the damage dynamic number
@@ -279,24 +316,19 @@ Quintus.Objects=function(Q){
                     Q.BattleGrid.removeZOC(this);
                     Q.BattleGrid.removeObject(this.p.loc);
                     Q.BatCon.markForRemoval(this);
-                    this.destroy();
                 }
+                //Q.playSound("hit1.mp3");
             },
             addStatus:function(name,turns){
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
                 this.p.status[name] = {name:name,turns:turns};
+                Q.playSound("inflict_status.mp3");
             },
-            doAttackAnim:function(defender,damage){
-                this.faceTarget(defender.p.loc);
-                var callback;
-                if(damage){
-                    defender.takeDamage(damage);
-                    callback = function(){defender.showDamage(damage);};
-                } else {
-                    callback = function(){defender.showMiss(damage);};
-                }
-                this.playAttack(this.p.dir,callback);
+            doAttackAnim:function(targets,animation,sound,callback){
+                this.faceTarget(targets[0].p.loc);
+                this["play"+animation](this.p.dir,callback,targets);
+                Q.playSound(sound+".mp3");
             },
             
             advanceStatus:function(){
@@ -355,7 +387,7 @@ Quintus.Objects=function(Q){
                     }
                 }
                 this.p.dir = newDir;
-            },
+            }
             
         }
     });
@@ -537,6 +569,10 @@ Quintus.Objects=function(Q){
             Q.BatCon.setXY(this);
             this.playStand(this.p.dir);
             Q._generatePoints(this,true);
+            //TEMPORARY SINCE THE FINAL SPRITES WILL NOT BE ISOMETRIC
+            if(this.p.dir==="down"||this.p.dir==="right"){
+                this.p.flip = 'x';
+            }
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function

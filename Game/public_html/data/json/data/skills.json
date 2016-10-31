@@ -37,7 +37,9 @@
             "damageLow":50,
             "damageHigh":60,
             "range":["self",0],
-            "aoe":["normal",1,"excludeCenter"]
+            "aoe":["normal",1,"excludeCenter"],
+            "anim":"Whirlwind",
+            "sound":"whirlwind"
         },
         "superwhirlwind":{
             "name":"Super Whirlwind",
@@ -45,7 +47,9 @@
             "damageLow":20,
             "damageHigh":50,
             "range":["self",0],
-            "aoe":["normal",2]
+            "aoe":["normal",2],
+            "anim":"Whirlwind",
+            "sound":"whirlwind"
         }
     },
     "axe":{
@@ -96,7 +100,9 @@
             "damageLow":999,
             "damageHigh":999,
             "range":["normal",6],
-            "aoe":["corners",1]
+            "aoe":["corners",1],
+            "anim":"SonicBoom",
+            "sound":"explosion"
         },
         "crosshair":{
             "name":"Crosshair",
