@@ -74,6 +74,9 @@
             "name":"Pierce",
             "cost":6,
             "range":["straight",2],
+            "aoe":["straight",2],
+            "damageLow":20,
+            "damageHigh":50,
             "effect":{
                 "func":"pierce",
                 "props":[20,50,2],
@@ -106,7 +109,7 @@
         },
         "crosshair":{
             "name":"Crosshair",
-            "cost":20,
+            "cost":15,
             "damageLow":999,
             "damageHigh":999,
             "range":["normal",6],

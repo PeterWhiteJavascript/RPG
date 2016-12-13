@@ -71,8 +71,11 @@ Quintus.HUD=function(Q){
                     //Don't allow the center tile
                     if(i===0&&loc[1]+j-(zoc-Math.abs(i))===loc[1]) continue;
                     
+                    var tileLoc = [loc[0]+i,loc[1]+j-(zoc-Math.abs(i))];
+                    //Don't allow tiles that are offscreen
+                    if(tileLoc[0]<0||tileLoc[1]<0) continue;
                     //Keep a reference to the ZOC tiles in each object and also here
-                    var tile = this.stage.insert(new Q.ZOCTile({loc:[loc[0]+i,loc[1]+j-(zoc-Math.abs(i))]}));
+                    var tile = this.stage.insert(new Q.ZOCTile({loc:tileLoc}));
                     grid[tile.p.loc[1]][tile.p.loc[0]] = tile;
                     obj.p.zocTiles.push(tile);
                 }
@@ -107,11 +110,12 @@ Quintus.HUD=function(Q){
         removeObject:function(loc){
             this.grid[loc[1]][loc[0]] = false;
         },
-        getObjectsAround:function(loc,area){
+        getObjectsAround:function(loc,aoe,target){
             var objects = [];
-            var radius = area[1];
+            var radius = aoe[1];
             var bounds = this.getBounds(loc,radius);
-            switch(area[0]){
+            var dir = target?target.p.dir:false;
+            switch(aoe[0]){
                 //Diamond shape
                 case "normal":
                     for(var i=-radius;i<radius+1;i++){
@@ -130,9 +134,18 @@ Quintus.HUD=function(Q){
                         }
                     }
                     break;
+                    //Straight line
+                case "straight":
+                    var arr = Q.getDirArray(dir);
+                    for(var i=0;i<radius;i++){
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        var object = this.getObject(spot);
+                        if(object) objects.push(object);
+                    }
+                    break;
             }
             //Don't include the middle square
-            if(area[2]==="excludeCenter"){
+            if(aoe[2]==="excludeCenter"){
                 objects.forEach(function(obj,i){
                     if(obj.p.loc[0]===loc[0]&&obj.p.loc[1]===loc[1]){
                         objects.splice(i,1);
@@ -318,7 +331,24 @@ Quintus.HUD=function(Q){
             }
             
             return from;
+        },
+        
+        //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
+        previewAttackTarget:function(user,loc){
+            var target = Q.BattleGrid.getObject(loc);
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:[target]}));
+        },
+        //Previews a skill
+        previewDoSkill:function(user,loc,skill){
+            var targets = [];
+            if(skill.aoe){
+                targets = Q.BattleGrid.getObjectsAround(loc,skill.aoe,user);
+            } else {
+                targets[0] = Q.BattleGrid.getObject(loc);
+            }
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,skill:skill}));
         }
+        
     });
     Q.component("attackFuncs",{
         added:function(){
@@ -467,6 +497,8 @@ Quintus.HUD=function(Q){
                         damage = this.processSkillResult(blow);
                     }
                 }
+                //No negative damage please :)
+                if(damage<0) damage = 0;
                 if(defender.p.hp-damage<=0) return;
                 if(skill.effect){
                     var rand = Math.ceil(Math.random()*skill.effect.accuracy);
@@ -500,6 +532,7 @@ Quintus.HUD=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
             }
             var t = this;
+            //If this character has now attacked and moved, end their turn.
             if(turnEnded){
                 attacker.doAttackAnim(targets,anim,sound,function(){
                     for(var i=0;i<t.text.length;i++){
@@ -510,7 +543,9 @@ Quintus.HUD=function(Q){
                     },500);
                 });
                 
-            } else {
+            } 
+            //If the character has not moved yet
+            else {
                 attacker.doAttackAnim(targets,anim,sound,function(){
                     for(var i=0;i<t.text.length;i++){
                         t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
@@ -532,6 +567,8 @@ Quintus.HUD=function(Q){
                         //If the current character is not AI
                         if(Q.BatCon.turnOrder[0].p.team!=="enemy"){
                             Q.pointer.displayCharacterMenu();
+                        } else {
+                            //Do whatever the AI does after attacking and can still move
                         }
                     },500);
                 });
@@ -539,11 +576,36 @@ Quintus.HUD=function(Q){
         }
     });
     Q.component("skillFuncs",{
-        //This will only be called on the enemy that has been selected.
-        //Calculate any affected units here based on the difference between the user and target's loc + range
+        //Damage is reduced for further targets
         pierce:function(damageLow,damageHigh,range,target,user){
             var text = [];
+            console.log(damageLow,damageHigh,range,target,user)
+            /*var userLoc = user.p.loc;
+            var targetLoc = target.p.loc;
+            //If we're attacking in the y direction
+            if(targetLoc[0]-userLoc[0]===0){
+                //Attacking up
+                if(targetLoc[1]-userLoc[1]<0){
+                    
+                } 
+                //Attacking down
+                else {
+                    
+                }
+            } 
+            //If we're attacking in the x direction
+            else {
+                //Attacking left
+                if(targetLoc[0]-userLoc[0]<0){
+                    
+                } 
+                //Attacking right
+                else {
+                    
+                }
+            }
             
+            */
             return text;
 
         },
@@ -558,7 +620,7 @@ Quintus.HUD=function(Q){
             var tileTo = [];
             //Pushing in the y direction
             if(user.p.loc[0]===target.p.loc[0]){
-                //Pushing to the up
+                //Pushing up
                 if(user.p.loc[1]-target.p.loc[1]>0){
                     tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
                 } 
@@ -707,6 +769,21 @@ Quintus.HUD=function(Q){
         added:function(){
             this.getAOERange(this.entity.p.loc,this.entity.p.skill.aoe);
         },
+        moveStraightTiles:function(dir){
+            var tiles = this.aoeTiles;
+            var arr = Q.getDirArray(dir);
+            //Loop backwards so the closer enemy is targeted
+            for(var i=tiles.length-1;i>=0;i--){
+                var tile = tiles[i];
+                var loc = tile.p.center;
+                tile.p.loc = [(i+1)*arr[0]+loc[0],(i+1)*arr[1]+loc[1]];
+                Q.BatCon.setXY(tile);
+                var objOn = Q.BattleGrid.getObject(tile.p.loc);
+                if(objOn){
+                    Q.pointer.trigger("onTarget",objOn);
+                }
+            }
+        },
         moveTiles:function(to){
             this.aoeTiles.forEach(function(tile){
                 tile.p.loc = [tile.p.relative[0]+to[0],tile.p.relative[1]+to[1]];
@@ -742,6 +819,16 @@ Quintus.HUD=function(Q){
                         for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
                             aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
                         }
+                    }
+                    break;
+                    //Line shape
+                case "straight":
+                    var dir = this.entity.p.user.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(dir);
+                    for(var i=0;i<radius;i++){
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
                     break;
             }
@@ -798,6 +885,7 @@ Quintus.HUD=function(Q){
         },
         reset:function(){
             Q.BatCon.setXY(this);
+            this.show();
             this.checkTarget();
             this.addControls();
             this.show();
@@ -819,8 +907,22 @@ Quintus.HUD=function(Q){
             }
             return loc;
         },
-        addControls:function(){
+        addControls:function(skill){
+            if(skill&&skill.range){
+                if(skill.range[0]==="straight"){
+                    //Only takes into account the direction of the input.
+                    //Viewport is centered around the middle of the range
+                    this.on("checkInputs",this,"checkStraightInputs");
+                    //The pointer is hidden for straight aoe
+                    this.hide();
+                    //Force the first direction
+                    Q.inputs[this.p.user.p.dir]=true;
+                    return;
+                }
+            }
+            //The standard checkInputs. This creates a 
             this.on("checkInputs");
+            
         },
         displayCharacterMenu:function(){
             if(!this.p.target) return;
@@ -873,6 +975,51 @@ Quintus.HUD=function(Q){
                 p.loc = newLoc;
                 this.getTerrain();
                 this.checkTarget();
+                if(this.has("AOEGuide")) this.AOEGuide.moveTiles(p.loc);
+            } else {
+                p.diffX = 0;
+                p.diffY = 0;
+            }
+        },
+        checkStraightInputs:function(){
+            var p = this.p;
+            var input = Q.inputs;
+            var newLoc = [p.user.p.loc[0],p.user.p.loc[1]];
+            var dir;
+            if(input['up']){
+                newLoc[1]-=1;
+                dir = "up";
+                input['up']=false;
+            } else if(input['down']){
+                newLoc[1]+=1;
+                dir = "down";
+                input['down']=false;
+            } else if(input['right']){
+                newLoc[0]+=1;
+                dir = "right";
+                input['right']=false;
+            } else if(input['left']){
+                newLoc[0]-=1;
+                dir = "left";
+                input['left']=false;
+            }
+            var validLoc = this.checkValidLoc(newLoc);
+            //If there's a dir, loc, and the loc was changed
+            if(dir&&validLoc&&(newLoc[0]!==p.loc[0]||newLoc[1]!==p.loc[1])){
+                p.diffX = (newLoc[0]-p.loc[0])*p.stepDistanceX;
+                p.diffY = (newLoc[1]-p.loc[1])*p.stepDistanceY;
+                p.stepping = true;
+                p.origX = p.x;
+                p.origY = p.y;
+                p.destX = p.x+p.diffX;
+                p.destY = p.y+p.diffY;
+                p.stepWait = p.stepDelay;
+                //Set the loc right away and not when the pointer gets to the location
+                p.loc = newLoc;
+                this.getTerrain();
+                this.checkTarget();
+                p.user.playStand(dir);
+                if(this.has("AOEGuide")) this.AOEGuide.moveStraightTiles(dir);
             } else {
                 p.diffX = 0;
                 p.diffY = 0;
@@ -894,7 +1041,6 @@ Quintus.HUD=function(Q){
             p.stepping = false;
             p.diffX = 0;
             p.diffY = 0;
-            if(this.has("AOEGuide")) this.AOEGuide.moveTiles(this.p.loc);
             this.trigger("checkInputs");
             this.trigger("checkConfirm");
         }
@@ -1037,7 +1183,7 @@ Quintus.HUD=function(Q){
         //Shows the move grid and zoc
         loadMove:function(){
             Q.BattleGrid.showZOC(this.p.team==="enemy"?"ally":"enemy");
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"walk"}));
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
@@ -1046,7 +1192,7 @@ Quintus.HUD=function(Q){
         },
         //Shows the attack grid
         loadAttack:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"attack"}));
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
@@ -1061,17 +1207,23 @@ Quintus.HUD=function(Q){
         //Show the attack grid for the skill
         loadSkill:function(){
             var skill = this.p.skills[this.p.selected];
-            if(this.p.target.p.sp-skill.cost<0) return;
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({target:this.p.target,kind:"skill",skill:skill}));
+            if(this.p.target.p.sp-skill.cost<0){
+                alert("Not Enough SP!");
+                return;
+            }
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
-            Q.pointer.addControls();
-            Q.pointer.snapTo(this.p.target);
+            
             if(!skill.aoe){
                 skill.aoe = ["normal",0];
             }
             Q.pointer.p.skill = skill;
+            Q.pointer.p.user = this.p.target;
+            Q.pointer.snapTo(this.p.target);
+            Q.pointer.addControls(skill);
+            //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
         },
         //Loads the items menu
@@ -1114,29 +1266,29 @@ Quintus.HUD=function(Q){
             this.on("step");
         },
         inserted:function(){
-            var target = this.p.target;
+            var user = this.p.user;
             //Insert all of the squares
             switch(this.p.kind){
                 case "walk":
-                    //Loop through the target's move the get the move range
-                    this.getTileRange(target.p.loc,target.p.move,target.p["walkMatrix"]);
+                    //Loop through the user's move the get the move range
+                    this.getTileRange(user.p.loc,user.p.move,user.p["walkMatrix"]);
                     break;
                 case "attack":
-                    this.getTileRange(target.p.loc,target.p.range,target.p["attackMatrix"]);
+                    this.getTileRange(user.p.loc,user.p.range,user.p["attackMatrix"]);
                     break;
                 //Used for skills that have a weird range (eg 'T' shape)
                 case "skill":
                     var skill = this.p.skill;
                     switch(skill.range[0]){
                         case "self":
-                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[target.p.loc[0],target.p.loc[1]]})));
+                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[user.p.loc[0],user.p.loc[1]]})));
                             break;
                         case "normal":
-                            this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"]);
+                            this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"]);
                             break;
                         //No diagonal attack
                         case "straight":
-                            this.getTileRange(target.p.loc,skill.range[1],target.p["attackMatrix"],skill.range[0]);
+                            this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"],skill.range[0]);
                             break;
                     }
                     break;
@@ -1221,31 +1373,35 @@ Quintus.HUD=function(Q){
             return false;
         },
         step:function(){
+            //Run this when pressing confirm on a range tile
             if(Q.inputs['confirm']){
+                //Make sure the pointer is on a valid tile
                 if(this.checkValidPointerLoc()){
-                    var stage = this.p.target.stage;
+                    var user = this.p.user;
                     switch(this.p.kind){
                         case "walk":
                             if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 return;                            
                             }
                             //Hide the zoc
-                            Q.BattleGrid.hideZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
+                            Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
                             //Make the character move to the spot
-                            this.p.target.moveAlong(this.getPath(this.p.target.p.loc,Q.pointer.p.loc,this.p.target.p[this.p.kind+"Matrix"]));
+                            user.moveAlong(this.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
-                            //Make sure there's a target there
+                            //Make sure there's a user there
                             if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
-                                this.p.target.previewAttackTarget(Q.pointer.p.loc);
+                                Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
                             } else {return;}
                             break;
                         case "skill":
-                            //Make sure there's a target there
-                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,this.p.skill.aoe?this.p.skill.aoe:["normal",0]).length){
-                                this.p.target.previewDoSkill(Q.pointer.p.loc,this.p.skill);
+                            //Use the skill's aoe, else it's a normal single user
+                            var aoe = this.p.skill.aoe?this.p.skill.aoe:["normal",0];
+                            //Make sure there's a user 
+                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user).length){
+                                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.skill);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
                             } else {return;}
@@ -1258,10 +1414,11 @@ Quintus.HUD=function(Q){
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
                 //Hide the zoc
-                Q.BattleGrid.hideZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
+                Q.BattleGrid.hideZOC(this.p.user.p.team==="enemy"?"ally":"enemy");
                 Q.stage(2).ActionMenu.show();
                 Q.stage(2).ActionMenu.on("step","checkInputs");
-                Q.pointer.snapTo(this.p.target);
+                Q.pointer.show();
+                Q.pointer.snapTo(this.p.user);
                 Q.pointer.off("checkInputs");
                 Q.pointer.off("checkConfirm");
                 this.fullDestroy();
@@ -1336,7 +1493,7 @@ Quintus.HUD=function(Q){
             } else if(Q.inputs['esc']){
                 this.destroy();
                 if(this.p.skill){
-                if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
+                    if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
                     this.stage.ActionMenu.loadSkill();
                 } else {
                     this.stage.ActionMenu.loadAttack();
@@ -1434,7 +1591,7 @@ Quintus.HUD=function(Q){
                 frame:0
             });
             this.setPos();
-            this.p.z = this.p.char.p.z;
+            this.p.z = this.p.char.p.z+Q.tileH;
             this.displayStatus();
         },
         setPos:function(){

@@ -8,7 +8,7 @@
             "gender":"female",
             "equipment":{
                 "righthand":["weapon","woodenSword"],
-                "lefthand":["shield","woodenShield"],
+                "lefthand":["weapon","woodenSpear"],
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
                 "accessory":["accessory","movementCharm"]
@@ -41,11 +41,11 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":80,
-                "end":100,
-                "dex":75,
-                "wsk":50,
-                "rfl":78
+                "str":1,
+                "end":1,
+                "dex":2,
+                "wsk":1,
+                "rfl":11
             },
             "skills":{
                 "sword":["stab","slash","whirlwind","superwhirlwind"],

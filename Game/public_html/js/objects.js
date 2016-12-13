@@ -66,6 +66,12 @@ Quintus.Objects=function(Q){
             playStand:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("standing"+this.p.dir);
+                //TEMPORARY SINCE THE FINAL SPRITES WILL NOT BE ISOMETRIC
+                if(this.p.dir==="down"||this.p.dir==="right"){
+                    this.p.flip = 'x';
+                } else {
+                    this.p.flip = false;
+                }
             },
             playWalk:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
@@ -282,6 +288,7 @@ Quintus.Objects=function(Q){
         }
     });
     //Given to characters, interactables, and pickups
+    //Checked to see if this object should be placed in the BattleGrid, and also if it has ZOC.
     Q.component("interactable",{
         added:function(){
             
@@ -536,7 +543,6 @@ Quintus.Objects=function(Q){
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
                 dir:"left",
-                z:10,
                 status:{
                     sturdy:false,
                     blind:false,
@@ -548,22 +554,7 @@ Quintus.Objects=function(Q){
             this.add("2d, animation, tween");
             //Custom components
             this.add("animations,interactable,combatant");
-            /*var t = this;
-            setTimeout(function(){
-                console.log(t.p.charClass+"'s Equipment: ");
-                console.log(t.p.equipment);
-                console.log(t.p.charClass+"'s Stats: ");
-                console.log(t.p.stats);
-                console.log("Battle stats: ")
-                console.log("Damage Low: "+t.p.totalDamageLow);
-                console.log("Damage High: "+t.p.totalDamageHigh);
-                console.log("Speed: "+t.p.totalSpeed);
-                console.log("Strike: "+t.p.strike);
-                console.log("Parry: "+t.p.parry);
-                console.log("Critical Chance: "+t.p.criticalChance);
-                console.log("Armour: "+t.p.armour);
-                console.log("---------------------------");
-            },1);*/
+            //Turn the inserted function on. This is called when the sprite is added to a stage.
             this.on("inserted");
         },
         //Will run when this character is inserted into the stage (whether it be placement by the user, or when inserting enemies)
@@ -571,10 +562,7 @@ Quintus.Objects=function(Q){
             Q.BatCon.setXY(this);
             this.playStand(this.p.dir);
             Q._generatePoints(this,true);
-            //TEMPORARY SINCE THE FINAL SPRITES WILL NOT BE ISOMETRIC
-            if(this.p.dir==="down"||this.p.dir==="right"){
-                this.p.flip = 'x';
-            }
+            this.p.z = this.p.y;
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function
@@ -626,20 +614,6 @@ Quintus.Objects=function(Q){
                 }
                 t.off("doneAutoMove");
             });
-        },
-        //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
-        previewAttackTarget:function(targetLoc){
-            var target = Q.BattleGrid.getObject(targetLoc);
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,targets:[target]}));
-        },
-        previewDoSkill:function(targetLoc,skill){
-            var targets = [];
-            if(skill.aoe){
-                targets = Q.BattleGrid.getObjectsAround(targetLoc,skill.aoe);
-            } else {
-                targets[0] = Q.BattleGrid.getObject(targetLoc);
-            }
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:this,targets:targets,skill:skill}));
         },
         getMatrix:function(matrixType){
             var tileTypes = Q.state.get("tileTypes");

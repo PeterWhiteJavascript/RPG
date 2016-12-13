@@ -91,4 +91,17 @@ Quintus.QFunctions=function(Q){
             st.unpause();
         });
     };
+    //Converts the direction into an location array that can be used to multiply for direction
+    Q.getDirArray = function(dir){
+        switch(dir){
+            case "up":
+                return [0,-1];
+            case "right":
+                return [1,0];
+            case "down":
+                return [0,1];
+            case "left":
+                return [-1,0];
+        }
+    };
 };
