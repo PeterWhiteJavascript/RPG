@@ -364,10 +364,10 @@ Quintus.HUD=function(Q){
         //Loads the directional arrows so the user can decide which direction to face
         loadEndTurn:function(){
             Q.clearStage(2);
-            //For now, end the turn without giving direction.
-            Q.BatCon.endTurn();
-            //this.off("step");
-            //this.hide();
+            Q.BatCon.showEndTurnDirection(Q.BatCon.turnOrder[0]);
+            this.off("step");
+            this.hide();
+            Q.pointer.hide();
         }
     });
     //Contains the character's full information
@@ -797,6 +797,85 @@ Quintus.HUD=function(Q){
             });
             Q.BatCon.setXY(this);
             this.add("animation");
+        }
+    });
+    Q.Sprite.extend("dirTri",{
+        init: function(p) {
+            this._super(p, {
+                w:Q.tileW/2,h:Q.tileH/2,
+                type:Q.SPRITE_NONE
+            });
+            //Triangle points
+            this.p.p1=[-this.p.w/2,this.p.h/2];
+            this.p.p2=[0,-this.p.h/2];
+            this.p.p3=[this.p.w/2,this.p.h/2];
+            this.p.z = this.p.y+Q.tileH*2;
+        },
+        changePos:function(dir,char){
+            switch(dir){
+                case "left":
+                    this.p.x=char.p.x-char.p.w/2-this.p.w/2;
+                    this.p.y=char.p.y;
+                    this.p.angle=270;
+                    break;
+                case "up":
+                    this.p.x=char.p.x;
+                    this.p.y=char.p.y-char.p.h/2-this.p.h/2;
+                    this.p.angle=0;
+                    break;
+                case "right":
+                    this.p.x=char.p.x+char.p.w/2+this.p.w/2;
+                    this.p.y=char.p.y;
+                    this.p.angle=90;
+                    break;
+                case "down":
+                    this.p.x=char.p.x;
+                    this.p.y=char.p.y+char.p.w/2+this.p.w/2;
+                    this.p.angle=180;
+                    break;
+            }
+            this.p.z = this.p.y+Q.tileH*2;
+        },
+        draw:function(ctx){
+            ctx.beginPath();
+            ctx.lineWidth="6";
+            ctx.fillStyle="red";
+            ctx.moveTo(this.p.p1[0],this.p.p1[1]);
+            ctx.lineTo(this.p.p2[0],this.p.p2[1]);
+            ctx.lineTo(this.p.p3[0],this.p.p3[1]);
+            ctx.closePath();
+            ctx.fill();
+        }
+    });
+
+    Q.component("directionControls", {
+        added: function() {
+            this.entity.on("step",this,"step");
+            this.canMove = true;
+            this.dirTri = this.entity.stage.insert(new Q.dirTri({x:this.entity.p.x,y:this.entity.p.y}));
+            this.dirTri.changePos(this.entity.p.dir,this.entity);
+        },
+        step:function(dt){
+            var dir;
+            if(Q.inputs['left']) {
+                dir='left';
+            } else if(Q.inputs['right']) {;
+                dir='right';
+            } else if(Q.inputs['up']) {
+                dir='up';
+            } else if(Q.inputs['down']) {
+                dir='down';
+            }
+            if(dir){
+                this.entity.playStand(dir);
+                this.dirTri.changePos(this.entity.p.dir,this.entity);
+            }
+            if(Q.inputs['confirm']){
+                this.dirTri.destroy();
+                Q.BatCon.endTurn();
+                this.entity.del("directionControls");
+                Q.inputs['confirm']=false;
+            }
         }
     });
 };

@@ -550,6 +550,13 @@ Quintus.GameObjects=function(Q){
                 targets[0] = Q.BattleGrid.getObject(loc);
             }
             Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,skill:skill}));
+        },
+        showEndTurnDirection:function(obj){
+            Q.pointer.off("checkInputs");
+            Q.pointer.off("checkConfirm");
+            Q.pointer.snapTo(obj);
+            Q.pointer.hide();
+            obj.add("directionControls");
         }
 
     });
@@ -735,32 +742,30 @@ Quintus.GameObjects=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
             }
             var t = this;
-            //If this character has now attacked and moved, end their turn.
-            if(turnEnded){
-                attacker.doAttackAnim(targets,anim,sound,function(){
-                    for(var i=0;i<t.text.length;i++){
-                        t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
-                    }
+            attacker.doAttackAnim(targets,anim,sound,function(){
+                for(var i=0;i<t.text.length;i++){
+                    t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
+                }
+                //The the current character died (from being counter attacked, etc...)
+                if(Q.BatCon.turnOrder[0].p.hp<=0){
+                    Q.BatCon.endTurn();
+                    return;
+                }
+                //Remove any characters that have been defeated
+                Q.BatCon.removeMarked();
+                //If this character has now attacked and moved, end their turn.
+                if(turnEnded){
                     setTimeout(function(){
-                        Q.BatCon.endTurn();
-                    },500);
-                });
-
-            } 
-            //If the character has not moved yet
-            else {
-                attacker.doAttackAnim(targets,anim,sound,function(){
-                    for(var i=0;i<t.text.length;i++){
-                        t.text[i].obj[t.text[i].func].apply(t.text[i].obj,t.text[i].props);
-                    }
-
-                    setTimeout(function(){
-                        if(Q.BatCon.turnOrder[0].p.hp<=0){
-                            Q.BatCon.endTurn();
-                            return;
+                        if(Q.BatCon.turnOrder[0].p.team!=="enemy"){
+                            Q.BatCon.showEndTurnDirection(Q.BatCon.turnOrder[0]);
+                        } else {
+                            //Set the AI's direction and end its turn
                         }
-                        //Remove any characters that have been defeated
-                        Q.BatCon.removeMarked();
+                    },500);
+                }   
+                //If the character has not moved yet
+                else {
+                    setTimeout(function(){
                         //Check if there's either no more enemies, or no more allies
                         if(Q.BatCon.checkBattleOver()) return;
                         //Get the new walk matrix since objects may have moved
@@ -774,8 +779,8 @@ Quintus.GameObjects=function(Q){
                             //Do whatever the AI does after attacking and can still move
                         }
                     },500);
-                });
-            }
+                }
+            });
         }
     });
     Q.component("skillFuncs",{

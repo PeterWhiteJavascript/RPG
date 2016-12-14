@@ -580,7 +580,6 @@ Quintus.Objects=function(Q){
             var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
             exc.add("tween");
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
-            
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
@@ -610,7 +609,11 @@ Quintus.Objects=function(Q){
                         this.trigger("startAIAction");
                     }
                 } else {
-                    Q.BatCon.endTurn();
+                    if(this.p.team==="enemy"){
+                        this.trigger("setAIDirection");
+                    } else {
+                        this.add("directionControls");
+                    }
                 }
                 t.off("doneAutoMove");
             });
