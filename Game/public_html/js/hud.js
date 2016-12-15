@@ -314,6 +314,7 @@ Quintus.HUD=function(Q){
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
+            Q.pointer.p.user = this.p.target;
             Q.pointer.addControls();
             Q.pointer.snapTo(this.p.target);
         },
@@ -323,6 +324,7 @@ Quintus.HUD=function(Q){
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.off("step",this,"checkInputs");
             this.hide();
+            Q.pointer.p.user = this.p.target;
             Q.pointer.addControls();
             Q.pointer.snapTo(this.p.target);
         },
@@ -508,6 +510,8 @@ Quintus.HUD=function(Q){
                     switch(this.p.kind){
                         case "walk":
                             if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                                Q.playSound("cannot_do.mp3");
+                                Q.inputs['confirm']=false;
                                 return;                            
                             }
                             //Hide the zoc
@@ -516,27 +520,43 @@ Quintus.HUD=function(Q){
                             user.moveAlong(this.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
-                            //Make sure there's a user there
+                            //Make sure there's a target there
                             if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
-                            } else {return;}
+                            } else {
+                                //Play a "cannot do that" sound
+                                Q.playSound("cannot_do.mp3");
+                                Q.inputs['confirm']=false;
+                                return;
+                            }
                             break;
                         case "skill":
-                            //Use the skill's aoe, else it's a normal single user
+                            //Use the skill's aoe, else it's a normal single target
                             var aoe = this.p.skill.aoe?this.p.skill.aoe:["normal",0];
-                            //Make sure there's a user 
-                            if(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user).length){
+                            //Make sure there's a target 
+                            var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user));
+                            //Remove any characters that are not affected.
+                            if(this.p.skill.affects) Q.BatCon.removeTeamObjects(targets,this.p.skill.affects);
+                            //If there is at least one target
+                            if(targets.length){
                                 Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.skill);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
-                            } else {return;}
+                            } else {
+                                //Play a "cannot do that" sound
+                                Q.playSound("cannot_do.mp3");
+                                Q.inputs['confirm']=false;
+                                return;
+                            }
                             
                             break;
                     }
                     this.fullDestroy();
                     if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
+                } else {
+                    Q.playSound("cannot_do.mp3");
                 }
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']){
@@ -612,8 +632,7 @@ Quintus.HUD=function(Q){
                 var attacker = this.p.attacker;
                 var targets = this.p.targets;
                 var skill = this.p.skill;
-                var turnEnded = attacker.p.didMove?true:false;
-                Q.BatCon.attackFuncs.doAttack(attacker,targets,skill,turnEnded);
+                Q.BatCon.attackFuncs.doAttack(attacker,targets,skill);
                 this.off("step",this,"checkInputs");
                 this.destroy();
                 Q.inputs['confirm']=false;

@@ -77,11 +77,9 @@
             "aoe":["straight",2],
             "damageLow":20,
             "damageHigh":50,
-            "effect":{
-                "func":"pierce",
-                "props":[20,50,2],
-                "accuracy":80
-            }
+            "diminishFarDamage":0.1,
+            "dfAnimTime":100,
+            "anim":"Piercing"
         },
         "push":{
             "name":"Push",
@@ -129,7 +127,7 @@
             "effect":{
                 "func":"changeStatus",
                 "props":["blind",[1,3]],
-                "accuracy":50
+                "accuracy":75
             }
         },
         "poison":{
@@ -146,8 +144,32 @@
     "shield":{
         "defend":{
             "name":"Defend",
-            "cost":1,
+            "cost":3,
             "range":["self",0],
+            "effect":{
+                "func":"changeStatus",
+                "props":["sturdy",1],
+                "accuracy":100
+            }
+        },
+        "protect":{
+            "name":"Protect",
+            "cost":8,
+            "range":["self",0],
+            "aoe":["normal",1,"excludeCenter"],
+            "affects":"ally",
+            "effect":{
+                "func":"changeStatus",
+                "props":["sturdy",1],
+                "accuracy":100
+            }
+        },
+        "totaldefense":{
+            "name":"Total Defense",
+            "cost":13,
+            "range":["self",0],
+            "aoe":["normal",1],
+            "affects":"ally",
             "effect":{
                 "func":"changeStatus",
                 "props":["sturdy",1],

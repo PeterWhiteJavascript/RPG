@@ -84,13 +84,29 @@ Quintus.Objects=function(Q){
                 this.animate({x:to[0], y:to[1]}, .2, Q.Easing.Quadratic.Out)
                         .chain({x:this.p.x,y:this.p.y},.2,Q.Easing.Quadratic.Out);
             },
-            playAttack:function(dir,callback,targets){
+            playAttack:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("attacking"+this.p.dir);
                 this.on("doneAttack",function(){
-                    this.playStand(this.p.dir);
                     this.off("doneAttack");
+                    this.playStand(this.p.dir);
                     if(callback) callback();
+                });
+            },
+            playCounter:function(dir,callback){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("countering"+this.p.dir);
+                this.on("doneCounter",function(){
+                    this.off("doneCounter");
+                    this.playAttack(dir,callback);
+                });
+            },
+            playDying:function(dir,callback){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("dying"+this.p.dir);
+                this.on("doneDying",function(){
+                    this.off("doneDying");
+                    this.play("dead"+this.p.dir);
                 });
             },
             playSonicBoom:function(dir,callback,targets){
@@ -119,6 +135,40 @@ Quintus.Objects=function(Q){
                     });
                     wind.play("winding");
                 });
+            },
+            playPiercing:function(dir,callback,targets){
+                this.playAttack(dir);
+                var loc = [this.p.loc[0],this.p.loc[1]];
+                //Rotation of weapon
+                var rot = 0;
+                //Flip of weapon
+                var flip = false;
+                //Change the location slightly
+                switch(dir){
+                    case "up":
+                        loc[1]-=1;
+                        rot = 270;
+                        break;
+                    case "right":
+                        loc[0]+=1;
+                        break;
+                    case "down":
+                        loc[1]+=1;
+                        rot=90;
+                        break;
+                    case "left":
+                        loc[0]-=1;
+                        flip = 'x';
+                        break;
+                }
+                var weapon = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Piercing",sprite:"Piercing",frame:0,loc:loc,z:this.p.z,angle:rot,flip:flip}));
+                weapon.on("doneAttack",function(){
+                    if(callback) callback();
+                });
+                weapon.on("finished",function(){
+                    weapon.destroy();
+                });
+                weapon.play("piercingStart");
             }
         }
     });
@@ -308,22 +358,40 @@ Quintus.Objects=function(Q){
                 }});
             },
             //Displays the miss dynamic number
-            showMiss:function(){
+            showMiss:function(time){
                 this.playMiss(this.p.dir);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
+                Q.playSound("cannot_do.mp3");
+                return time?time:300;
             },
             //Displays the damage dynamic number
-            showDamage:function(dmg){
+            showDamage:function(dmg,time){
                 this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
+                //Show the death animation at this point
+                if(this.p.hp<=0){
+                    this.playDying(this.p.dir);
+                    //Probably want to do unit specific death sounds
+                    Q.playSound("dying.mp3");
+                } else {
+                    Q.playSound("hit1.mp3");
+                }
+                return time?time:300;
+            },
+            showCounter:function(time){
+                this.playCounter(this.p.dir);
+                Q.playSound("slashing.mp3");
+                return time?time:1000;
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             takeDamage:function(dmg){
-                if(dmg<=0){dmg=1;};
+                if(dmg<=0){alert("Damage is less than or equal to 0");};
                 this.p.hp-=dmg;
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
-                    Q.BattleGrid.removeObject(this.p.loc);
+                    //Uncomment this if the object will be removed from the grid when dead
+                    //Q.BattleGrid.removeObject(this.p.loc);
                     Q.BatCon.markForRemoval(this);
+                    this.p.hp = 0;
                 }
                 //Q.playSound("hit1.mp3");
             },
@@ -577,6 +645,8 @@ Quintus.Objects=function(Q){
             this.p.didMove = false;
             //Set to true when the character attacks
             this.p.didAction = false;
+            //The initial location of this character at the start of its turn
+            this.p.initialLoc = [this.p.loc[0],this.p.loc[1]];
             var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
             exc.add("tween");
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
@@ -612,6 +682,10 @@ Quintus.Objects=function(Q){
                     if(this.p.team==="enemy"){
                         this.trigger("setAIDirection");
                     } else {
+                        Q.pointer.off("checkInputs");
+                        Q.pointer.off("checkConfirm");
+                        Q.pointer.snapTo(this);
+                        Q.pointer.hide();
                         this.add("directionControls");
                     }
                 }

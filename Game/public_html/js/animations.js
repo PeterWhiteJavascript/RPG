@@ -6,9 +6,9 @@ Q.setUpAnimations=function(){
     
     //Sprites
     var toSheet= [
-        ['archer','archer.png',24,48,6,6,344,352],
-        ['barbarian','barbarian.png',24,48,6,6,344,352],
-        ['knight','knight.png',24,48,6,14,344,352]
+        ['archer','archer.png',24,48,6,6,288,338],
+        ['barbarian','barbarian.png',24,48,6,6,288,338],
+        ['knight','knight.png',24,48,6,14,288,338]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -25,7 +25,8 @@ Q.setUpAnimations=function(){
     //Animations
     var toSheet= [
         ['SonicBoom','SonicBoom.png',96,96,0,0,288,288],
-        ['Whirlwind','Whirlwind.png',32,32,0,0,96,32]
+        ['Whirlwind','Whirlwind.png',32,32,0,0,96,32],
+        ['Piercing','Piercing.png',64,32,0,0,320,32]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -47,28 +48,43 @@ Q.setUpAnimations=function(){
         walkingleft:{ frames: [1,2,3], rate:walkRate},
         attackingleft:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
+        counteringleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
+        dyingleft:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
+        deadleft:{frames:[50],rate:standRate},
         
         standingright:{ frames: [5,6], rate:standRate},
         walkingright:{ frames: [5,6,7], rate:walkRate},
         attackingright:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
+        counteringright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
+        dyingright:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
+        deadright:{frames:[51],rate:standRate},
         
         standingup:{ frames: [5,6], rate:standRate},
         walkingup:{ frames: [5,6,7], rate:walkRate},
         attackingup:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
+        counteringup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
+        dyingup:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
+        deadup:{frames:[51],rate:standRate},
         
         standingdown:{ frames: [1,2], rate:standRate},
         walkingdown:{ frames: [1,2,3], rate:walkRate},
         attackingdown:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
-        misseddown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"}
-        
+        misseddown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
+        counteringdown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
+        dyingdown:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
+        deaddown:{frames:[50],rate:standRate},
     });
     Q.animations("SonicBoom",{
         booming:{frames:[0,0,1,1,0,0,1,1,2,2,1,1,2,2,3,3,4,4,3,3,4,4,5,5,4,4,5,5,6,7,6,7,8,7,8,7,6,0,0],rate:1/10, loop:false,trigger:"doneAttack"}
     });
     Q.animations("Whirlwind",{
         winding:{frames:[0,0,1,1,2,2,1,2,1,2,1,2,1,2],rate:1/6, loop:false,trigger:"doneAttack"}
+    });
+    Q.animations("Piercing",{
+        piercingStart:{frames:[0,1],rate:1/6,loop:false,next:"piercingEnd",trigger:"doneAttack"},
+        piercingEnd:{frames:[2,3],rate:1/6,loop:false,trigger:"finished"}
     });
 };
     

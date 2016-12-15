@@ -7,7 +7,7 @@
             "level":5,
             "gender":"female",
             "equipment":{
-                "righthand":["weapon","woodenSword"],
+                "righthand":["shield","potLid"],
                 "lefthand":["weapon","woodenSpear"],
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
@@ -23,7 +23,7 @@
             "skills":{
                 "sword":["whirlwind","superwhirlwind"],
                 "spear":["pierce","puncture","push"],
-                "shield":["defend"]
+                "shield":["defend","protect","totaldefense"]
             },
             "value":20,
             "method":80,
@@ -41,10 +41,10 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":1,
-                "end":1,
-                "dex":2,
-                "wsk":1,
+                "str":11,
+                "end":11,
+                "dex":21,
+                "wsk":11,
                 "rfl":11
             },
             "skills":{
