@@ -132,6 +132,7 @@ var files = [
     "animations/Piercing.png",
     //AUDIO SFX
     "sfx/cannot_do.mp3",
+    "sfx/coin.mp3",
     "sfx/confirm.mp3",
     "sfx/dying.mp3",
     "sfx/explosion.mp3",

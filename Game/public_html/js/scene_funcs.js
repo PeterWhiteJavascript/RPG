@@ -62,7 +62,7 @@ Quintus.SceneFuncs=function(Q){
             var allyData = Q.state.get("allies");
             var allies = [];
             allyData.forEach(function(ally,i){
-                var char = new Q.Character({charClass:ally.charClass,level:ally.level,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
+                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
                 char.add("statCalcs");
                 allies.push(char);
                 char.p.loc = battleData.placementSquares[i];

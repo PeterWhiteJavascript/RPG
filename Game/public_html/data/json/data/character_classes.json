@@ -9,6 +9,13 @@
             "wsk":15,
             "rfl":10
         },
+        "levelUp":{
+            "str":2,
+            "end":1,
+            "dex":1,
+            "wsk":1,
+            "rfl":1
+        },
         "move":4,
         "zoc":2
     },
@@ -22,6 +29,13 @@
             "wsk":15,
             "rfl":10
         },
+        "levelUp":{
+            "str":1,
+            "end":2,
+            "dex":1,
+            "wsk":1,
+            "rfl":1
+        },
         "move":4,
         "zoc":2
     },
@@ -34,6 +48,13 @@
             "dex":5,
             "wsk":10,
             "rfl":10
+        },
+        "levelUp":{
+            "str":3,
+            "end":1,
+            "dex":1,
+            "wsk":1,
+            "rfl":0
         },
         "move":4,
         "zoc":1
@@ -49,6 +70,13 @@
             "wsk":15,
             "rfl":15
         },
+        "levelUp":{
+            "str":1,
+            "end":1,
+            "dex":2,
+            "wsk":1,
+            "rfl":1
+        },
         "move":4,
         "zoc":0
     },
@@ -62,6 +90,13 @@
             "wsk":5,
             "rfl":5
         },
+        "levelUp":{
+            "str":1,
+            "end":2,
+            "dex":2,
+            "wsk":0,
+            "rfl":1
+        },
         "move":4,
         "zoc":1
     },
@@ -74,6 +109,13 @@
             "dex":25,
             "wsk":25,
             "rfl":25
+        },
+        "levelUp":{
+            "str":0,
+            "end":0,
+            "dex":2,
+            "wsk":1,
+            "rfl":3
         },
         "move":5,
         "zoc":0
@@ -89,6 +131,13 @@
             "wsk":10,
             "rfl":20
         },
+        "levelUp":{
+            "str":0,
+            "end":2,
+            "dex":2,
+            "wsk":1,
+            "rfl":1
+        },
         "move":3,
         "zoc":0
     },
@@ -102,6 +151,13 @@
             "wsk":20,
             "rfl":20
         },
+        "levelUp":{
+            "str":0,
+            "end":1,
+            "dex":2,
+            "wsk":1,
+            "rfl":2
+        },
         "move":3,
         "zoc":1
     },
@@ -114,6 +170,13 @@
             "dex":15,
             "wsk":15,
             "rfl":25
+        },
+        "levelUp":{
+            "str":0,
+            "end":3,
+            "dex":1,
+            "wsk":1,
+            "rfl":1
         },
         "move":3,
         "zoc":0

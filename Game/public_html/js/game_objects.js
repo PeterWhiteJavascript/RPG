@@ -19,6 +19,7 @@ Quintus.GameObjects=function(Q){
                 
                 locsTo:[]
             });
+            this.add("animation, tween");
             this.on("inserted");
             this.hide();
         },
@@ -218,6 +219,16 @@ Quintus.GameObjects=function(Q){
                 p.diffX = 0;
                 p.diffY = 0;
             }
+        },
+        //Moves the invisible pointer to an object at the start of a turn
+        //The time it takes for the pointer to reach its target is affected by how far away the object is.
+        tweenTo:function(obj){
+            var loc = obj.p.loc;
+            var coords = Q.BatCon.getXY(loc);
+            var dist = Q.BattleGrid.getTileDistance(loc,this.p.loc);
+            var baseSpeed = 100;
+            var speed = (baseSpeed*dist)/1000;
+            this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest");}});
         },
         step:function(dt){
             var p = this.p;
@@ -487,30 +498,42 @@ Quintus.GameObjects=function(Q){
         },
         //Starts the character that is first in turn order
         startTurn:function(){
-            this.turnOrder[0].startTurn();
+            var obj = this.turnOrder[0];
             //Hide and disable the pointer if it's not an ally's turn
-            if(this.turnOrder[0].p.team!=="ally"&&Q.pointer){
+            if(obj.p.team!=="ally"&&Q.pointer){
                 Q.pointer.hide();
                 Q.pointer.off("checkInputs");
                 Q.pointer.off("checkConfirm");
                 Q.pointer.trigger("offTarget");
-                //Follow the AI object
-                Q.viewFollow(this.turnOrder[0],this.stage);
-                Q.CharacterAI(this.turnOrder[0]);
+                Q.pointer.on("atDest",function(){
+                    Q.BatCon.turnOrder[0].startTurn();
+                    //Follow the AI object
+                    Q.viewFollow(Q.BatCon.turnOrder[0],this.stage);
+                    Q.CharacterAI(Q.BatCon.turnOrder[0]);
+                    this.off("atDest");
+                });
             } else {
-                Q.pointer.reset();
-                Q.viewFollow(Q.pointer,this.stage);
-                Q.pointer.p.loc = this.turnOrder[0].p.loc;
-                this.setXY(Q.pointer);
-                Q.pointer.checkTarget();
-                //Display the menu on turn start
-                Q.pointer.displayCharacterMenu();
+                Q.pointer.on("atDest",function(){
+                    Q.BatCon.turnOrder[0].startTurn();
+                    this.reset();
+                    this.p.loc = Q.BatCon.turnOrder[0].p.loc;
+                    Q.BatCon.setXY(this);
+                    this.checkTarget();
+                    //Display the menu on turn start
+                    this.displayCharacterMenu();
+                    this.off("atDest");
+                });
             }
+            Q.viewFollow(Q.pointer,this.stage);
+            //Tween the pointer to the AI
+            Q.pointer.tweenTo(obj);
         },
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
+            //Move the first character to the back (Maybe do some speed calculations to place them somewhere else)
             var lastTurn = this.turnOrder.shift();
             this.turnOrder.push(lastTurn);
+            //Remove any dead characters
             this.removeMarked();
             //Check if the battle is over at this point
             if(this.checkBattleOver()) return; 
@@ -636,12 +659,53 @@ Quintus.GameObjects=function(Q){
             Q.pointer.snapTo(obj);
             Q.pointer.hide();
             obj.add("directionControls");
+        },
+        //Divide the exp amongst any characters that fought this enemy
+        /*How it works:
+            Sort the array of attackers that hit this target from lowest level to highest level.
+            The base exp gain is 10exp. This means the exp gain for an enemy that has been defeated by a single character of the same level will get 10 exp.
+            Every level difference between the lowest level attacker and the defender results in a 2exp increase/decrease
+            Characters that appear later in the sorted array get half of the previous character's exp
+        */
+        giveExp:function(defeated,shared){
+            //Whoever got the last hit gets an additional share of the exp
+            var lastHit = shared[shared.length-1];
+            //Sort from lowest to highest level
+            var sorted = shared.sort(function(a,b){
+                return a.p.level>b.p.level;
+            });
+            var defeatedLevel = defeated.p.level;
+            var lowestLevel = sorted[0].p.level;
+            var dif = defeatedLevel-lowestLevel;
+            //Set the exp to be 10 + 2 for each level higher the defeated enemy was. It's negative if the enemy was lower than the lowest level. Must be at least 1.
+            var exp = 10+dif>0?10+dif:1;
+            var text = [];
+            //Give the exp to all participants
+            sorted.forEach(function(obj,i){
+                var gain = Math.floor(exp/(i+1));
+                if(lastHit.p.id===obj.p.id){
+                    gain*=2;
+                }
+                obj.p.exp+= gain;
+                var leveledUp = false;
+                //Level up the character if they are at or over 100
+                if(obj.p.exp>=100){
+                    leveledUp = true;
+                    obj.p.level+=1;
+                    obj.p.exp-=100;
+                }
+                text.push({func:"showExpGain",obj:obj,props:[gain,leveledUp]});
+            });
+            return text;
         }
 
     });
     Q.component("attackFuncs",{
         added:function(){
+            //Any feedback from the attack is stored here
             this.text = [];
+            //If any defenders dies from an attack, save the feedback and add it on to text at the end
+            this.expText = [];
         },
         getBlow:function(attackNum,attacker,defendNum,defender){
             var result = {
@@ -726,12 +790,6 @@ Quintus.GameObjects=function(Q){
             var damage = 0;
             if(result.hit||result.crit){
                 damage = this.getDamage(Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour);
-                this.text.push({func:"showDamage",obj:defender,props:[damage]});
-                attacker.takeDamage(damage);
-                //Show an animation if the user of the skill kills themselves
-                if(attacker.p.hp<=0){
-
-                }  
             }
             return damage;
         },
@@ -822,15 +880,19 @@ Quintus.GameObjects=function(Q){
             //After the damage has been calculated, come up with the text to show the user
             if(damage>0){
                 this.text.push({func:"showDamage",obj:defender,props:[damage,time]});
-                defender.takeDamage(damage);
+                var expText = defender.takeDamage(damage,attacker);
+                //If a defender was defeated
+                if(expText){
+                    this.expText.push.apply(this.expText,expText);
+                }
             } 
             //Miss
             else if(damage===0){
-                this.text.push({func:"showMiss",obj:defender,props:[time]});
+                this.text.push({func:"showMiss",obj:defender,props:[attacker,time]});
             } 
             //Counter chance
             else if(damage===-1){
-                this.text.push({func:"showCounter",obj:defender,props:[time]});
+                this.text.push({func:"showCounter",obj:defender,props:[attacker,time]});
                 this.calcAttack(defender,attacker);
             } 
             //The skill does not do any damage
@@ -853,6 +915,14 @@ Quintus.GameObjects=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
             }
             var text = this.text;
+            //If a defender died, there will be an exp gain
+            if(this.expText.length){
+                //Wait between damage and exp gain
+                text.push({func:"waitTime",obj:this,props:[1000]});
+                text.push.apply(text,this.expText);
+                //Empty the expText array for next time
+                this.expText = [];
+            }
             var obj = this;
             attacker.doAttackAnim(targets,anim,sound,function(){
                 obj.doDefensiveAnim(text);
@@ -906,6 +976,9 @@ Quintus.GameObjects=function(Q){
                     //Do whatever the AI does after attacking and can still move
                 }
             }
+        },
+        waitTime:function(time){
+            return time?time:1000;
         }
     });
     Q.component("skillFuncs",{

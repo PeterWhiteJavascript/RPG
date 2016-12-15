@@ -109,6 +109,10 @@ Quintus.Objects=function(Q){
                     this.play("dead"+this.p.dir);
                 });
             },
+            playLevelUp:function(dir,callback){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("levelingUp");
+            },
             playSonicBoom:function(dir,callback,targets){
                 this.playAttack(dir);
                 var boom = Q.stage(0).insert(new Q.DynamicAnim({sheet:"SonicBoom",sprite:"SonicBoom",frame:0,loc:Q.pointer.p.loc,z:this.p.z}));
@@ -254,13 +258,20 @@ Quintus.Objects=function(Q){
     Q.component("statCalcs",{
         added:function(){
             var p = this.entity.p;
-            var base = Q.state.get("charClasses")[p.charClass].baseStats;
+            var base = p.baseStats = Q.state.get("charClasses")[p.charClass].baseStats;
             p.className = Q.state.get("charClasses")[p.charClass].name;
             p.move = this.getMove(Q.state.get("charClasses")[p.charClass].move);
-            p.maxHp = this.getHp(base);
+            p.levelUp = Q.state.get("charClasses")[p.charClass].levelUp;
             p.hp = this.getHp(base);
-            p.maxSp = this.getSp(base);
             p.sp = this.getSp(base);
+            this.calcStats();
+        },
+        //Set stats for the character
+        calcStats:function(){
+            var p = this.entity.p;
+            var base = p.baseStats;
+            p.maxHp = this.getHp(base);
+            p.maxSp = this.getSp(base);
             p.totalDamageLow = this.getDamageLow();
             p.totalDamageHigh = this.getDamageHigh();
             p.totalSpeed = this.getSpeed();
@@ -335,6 +346,18 @@ Quintus.Objects=function(Q){
             var left = this.entity.p.equipment.lefthand.range?this.entity.p.equipment.lefthand.range:0;
             var accessory = this.entity.p.equipment.accessory.range?this.entity.p.equipment.accessory.range:0;
             return (right>left?right:left)+accessory; 
+        },
+        extend:{
+            levelUp:function(){
+                var lv = this.p.levelUp;
+                var st = this.p.stats;
+                st.str += lv.str;
+                st.end += lv.end;
+                st.dex += lv.dex;
+                st.wsk += lv.wsk;
+                st.rfl += lv.rfl;
+                this.statCalcs.calcStats();
+            }
         }
     });
     //Given to characters, interactables, and pickups
@@ -358,7 +381,9 @@ Quintus.Objects=function(Q){
                 }});
             },
             //Displays the miss dynamic number
-            showMiss:function(time){
+            showMiss:function(attacker,time){
+                //Face the attacker
+                this.faceTarget(attacker.p.loc);
                 this.playMiss(this.p.dir);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
                 Q.playSound("cannot_do.mp3");
@@ -366,7 +391,7 @@ Quintus.Objects=function(Q){
             },
             //Displays the damage dynamic number
             showDamage:function(dmg,time){
-                this.stage.insert(new Q.DynamicNumber({color:"#fff", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
+                this.stage.insert(new Q.DynamicNumber({color:"red", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
                 //Show the death animation at this point
                 if(this.p.hp<=0){
                     this.playDying(this.p.dir);
@@ -377,23 +402,55 @@ Quintus.Objects=function(Q){
                 }
                 return time?time:300;
             },
-            showCounter:function(time){
+            showCounter:function(toCounter,time){
+                this.faceTarget(toCounter.p.loc);
                 this.playCounter(this.p.dir);
                 Q.playSound("slashing.mp3");
                 return time?time:1000;
             },
+            showExpGain:function(exp,leveledUp,time){
+                this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
+                //If the character leveled up
+                if(leveledUp){
+                    this.playLevelUp(this.p.dir);
+                    time = 1000;
+                    Q.playSound("confirm.mp3");
+                } else {
+                    Q.playSound("coin.mp3");
+                }
+                return time?time:300;
+            },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
-            takeDamage:function(dmg){
+            //Also can add some feedback to the attackfuncs text
+            takeDamage:function(dmg,attacker){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
+                //Make the character take damage
                 this.p.hp-=dmg;
+                
+                //Don't add team attackers for exp
+                if(attacker.p.team!==this.p.team){
+                    //Don't add the attacker if they are already in there.
+                    if(!this.p.hitBy.filter(function(obj){
+                        return obj.p.id===attacker.p.id;
+                    })[0]){
+                        //Add the attacker to the hitBy array
+                        this.p.hitBy.push(attacker);
+                    }
+                }
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
                     //Q.BattleGrid.removeObject(this.p.loc);
                     Q.BatCon.markForRemoval(this);
+                    //Set the hp to 0
                     this.p.hp = 0;
+                    if(!this.p.died){
+                        //Set died to true so that if the character comes back to life, it will not give exp
+                        this.p.died = true;
+                        //Figure out how much exp should be awarded
+                        return Q.BatCon.giveExp(this,this.p.hitBy);
+                    }
                 }
-                //Q.playSound("hit1.mp3");
             },
             addStatus:function(name,turns){
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
@@ -454,7 +511,7 @@ Quintus.Objects=function(Q){
                     switch(true){
                         case xDif<0:
                             newDir+="left";
-                        this.p.flip=false;
+                            this.p.flip=false;
                             break
                         case xDif>0:
                             newDir+="right";
@@ -615,7 +672,11 @@ Quintus.Objects=function(Q){
                     sturdy:false,
                     blind:false,
                     poisoned:false
-                }
+                },
+                //All enemies that hit this character are added so the exp can be divided when this character dies
+                hitBy:[],
+                //Temporarily 0. Eventually take numbers from a level table if needed
+                exp:0
             });
             this.p.sheet = this.p.charClass;
             //Quintus components

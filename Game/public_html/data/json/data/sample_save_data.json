@@ -27,7 +27,8 @@
             },
             "value":20,
             "method":80,
-            "charClass":"knight"
+            "charClass":"knight",
+            "exp":0
         },
         {
             "name": "Peter",
@@ -54,7 +55,8 @@
             },
             "value":40,
             "method":60,
-            "charClass":"archer"
+            "charClass":"archer",
+            "exp":90
         }
     ],
     "inventory":{

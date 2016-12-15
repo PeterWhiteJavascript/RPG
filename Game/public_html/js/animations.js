@@ -75,6 +75,8 @@ Q.setUpAnimations=function(){
         counteringdown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
         dyingdown:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
         deaddown:{frames:[50],rate:standRate},
+        
+        levelingUp:{frames:[12,12],rate:standRate,loop:false,trigger:"playStand"}
     });
     Q.animations("SonicBoom",{
         booming:{frames:[0,0,1,1,0,0,1,1,2,2,1,1,2,2,3,3,4,4,3,3,4,4,5,5,4,4,5,5,6,7,6,7,8,7,8,7,6,0,0],rate:1/10, loop:false,trigger:"doneAttack"}

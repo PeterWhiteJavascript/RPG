@@ -49,7 +49,7 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:220,h:320,
+                w:220,h:345,
                 type:Q.SPRITE_NONE,
                 fill:"blue",
                 opacity:0.5
@@ -58,7 +58,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","Move","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical","Range"];
+            var info = ["Class","Level","Move","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical","Range","Exp."];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -84,7 +84,8 @@ Quintus.HUD=function(Q){
                 ""+obj.p.strike,
                 ""+obj.p.parry,
                 ""+obj.p.criticalChance,
-                ""+obj.p.range
+                ""+obj.p.range,
+                ""+obj.p.exp
             ];
             for(var i=0;i<stats.length;i++){
                 stats[i].p.label = labels[i];

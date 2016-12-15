@@ -36,6 +36,7 @@ Quintus.QFunctions=function(Q){
         var char = {
             name:data.name,
             level:data.level,
+            exp:data.exp,
             gender:data.gender,
             stats:data.stats,
             charClass:data.charClass,
