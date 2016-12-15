@@ -42,16 +42,16 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":11,
-                "end":11,
-                "dex":21,
-                "wsk":11,
-                "rfl":11
+                "str":1111,
+                "end":1111,
+                "dex":2111,
+                "wsk":1111,
+                "rfl":1111
             },
             "skills":{
                 "sword":["stab","slash","whirlwind","superwhirlwind"],
                 "spear":["pierce","push"],
-                "bow":["shoot","blind","sonicboom","crosshair","poison"]
+                "bow":["shoot","blind","sonicboom","crosshair","poison","holdback"]
             },
             "value":40,
             "method":60,

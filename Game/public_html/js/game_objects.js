@@ -226,9 +226,11 @@ Quintus.GameObjects=function(Q){
             var loc = obj.p.loc;
             var coords = Q.BatCon.getXY(loc);
             var dist = Q.BattleGrid.getTileDistance(loc,this.p.loc);
-            var baseSpeed = 100;
+            //Set lower to go faster
+            var baseSpeed = 50;
             var speed = (baseSpeed*dist)/1000;
             this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest");}});
+            this.p.loc = [loc[0],loc[1]];
         },
         step:function(dt){
             var p = this.p;
@@ -480,7 +482,7 @@ Quintus.GameObjects=function(Q){
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="enemy"; 
             });
-            Q.viewFollow(this.turnOrder[0],this.stage);
+            
             this.startTurn();
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
@@ -509,16 +511,16 @@ Quintus.GameObjects=function(Q){
                     Q.BatCon.turnOrder[0].startTurn();
                     //Follow the AI object
                     Q.viewFollow(Q.BatCon.turnOrder[0],this.stage);
-                    Q.CharacterAI(Q.BatCon.turnOrder[0]);
+                    //Q.CharacterAI(Q.BatCon.turnOrder[0]);
                     this.off("atDest");
                 });
             } else {
+                Q.pointer.checkTarget();
                 Q.pointer.on("atDest",function(){
                     Q.BatCon.turnOrder[0].startTurn();
-                    this.reset();
                     this.p.loc = Q.BatCon.turnOrder[0].p.loc;
-                    Q.BatCon.setXY(this);
-                    this.checkTarget();
+                    this.reset();
+                    this.checkTarget();;
                     //Display the menu on turn start
                     this.displayCharacterMenu();
                     this.off("atDest");
@@ -700,6 +702,7 @@ Quintus.GameObjects=function(Q){
         }
 
     });
+    //TO DO - USE THE SKILL'S DAMAGE LOW AND DAMAGE HIGH IN THE CALCULATION
     Q.component("attackFuncs",{
         added:function(){
             //Any feedback from the attack is stored here
@@ -786,7 +789,7 @@ Quintus.GameObjects=function(Q){
             }
             return damage;
         },
-        processSelfTarget:function(attacker,defender,result){
+        processSelfTarget:function(attacker,result){
             var damage = 0;
             if(result.hit||result.crit){
                 damage = this.getDamage(Math.floor(Math.random()*(attacker.p.totalDamageHigh-attacker.p.totalDamageLow)+attacker.p.totalDamageLow)-attacker.p.armour);
@@ -838,28 +841,32 @@ Quintus.GameObjects=function(Q){
                 //If the skill is damaging
                 if(skill.damageLow&&skill.damageHigh){
                     if(attacker.p.id===defender.p.id){
-                        damage = this.processSelfTarget(blow.attacker,blow.defender,blow.result);
+                        damage = this.processSelfTarget(blow.attacker,blow.result);
                     } else {
                         damage = this.processSkillResult(blow);
+                    }
+                    //If the skill does less damage to further targets.
+                    if(skill.diminishFarDamage){
+                        //Get the distance between the two objects (minus 1 as 1 range is 100% power)
+                        var dist = Q.BattleGrid.getTileDistance(attacker.p.loc,defender.p.loc)-1;
+                        damage-=Math.floor(damage*(dist*skill.diminishFarDamage));
+                    }
+                    //If the defender would be defeated by the damage
+                    if(damage>0&&defender.p.hp-damage<=0){
+                        if(skill.holdBack){
+                            damage = defender.p.hp-1;
+                            if(damage<=0) damage=1;
+                        }
                     }
                 } 
                 //If the skill does not do any damage
                 else {
                     damage = -2;
                 }
-                //If the skill does less damage to further targets.
-                if(skill.diminishFarDamage&&damage){
-                    //Get the distance between the two objects (minus 1 as 1 range is 100% power)
-                    var dist = Q.BattleGrid.getTileDistance(attacker.p.loc,defender.p.loc)-1;
-                    damage-=Math.floor(damage*(dist*skill.diminishFarDamage));
-                }
-                //If the defender was defeated by the damage
-                if(defender.p.hp-damage<=0){
-                    
-                }
+                
                 //If the defender is still alive and there's an effect from this skill
-                else if(skill.effect){
-                    var rand = Math.ceil(Math.random()*skill.effect.accuracy);
+                if(defender.p.hp-damage>0&&skill.effect){
+                    var rand = Math.ceil(Math.random()*100);
                     if(rand<=skill.effect.accuracy){
                         var props = skill.effect.props.slice();
                         props.push(defender,attacker);
@@ -924,6 +931,8 @@ Quintus.GameObjects=function(Q){
                 this.expText = [];
             }
             var obj = this;
+            //The standard finish attack
+            obj.entity.on("finishAttack",obj,"finishAttack");
             attacker.doAttackAnim(targets,anim,sound,function(){
                 obj.doDefensiveAnim(text);
             });
@@ -938,7 +947,7 @@ Quintus.GameObjects=function(Q){
                     obj.doDefensiveAnim(text);
                 } else {
                     setTimeout(function(){
-                        obj.finishAttack();
+                        obj.entity.trigger("finishAttack");
                     },500);
                     
                 }
@@ -946,7 +955,7 @@ Quintus.GameObjects=function(Q){
         },
         finishAttack:function(){
             var active = Q.BatCon.turnOrder[0];
-            //The the current character died (from being counter attacked, etc...)
+            //The current character died (from being counter attacked, etc...)
             if(active.p.hp<=0){
                 Q.BatCon.endTurn();
                 return;
@@ -976,6 +985,7 @@ Quintus.GameObjects=function(Q){
                     //Do whatever the AI does after attacking and can still move
                 }
             }
+            this.entity.off("finishAttack");
         },
         waitTime:function(time){
             return time?time:1000;
@@ -1036,7 +1046,7 @@ Quintus.GameObjects=function(Q){
                 curStatus.turns = curStatus.turns>num?num:curStatus.turns;
                 //text.push(target.p.name+"'s "+status+" has been extended!");
             } else {
-                text.push({func:"addStatus",obj:target,props:[status,num]});
+                text.push({func:"addStatus",obj:target,props:[status,num,user]});
                 //text.push(target.p.name+" was given "+status+" status.");
             }
             return text;

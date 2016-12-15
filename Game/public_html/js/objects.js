@@ -426,17 +426,7 @@ Quintus.Objects=function(Q){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.hp-=dmg;
-                
-                //Don't add team attackers for exp
-                if(attacker.p.team!==this.p.team){
-                    //Don't add the attacker if they are already in there.
-                    if(!this.p.hitBy.filter(function(obj){
-                        return obj.p.id===attacker.p.id;
-                    })[0]){
-                        //Add the attacker to the hitBy array
-                        this.p.hitBy.push(attacker);
-                    }
-                }
+                this.addToHitBy(attacker);
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
@@ -445,6 +435,8 @@ Quintus.Objects=function(Q){
                     //Set the hp to 0
                     this.p.hp = 0;
                     if(!this.p.died){
+                        //Remove all status effects
+                        this.removeAllStatus();
                         //Set died to true so that if the character comes back to life, it will not give exp
                         this.p.died = true;
                         //Figure out how much exp should be awarded
@@ -452,11 +444,24 @@ Quintus.Objects=function(Q){
                     }
                 }
             },
-            addStatus:function(name,turns){
+            addStatus:function(name,turns,user){
+                this.addToHitBy(user);
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
                 this.p.status[name] = {name:name,turns:turns};
                 Q.playSound("inflict_status.mp3");
+            },
+            addToHitBy:function(obj){
+                //Don't add team attackers for exp
+                if(obj&&obj.p.team!==this.p.team){
+                    //Don't add the attacker if they are already in there.
+                    if(!this.p.hitBy.filter(function(obj){
+                        return obj.p.id===obj.p.id;
+                    })[0]){
+                        //Add the attacker to the hitBy array
+                        this.p.hitBy.push(obj);
+                    }
+                }
             },
             doAttackAnim:function(targets,animation,sound,callback){
                 this.faceTarget(targets[0].p.loc);
@@ -484,6 +489,15 @@ Quintus.Objects=function(Q){
             removeStatus:function(name){
                 this.p.status[name] = false;
                 this.p.statusDisplay.removeStatus(name);
+            },
+            removeAllStatus:function(){
+                var status = this.p.status;
+                var statusDisplay = this.p.statusDisplay;
+                var keys = Object.keys(status);
+                keys.forEach(function(key){
+                    status[key]=false;
+                    if(statusDisplay) statusDisplay.removeStatus(key);
+                });
             },
             hideStatusDisplay:function(){
                 if(this.p.statusDisplay) this.p.statusDisplay.hide();
@@ -695,8 +709,20 @@ Quintus.Objects=function(Q){
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function
-            if(this.p.status.poisoned) this.takeDamage(Math.floor(this.p.maxHp/8));
-            if(this.p.hp<=0) Q.BatCon.endTurn();
+            if(this.p.status.poisoned){
+                var text = [];
+                var damage = Math.floor(this.p.maxHp/8);
+                text.push({func:"showDamage",obj:this,props:[damage,500]});
+                var dead = this.takeDamage(damage);
+                if(dead){
+                    text.push.apply(text,dead);
+                    text.push({func:"waitTime",obj:Q.BatCon.attackFuncs,props:[1000]});
+                    text.push({func:"endTurn",obj:Q.BatCon,props:[]});
+                    Q.BatCon.attackFuncs.doDefensiveAnim(text);
+                    return;
+                }
+                Q.BatCon.attackFuncs.doDefensiveAnim(text);
+            }
             this.advanceStatus();
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
@@ -710,7 +736,12 @@ Quintus.Objects=function(Q){
             this.p.initialLoc = [this.p.loc[0],this.p.loc[1]];
             var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
             exc.add("tween");
-            exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
+            var t = this;
+            exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();
+                if(t.p.team==="enemy"){
+                    Q.BatCon.endTurn();
+                }
+                }});
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
