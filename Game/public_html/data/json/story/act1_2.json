@@ -28,8 +28,8 @@
             {"func":"moveAlong","props":[2,[[22,2]],"right"]},
             {"func":"hideDialogueBox","props":[],"noCycle":true},
             
-            {"func":"fadeChar","props":[0,1]},
-            {"func":"fadeChar","props":[2,1,true]},
+            {"func":"fadeChar","props":[0,0.25]},
+            {"func":"fadeChar","props":[2,0.25,true]},
             {"func":"hideDialogueBox","props":[],"noCycle":true},
             
             {"func":"centerView","props":[1,1],"wait":true},
@@ -45,7 +45,7 @@
             {"func":"moveAlong","props":[3,[[20,9]],"right",{"func":"forceCycle","obj":"text"}],"noCycle":true},
             {"func":"moveAlong","props":[6,[[21,10]],"right",{"func":"forceCycle","obj":"text"}],"noCycle":true},
             {"func":"moveAlong","props":[7,[[22,9]],"left"]},
-            {"func":"waitTime","props":[2500],"noCycle":true},
+            {"func":"waitTime","props":[1500],"noCycle":true},
             
             {"func":"loadScene","props":["act1_3","preBattleScene","battleScene"]}
         ],

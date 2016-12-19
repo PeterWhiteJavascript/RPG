@@ -7,7 +7,9 @@
     "preBattleScene":{
         "interaction":[
             {"func":"setView","props":[0,true]},
-            {"text":["THAT'S AS FAR AS I GOT :) - Peter"],"asset":[false],"pos":"left"}
+            {"text":["THAT'S AS FAR AS I GOT :) - Peter"],"asset":[false],"pos":"left"},
+            {"func":"loadLocation","props":["homeland_forest","start"]}
+            
         ],
         "music":"the_usual.mp3",
         "map":"demo2.tmx",

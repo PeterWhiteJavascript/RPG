@@ -5,7 +5,7 @@
     "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
     "startScene":["dialogue","dialogue"],
     "dialogue":{
-        "music":"the_usual.mp3",
+        "music":"homeland.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Welcome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
@@ -152,7 +152,8 @@
             {"func":"waitTime","props":[1400],"noCycle":true},
             {"text":["Hmph, that'll teach you guys to mess with me!","See ya."],"asset":[false,"skirm.png"],"pos":"right"},
             {"func":"hideDialogueBox","props":[]},
-            {"func":"moveAlong","props":[2,[[19,7]],"left",{"func":"forceCycle","obj":"text"}],"noCycle":true},
+            {"func":"moveAlong","props":[2,[[19,0]],"up",{"func":"forceCycle","obj":"text"}],"noCycle":true},
+            {"func":"fadeChar","props":[2,1,true],"noCycle":true},
             {"func":"loadScene","props":["act1_2","preBattleScene","battleScene"]}
         ]
     },
