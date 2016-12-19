@@ -19,6 +19,8 @@ Q.astar = astar;
 Q.Graph = Graph;
 //The highest rank for weapons
 Q.maxEquipmentRank = 2;
+
+
 //End Constants
 
 //Set up the game state's options
@@ -26,7 +28,7 @@ Q.maxEquipmentRank = 2;
 Q.state.set({
     options:{
         //If true, BGM will play
-        musicEnabled:true,
+        musicEnabled:false,
         musicVolume:100,
         //If true, SFX will play
         soundEnabled:true,
@@ -94,6 +96,19 @@ Q.newGame=function(options){
     Q.state.set("alex",storyAlex);
     //For now, alex is the only character
     Q.state.set("allies",[storyAlex]);
+    //Set up the new game bag
+    Q.state.set("Bag",new Q.Bag(
+            {items:{
+        consumable:[
+            ["potion",1]
+        ],
+        weapon:[],
+        shield:[],
+        body:[],
+        feet:[],
+        accessory:[],
+        key:[]
+    }}));
     //Start a scene
     Q.startScene(Q.state.get("sceneName"));
 };
@@ -101,7 +116,7 @@ Q.newGame=function(options){
 Q.startGame=function(save){
     Q.state.set({
         sceneName:save.sceneName,
-        week:save.week,
+        day:save.day,
         options:save.options,
         acceptedQuests:save.acceptedQuests
     });
@@ -126,6 +141,7 @@ var files = [
     "ui/text_box.png",
     //IMAGES TILES
     "tiles/tiles.png",
+    "tiles/interactables.png",
     //ANIMATIONS
     "animations/SonicBoom.png",
     "animations/Whirlwind.png",
@@ -159,7 +175,7 @@ var files = [
     "json/story/act1_2.json",
     "json/story/act1_3.json",
     //THE SAMPLE SAVE DATA
-    "json/data/sample_save_data.json"
+    "json/save/sample_save_data.json"
 ];
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){
@@ -179,23 +195,27 @@ Q.load(files.join(','),function(){
     Q.state.set("skills",Q.assets['json/data/skills.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
+    //Get the equipment in the proper format
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     //For now, just start a new game when we load in. -> main.js
-    //Q.newGame({gender:"female"});
-    Q.startGame(Q.assets['json/data/sample_save_data.json']);
+    Q.newGame({gender:"female"});
+    //Start the game from the JSON save data
+    //Q.startGame(Q.assets['json/save/sample_save_data.json']);
     //Make it so that you can open the options menu at all times
     //For now, press space or z to load
-    Q.input.on("fire",function(){
-        if(!Q.stage(4)){
-            Q.pauseAllStages();
-            Q.stageScene("optionsMenu",4);
-        } else  {
-            Q.clearStage(4);
-            Q.unpauseAllStages();
-        }
-    });
+    Q.input.on("fire",Q,"loadOptions");
 });
+//Checks if the user wants to go to the options menu
+Q.loadOptions = function(){
+    if(!Q.stage(4)){
+        Q.pauseAllStages();
+        Q.stageScene("optionsMenu",4);
+    } else  {
+        Q.clearStage(4);
+        Q.unpauseAllStages();
+    }
+};
 //Q.debug=true;
 });

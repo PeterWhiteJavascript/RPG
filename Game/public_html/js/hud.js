@@ -182,15 +182,16 @@ Quintus.HUD=function(Q){
                 fill:"blue",
                 opacity:0.5,
                 menuNum:0,
-                titles:["ACTIONS","ACTIONS","SKILLS"],
+                titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
                 options:[["Move","Attack","Skill","Item","Status","End Turn"],["Status"],[]],
-                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadItems","loadStatus","loadEndTurn"],["loadStatus"],[]],
+                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus"],[]],
                 conts:[]
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
             this.on("inserted","displayMenu");
             this.on("step",this,"checkInputs");
+            //If the character selected is not the one whose turn it is
             if(!this.p.active){
                 this.p.menuNum=1;
             } else {
@@ -220,6 +221,25 @@ Quintus.HUD=function(Q){
                 this.p.options[2]=opts;
                 this.p.funcs[2]=funcs;
                 this.p.skills=skills;
+                //Set items
+                var opts = [];
+                var funcs = [];
+                var itms = [];
+                var items = Q.state.get("Bag").items.consumable;
+                //If there are items in the bag
+                if(items.length){
+                    items.forEach(function(item){
+                        opts.push(item.name);
+                        funcs.push("loadItem");
+                        itms.push(item);
+                    });
+                } else {
+                    opts.push("No Items");
+                    funcs.push("noItems");
+                }
+                this.p.options[3]=opts;
+                this.p.funcs[3]=funcs;
+                this.p.items=itms;
             }
         },
         cycle:function(to){
@@ -295,11 +315,12 @@ Quintus.HUD=function(Q){
                 Q.inputs['confirm']=false;
             }
             if(Q.inputs['esc']){
-                //If we're in the skillsmenu
-                if(this.p.menuNum===2){
+                //If we're in the skillsmenu or items menu
+                if(this.p.menuNum===2||this.p.menuNum===3){
                     this.p.menuNum=0;
                     this.displayMenu();
-                } else {
+                } 
+                else {
                     Q.pointer.addControls();
                     Q.pointer.on("checkConfirm");
                     //Make sure the characterMenu is gone
@@ -356,13 +377,37 @@ Quintus.HUD=function(Q){
             //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
         },
+        noItems:function(){
+            Q.playSound("cannot_do.mp3");
+        },
+        //When the user selects an item, ask to use it and show what it does
+        loadItem:function(){
+            var item = this.p.items[this.p.selected];
+            //Load the range grid
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",item:item}));
+            //Hide this options box. Once the user confirms if the item should be used, destroy this. If he presses 'back' the selection num should be the same
+            this.off("step",this,"checkInputs");
+            this.hide();
+            if(!item.aoe){
+                item.aoe = ["normal",0];
+            }
+            Q.pointer.p.item = item;
+            //Must set it as a skill so it work for the aoe guide aoe
+            Q.pointer.p.skill = item;
+            Q.pointer.p.user = this.p.target;
+            Q.pointer.snapTo(this.p.target);
+            Q.pointer.addControls();
+            //Create the AOEGuide which shows which squares will be affected by the skill
+            Q.pointer.add("AOEGuide");
+        },
         //Loads the items menu
-        loadItems:function(){
-            
+        loadItemsMenu:function(){
+            this.p.menuNum=3;
+            this.displayMenu();
         },
         //Loads the large menu that displays all stats for this character
         loadStatus:function(){
-            
+            alert("To Do: Create big good looking status menu.");
         },
         //Loads the directional arrows so the user can decide which direction to face
         loadEndTurn:function(){
@@ -408,15 +453,20 @@ Quintus.HUD=function(Q){
                     break;
                 //Used for skills that have a weird range (eg 'T' shape)
                 case "skill":
-                    var skill = this.p.skill;
+                    var skill = this.p.skill?this.p.skill:this.p.item;
                     switch(skill.range[0]){
                         case "self":
+                            //Self skills can target the tile that the user is on
                             this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[user.p.loc[0],user.p.loc[1]]})));
+                            //If there is range, then the skill can target self, or other squares (using potion, etc...)
+                            if(skill.range[1]>0){
+                                this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"]);
+                            }
                             break;
                         case "normal":
                             this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"]);
                             break;
-                        //No diagonal attack
+                            //No diagonal attack
                         case "straight":
                             this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"],skill.range[0]);
                             break;
@@ -441,12 +491,7 @@ Quintus.HUD=function(Q){
                 return tiles;
             }
         },
-        //Gets the fastest path to a certain location 
-        getPath:function(loc,toLoc,graph){
-            var start = graph.grid[loc[0]][loc[1]];
-            var end = graph.grid[toLoc[0]][toLoc[1]];
-            return Q.astar.search(graph, start, end);
-        },
+        
         getTileRange:function(loc,stat,graph,special){
             var bounds = Q.BattleGrid.getBounds(loc,stat);
             var tiles=[];
@@ -466,7 +511,7 @@ Quintus.HUD=function(Q){
                 //Loop through the possible tiles
                 for(var i=0;i<tiles.length;i++){
                     //Get the path and then slice it if it goes across enemy ZOC
-                    var path = this.getPath(loc,[tiles[i].x,tiles[i].y],graph);
+                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
@@ -518,7 +563,7 @@ Quintus.HUD=function(Q){
                             //Hide the zoc
                             Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
                             //Make the character move to the spot
-                            user.moveAlong(this.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
+                            user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
                             break;
                         case "attack":
                             //Make sure there's a target there
@@ -534,15 +579,16 @@ Quintus.HUD=function(Q){
                             }
                             break;
                         case "skill":
+                            var skill = this.p.skill?this.p.skill:this.p.item;
                             //Use the skill's aoe, else it's a normal single target
-                            var aoe = this.p.skill.aoe?this.p.skill.aoe:["normal",0];
+                            var aoe = skill.aoe?skill.aoe:["normal",0];
                             //Make sure there's a target 
                             var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user));
                             //Remove any characters that are not affected.
-                            if(this.p.skill.affects) Q.BatCon.removeTeamObjects(targets,this.p.skill.affects);
+                            if(skill.affects) Q.BatCon.removeTeamObjects(targets,skill.affects);
                             //If there is at least one target
                             if(targets.length){
-                                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.skill);
+                                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.item?this.p.item:skill);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
                             } else {
@@ -571,7 +617,6 @@ Quintus.HUD=function(Q){
                 Q.pointer.off("checkConfirm");
                 this.fullDestroy();
                 if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
-                
                 Q.inputs['esc']=false;
             }
         } 
@@ -641,8 +686,13 @@ Quintus.HUD=function(Q){
                 this.destroy();
                 if(this.p.skill){
                     if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
-                    this.stage.ActionMenu.loadSkill();
-                } else {
+                    if(this.p.skill.kind==="consumable"){
+                        this.stage.ActionMenu.loadItem();
+                    } else {
+                        this.stage.ActionMenu.loadSkill();
+                    }
+                }
+                else {
                     this.stage.ActionMenu.loadAttack();
                 }
                 Q.inputs['esc']=false;

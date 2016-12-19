@@ -4,7 +4,7 @@
     "allies":[
         {
             "name": "Alex",
-            "level":5,
+            "level":1,
             "gender":"female",
             "equipment":{
                 "righthand":["shield","potLid"],
@@ -14,11 +14,11 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":80,
-                "end":100,
-                "dex":75,
-                "wsk":50,
-                "rfl":78
+                "str":10,
+                "end":10,
+                "dex":10,
+                "wsk":10,
+                "rfl":10
             },
             "skills":{
                 "sword":["whirlwind","superwhirlwind"],
@@ -32,7 +32,7 @@
         },
         {
             "name": "Peter",
-            "level":3,
+            "level":1,
             "gender":"male",
             "equipment":{
                 "righthand":["weapon","woodenBow"],
@@ -42,11 +42,11 @@
                 "accessory":["accessory","movementCharm"]
             },
             "stats":{
-                "str":1111,
-                "end":1111,
-                "dex":2111,
-                "wsk":1111,
-                "rfl":1111
+                "str":10,
+                "end":10,
+                "dex":10,
+                "wsk":10,
+                "rfl":10
             },
             "skills":{
                 "sword":["stab","slash","whirlwind","superwhirlwind"],
@@ -56,12 +56,12 @@
             "value":40,
             "method":60,
             "charClass":"archer",
-            "exp":90
+            "exp":0
         }
     ],
     "inventory":{
         "consumable":[
-            ["potion",5]
+            ["potion",1]
         ],
         "weapon":[
             ["woodenBow",1],

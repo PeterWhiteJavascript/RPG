@@ -41,17 +41,40 @@ Quintus.Objects=function(Q){
             });
             this.items = bagItems;
         },
+        getBagItem:function(type,name){
+            for(var i=0;i<this.items[type].length;i++){
+                var item = this.items[type][i];
+                if(item.name===name){
+                    return item;
+                }
+            }
+        },
         addItem:function(itm,type){
-            
+            //Check if the item is contained in the bag already
+            var item = this.getBagItem(type,itm.name);
+            //If the item wasn't found, add it
+            if(!item){
+                this.items[type].push(itm);
+            } else {
+                item.amount+=itm.amount;
+            }
         },
         removeItem:function(itm,type){
-            
+            for(var i=0;i<this.items[type].length;i++){
+                var item = this.items[type][i];
+                if(item.name===itm.name){
+                    this.items[type].splice(i,1);
+                    return;
+                }
+            }
         },
-        increaseItem:function(itm,type){
-            
+        increaseItem:function(itm,amount){
+            itm.amount+=amount;
         },
-        decreaseItem:function(itm,type){
-            
+        decreaseItem:function(itm,type,amount){
+            var item = this.getBagItem(type,itm.name);
+            item.amount-=amount?amount:1;
+            if(item.amount<=0) this.removeItem(item,type);
         }
     });
     //Adds more control over what animations are playing.
@@ -61,17 +84,17 @@ Quintus.Objects=function(Q){
         },
         extend:{
             checkPlayDir:function(dir){
-                if(!dir){return this.p.dir;}else{return dir||"down";}
-            },
-            playStand:function(dir){
-                this.p.dir = this.checkPlayDir(dir);
-                this.play("standing"+this.p.dir);
                 //TEMPORARY SINCE THE FINAL SPRITES WILL NOT BE ISOMETRIC
                 if(this.p.dir==="down"||this.p.dir==="right"){
                     this.p.flip = 'x';
                 } else {
                     this.p.flip = false;
                 }
+                if(!dir){return this.p.dir;}else{return dir||"down";}
+            },
+            playStand:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("standing"+this.p.dir);
             },
             playWalk:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
@@ -100,6 +123,10 @@ Quintus.Objects=function(Q){
                     this.off("doneCounter");
                     this.playAttack(dir,callback);
                 });
+            },
+            playHurt:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("hurt"+this.p.dir);
             },
             playDying:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
@@ -349,13 +376,20 @@ Quintus.Objects=function(Q){
         },
         extend:{
             levelUp:function(){
+                //Increase the level by 1
+                this.p.level+=1;
+                //Decrease the exp by 100
+                this.p.exp-=100;
+                //The base level up stats
                 var lv = this.p.levelUp;
+                //The current stats
                 var st = this.p.stats;
                 st.str += lv.str;
                 st.end += lv.end;
                 st.dex += lv.dex;
                 st.wsk += lv.wsk;
                 st.rfl += lv.rfl;
+                //Re-calculate all of the values
                 this.statCalcs.calcStats();
             }
         }
@@ -412,6 +446,7 @@ Quintus.Objects=function(Q){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
                 //If the character leveled up
                 if(leveledUp){
+                    this.stage.insert(new Q.DynamicNumber({color:"white", loc:this.p.loc, text:"Lv. up!",z:this.p.z}));
                     this.playLevelUp(this.p.dir);
                     time = 1000;
                     Q.playSound("confirm.mp3");
@@ -439,10 +474,16 @@ Quintus.Objects=function(Q){
                         this.removeAllStatus();
                         //Set died to true so that if the character comes back to life, it will not give exp
                         this.p.died = true;
-                        //Figure out how much exp should be awarded
-                        return Q.BatCon.giveExp(this,this.p.hitBy);
+                        //Only give exp if possible (if an ally killed this character, no exp is given)
+                        if(this.p.hitBy.length){
+                            //Figure out how much exp should be awarded
+                            return Q.BatCon.giveExp(this,this.p.hitBy);
+                        }
                     }
                 }
+            },
+            healHp:function(amount){
+                this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
             },
             addStatus:function(name,turns,user){
                 this.addToHitBy(user);
@@ -556,7 +597,7 @@ Quintus.Objects=function(Q){
             p.loc = p.destLoc;
             Q.BatCon.setXY(this.entity);
             this.entity.trigger("doneAutoMove");
-            this.entity.trigger("atDest");
+            this.entity.trigger("atDest",[(p.x-Q.tileW/2)/Q.tileW,(p.y-Q.tileH/2)/Q.tileH]);
             this.entity.playStand(p.dir);
             this.entity.del("autoMove");
         },
@@ -613,7 +654,7 @@ Quintus.Objects=function(Q){
                 p.x = p.destX;
                 p.y = p.destY;
                 p.walkPath.shift();
-                this.entity.trigger("atDest");
+                this.entity.trigger("atDest",[(p.x-Q.tileW/2)/Q.tileW,(p.y-Q.tileH/2)/Q.tileH]);
                 if(p.walkPath.length===0){
                     this.atDest();
                     return;
@@ -682,10 +723,17 @@ Quintus.Objects=function(Q){
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
                 dir:"left",
+                //Any status effects (good and bad)
                 status:{
+                    //Good
                     sturdy:false,
+                    //Bad
                     blind:false,
                     poisoned:false
+                },
+                //Allows the character to walk on tiles that it normally wouldn't be able to
+                canMoveOn:{
+                    waterWalk:false
                 },
                 //All enemies that hit this character are added so the exp can be divided when this character dies
                 hitBy:[],
@@ -725,9 +773,9 @@ Quintus.Objects=function(Q){
             }
             this.advanceStatus();
             //Get the grid for walking from this position
-            this.p.walkMatrix = new Q.Graph(this.getMatrix("walk"));
+            this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn));
             //Get the grid for attacking from this position
-            this.p.attackMatrix = new Q.Graph(this.getMatrix("attack"));
+            this.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
             //Set to true when the character moves
             this.p.didMove = false;
             //Set to true when the character attacks
@@ -764,7 +812,7 @@ Quintus.Objects=function(Q){
                 this.revealStatusDisplay();
                 //If this character hasn't attacked yet this turn, generate a new attackgraph
                 if(!t.p.didAction){
-                    t.p.attackMatrix = new Q.Graph(t.getMatrix("attack"));
+                    t.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
                     Q.pointer.p.loc = t.p.loc;
                     Q.BatCon.setXY(Q.pointer);
                     if(this.p.team==="enemy") {
@@ -783,50 +831,98 @@ Quintus.Objects=function(Q){
                 }
                 t.off("doneAutoMove");
             });
+        }
+    });
+    Q.Sprite.extend("StoryCharacter",{
+        init:function(p){
+            this._super(p,{
+                w:20,h:30,
+                type:Q.SPRITE_NONE,
+                sprite:"Character",
+                dir:"left"
+            });
+            this.p.sheet = this.p.charClass;
+            //Quintus components
+            this.add("2d, animation, tween");
+            this.add("animations");
+            this.on("inserted");
         },
-        getMatrix:function(matrixType){
-            var tileTypes = Q.state.get("tileTypes");
-            var cM=[];
-            var stage = this.stage;
-            var otherTeam = this.p.team==="enemy"?"ally":"enemy";
-            function getWalkable(){
-                var move = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])].move;
-                return move?move:1000000;
+        inserted:function(){
+            Q.BatCon.setXY(this);
+            if(this.p.anim){
+                this["play"+this.p.anim](this.p.dir);
+            } else {
+                this.playStand(this.p.dir);
             }
-            function getTarget(){
-                return Q.BattleGrid.getObject([i_walk,j_walk]);
-            }
-            function getZOC(){
-                return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
-            }
-            for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
-                var costRow = [];
-                for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
-                    var cost = 1;
-                    var objOn = false;
-                    var zocOn = false;
-                    //If we're walking, enemies are impassable
-                    if(matrixType==="walk"){
-                        cost = getWalkable();
-                        objOn = getTarget();
-                        if(!objOn) zocOn = getZOC();
-                        
-                        //Allow walking over allies
-                        if(objOn&&objOn.p.team===this.p.team){objOn=false;};
-                    }
-                    //If there's still no enemy on the sqaure, get the tileCost
-                    if(objOn){
-                        costRow.push(1000000);
-                    } else if(zocOn){
-                        costRow.push(1000);
-                    } else {
-                        costRow.push(cost);
-                    }
+            
+            Q._generatePoints(this,true);
+            this.p.z = this.p.y;
+        },
+        //Moves the character along a path of preset points
+        moveAlongPath:function(data){
+            var path = [];
+            var locNow = this.p.loc;
+            var walkMatrix = new Q.Graph(Q.getMatrix("walk","story"));
+            var checkAt = [];
+            var checkFuncs = [];
+            var prevLoc;
+            for(var i=0;i<data.length;i++){
+                //If the data is a loc array.
+                if(Q._isArray(data[i])){
+                    var to = Q.getPath(locNow,data[i],walkMatrix);
+                    path.push.apply(path,to);
+                    locNow = data[i];
+                    prevLoc = data[i];
+                } 
+                //Otherwise, it's a function
+                else {
+                    if(prevLoc){
+                        checkAt.push(prevLoc);
+                        checkFuncs.push(data[i]);
+                    } else { alert("Can't put a function at the start"); }
                 }
-                cM.push(costRow);
             }
-            return cM;
-         }
-    
+            if(checkAt.length){
+                this.p.checkAt = checkAt;
+                this.p.checkFuncs = checkFuncs;
+                this.on("atDest",this,"checkAtLoc");
+            }
+            this.p.calcPath = path;
+            this.p.destLoc = data[data.length-1];
+            this.add("autoMove");
+            this.on("doneAutoMove");
+        },
+        //Run this when an object does the at dest trigger from an automove
+        checkAtLoc:function(loc){
+            if(!loc) return;
+            var checkAt = this.p.checkAt[0];
+            if(loc[0]===checkAt[0]&&loc[1]===checkAt[1]){
+                var data = this.p.checkFuncs.shift();
+                var destObj;
+                if(data.obj==="text"){
+                    destObj = Q.stage(1).textBox;
+                }
+                destObj[data.func].apply(destObj,data.props);
+                this.p.checkAt.shift();
+                if(this.p.checkAt.length===0){
+                    this.off("atDest",this,"checkAtLoc");
+                }
+            }
+        },
+        doneAutoMove:function(){
+            this.off("doneAutoMove");
+            this.off("atDest","checkAtLoc");
+        }
+    });
+    //A chest that appears on the map that you can pick up
+    Q.Sprite.extend("Chest",{
+        init:function(p){
+            this._super(p,{
+                w:20,h:30,
+                type:Q.SPRITE_NONE,
+                sheet:"chest",
+                frame:0
+            });
+        }
     });
 };

@@ -1,55 +1,109 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(scene){
+    Q.startScene = function(scene,start,sceneType){
         Q.load("json/story/"+scene+".json",function(){
             var data = Q.assets["json/story/"+scene+".json"];
             //Load the bg assets and create the scene
             Q.loadMusic(data.music.join(','),function(){
                 Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
-                    //If there is dialogue
-                    if(data.dialogue){
-                        Q.playMusic(data.dialogue.music,function(){
-                            //Stage the scene
-                            Q.stageScene("dialogue",1,{data: data, dialogue: data.dialogue,path:"dialogue"});
-                        });
-                    }
-                    if(data.battle) {
-                        //For those occasions where there's no dialogue cutscene, stage the battle scene.
-                        if(!data.dialogue){
-                            Q.playMusic(data.battle.music,function(){
-                                    Q.stageScene("battle",0,{data:data,battle:data.battle});
-                            });
-                        }
-                    }
+                    var starting = start?start:data.startScene[0];
+                    var sceneData = data[starting];
+                    //dialogue, battle, battleScene
+                    var type = sceneType?sceneType:"dialogue";
+                    var sceneNum = 1;
+                    if(type==="battleScene"||type==="battle"){sceneNum = 0;};
+                    Q.playMusic(sceneData.music,function(){
+                        //Stage the scene
+                        Q.stageScene(type,sceneNum,{data: data, dialogue: data[data.startScene],path:data.startScene[0]});
+                    });
                 });
             });
         });
     };
     Q.scene("dialogue",function(stage){
         var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
-        var bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
+        var bgImage;
+        if(dialogueData.bg){
+            bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
+        }
         //The textbox is in charge of all of the functions that need to be run to do custom events.
         //It also shows the text_box.png
-        var textbox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg}));
+        var textBox = stage.textBox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg}));
         //The left/right Assets are the characters that are speaking in the dialogue
-        textbox.p.leftAsset = stage.insert(new Q.StoryImage({x:100,y:Q.height-textbox.p.h-150}));
-        textbox.p.rightAsset = stage.insert(new Q.StoryImage({x:Q.width-100,y:Q.height-textbox.p.h-150,flip:'x'}));
+        textBox.p.leftAsset = stage.insert(new Q.StoryImage({x:100,y:Q.height-textBox.p.h-150}));
+        textBox.p.rightAsset = stage.insert(new Q.StoryImage({x:Q.width-100,y:Q.height-textBox.p.h-150,flip:'x'}));
         //The Dialogue Area is the inner area of the text box. It will be transparent later on.
-        textbox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
+        textBox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
         //The Dialogue is the text that is inside the dialogue area
-        textbox.p.dialogueText = textbox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
-        textbox.next();
+        textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
+        textBox.next();
     }); 
+    Q.scene("battleScene",function(stage){
+        Q.stageScene("fader",11);
+        //Get the data to play out this scene
+        var data = stage.options.sceneData = Q.getPathData(stage.options.data,stage.options.path);
+        var music = data.music;
+        if(!music) music = Q.state.get("currentMusic");
+        Q.playMusic(music,function(){
+            //Display the tmx tile map
+            //If one is not passed in, we are re-using the map from the previous battle
+            if(data.map){
+                Q.stageTMX(data.map, stage);
+            }
+            stage.lists.TileLayer[0].p.z = 0;
+            stage.lists.TileLayer[1].p.z = 1;
+            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+            //The battle controller holds all battle specific functions
+            Q.BatCon = new Q.BattleController({stage:stage});
+            stage.add("viewport");
+            stage.viewport.scale = 2;
+            //The invisible sprite that the viewport follows
+            stage.viewSprite = stage.insert(new Q.ViewSprite());
+            Q.viewFollow(stage.viewSprite,stage);
+            
+            var allyData = Q.state.get("allies");
+            var charData = data.initialChars;
+            var chars = [];
+            charData.forEach(function(char){
+                var character;
+                //If the character is an ally, get the data from the allies array
+                if(char.team==="ally"){
+                    //Find the data in the allies array
+                    var data = allyData.filter(function(ally){
+                        return ally.name===char.name;
+                    })[0];
+                    if(data){
+                        character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,value:data.value,method:data.method,team:char.team});
+                        character.add("statCalcs");
+                    } else {
+                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"neutral"});
+                    }
+                } else {
+                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
+                }
+                chars.push(character);
+                character.p.loc = char.loc;
+                character.p.anim = char.anim;
+            });
+            chars.forEach(function(char){
+                stage.insert(char);
+            });
+            Q.stageScene("dialogue",1,{data:stage.options.data,path:stage.options.path});
+        });
+        
+    },{sort:true});
     Q.scene("battle",function(stage){
+        Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
         var music = battleData.music;
         if(!music) music = Q.state.get("currentMusic"); 
         Q.playMusic(music,function(){
-            //Load the tmx tile map
+            //Display the tmx tile map
             Q.stageTMX(battleData.map, stage);
-            stage.lists.TileLayer[0].p.z = 0;
-            stage.lists.TileLayer[1].p.z = 1;
+            stage.lists.TileLayer[0].p.z = -2;
+            stage.lists.TileLayer[1].p.z = -1;
             stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
             stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
             //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
@@ -58,7 +112,7 @@ Quintus.SceneFuncs=function(Q){
             Q.BatCon = new Q.BattleController({stage:stage});
             stage.add("viewport");
             stage.viewport.scale = 2;
-            //Display alex
+            
             var allyData = Q.state.get("allies");
             var allies = [];
             allyData.forEach(function(ally,i){
@@ -138,6 +192,7 @@ Quintus.SceneFuncs=function(Q){
                 optsFuncs[optionNum](options[optionNum]);
                 vals[values[optionNum]] = options[optionNum].p.value;
                 options[optionNum].val.p.label = ""+vals[values[optionNum]];
+                Q.state.trigger("change."+values[optionNum],options[optionNum].p.value);
                 Q.inputs['confirm']=false;
                 return;
             }
@@ -175,5 +230,8 @@ Quintus.SceneFuncs=function(Q){
                 Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});
             });
         });
+    });
+    Q.scene("fader",function(stage){
+        stage.insert(new Q.Fader());
     });
 };

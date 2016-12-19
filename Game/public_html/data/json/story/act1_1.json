@@ -1,17 +1,16 @@
 {
     "bgs":["bg/forest.jpg","bg/city.jpg"],
-    "chars":["story/l.jpg","story/shini.jpg","story/pyro.png"],
-    "maps":["homeland.tmx"],
+    "chars":["story/l.jpg","story/shini.jpg","story/pyro.png","story/skirm.png"],
+    "maps":["homeland.tmx","demo0.tmx"],
     "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
+    "startScene":["dialogue","dialogue"],
     "dialogue":{
         "music":"the_usual.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
-            {"text":["Press enter."],"asset":[false,"pyro.png"],"pos":"right"},
+            {"text":["Welcome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
             {"func":"confirmation","props":[[
-                {"next":"dialogue/on_to_battle","text":"Fight"},
-                {"next":"skip_to_town","text":"Skip to town"},
-                {"next":"dialogue/readStuff","text":"Read Stuff"}
+                {"next":"dialogue/on_to_battle","text":"Demo Scene"}
             ]]}
             
         ],
@@ -85,33 +84,51 @@
         "on_to_battle":{
             "bg":"bg/forest.jpg",
             "interaction":[
-                {"text":["Let's go fight some dudes then!"],"asset":["shini.jpg","l.jpg"],"pos":"left"},
-                {"func":"loadBattle","props":["battle"]}
+                {"text":["Nihihi, time to walk through the forest and go to the town!"],"asset":["skirm.png",false],"pos":"left"},
+                {"func":"loadBattleScene","props":["preBattleScene"]}
             ]
         }
     },
+    "preBattleScene":{
+        "interaction":[
+            {"func":"setView","props":[2]},
+            {"func":"moveAlong","props":[2,[[17,22],[14,22],[14,11]],"up",{"func":"allowCycle","obj":"text"}]},
+            {"text":["Doot da doo!"],"asset":["skirm.png"],"pos":"left","autoCycle":180},
+            {"text":["Doooooo!"],"asset":["skirm.png"],"pos":"left","noCycle":true},
+            {"func":"hideDialogueBox","props":[]},
+            {"func":"centerView","props":[0,1],"wait":true},
+            {"func":"moveAlong","props":[1,[[17,14],{"func":"forceCycle","obj":"text"},[15,14],[15,13]],"up"]},
+            {"func":"moveAlong","props":[0,[[14,15],[14,13]],"up",{"func":"forceCycle","obj":"text"}]},
+            {"text":["Hehehehehehe"],"asset":["shini.jpg",false],"pos":"left","noCycle":true},
+            {"text":["Mehehehehehe"],"asset":[false,"l.jpg"],"pos":"right","noCycle":true},
+            {"func":"changeDir","props":[2,"down"]},
+            {"text":["Uwah!","You two surprised me!","I'm gonna beat you both up now!","UWU"],"asset":["skirm.png",false],"pos":"left"},
+            
+            {"func":"loadBattle","props":["battle"]}
+        ],
+        "music":"the_usual.mp3",
+        "map":"demo0.tmx",
+        "initialChars":[
+            {"loc":[24,15],"charClass":"archer","dir":"up","storyId":0,"anim":"Hurt"},
+            {"loc":[24,14],"charClass":"barbarian","dir":"down","storyId":1},
+            {"loc":[17,29],"name":"Alex","dir":"left","storyId":2,"team":"ally"}
+        ]
+    },
     "battle":{
         "music":"battle.mp3",
-        "map":"homeland.tmx",
-        "winScene":"victory",
-        "loseScene":"defeat",
-        "placementSquares":[[10,8],[8,3],[3,3],[4,1],[4,2],[4,3]],
+        "map":"demo0.tmx",
+        "victory":{"func":"loadBattleScene","scene":"victory"},
+        "defeat":{"func":"loadBattleScene","scene":"defeat"},
+        "placementSquares":[[14,11]],
         "enemies":[
-            {"loc":[10,6],"charClass":"archer","level":1,"equipmentRank":2,"dir":"down"},
-            {"loc":[9,8],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"right"},
-            {"loc":[10,7],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[10,2],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[11,2],"charClass":"archer","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[9,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[10,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[11,3],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"down"},
-            {"loc":[11,14],"charClass":"knight","level":2,"equipmentRank":1,"dir":"up"}
+            {"loc":[14,13],"charClass":"archer","level":1,"equipmentRank":2,"dir":"up"},
+            {"loc":[15,13],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"up"}
         ],
         "interactables":[
-            {}
+            {"loc":[11,14],"class":"Chest","contents":["potion",1]}
         ],
         "pickups":[
-            {}
+            
         ]
     },
     "skip_to_town":{
@@ -122,15 +139,25 @@
     },
     "victory":{
         "music":"the_usual.mp3",
-        "bg":"",
+        "map":"demo0.tmx",
+        "initialChars":[
+            {"loc":[14,17],"charClass":"archer","dir":"up","storyId":0,"team":"enemy","anim":"Hurt"},
+            {"loc":[15,17],"charClass":"barbarian","dir":"up","storyId":1,"team":"enemy","anim":"Hurt"},
+            {"loc":[14,15],"name":"Alex","dir":"down","storyId":2,"team":"ally"}
+        ],
         "interaction":[
-            {"text":["Looks like we won the battle!"],"asset":[false,"l.jpg"],"pos":"right"},
-            {"func":"loadLocation","props":["homeland_forest","start"]}
+            {"func":"setCharacterAs","props":["leader","highest","method","ally"]},
+            {"func":"setView","props":["leader"]},
+            {"func":"hideDialogueBox","props":[]},
+            {"func":"waitTime","props":[1400],"noCycle":true},
+            {"text":["Hmph, that'll teach you guys to mess with me!","See ya."],"asset":[false,"skirm.png"],"pos":"right"},
+            {"func":"hideDialogueBox","props":[]},
+            {"func":"moveAlong","props":[2,[[19,7]],"left",{"func":"forceCycle","obj":"text"}],"noCycle":true},
+            {"func":"loadScene","props":["act1_2","preBattleScene","battleScene"]}
         ]
     },
     "defeat":{
         "music":"the_usual.mp3",
-        "bg":"bg/city.jpg",
         "interaction":[
             {"text":["Looks like we LOST the GAME!"],"asset":["shini.jpg",false],"pos":"left"},
             {"func":"moreDialogue","props":["defeat/testerinoDialogino"]}

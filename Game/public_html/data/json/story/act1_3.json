@@ -1,6 +1,19 @@
 {
-    "text":[
-        {},
-        {}
-    ]
+    "bgs":["bg/forest.jpg","bg/city.jpg"],
+    "chars":["story/l.jpg","story/shini.jpg","story/pyro.png","story/skirm.png"],
+    "maps":["demo2.tmx"],
+    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
+    "startScene":["preBattleScene","battleScene"],
+    "preBattleScene":{
+        "interaction":[
+            {"func":"setView","props":[0,true]},
+            {"text":["THAT'S AS FAR AS I GOT :) - Peter"],"asset":[false],"pos":"left"}
+        ],
+        "music":"the_usual.mp3",
+        "map":"demo2.tmx",
+        "initialChars":[
+            {"loc":[0,9],"name":"Alex","dir":"right","storyId":0,"team":"ally"}
+            
+        ]
+    }
 }

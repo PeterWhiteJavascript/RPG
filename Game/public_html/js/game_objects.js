@@ -78,9 +78,8 @@ Quintus.GameObjects=function(Q){
                     return;
                 }
             }
-            //The standard checkInputs. This creates a 
+            //The standard checkInputs.
             this.on("checkInputs");
-            
         },
         compareLocsForDirection:function(){
             var userLoc = this.p.user.p.loc;
@@ -229,7 +228,7 @@ Quintus.GameObjects=function(Q){
             //Set lower to go faster
             var baseSpeed = 50;
             var speed = (baseSpeed*dist)/1000;
-            this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest");}});
+            this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest",[(coords.x-Q.tileW/2)/Q.tileW,(coords.y-Q.tileH/2)/Q.tileH]);}});
             this.p.loc = [loc[0],loc[1]];
         },
         step:function(dt){
@@ -489,12 +488,23 @@ Quintus.GameObjects=function(Q){
         checkBattleOver:function(){
             if(this.allies.length===0){
                 Q.clearStages();
-                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.loseScene});
+                var defeat = this.stage.options.battleData.defeat;
+                if(defeat.func==="loadBattleScene"){
+                    Q.stageScene("battleScene",0,{data:this.stage.options.data, path:defeat.scene});
+                } else if(victory.func==="loadDialogue"){
+                    Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:defeat.scene});
+                }
                 return true;
             }
             if(this.enemies.length===0){
                 Q.clearStages();
-                Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:this.stage.options.battleData.winScene});
+                var victory = this.stage.options.battleData.victory;
+                if(victory.func==="loadBattleScene"){
+                    Q.stageScene("battleScene",0,{data:this.stage.options.data, path:victory.scene});
+                } else if(victory.func==="loadDialogue"){
+                    Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:victory.scene});
+                }
+                
                 return true;
             }
         },
@@ -571,11 +581,8 @@ Quintus.GameObjects=function(Q){
         removeMarked:function(){
             if(this.markedForRemoval.length){
                 for(var i=0;i<this.markedForRemoval.length;i++){
-                    this.removeFromTurnOrder(this.markedForRemoval[i]);
-                    /*
                     this.removeFromBattle(this.markedForRemoval[i]);
-                    this.markedForRemoval[i].destroy();
-                     */
+                    //this.markedForRemoval[i].destroy();
                 }
                 this.markedForRemoval = [];
             }
@@ -584,14 +591,17 @@ Quintus.GameObjects=function(Q){
         removeFromTurnOrder:function(obj){
             this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
         },
-        //Removes the object from battle (at end of turn)
-        removeFromBattle:function(obj){
-            this.removeFromTurnOrder(obj);
+        removeFromTeam:function(obj){
             if(obj.p.team==="ally"){
                 this.allies.splice(this.allies.indexOf(this.allies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             } else if(obj.p.team==="enemy"){
                 this.enemies.splice(this.enemies.indexOf(this.enemies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             }
+        },
+        //Removes the object from battle (at end of turn)
+        removeFromBattle:function(obj){
+            this.removeFromTurnOrder(obj);
+            this.removeFromTeam(obj);
         },
         getXY:function(loc){
             return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
@@ -649,7 +659,6 @@ Quintus.GameObjects=function(Q){
                 targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(loc,skill.aoe,user));
                 //Don't allow for unnaffected targets
                 if(skill.affects) this.removeTeamObjects(targets,skill.affects);
-                
             } else {
                 targets[0] = Q.BattleGrid.getObject(loc);
             }
@@ -693,8 +702,7 @@ Quintus.GameObjects=function(Q){
                 //Level up the character if they are at or over 100
                 if(obj.p.exp>=100){
                     leveledUp = true;
-                    obj.p.level+=1;
-                    obj.p.exp-=100;
+                    obj.levelUp();
                 }
                 text.push({func:"showExpGain",obj:obj,props:[gain,leveledUp]});
             });
@@ -835,6 +843,10 @@ Quintus.GameObjects=function(Q){
             //This sometimes is different depending on the skill
             var time;
             if(skill){
+                if(skill.kind==="consumable"){
+                    var bag = Q.state.get("Bag");
+                    bag.decreaseItem(skill,skill.kind);
+                }
                 if(attacker.p.hp<=0) return;
                 var damage = 0;
                 var blow = this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender);
@@ -871,7 +883,7 @@ Quintus.GameObjects=function(Q){
                         var props = skill.effect.props.slice();
                         props.push(defender,attacker);
                         //The skill func will return the feedback
-                        var newText =  this.entity.skillFuncs[skill.effect.func].apply(this,props);
+                        var newText = this.entity.skillFuncs[skill.effect.func].apply(this,props);
                         for(var i=0;i<newText.length;i++){
                             this.text.push(newText[i]);
                         }
@@ -913,7 +925,7 @@ Quintus.GameObjects=function(Q){
             var sound = "slashing";
             attacker.p.didAction = true;
             if(skill){
-                attacker.p.sp-=skill.cost;
+                if(skill.cost) attacker.p.sp-=skill.cost;
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
             }
@@ -975,7 +987,7 @@ Quintus.GameObjects=function(Q){
                 //Check if there's either no more enemies, or no more allies
                 if(Q.BatCon.checkBattleOver()) return;
                 //Get the new walk matrix since objects may have moved
-                active.p.walkMatrix = new Q.Graph(active.getMatrix("walk"));
+                active.p.walkMatrix = new Q.Graph(Q.getMatrix("walk"));
                 //Snap the pointer to the current character
                 Q.pointer.snapTo(active);
                 //If the current character is not AI
@@ -1044,11 +1056,18 @@ Quintus.GameObjects=function(Q){
             var curStatus = target.hasStatus(status);
             if(curStatus){
                 curStatus.turns = curStatus.turns>num?num:curStatus.turns;
-                //text.push(target.p.name+"'s "+status+" has been extended!");
             } else {
                 text.push({func:"addStatus",obj:target,props:[status,num,user]});
-                //text.push(target.p.name+" was given "+status+" status.");
             }
+            return text;
+        },
+        
+        //Item functions below
+        healHp:function(amount,target,user){
+            var text = [];
+            if(target.p.hp+amount>target.p.maxHp) amount=target.p.maxHp-target.p.hp;
+            target.p.hp+=amount;
+            text.push({func:"healHp",obj:target,props:[amount]});
             return text;
         }
     });

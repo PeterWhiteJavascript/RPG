@@ -8,21 +8,22 @@
             "lefthand":["shield","woodenShield"],
             "body":["body","shirt"],
             "feet":["feet","sandals"],
-            "accessory":["accessory","movementCharm"]
+            "accessory":false
         },
         "stats":{
-            "str":10,
+            "str":1110,
             "end":10,
             "dex":10,
             "wsk":10,
             "rfl":10
         },
         "skills":{
-            "sword":["stab","slash"],
-            "spear":["pierce","puncture","push"]
+            "sword":["stab"],
+            "shield":["defend"]
         },
         "value":50,
         "method":50,
-        "charClass":"knight"
+        "charClass":"knight",
+        "exp":0
     }
 }

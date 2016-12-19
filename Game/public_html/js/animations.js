@@ -49,6 +49,7 @@ Q.setUpAnimations=function(){
         attackingleft:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
         counteringleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
+        hurtleft:{frames:[48],rate:standRate},
         dyingleft:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
         deadleft:{frames:[50],rate:standRate},
         
@@ -57,6 +58,7 @@ Q.setUpAnimations=function(){
         attackingright:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
         counteringright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
+        hurtright:{frames:[49],rate:standRate},
         dyingright:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
         deadright:{frames:[51],rate:standRate},
         
@@ -65,6 +67,7 @@ Q.setUpAnimations=function(){
         attackingup:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
         missedup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
         counteringup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
+        hurtup:{frames:[49],rate:standRate},
         dyingup:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
         deadup:{frames:[51],rate:standRate},
         
@@ -73,6 +76,7 @@ Q.setUpAnimations=function(){
         attackingdown:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
         misseddown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
         counteringdown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
+        hurtdown:{frames:[48],rate:standRate},
         dyingdown:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
         deaddown:{frames:[50],rate:standRate},
         

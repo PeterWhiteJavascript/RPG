@@ -26,5 +26,11 @@
         "buff":"Armour +2",
         "required":"waterWalk",
         "effect":{"stat":"armour","amount":2}
+    },
+    "road":{
+        "name":"Road",
+        "move":1,
+        "buff":"Speed +2",
+        "effect":{"stat":"move","amount":1}
     }
 }

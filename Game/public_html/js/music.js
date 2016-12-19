@@ -1,5 +1,16 @@
 Quintus.Music=function(Q){
-    
+//Make sure that when the user enables music, it start playing
+Q.state.on("change.musicEnabled",function(value){
+    if(value){
+        var music = Q.state.get("currentMusic");
+        Q.state.set("currentMusic",false);
+        Q.input.off("fire",Q,"loadOptions");
+        Q.playMusic(music,function(){Q.input.on("fire",Q,"loadOptions");});
+    } else {
+        Q.stopMusic(Q.state.get("currentMusic"));
+    }
+});
+
 Q.stopMusic=function(music){
     Q.audio.stop("bgm/"+music);
 };
