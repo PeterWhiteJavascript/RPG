@@ -24,10 +24,7 @@
             {"loc":[8,4],"charClass":"barbarian","level":1,"equipmentRank":1}
         ],
         "interactables":[
-            {}
-        ],
-        "pickups":[
-            {}
+            
         ]
     },
     "victory":{

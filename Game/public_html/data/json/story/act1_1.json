@@ -2,7 +2,7 @@
     "bgs":["bg/forest.jpg","bg/city.jpg"],
     "chars":["story/l.jpg","story/shini.jpg","story/pyro.png","story/skirm.png"],
     "maps":["homeland.tmx","demo0.tmx"],
-    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
+    "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3","bgm/prebattle.mp3"],
     "startScene":["dialogue","dialogue"],
     "dialogue":{
         "music":"homeland.mp3",
@@ -94,9 +94,11 @@
             {"func":"setView","props":[2]},
             {"func":"moveAlong","props":[2,[[17,22],[14,22],[14,11]],"up",{"func":"allowCycle","obj":"text"}]},
             {"text":["Doot da doo!"],"asset":["skirm.png"],"pos":"left","autoCycle":180},
-            {"text":["Doooooo!"],"asset":["skirm.png"],"pos":"left","noCycle":true},
+            {"text":["Doooooo!"],"asset":["skirm.png"],"pos":"left","autoCycle":90},
+            {"text":["Eyahooo!"],"asset":["skirm.png"],"pos":"left","noCycle":true},
             {"func":"hideDialogueBox","props":[]},
             {"func":"centerView","props":[0,1],"wait":true},
+            {"func":"changeMusic","props":["prebattle.mp3"],"wait":true},
             {"func":"moveAlong","props":[1,[[17,14],{"func":"forceCycle","obj":"text"},[15,14],[15,13]],"up"]},
             {"func":"moveAlong","props":[0,[[14,15],[14,13]],"up",{"func":"forceCycle","obj":"text"}]},
             {"text":["Hehehehehehe"],"asset":["shini.jpg",false],"pos":"left","noCycle":true},
@@ -119,16 +121,13 @@
         "map":"demo0.tmx",
         "victory":{"func":"loadBattleScene","scene":"victory"},
         "defeat":{"func":"loadBattleScene","scene":"defeat"},
-        "placementSquares":[[14,11]],
+        "placementSquares":[[14,11,"down"]],
         "enemies":[
             {"loc":[14,13],"charClass":"archer","level":1,"equipmentRank":2,"dir":"up"},
             {"loc":[15,13],"charClass":"barbarian","level":2,"equipmentRank":1,"dir":"up"}
         ],
         "interactables":[
             {"loc":[11,14],"class":"Chest","contents":["potion",1]}
-        ],
-        "pickups":[
-            
         ]
     },
     "skip_to_town":{

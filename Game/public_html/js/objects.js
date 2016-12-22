@@ -289,9 +289,9 @@ Quintus.Objects=function(Q){
             p.className = Q.state.get("charClasses")[p.charClass].name;
             p.move = this.getMove(Q.state.get("charClasses")[p.charClass].move);
             p.levelUp = Q.state.get("charClasses")[p.charClass].levelUp;
-            p.hp = this.getHp(base);
-            p.sp = this.getSp(base);
             this.calcStats();
+            p.hp = p.hp?p.hp:p.maxHp;
+            p.sp = p.sp?p.sp:p.maxSp;
         },
         //Set stats for the character
         calcStats:function(){
@@ -401,6 +401,17 @@ Quintus.Objects=function(Q){
             
         }
     });
+    //Any object that saves some properties
+    Q.component("save",{
+        added:function(){
+            this.entity.on("saveProp",this,"saveProp");
+        },
+        saveProp:function(props){
+            var name = props.name;
+            var value = props.value;
+            this.entity.p.savedData[name] = value;
+        }
+    });
     //Any functions that are run because of skills are here as well
     Q.component("combatant",{
         extend:{
@@ -461,6 +472,7 @@ Quintus.Objects=function(Q){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.hp-=dmg;
+                this.trigger("saveProp",{name:"hp",value:this.p.hp});
                 this.addToHitBy(attacker);
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
@@ -469,6 +481,7 @@ Quintus.Objects=function(Q){
                     Q.BatCon.markForRemoval(this);
                     //Set the hp to 0
                     this.p.hp = 0;
+                    this.trigger("saveProp",{name:"hp",value:this.p.hp});
                     if(!this.p.died){
                         //Remove all status effects
                         this.removeAllStatus();
@@ -862,11 +875,12 @@ Quintus.Objects=function(Q){
         moveAlongPath:function(data){
             var path = [];
             var locNow = this.p.loc;
-            var walkMatrix = new Q.Graph(Q.getMatrix("walk","story"));
             var checkAt = [];
             var checkFuncs = [];
             var prevLoc;
             for(var i=0;i<data.length;i++){
+                //Get a new walk matrix for every point (This allows for going back and forth over the same tile more than once)
+                var walkMatrix = new Q.Graph(Q.getMatrix("walk","story"));
                 //If the data is a loc array.
                 if(Q._isArray(data[i])){
                     var to = Q.getPath(locNow,data[i],walkMatrix);

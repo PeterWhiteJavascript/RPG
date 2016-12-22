@@ -34,12 +34,22 @@ Quintus.UIObjects=function(Q){
                 textIndex:0,
                 cantCycle:false,
                 noCycle:false,
-                autoCycle:false
+                autoCycle:false,
+                
+                //The number of frames between inputs
+                inputsTime:15
             });
             //Uncomment if we add touch and set type to Q.SPRITE_UI
             //Q._generatePoints(this,true);
             this.p.y=Q.height-this.p.h;
             this.on("step",this,"checkInputs");
+        },
+        waitForInputsTimer:function(){
+            this.p.inputsTimer--;
+            if(this.p.inputsTimer<=0){
+                this.on("step",this,"checkInputs");
+                this.off("step",this,"waitForInputsTimer");
+            }
         },
         checkInputs:function(){
             if(Q.inputs['confirm']){
@@ -47,6 +57,9 @@ Quintus.UIObjects=function(Q){
                     if(this.p.dialogueText.interact()){
                         this.nextText();
                     }
+                    this.p.inputsTimer=this.p.inputsTime;
+                    this.off("step",this,"checkInputs");
+                    this.on("step",this,"waitForInputsTimer");
                 };
                 Q.inputs['confirm']=false;
             }
@@ -227,6 +240,14 @@ Quintus.UIObjects=function(Q){
             //This will run on defeat. TODO
         },
         //Battle Scene Below
+        changeMusic:function(music){
+            var t = this;
+            Q.playMusic(music,function(){t.forceCycle();});
+        },
+        checkAddCharacter:function(name){
+            //For now, just add the character to the party 100% of the time
+            Q.state.get("allies").push(Q.state.get("characters")[name]);
+        },
         getStoryCharacter:function(id){
             //Gets a story character by their id
             if(Q._isNumber(id)){
@@ -249,7 +270,6 @@ Quintus.UIObjects=function(Q){
         },
         waitTime:function(time){
           var t = this;
-          console.log(time)
           setTimeout(function(){
               t.forceCycle();
           },time);
@@ -317,6 +337,10 @@ Quintus.UIObjects=function(Q){
             Q.playSound(sound+".mp3");
             var t = this;
             this.getStoryCharacter(id)["play"+anim](dir,function(){t[callbackString]();});
+        },
+        changeMoveSpeed:function(id,speed){
+            var obj = this.getStoryCharacter(id);
+            obj.p.stepDelay = speed;
         },
         //Moves a character along a path
         moveAlong:function(id,path,dir,atDest){

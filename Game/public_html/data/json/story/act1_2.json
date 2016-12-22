@@ -54,7 +54,7 @@
         "initialChars":[
             {"loc":[12,22],"name":"Alex","dir":"left","storyId":0,"team":"ally"},
             {"loc":[18,9],"charClass":"barbarian","storyId":1,"dir":"right"},
-            {"loc":[17,10],"charClass":"archer","storyId":2,"dir":"right","team":"ally"},
+            {"loc":[17,10],"name":"Astraea","charClass":"archer","storyId":2,"dir":"right","team":"ally"},
             {"loc":[19,9],"charClass":"archer","storyId":3,"dir":"right"},
             {"loc":[19,10],"charClass":"barbarian","storyId":4,"dir":"right"},
             {"loc":[21,9],"charClass":"barbarian","storyId":5,"dir":"right"},

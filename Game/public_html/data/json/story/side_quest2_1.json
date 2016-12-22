@@ -15,9 +15,9 @@
     "battle":{
         "music":"battle.mp3",
         "map":"le_forest.tmx",
-        "winScene":"victory",
-        "loseScene":"defeat",
-        "placementSquares":[[5,4],[4,5],[4,4],[5,5],[4,2],[4,3]],
+        "victory":{"func":"loadScene","scene":"victory"},
+        "defeat":{"func":"loadScene","scene":"defeat"},
+        "placementSquares":[[5,4,"right"],[4,5,"right"],[4,4],[5,5],[4,2],[4,3]],
         "enemies":[
             {"loc":[12,7],"charClass":"archer","level":1,"equipmentRank":1},
             {"loc":[12,8],"charClass":"archer","level":1,"equipmentRank":1},
@@ -25,10 +25,7 @@
             {"loc":[11,9],"charClass":"barbarian","level":1,"equipmentRank":1}
         ],
         "interactables":[
-            {}
-        ],
-        "pickups":[
-            {}
+            
         ]
     },
     "victory":{

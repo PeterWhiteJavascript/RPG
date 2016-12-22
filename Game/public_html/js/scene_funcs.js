@@ -21,6 +21,7 @@ Quintus.SceneFuncs=function(Q){
         });
     };
     Q.scene("dialogue",function(stage){
+        Q.inputs['confirm'] = false;
         var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
         var bgImage;
         if(dialogueData.bg){
@@ -39,6 +40,7 @@ Quintus.SceneFuncs=function(Q){
         textBox.next();
     }); 
     Q.scene("battleScene",function(stage){
+        Q.inputs['confirm'] = false;
         Q.stageScene("fader",11);
         //Get the data to play out this scene
         var data = stage.options.sceneData = Q.getPathData(stage.options.data,stage.options.path);
@@ -77,7 +79,7 @@ Quintus.SceneFuncs=function(Q){
                         character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,value:data.value,method:data.method,team:char.team});
                         character.add("statCalcs");
                     } else {
-                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"neutral"});
+                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team});
                     }
                 } else {
                     character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
@@ -116,10 +118,12 @@ Quintus.SceneFuncs=function(Q){
             var allyData = Q.state.get("allies");
             var allies = [];
             allyData.forEach(function(ally,i){
-                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally"});
-                char.add("statCalcs");
+                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally",hp:ally.hp,sp:ally.sp});
+                char.p.savedData = ally;
+                char.add("statCalcs,save");
                 allies.push(char);
-                char.p.loc = battleData.placementSquares[i];
+                char.p.loc = [battleData.placementSquares[i][0],battleData.placementSquares[i][1]];
+                char.p.dir = battleData.placementSquares[i][2];
             });
             //Display the enemies, interactables, pickups, and placement locations
             var enemyData = battleData.enemies;
@@ -130,12 +134,39 @@ Quintus.SceneFuncs=function(Q){
                 enemies.push(char);
                 char.p.loc = enm.loc;
             });
-
+            
+            var neutralData = battleData.neutral?battleData.neutral:[];
+            var neutral = [];
+            neutralData.forEach(function(neu){
+                var ally = Q.state.get("characters")[neu.name];
+                var char;
+                //If the neutral character is a story character
+                if(ally){
+                    var storyChar = Q.setUpStoryCharacter(ally);
+                    char = new Q.Character({charClass:storyChar.charClass,level:storyChar.level,exp:storyChar.exp,name:storyChar.name,skills:storyChar.skills,equipment:storyChar.equipment,gender:storyChar.gender,stats:storyChar.stats,value:storyChar.value,method:storyChar.method,team:"ally"});
+                    char.add("statCalcs");
+                } else {
+                    char = new Q.Character({charClass:neu.charClass,level:neu.level,equipmentRank:neu.equipmentRank,equipmentType:neu.equipmentType,gender:"male",team:"enemy",dir:neu.dir?neu.dir:"left"});
+                    char.add("randomCharacter,statCalcs");
+                }
+                neutral.push(char);
+                char.p.loc = neu.loc;
+            });
+            
+            var interactables = battleData.ineractables?battleData.ineractables:[];
+            var inter = [];
+            //Insert the interactables (TODO)
+            interactables.forEach(function(){
+                
+            });
             allies.forEach(function(ally){
                 stage.insert(ally);
             });
             enemies.forEach(function(enemy){
                 stage.insert(enemy);
+            });
+            neutral.forEach(function(neut){
+                stage.insert(neut);
             });
             //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
             Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));

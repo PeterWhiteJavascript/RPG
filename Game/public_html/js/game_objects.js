@@ -330,21 +330,32 @@ Quintus.GameObjects=function(Q){
 
                     var tileLoc = [loc[0]+i,loc[1]+j-(zoc-Math.abs(i))];
                     //Don't allow tiles that are offscreen
-                    if(tileLoc[0]<0||tileLoc[1]<0) continue;
-                    //Keep a reference to the ZOC tiles in each object and also here
-                    var tile = this.stage.insert(new Q.ZOCTile({loc:tileLoc}));
-                    grid[tile.p.loc[1]][tile.p.loc[0]] = tile;
-                    obj.p.zocTiles.push(tile);
+                    if(tileLoc[0]<0||tileLoc[1]<0||tileLoc[0]>=this.stage.mapWidth||tileLoc[1]>=this.stage.mapHeight) continue;
+                    //There is already a tile there.
+                    var tileThere = this.getZOC(obj.p.team,tileLoc);
+                    if(tileThere){
+                        tileThere.p.number++;
+                    } else {
+                        //Keep a reference to the ZOC tiles in each object and also here
+                        var tile = this.stage.insert(new Q.ZOCTile({loc:tileLoc}));
+                        grid[tile.p.loc[1]][tile.p.loc[0]] = tile;
+                        obj.p.zocTiles.push(tile);
+                    }
+                    
                 }
             }
         },
+        
         //Remove the zone of control from an area
         removeZOC:function(obj){
             if(!obj.p.zoc) return;
             var grid = this.getGrid(obj);
             obj.p.zocTiles.forEach(function(tile){
-                grid[tile.p.loc[1]][tile.p.loc[0]] = false;
-                tile.destroy();
+                tile.p.number--;
+                if(tile.p.number<=0){
+                    grid[tile.p.loc[1]][tile.p.loc[0]] = false;
+                    tile.destroy();
+                }
             });
         },
         //Move the zone of control
@@ -698,11 +709,13 @@ Quintus.GameObjects=function(Q){
                     gain*=2;
                 }
                 obj.p.exp+= gain;
+                obj.trigger("saveProp",{name:"exp",value:obj.p.exp});
                 var leveledUp = false;
                 //Level up the character if they are at or over 100
                 if(obj.p.exp>=100){
                     leveledUp = true;
                     obj.levelUp();
+                    obj.trigger("saveProp",{name:"level",value:obj.p.level});
                 }
                 text.push({func:"showExpGain",obj:obj,props:[gain,leveledUp]});
             });
@@ -925,7 +938,11 @@ Quintus.GameObjects=function(Q){
             var sound = "slashing";
             attacker.p.didAction = true;
             if(skill){
-                if(skill.cost) attacker.p.sp-=skill.cost;
+                if(skill.cost) {
+                    attacker.p.sp-=skill.cost;
+                    //Save the sp use
+                    attacker.trigger("saveProp",{name:"sp",value:attacker.p.sp});
+                }
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
             }

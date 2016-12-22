@@ -654,7 +654,8 @@ Quintus.HUD=function(Q){
                 opacity:0.8,
                 w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE,
-                hidden:true
+                hidden:true,
+                number:1
             });
             Q.BatCon.setXY(this);
         }

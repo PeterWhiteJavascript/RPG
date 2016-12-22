@@ -25,5 +25,31 @@
         "method":50,
         "charClass":"knight",
         "exp":0
+    },
+    "astrea":{
+        "name": "Astrea",
+        "level":1,
+        "gender":"female",
+        "equipment":{
+            "righthand":false,
+            "lefthand":["weapon","woodenBow"],
+            "body":["body","shirt"],
+            "feet":["feet","sandals"],
+            "accessory":false
+        },
+        "stats":{
+            "str":8,
+            "end":8,
+            "dex":12,
+            "wsk":12,
+            "rfl":10
+        },
+        "skills":{
+            "bow":["shoot","holdback"]
+        },
+        "value":50,
+        "method":50,
+        "charClass":"archer",
+        "exp":0
     }
 }
