@@ -14,7 +14,7 @@ Quintus.SceneFuncs=function(Q){
                     if(type==="battleScene"||type==="battle"){sceneNum = 0;};
                     Q.playMusic(sceneData.music,function(){
                         //Stage the scene
-                        Q.stageScene(type,sceneNum,{data: data, dialogue: data[data.startScene],path:data.startScene[0]});
+                        Q.stageScene(type,sceneNum,{data: data,path:data.startScene[0]});
                     });
                 });
             });

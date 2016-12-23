@@ -60,8 +60,8 @@ Quintus.UIObjects=function(Q){
                     this.p.inputsTimer=this.p.inputsTime;
                     this.off("step",this,"checkInputs");
                     this.on("step",this,"waitForInputsTimer");
+                    Q.inputs['confirm']=false;
                 };
-                Q.inputs['confirm']=false;
             }
         },
         checkTextNum:function(){
@@ -73,6 +73,15 @@ Quintus.UIObjects=function(Q){
         },
         next:function() {
             var interaction = this.p.dialogueData.interaction[this.p.interactionIndex];
+            //Debug
+            if(!interaction){
+                alert("Check the console for error.");
+                console.log("No interaction becuase the interaction index may be too high")
+                console.log("Interaction:");
+                console.log(this.p.dialogueData.interaction);
+                console.log("Interaction Index:");
+                console.log(this.p.interactionIndex);
+            }
             //Disallow user cycling for some dialogue
             if(interaction.noCycle){
                 this.p.cantCycle = true;
@@ -133,7 +142,7 @@ Quintus.UIObjects=function(Q){
         cycleFunc:function(){
             var interaction = this.p.dialogueData.interaction[this.p.interactionIndex];
             //If the function finishes this dialogue, it will be true.
-            //This also gets the function that needs to be executed from the JSON
+            //This also runs the function that needs to be executed from the JSON
             if(this[interaction.func].apply(this,interaction.props)){return;};
             //Don't run the next part yet
             if(interaction.wait) return;
@@ -201,10 +210,11 @@ Quintus.UIObjects=function(Q){
         },
         //Any time the user needs to make a decision during dialogue
         confirmation:function(options){
+            this.p.cantCycle = true;
+            this.p.noCycle = true;
             var stage = this.stage;
             //Create the options menu box and put it into focus
             stage.insert(new Q.ConfirmBox({maxIndex:options.length-1,options:options}));
-            this.off("step",this,"checkInputs");
             return true;
         },
         triggerQuest:function(questName){
@@ -479,7 +489,7 @@ Quintus.UIObjects=function(Q){
                 x:0,y:0,
                 cx:0,cy:0,
                 type:Q.SPRITE_NONE,
-                label:"_",
+                label:"NO TEXT YET. HIDE THIS OR SET TEXT.",
                 charNum:0,
                 time:0,
                 speed:Q.state.get("options").textSpeed
@@ -535,7 +545,7 @@ Quintus.UIObjects=function(Q){
                 w:Q.tileW/2,h:Q.tileH/2,
                 type:Q.SPRITE_NONE,
                 blinkNum:0,
-                blinkTime:20
+                blinkTime:15
             });
             //Triangle points
             this.p.p1=[-this.p.w/2,-this.p.h/2];
