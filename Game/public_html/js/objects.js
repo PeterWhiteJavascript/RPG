@@ -828,8 +828,13 @@ Quintus.Objects=function(Q){
                     t.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
                     Q.pointer.p.loc = t.p.loc;
                     Q.BatCon.setXY(Q.pointer);
+                    //Do the AI action
                     if(this.p.team==="enemy") {
                         this.trigger("startAIAction");
+                    } 
+                    //Load the action menu
+                    else {
+                        Q.pointer.displayCharacterMenu();
                     }
                 } else {
                     if(this.p.team==="enemy"){
