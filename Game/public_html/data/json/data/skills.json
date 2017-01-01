@@ -5,15 +5,16 @@
             "cost":4,
             "damageLow":20,
             "damageHigh":80,
-            "range":["normal",1]
-            
+            "range":["normal",1],
+            "desc":"A basic stabbing skill."
         },
         "throw":{
             "name":"Throw",
             "cost":8,
             "damageLow":10,
             "damageHigh":60,
-            "range":["normal",3]
+            "range":["normal",3],
+            "desc":"A basic throwing skill."
         }
     },
     "sword":{
@@ -22,14 +23,16 @@
             "cost":4,
             "damageLow":10,
             "damageHigh":110,
-            "range":["normal",1]
+            "range":["normal",1],
+            "desc":"A basic stabbing skill."
         },
         "slash":{
             "name":"Slash",
             "cost":6,
             "damageLow":50,
             "damageHigh":80,
-            "range":["normal",1]
+            "range":["normal",1],
+            "desc":"A basic slashing skill."
         },
         "whirlwind":{
             "name":"Whirlwind",
@@ -39,7 +42,8 @@
             "range":["self",0],
             "aoe":["normal",1,"excludeCenter"],
             "anim":"Whirlwind",
-            "sound":"whirlwind"
+            "sound":"whirlwind",
+            "desc":"A basic whirlwinding skill."
         },
         "superwhirlwind":{
             "name":"Super Whirlwind",
@@ -49,7 +53,8 @@
             "range":["self",0],
             "aoe":["normal",2],
             "anim":"Whirlwind",
-            "sound":"whirlwind"
+            "sound":"whirlwind",
+            "desc":"A basic superwhirlwinding skill."
         }
     },
     "axe":{
@@ -58,7 +63,8 @@
             "cost":10,
             "damageLow":80,
             "damageHigh":100,
-            "range":["normal",1]
+            "range":["normal",1],
+            "desc":"A basic striking skill."
         }
     },
     
@@ -68,7 +74,8 @@
             "cost":4,
             "damageLow":50,
             "damageHigh":60,
-            "range":["normal",2]
+            "range":["normal",2],
+            "desc":"A basic puncturing skill."
         },
         "pierce":{
             "name":"Pierce",
@@ -79,7 +86,8 @@
             "damageHigh":50,
             "diminishFarDamage":0.1,
             "dfAnimTime":100,
-            "anim":"Piercing"
+            "anim":"Piercing",
+            "desc":"A basic piercing skill. This attack hits all units in its path."
         },
         "push":{
             "name":"Push",
@@ -91,7 +99,8 @@
                 "func":"push",
                 "props":[1],
                 "accuracy":80
-            }
+            },
+            "desc":"A basic pushing skill. This attack pushes the target one space."
         }
     },
     "bow":{
@@ -103,7 +112,8 @@
             "range":["normal",6],
             "aoe":["corners",1],
             "anim":"SonicBoom",
-            "sound":"explosion"
+            "sound":"explosion",
+            "desc":"A basic sonicbooming skill."
         },
         "crosshair":{
             "name":"Crosshair",
@@ -111,14 +121,16 @@
             "damageLow":999,
             "damageHigh":999,
             "range":["normal",6],
-            "aoe":["normal",1]
+            "aoe":["normal",1],
+            "desc":"A basic crosshair skill."
         },
         "shoot":{
             "name":"Shoot",
             "cost":4,
             "damageLow":20,
             "damageHigh":80,
-            "range":["normal",5]
+            "range":["normal",5],
+            "desc":"A basic shooting skill."
         },
         "blind":{
             "name":"Blind",
@@ -128,7 +140,8 @@
                 "func":"changeStatus",
                 "props":["blind",[1,3]],
                 "accuracy":75
-            }
+            },
+            "desc":"A basic blinding skill."
         },
         "poison":{
             "name":"Poison",
@@ -138,7 +151,8 @@
                 "func":"changeStatus",
                 "props":["poisoned",[1,3]],
                 "accuracy":100
-            }
+            },
+            "desc":"A basic poisoning skill."
         },
         "holdback":{
             "name":"Hold Back",
@@ -146,7 +160,8 @@
             "range":["normal",6],
             "damageLow":999,
             "damageHigh":999,
-            "holdBack":true
+            "holdBack":true,
+            "desc":"Hold back to keep the target at at least 1 hp."
         }
     },
     "shield":{
@@ -158,7 +173,8 @@
                 "func":"changeStatus",
                 "props":["sturdy",1],
                 "accuracy":100
-            }
+            },
+            "desc":"A basic defending skill."
         },
         "protect":{
             "name":"Protect",
@@ -170,7 +186,8 @@
                 "func":"changeStatus",
                 "props":["sturdy",1],
                 "accuracy":100
-            }
+            },
+            "desc":"A basic protecting skill."
         },
         "totaldefense":{
             "name":"Total Defense",
@@ -182,7 +199,8 @@
                 "func":"changeStatus",
                 "props":["sturdy",1],
                 "accuracy":100
-            }
+            },
+            "desc":"A basic totaldefensing skill."
         }
     }
     
