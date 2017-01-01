@@ -174,6 +174,83 @@ Quintus.HUD=function(Q){
             }
         }
     });
+    
+    //Enables controlling of menus
+    //Includes up, down, confirm, and esc.
+    Q.component("menuControls",{
+        added:function(){
+            //Set the defaults
+            this.changeMenuOpts();
+        },
+        turnOnInputs:function(){
+            this.entity.on("step",this,"checkInputs");
+        },
+        turnOffInputs:function(){
+            this.entity.off("step",this,"checkInputs");
+        },
+        changeMenuOpts:function(selected,menuNum){
+            this.menuNum = menuNum?menuNum:0;
+            //Default to the top of the menu
+            this.selected = selected?selected:0;
+            //The number of menu options in this menu
+            this.menuLen = this.entity.p.options[this.menuNum].length;
+        },
+        
+        cycle:function(to){
+            this.entity.p.conts[this.selected].p.fill="red";
+            this.selected=to;
+            this.entity.p.conts[this.selected].p.fill="green";
+            this.entity.trigger("hoverOption",to);
+        },
+        checkInBoundsUp:function(to){
+            if(this.selected===0||to<0){
+                to=this.entity.p.options[this.menuNum].length-1;
+            }
+            return to;
+        },
+        checkInBoundsDown:function(to){
+            if(to>this.entity.p.options[this.menuNum].length-1){
+                to=0;
+            };
+            return to;
+        },
+        skipGray:function(to,dir){
+            while(this.entity.p.conts[to]&&this.entity.p.conts[to].p.fill==="gray"){to+=dir;}
+            //Going up
+            if(dir<0) to = this.checkInBoundsUp(to);
+            else to = this.checkInBoundsDown(to);
+            return to;
+        },
+        checkInputs:function(){
+            if(Q.inputs['up']){
+                var to = this.checkInBoundsUp(this.selected-1);
+                to = this.skipGray(to,-1);
+                this.cycle(to);
+                Q.inputs['up']=false;
+            } else if(Q.inputs['down']){
+                var to=this.checkInBoundsDown(this.selected+1);
+                to = this.skipGray(to,1);
+                this.cycle(to);
+                Q.inputs['down']=false;
+            }
+            if(Q.inputs['confirm']){
+                this.entity.trigger("pressConfirm",this.selected);
+                Q.inputs['confirm']=false;
+            }
+            if(Q.inputs['esc']){
+                this.entity.trigger("pressBack",this.menuNum);       
+                Q.inputs['esc']=false;
+            }
+        },
+        
+        //Destroys all containers (the menu options)
+        destroyConts:function(){
+            this.entity.p.conts.forEach(function(cont){
+                cont.destroy();
+            });
+        }
+    });
+    //The menu that loads in battle that allows the user to do things with a character
     Q.UI.Container.extend("ActionMenu",{
         init: function(p) {
             this._super(p, {
@@ -181,7 +258,6 @@ Quintus.HUD=function(Q){
                 cx:0,cy:0,
                 fill:"blue",
                 opacity:0.5,
-                menuNum:0,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
                 options:[["Move","Attack","Skill","Item","Status","End Turn"],["Status"],[]],
                 funcs:[["loadMove","loadAttack","loadSkillsMenu","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus"],[]],
@@ -189,67 +265,93 @@ Quintus.HUD=function(Q){
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
-            this.on("inserted","displayMenu");
-            this.on("step",this,"checkInputs");
-            //If the character selected is not the one whose turn it is
-            if(!this.p.active){
-                this.p.menuNum=1;
-            } else {
-                var target = this.p.target;
-                var opts = [];
-                var funcs = [];
-                var skills = [];
-                //Set possible skills
-                var rh = target.p.equipment.righthand;
-                var lh = target.p.equipment.lefthand;
-                if(rh.equipmentType){
-                    var keys = Object.keys(target.p.skills[rh.equipmentType]);
-                    keys.forEach(function(key){
-                        opts.push(target.p.skills[rh.equipmentType][key].name);
-                        funcs.push("loadSkill");
-                        skills.push(target.p.skills[rh.equipmentType][key]);
-                    });
+            //Display the initial menu on inserted to the stage
+            this.on("inserted");
+            //If this is the active character, setup the skills options
+            if(this.p.active){
+                this.setSkillOptions();
+            } else this.menuControls.menuNum = 1;
+        },
+        inserted:function(){
+            //Add the inputs for the menu
+            this.add("menuControls");
+            //Check if the target has done move or action and gray out the proper container
+            this.on("checkGray");
+            //When the user presses back
+            this.on("pressBack");
+            //When the user presses confirm
+            this.on("pressConfirm");
+            //Turn on the inputs
+            this.menuControls.turnOnInputs();
+            //Display the menu options
+            this.displayMenu(0,0);
+        },
+        pressConfirm:function(selected){
+            this[this.p.conts[selected].p.func]();
+        },
+        pressBack:function(menuNum){
+            //If we're in the skills menu or items menu
+                if(menuNum===2||menuNum===3){
+                    //Send us back to the main menu
+                    this.displayMenu(0,0);
+                } 
+                else {
+                    Q.pointer.addControls();
+                    Q.pointer.on("checkConfirm");
+                    //Make sure the characterMenu is gone
+                    Q.clearStage(2);
                 }
-                if(lh.equipmentType){
-                    var keys = Object.keys(target.p.skills[lh.equipmentType]);
-                    keys.forEach(function(key){
-                        opts.push(target.p.skills[lh.equipmentType][key].name);
-                        funcs.push("loadSkill");
-                        skills.push(target.p.skills[lh.equipmentType][key]);
-                    });
-                }
-                this.p.options[2]=opts;
-                this.p.funcs[2]=funcs;
-                this.p.skills=skills;
-                //Set items
-                var opts = [];
-                var funcs = [];
-                var itms = [];
-                var items = Q.state.get("Bag").items.consumable;
-                //If there are items in the bag
-                if(items.length){
-                    items.forEach(function(item){
-                        opts.push(item.name);
-                        funcs.push("loadItem");
-                        itms.push(item);
-                    });
-                } else {
-                    opts.push("No Items");
-                    funcs.push("noItems");
-                }
-                this.p.options[3]=opts;
-                this.p.funcs[3]=funcs;
-                this.p.items=itms;
+        },
+        setSkillOptions:function(){
+            var target = this.p.target;
+            var opts = [];
+            var funcs = [];
+            var skills = [];
+            //Set possible skills
+            var rh = target.p.equipment.righthand;
+            var lh = target.p.equipment.lefthand;
+            if(rh.equipmentType){
+                var keys = Object.keys(target.p.skills[rh.equipmentType]);
+                keys.forEach(function(key){
+                    opts.push(target.p.skills[rh.equipmentType][key].name);
+                    funcs.push("loadSkill");
+                    skills.push(target.p.skills[rh.equipmentType][key]);
+                });
             }
+            if(lh.equipmentType){
+                var keys = Object.keys(target.p.skills[lh.equipmentType]);
+                keys.forEach(function(key){
+                    opts.push(target.p.skills[lh.equipmentType][key].name);
+                    funcs.push("loadSkill");
+                    skills.push(target.p.skills[lh.equipmentType][key]);
+                });
+            }
+            this.p.options[2]=opts;
+            this.p.funcs[2]=funcs;
+            this.p.skills=skills;
+            //Set items
+            var opts = [];
+            var funcs = [];
+            var itms = [];
+            var items = Q.state.get("Bag").items.consumable;
+            //If there are items in the bag
+            if(items.length){
+                items.forEach(function(item){
+                    opts.push(item.name);
+                    funcs.push("loadItem");
+                    itms.push(item);
+                });
+            } else {
+                opts.push("No Items");
+                funcs.push("noItems");
+            }
+            this.p.options[3]=opts;
+            this.p.funcs[3]=funcs;
+            this.p.items=itms;  
         },
-        cycle:function(to){
-            this.p.conts[this.p.selected].p.fill="red";
-            this.p.selected=to;
-            this.p.conts[this.p.selected].p.fill="green";
-            this.checkGray();
-        },
-        checkGray:function(){
-            if(this.p.menuNum===0){
+        //Checks if some containers should be gray
+        checkGray:function(menuNum){
+            if(menuNum===0){
                 if(this.p.target.p.didMove){this.p.conts[0].p.fill="gray";};
                 if(this.p.target.p.didAction){
                     this.p.conts[1].p.fill="gray";
@@ -258,83 +360,35 @@ Quintus.HUD=function(Q){
                 };
             }
         },
-        destroyConts:function(){
-            this.p.conts.forEach(function(cont){
-                cont.destroy();
-            });
-        },
-        displayMenu:function(){
+        //Displays new menu items within this menu
+        displayMenu:function(menuNum,selected){
+            this.menuControls.menuNum = menuNum;
             if(this.p.title) this.p.title.destroy();
-            if(this.p.conts.length) this.destroyConts();
-            this.p.title = this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:this.p.titles[this.p.menuNum],size:20}));
-            var options = this.p.options[this.p.menuNum];
-            var funcs = this.p.funcs[this.p.menuNum];
-            this.p.selected = 0;
-            if(this.p.target.p.didMove&&this.p.menuNum===0) this.p.selected++;
+            if(this.p.conts.length) this.menuControls.destroyConts();
+            this.p.title = this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:this.p.titles[menuNum],size:20}));
+            var options = this.p.options[menuNum];
+            var funcs = this.p.funcs[menuNum];
+            if(this.p.target.p.didMove&&menuNum===0) selected++;
             this.p.conts = [];
             for(var i=0;i<options.length;i++){
                 var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
                 var name = cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i],cx:0,size:16}));
-                if(this.p.menuNum===2){
+                if(menuNum===2){
                     name.p.x = 4;
                     name.p.align="left";
                     cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.skills[i].cost,cx:0,align:"right",size:16}));
                 }
                 this.p.conts.push(cont);
             }
-            this.cycle(this.p.selected);
-        },
-        checkInBoundsUp:function(to){
-            if(this.p.selected===0||to<0){
-                to=this.p.options[this.p.menuNum].length-1;
-            }
-            return to;
-        },
-        checkInBoundsDown:function(to){
-            if(to>this.p.options[this.p.menuNum].length-1){
-                to=0;
-            };
-            return to;
-        },
-        checkInputs:function(){
-            if(Q.inputs['up']){
-                var to=this.checkInBoundsUp(this.p.selected-1);
-                while(this.p.conts[to]&&this.p.conts[to].p.fill==="gray"){to--;}
-                to=this.checkInBoundsUp(to);
-                this.cycle(to);
-                Q.inputs['up']=false;
-            } else if(Q.inputs['down']){
-                var to=this.checkInBoundsDown(this.p.selected+1);
-                while(this.p.conts[to]&&this.p.conts[to].p.fill==="gray"){to++;}
-                to=this.checkInBoundsDown(to);
-                this.cycle(to);
-                Q.inputs['down']=false;
-            }
-            if(Q.inputs['confirm']){
-                this[this.p.conts[this.p.selected].p.func]();
-                Q.inputs['confirm']=false;
-            }
-            if(Q.inputs['esc']){
-                //If we're in the skillsmenu or items menu
-                if(this.p.menuNum===2||this.p.menuNum===3){
-                    this.p.menuNum=0;
-                    this.displayMenu();
-                } 
-                else {
-                    Q.pointer.addControls();
-                    Q.pointer.on("checkConfirm");
-                    //Make sure the characterMenu is gone
-                    Q.clearStage(2);
-                }
-                Q.inputs['esc']=false;
-            }
+            this.menuControls.selected = 0;
+            this.menuControls.cycle(selected);
         },
         //Shows the move grid and zoc
         loadMove:function(){
             Q.BattleGrid.showZOC(this.p.team==="enemy"?"ally":"enemy");
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.off("step",this,"checkInputs");
+            this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
             Q.pointer.addControls();
@@ -344,7 +398,7 @@ Quintus.HUD=function(Q){
         loadAttack:function(){
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.off("step",this,"checkInputs");
+            this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
             Q.pointer.addControls();
@@ -352,19 +406,18 @@ Quintus.HUD=function(Q){
         },
         //Loads the special skills menu
         loadSkillsMenu:function(){
-            this.p.menuNum=2;
-            this.displayMenu();
+            this.displayMenu(2,0);
         },
         //Show the attack grid for the skill
         loadSkill:function(){
-            var skill = this.p.skills[this.p.selected];
+            var skill = this.p.skills[this.menuControls.selected];
             if(this.p.target.p.sp-skill.cost<0){
                 alert("Not Enough SP!");
                 return;
             }
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.off("step",this,"checkInputs");
+            this.menuControls.turnOffInputs();
             this.hide();
             
             if(!skill.aoe){
@@ -382,11 +435,11 @@ Quintus.HUD=function(Q){
         },
         //When the user selects an item, ask to use it and show what it does
         loadItem:function(){
-            var item = this.p.items[this.p.selected];
+            var item = this.p.items[this.menuControls.selected];
             //Load the range grid
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",item:item}));
             //Hide this options box. Once the user confirms if the item should be used, destroy this. If he presses 'back' the selection num should be the same
-            this.off("step",this,"checkInputs");
+            this.menuControls.turnOffInputs();
             this.hide();
             if(!item.aoe){
                 item.aoe = ["normal",0];
@@ -402,22 +455,99 @@ Quintus.HUD=function(Q){
         },
         //Loads the items menu
         loadItemsMenu:function(){
-            this.p.menuNum=3;
-            this.displayMenu();
+            this.displayMenu(3,0);
         },
         //Loads the large menu that displays all stats for this character
         loadStatus:function(){
-            alert("To Do: Create big good looking status menu.");
+            //Hide this menu as it will be needed when the user exits the status menu.
+            this.hide();
+            //Turn off inputs for this menu as the new menu will take inputs
+            this.menuControls.turnOffInputs();
+            //Insert the status menu
+            this.stage.insert(new Q.StatusMenu());
         },
         //Loads the directional arrows so the user can decide which direction to face
         loadEndTurn:function(){
             Q.clearStage(2);
             Q.BatCon.showEndTurnDirection(Q.BatCon.turnOrder[0]);
-            this.off("step");
+            this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.hide();
         }
     });
+    
+    Q.UI.Container.extend("StatusMenu",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                w:800,
+                h:600,
+                titles:["OVERVIEW"],
+                options:[["Skills","Status","Awards"]],
+                funcs:[["showSkills","showStatus","showAwards"]],
+                conts:[]
+            });
+            this.p.x = Q.width/2-this.p.w/2;
+            this.p.y = Q.height/2-this.p.h/2;
+            this.on("inserted");
+        },
+        inserted:function(){
+            this.add("menuControls");
+            //When the user presses back
+            this.on("pressBack");
+            //When the user presses confirm
+            this.on("pressConfirm");
+            //Turn on when an option is hovered
+            this.on("hoverOption");
+            //Turn on the inputs
+            this.menuControls.turnOnInputs();
+            //Display the menu options
+            this.displayMenu(0,0);
+        },
+        displayMenu:function(menuNum){
+            this.p.title = this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:this.p.titles[menuNum],size:20}));
+            var options = this.p.options[0];
+            var funcs = this.p.funcs[0];
+            this.p.conts = [];
+            for(var i=0;i<options.length;i++){
+                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
+                var name = cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i],cx:0,size:16}));
+                this.p.conts.push(cont);
+            }
+            this.menuControls.selected = 0;
+            this.menuControls.cycle(0);
+        },
+        showInfo:function(num){
+            this[this.p.funcs[0][num]]();
+        },
+        //Don't do anything (for now at least)
+        //Probably add controls to the section info like hover each individual skill and see what it does, etc...
+        pressConfirm:function(){
+            
+        },
+        //Get rid of this menu and display the Action Menu
+        pressBack:function(){
+            //if(this.p.title) this.p.title.destroy();
+            //if(this.p.conts.length) this.menuControls.destroyConts();
+            this.destroy();
+            this.stage.ActionMenu.show();
+            this.stage.ActionMenu.menuControls.turnOnInputs();
+        },
+        //Display the information from the section
+        hoverOption:function(num){
+            this.showInfo(num);
+        },
+        showSkills:function(){
+            console.log("hi")
+        },
+        showStatus:function(){
+            
+        },
+        showAwards:function(){
+            
+        }
+    });
+    
     //Contains the character's full information
     Q.UI.Container.extend("StatsMenu",{
         init: function(p) {
@@ -610,7 +740,7 @@ Quintus.HUD=function(Q){
                 //Hide the zoc
                 Q.BattleGrid.hideZOC(this.p.user.p.team==="enemy"?"ally":"enemy");
                 Q.stage(2).ActionMenu.show();
-                Q.stage(2).ActionMenu.on("step","checkInputs");
+                Q.stage(2).ActionMenu.menuControls.turnOnInputs();
                 Q.pointer.show();
                 Q.pointer.snapTo(this.p.user);
                 Q.pointer.off("checkInputs");
@@ -949,4 +1079,5 @@ Quintus.HUD=function(Q){
             }
         }
     });
+    
 };

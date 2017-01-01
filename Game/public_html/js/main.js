@@ -28,7 +28,7 @@ Q.maxEquipmentRank = 2;
 Q.state.set({
     options:{
         //If true, BGM will play
-        musicEnabled:true,
+        musicEnabled:false,
         musicVolume:100,
         //If true, SFX will play
         soundEnabled:true,

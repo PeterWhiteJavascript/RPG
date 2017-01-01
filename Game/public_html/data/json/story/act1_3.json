@@ -94,7 +94,7 @@
     "battle":{
         "music":"battle.mp3",
         "map":"demo2_battle.tmx",
-        "victory":{"func":"loadBattleScene","props":["victory"]},
+        "victory":{"func":"loadBattleScene","scene":"victory"},
         "defeat":{"func":"loadBattleScene","scene":"victory"},
         "placementSquares":[[12,4,"left"]],
         "enemies":[

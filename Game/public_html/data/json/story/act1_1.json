@@ -83,8 +83,9 @@
         },
         "on_to_battle":{
             "bg":"bg/forest.jpg",
-            "interaction":[
+            "interaction":[{"func":"loadBattle","props":["battle"]},
                 {"text":["Nihihi, time to walk through the forest and go to the town!"],"asset":["skirm.png",false],"pos":"left"},
+                
                 {"func":"loadBattleScene","props":["preBattleScene"]}
             ]
         }
