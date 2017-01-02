@@ -23,6 +23,45 @@ Q.maxEquipmentRank = 2;
 
 //End Constants
 
+//Wraps the text to fit inside a container.
+//Really useful for long descriptions
+//Automatically run when the label is changed and the text is inside a container
+//label is the new incoming label
+//maxWidth is either the textWidth property of the container that the text is in, or it is the container's w
+Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
+    var ctx = Q.ctx;
+    var split = label.split(' ');
+    var newLabel = '';
+    var tempLabel = '';
+    var spaceWidth = ctx.measureText(" ").width;
+    var spaces = 0;
+    //Loop through the array of the split label
+    for(var i=0;i<split.length;i++){
+        //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
+        //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
+        split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
+        //The upcoming width for this word
+        var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
+        for(var j=0;j<split[i].length;j++){
+            var measured = ctx.measureText(tempLabel);
+            //Move to a new line
+            if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
+                newLabel+="\n";
+                tempLabel = '';
+                spaces = 0;
+            } else {
+                tempLabel+=split[i][j];
+            }
+        }
+        newLabel+=split[i];
+        if(i!==split.length-1){
+            newLabel+=" ";
+        }
+        spaces++;
+    }
+    return newLabel;
+};
+
 //Set up the game state's options
 //The default values will be overridden by data coming from the save file.
 Q.state.set({
@@ -168,6 +207,7 @@ var files = [
     "json/data/character_classes.json",
     "json/data/characters.json",
     "json/data/skills.json",
+    "json/data/status.json",
     "json/data/ui_objects.json",
     "json/data/tile_types.json",
     //JSON STORY
@@ -193,6 +233,8 @@ Q.load(files.join(','),function(){
     Q.state.set("characters",Q.assets['json/data/characters.json']);
     //The list of skills and their effects
     Q.state.set("skills",Q.assets['json/data/skills.json']);
+    //The descriptions for status effects
+    Q.state.set("status",Q.assets['json/data/status.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
     //Get the equipment in the proper format

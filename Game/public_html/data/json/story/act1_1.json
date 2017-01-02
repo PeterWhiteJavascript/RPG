@@ -8,7 +8,7 @@
         "music":"homeland.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
-            {"text":["Welcome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
+            {"text":["Welcome to Greece Lightning! Welcome to Greeece Light5ning! Welcome to Grshereece Lightning! Wregelcome to Greece Lightning! Welczsvggome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
             {"func":"confirmation","props":[[
                 {"next":"dialogue/on_to_battle","text":"Demo Scene"}
             ]]}

@@ -24,7 +24,7 @@
             "damageLow":10,
             "damageHigh":110,
             "range":["normal",1],
-            "desc":"A basic stabbing skill."
+            "desc":"A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill."
         },
         "slash":{
             "name":"Slash",
@@ -32,7 +32,7 @@
             "damageLow":50,
             "damageHigh":80,
             "range":["normal",1],
-            "desc":"A basic slashing skill."
+            "desc":"A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas."
         },
         "whirlwind":{
             "name":"Whirlwind",
@@ -43,7 +43,7 @@
             "aoe":["normal",1,"excludeCenter"],
             "anim":"Whirlwind",
             "sound":"whirlwind",
-            "desc":"A basic whirlwinding skill."
+            "desc":"A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A "
         },
         "superwhirlwind":{
             "name":"Super Whirlwind",

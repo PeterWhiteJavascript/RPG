@@ -299,6 +299,10 @@ Quintus.UI = function(Q) {
       var p = this.p;
 
       this.setFont(Q.ctx);
+      if(this.container){
+        var width = this.container.p.textWidth?this.container.p.textWidth:this.container.p.w;
+        p.label = this.wrapLabel(p.label,width);
+      }
       this.splitLabel = p.label.split("\n");
       var maxLabel = "";
       p.w = 0;
@@ -341,6 +345,7 @@ Quintus.UI = function(Q) {
             [ 0, p.h ]
          ];
       }
+      p.oldLabel = p.label;
     },
 
     prerender: function() {

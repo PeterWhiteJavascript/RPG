@@ -276,10 +276,22 @@ Quintus.Objects=function(Q){
         generateSkills:function(){
             var allSkills = Q.state.get("skills");
             var p = this.entity.p;
-            p.skills = {};
+            var skills = {
+                dagger:{},
+                sword:{},
+                axe:{},
+                spear:{},
+                bow:{},
+                shield:{}
+            };
             //To do: Come up with a way to give reasonable skills
-            p.skills[p.equipment.righthand.equipmentType] = allSkills[p.equipment.righthand.equipmentType];
-            p.skills[p.equipment.lefthand.equipmentType] = allSkills[p.equipment.lefthand.equipmentType];
+            if(p.equipment.righthand.equipmentType){
+                skills[p.equipment.righthand.equipmentType] = allSkills[p.equipment.righthand.equipmentType];
+            }
+            if(p.equipment.lefthand.equipmentType){
+                skills[p.equipment.lefthand.equipmentType] = allSkills[p.equipment.lefthand.equipmentType];
+            }
+            return skills;
         }
     });
     Q.component("statCalcs",{

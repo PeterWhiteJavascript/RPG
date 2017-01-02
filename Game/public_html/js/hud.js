@@ -552,16 +552,16 @@ Quintus.HUD=function(Q){
             this.p.box3 = cont.insert(new Q.BigSkillsBox({x:width/3*2,w:width/3-spacing,h:this.p.h-spacing*2-100,y:spacing,bigStatusMenu:this.p.bigStatusMenu,target:this.p.target,box:this,skills:["bow","shield"],skillNames:["Bow","Shield"]}));
             //The bottom description box
             this.p.bigSkillsDescBox = cont.insert(new Q.BigSkillsDescBox({x:10,y:this.p.h-spacing-100,w:width-spacing*2,h:100}));
-            
-            
-            this.p.box1.menuControls.selected = 0;
-            this.p.box1.menuControls.cycle(this.p.box1.menuControls.selected);
-            
+            this.p.bigSkillsDescBox.hide();
         },
         showStatus:function(){
             this.on("pressConfirm",this,"selectStatus");
             var cont = this.p.infoCont;
-            
+            var width = cont.p.w;
+            var spacing = 10;
+            this.p.bigStatusConditionsBox = cont.insert(new Q.BigStatusConditionsBox({x:spacing,w:width/3-spacing,h:this.p.h-spacing*2,y:spacing,target:this.p.target,box:this,bigStatusMenu:this.p.bigStatusMenu}));
+            this.p.bigStatusConditionsDescBox = cont.insert(new Q.BigStatusConditionsDescBox({x:spacing+width/3,w:width/1.5-spacing*2,h:this.p.h/2-spacing*2,y:spacing,target:this.p.target}));
+            this.p.bigStatusConditionsDescBox.hide();
         },
         showAwards:function(){
             this.on("pressConfirm",this,"selectAwards");
@@ -569,10 +569,19 @@ Quintus.HUD=function(Q){
         },
         //When hovering "Skills" and the pressing confirm, give control over to the skills
         selectSkills:function(){
-            this.off("pressConfirm");
             //Tracks which BigSkillsBox we're in
             this.p.bigSkillsNum = 1;
-            this.p.infoCont.children[0].menuControls.turnOnInputs();
+            this.p.box1.menuControls.turnOnInputs();
+            this.p.box1.menuControls.selected = 0;
+            this.p.box1.menuControls.cycle(this.p.box1.menuControls.selected);
+        },
+        selectStatus:function(){
+            this.p.bigStatusConditionsBox.menuControls.turnOnInputs();
+            this.p.bigStatusConditionsBox.menuControls.selected = 0;
+            this.p.bigStatusConditionsBox.menuControls.cycle(this.p.bigStatusConditionsBox.menuControls.selected);
+        },
+        selectAwards:function(){
+            
         },
         //Shows a single skill's info when it's hovered from the BigSkillsBox
         loadSkill:function(skill){
@@ -583,9 +592,80 @@ Quintus.HUD=function(Q){
             } else {
                 box.hide();
             }
+        },
+        loadStatus:function(status){
+            this.p.bigStatusConditionsDescBox.show();
+            this.p.bigStatusConditionsDescBox.setText(Q.state.get("status")[status]);
         }
     });
-    
+    Q.UI.Container.extend("BigStatusConditionsBox",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                fill:"cyan",
+                border:2,
+                stroke:"yellow",
+                skillsOptions:[],
+                options:[[]]
+            });
+            this.on("inserted");
+        },
+        inserted:function(){
+            this.add("menuControls");
+            //When the user presses back
+            this.on("pressBack");
+            //Turn on when an option is hovered
+            this.on("hoverOption");
+            this.displayMenu();
+        },
+        displayMenu:function(){
+            var target = this.p.target;
+            var status = target.p.status;
+            var effects = ["Blind","Poison","Sturdy"];
+            var st = ["blind","poison","sturdy"];
+            this.p.conts = [];
+            for(var i=0;i<effects.length;i++){
+                var cont = this.insert(new Q.UI.Container({x:10,y:10+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0}));
+                var text = status[st[i]]?status[st[i]].turns+"":"-";
+                cont.insert(new Q.UI.Text({label:effects[i],align:"left",x:10,y:12,size:14}));
+                cont.insert(new Q.UI.Text({label:text,align:"right",x:cont.p.w-10,y:12,size:14}));
+                this.p.conts.push(cont);
+                this.p.options[0].push(st[i]);
+            }
+        },
+        showInfo:function(num){
+            this.p.box.loadStatus(this.p.options[0][num]);
+        },
+        //Give control back to the BigStatusMenu
+        pressBack:function(){
+            this.menuControls.turnOffInputs();
+            this.menuControls.fillAllRed();
+            this.p.bigStatusMenu.menuControls.turnOnInputs();
+        },
+        //Display the information from the section
+        hoverOption:function(num){
+            this.showInfo(num);
+        }
+    });
+    Q.UI.Container.extend("BigStatusConditionsDescBox",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                fill:"cyan",
+                border:2,
+                stroke:"yellow"
+            });
+            this.p.textWidth = this.p.w-20;
+            this.on("inserted");
+        },
+        setText:function(status){
+            this.p.descText.p.label = "Description: "+status.desc;
+        },
+        inserted:function(){
+            var textSize = 14;
+            this.p.descText = this.insert(new Q.UI.Text({label:"Description: ",x:10,y:10,size:textSize,cx:0,cy:0,align:"left"}));
+        }
+    });
     Q.UI.Container.extend("BigSkillsBox",{
         init:function(p){
             this._super(p,{
@@ -652,6 +732,10 @@ Quintus.HUD=function(Q){
         },
         //Give control back to the BigStatusMenu
         pressBack:function(){
+            var box = this.p.box;
+            box.p.box1.menuControls.fillAllRed();
+            box.p.box2.menuControls.fillAllRed();
+            box.p.box3.menuControls.fillAllRed();
             this.menuControls.turnOffInputs();
             this.p.bigStatusMenu.menuControls.turnOnInputs();
         },
@@ -694,6 +778,7 @@ Quintus.HUD=function(Q){
                 border:2,
                 stroke:"yellow"
             });
+            this.p.textWidth = this.p.w-20;
             this.on("inserted");
         },
         setText:function(skill){
@@ -706,11 +791,10 @@ Quintus.HUD=function(Q){
         inserted:function(){
             var textSize = 14;
             this.p.nameText = this.insert(new Q.UI.Text({label:"Name: ",x:10,y:10,size:textSize,cx:0,cy:0,align:"left"}));
-            this.p.costText = this.insert(new Q.UI.Text({label:"Cost: ",x:150,y:10,size:textSize,cx:0,cy:0,align:"left"}));
+            this.p.costText = this.insert(new Q.UI.Text({label:"Cost: ",x:210,y:10,size:textSize,cx:0,cy:0,align:"left"}));
             this.p.descText = this.insert(new Q.UI.Text({label:"Description: ",x:10,y:40,size:textSize,cx:0,cy:0,align:"left"}));
             this.p.damageText = this.insert(new Q.UI.Text({label:"Damage: ",x:290,y:10,size:textSize,cx:0,cy:0,align:"left"}));
             this.p.rangeText = this.insert(new Q.UI.Text({label:"Range: ",x:430,y:10,size:textSize,cx:0,cy:0,align:"left"}));
-            
         }
     });
     Q.UI.Container.extend("BigOverviewBox1",{
@@ -847,7 +931,7 @@ Quintus.HUD=function(Q){
             //When the user presses back
             this.on("pressBack");
             //When the user presses confirm
-            this.on("pressConfirm");
+            this.on("pressConfirm,pressRight",this,"pressConfirm");
             //Turn on when an option is hovered
             this.on("hoverOption");
             //Turn on the inputs
@@ -887,7 +971,7 @@ Quintus.HUD=function(Q){
         //Display the information from the section
         hoverOption:function(num){
             this.showInfo(num);
-        },
+        }
     });
     
     //Contains the character's full information

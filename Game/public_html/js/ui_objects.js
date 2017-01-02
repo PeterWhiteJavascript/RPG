@@ -481,6 +481,7 @@ Quintus.UIObjects=function(Q){
             Q._generatePoints(this,true);
             this.p.y=Q.height-this.p.h-15;
             this.p.x+=10;
+            this.p.textWidth = this.p.w-40;
         }
     });
     Q.UI.Text.extend("Dialogue",{
