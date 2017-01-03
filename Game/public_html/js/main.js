@@ -208,6 +208,7 @@ var files = [
     "json/data/characters.json",
     "json/data/skills.json",
     "json/data/status.json",
+    "json/data/awards.json",
     "json/data/ui_objects.json",
     "json/data/tile_types.json",
     //JSON STORY
@@ -233,6 +234,8 @@ Q.load(files.join(','),function(){
     Q.state.set("characters",Q.assets['json/data/characters.json']);
     //The list of skills and their effects
     Q.state.set("skills",Q.assets['json/data/skills.json']);
+    //The list of awards and descriptions
+    Q.state.set("awards",Q.assets['json/data/awards.json']);
     //The descriptions for status effects
     Q.state.set("status",Q.assets['json/data/status.json']);
     //The attributes of each type of tile that can be stepped on.

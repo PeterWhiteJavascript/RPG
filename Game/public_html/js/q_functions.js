@@ -33,6 +33,7 @@ Quintus.QFunctions=function(Q){
             });
             return sk; 
         }
+        
         var char = {
             name:data.name,
             level:data.level,
@@ -42,10 +43,25 @@ Quintus.QFunctions=function(Q){
             charClass:data.charClass,
             equipment:getEquipment(data.equipment),
             skills:getSkills(data.skills),
-            value:data.value,
-            method:data.method
+            awards:data.awards?data.awards:Q.setUpAwards()
         };
+        char.awards.value = data.value;
+        char.awards.method = data.method;
         return char;
+    };
+    Q.setUpAwards = function(){
+        var awards = Q.state.get("awards");
+        var keys = Object.keys(awards);
+        var obj = {};
+        //The default value for all awards is 0
+        keys.forEach(function(key){
+            obj[key] = 0;
+        });
+        return obj;
+    };
+    Q.setAward = function(obj,prop,value){
+        if(!obj) return;
+        obj.p.awards[prop]+=value;
     };
     //Value scale of 1-100
     Q.getCharacterValue=function(value){

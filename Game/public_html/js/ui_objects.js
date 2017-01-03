@@ -376,12 +376,12 @@ Quintus.UIObjects=function(Q){
             var t =this;
             obj.animate({opacity:0},time,Q.Easing.Linear,{callback:function(){if(wait){t.nextText();}}});
         },
-        setCharacterAs:function(setTo,amount,prop,team){
+        setCharacterAs:function(setTo,amount,prop,team,filter){
             var objs = this.getStoryTeamCharacters(team);
-            var obj = this.characterFilters[amount](objs,prop);
+            var obj = this[filter][amount](objs,prop);
             obj.p[setTo] = true;
         },
-        characterFilters:{
+        propertyFilter:{
             lowest:function(objs,prop){
                 return objs.sort(function(a,b){
                     return a.p[prop]>b.p[prop];
@@ -390,6 +390,18 @@ Quintus.UIObjects=function(Q){
             highest:function(objs,prop){
                 return objs.sort(function(a,b){
                     return a.p[prop]<b.p[prop];
+                })[0];
+            }
+        },
+        awardFilter:{
+            lowest:function(objs,prop){
+                return objs.sort(function(a,b){
+                    return a.p.awards[prop]>b.p.awards[prop];
+                })[0];
+            },
+            highest:function(objs,prop){
+                return objs.sort(function(a,b){
+                    return a.p.awards[prop]<b.p.awards[prop];
                 })[0];
             }
         }

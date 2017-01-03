@@ -485,7 +485,10 @@ Quintus.Objects=function(Q){
                 //Make the character take damage
                 this.p.hp-=dmg;
                 this.trigger("saveProp",{name:"hp",value:this.p.hp});
-                this.addToHitBy(attacker);
+                Q.setAward(attacker,"damageDealt",dmg);
+                Q.setAward(this,"damageTaken",dmg);
+                //Only add the attacker if ther is one (no attacker for hurt by poison, etc...)
+                if(attacker) this.addToHitBy(attacker);
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
@@ -494,6 +497,9 @@ Quintus.Objects=function(Q){
                     //Set the hp to 0
                     this.p.hp = 0;
                     this.trigger("saveProp",{name:"hp",value:this.p.hp});
+                    //Give the character that got the last hit an 'enemiesDefeated' award
+                    Q.setAward(attacker,"enemiesDefeated",1);
+                    Q.setAward(this,"timesDied",1);
                     if(!this.p.died){
                         //Remove all status effects
                         this.removeAllStatus();
@@ -521,8 +527,8 @@ Quintus.Objects=function(Q){
                 //Don't add team attackers for exp
                 if(obj&&obj.p.team!==this.p.team){
                     //Don't add the attacker if they are already in there.
-                    if(!this.p.hitBy.filter(function(obj){
-                        return obj.p.id===obj.p.id;
+                    if(!this.p.hitBy.filter(function(ob){
+                        return ob.p.id===obj.p.id;
                     })[0]){
                         //Add the attacker to the hitBy array
                         this.p.hitBy.push(obj);
@@ -811,9 +817,10 @@ Quintus.Objects=function(Q){
             exc.add("tween");
             var t = this;
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();
-                if(t.p.team==="enemy"){
+                //TEMP
+                /*if(t.p.team==="enemy"){
                     Q.BatCon.endTurn();
-                }
+                }*/
                 }});
         },
         //Move this character to a location based on the passed path

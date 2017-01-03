@@ -8,9 +8,13 @@
         "music":"homeland.mp3",
         "bg":"bg/city.jpg",
         "interaction":[
-            {"text":["Welcome to Greece Lightning! Welcome to Greeece Light5ning! Welcome to Grshereece Lightning! Wregelcome to Greece Lightning! Welczsvggome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
+            {"text":["Welcome to Greece Lightning! Welcome to Greeece Light5ning! Welcome to Grshereece Lightning! Wregelcome to Greece Lightning! Welvggome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
             {"func":"confirmation","props":[[
-                {"next":"dialogue/on_to_battle","text":"Demo Scene"}
+                {"next":"dialogue/preBattle","text":"Act 1"},
+                {"next":"dialogue/battle","text":"Act 1_1 Battle"},
+                {"next":"dialogue/nextAct","text":"Act 1_2"},
+                {"next":"dialogue/thirdAct","text":"Act 1_3"},
+                {"next":"dialogue/thirdActBattle","text":"Act 1_3 Battle"}
             ]]}
             
         ],
@@ -81,12 +85,39 @@
                 ]
             }
         },
-        "on_to_battle":{
+        "preBattle":{
             "bg":"bg/forest.jpg",
-            "interaction":[{"func":"loadBattle","props":["battle"]},
+            "interaction":[
                 {"text":["Nihihi, time to walk through the forest and go to the town!"],"asset":["skirm.png",false],"pos":"left"},
-                
                 {"func":"loadBattleScene","props":["preBattleScene"]}
+            ]
+        },
+        "battle":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Loading battle."],"asset":["skirm.png",false],"pos":"left"},
+                {"func":"loadBattle","props":["battle"]}
+            ]
+        },
+        "nextAct":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Loading Act 1_2."],"asset":["skirm.png",false],"pos":"left"},
+                {"func":"loadScene","props":["act1_2","preBattleScene","battleScene"]}
+            ]
+        },
+        "thirdAct":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Loading Act 1_3."],"asset":["skirm.png",false],"pos":"left"},
+                {"func":"loadScene","props":["act1_3","preBattleScene","battleScene"]}
+            ]
+        },
+        "thirdActBattle":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"text":["Loading Act 1_3 Battle."],"asset":["skirm.png",false],"pos":"left"},
+                {"func":"loadScene","props":["act1_3","battle","battle"]}
             ]
         }
     },
@@ -146,7 +177,7 @@
             {"loc":[14,15],"name":"Alex","dir":"down","storyId":2,"team":"ally"}
         ],
         "interaction":[
-            {"func":"setCharacterAs","props":["leader","highest","method","ally"]},
+            {"func":"setCharacterAs","props":["leader","highest","method","ally","awardFilter"]},
             {"func":"setView","props":["leader"]},
             {"func":"hideDialogueBox","props":[]},
             {"func":"waitTime","props":[1400],"noCycle":true},

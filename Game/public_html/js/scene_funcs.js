@@ -13,8 +13,9 @@ Quintus.SceneFuncs=function(Q){
                     var sceneNum = 1;
                     if(type==="battleScene"||type==="battle"){sceneNum = 0;};
                     Q.playMusic(sceneData.music,function(){
+                        Q.clearStages();
                         //Stage the scene
-                        Q.stageScene(type,sceneNum,{data: data,path:data.startScene[0]});
+                        Q.stageScene(type,sceneNum,{data: data,path:starting});
                     });
                 });
             });
@@ -76,10 +77,10 @@ Quintus.SceneFuncs=function(Q){
                         return ally.name===char.name;
                     })[0];
                     if(data){
-                        character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,value:data.value,method:data.method,team:char.team});
+                        character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
                         character.add("statCalcs");
                     } else {
-                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team});
+                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team,awards:char.awards});
                     }
                 } else {
                     character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
@@ -99,6 +100,7 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
+        console.log(stage.options.data,stage.options.path)
         var music = battleData.music;
         if(!music) music = Q.state.get("currentMusic"); 
         Q.playMusic(music,function(){
@@ -118,7 +120,7 @@ Quintus.SceneFuncs=function(Q){
             var allyData = Q.state.get("allies");
             var allies = [];
             allyData.forEach(function(ally,i){
-                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,value:ally.value,method:ally.method,team:"ally",hp:ally.hp,sp:ally.sp});
+                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,team:"ally",hp:ally.hp,sp:ally.sp,awards:ally.awards});
                 char.p.savedData = ally;
                 char.add("statCalcs,save");
                 allies.push(char);
@@ -129,7 +131,7 @@ Quintus.SceneFuncs=function(Q){
             var enemyData = battleData.enemies;
             var enemies = [];
             enemyData.forEach(function(enm){
-                var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy",dir:enm.dir?enm.dir:"left"});
+                var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy",dir:enm.dir?enm.dir:"left",awards:Q.setUpAwards()});
                 char.add("randomCharacter,statCalcs");
                 enemies.push(char);
                 char.p.loc = enm.loc;
@@ -143,10 +145,10 @@ Quintus.SceneFuncs=function(Q){
                 //If the neutral character is a story character
                 if(ally){
                     var storyChar = Q.setUpStoryCharacter(ally);
-                    char = new Q.Character({charClass:storyChar.charClass,level:storyChar.level,exp:storyChar.exp,name:storyChar.name,skills:storyChar.skills,equipment:storyChar.equipment,gender:storyChar.gender,stats:storyChar.stats,value:storyChar.value,method:storyChar.method,team:"ally"});
+                    char = new Q.Character({charClass:storyChar.charClass,level:storyChar.level,exp:storyChar.exp,name:storyChar.name,skills:storyChar.skills,equipment:storyChar.equipment,gender:storyChar.gender,stats:storyChar.stats,team:"ally",awards:storyChar.awards});
                     char.add("statCalcs");
                 } else {
-                    char = new Q.Character({charClass:neu.charClass,level:neu.level,equipmentRank:neu.equipmentRank,equipmentType:neu.equipmentType,gender:"male",team:"enemy",dir:neu.dir?neu.dir:"left"});
+                    char = new Q.Character({charClass:neu.charClass,level:neu.level,equipmentRank:neu.equipmentRank,equipmentType:neu.equipmentType,gender:"male",team:"enemy",dir:neu.dir?neu.dir:"left",awards:Q.setUpAwards()});
                     char.add("randomCharacter,statCalcs");
                 }
                 neutral.push(char);

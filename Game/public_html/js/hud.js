@@ -396,10 +396,11 @@ Quintus.HUD=function(Q){
             }
             this.menuControls.selected = 0;
             this.menuControls.cycle(selected);
+            this.trigger("checkGray",menuNum);
         },
         //Shows the move grid and zoc
         loadMove:function(){
-            Q.BattleGrid.showZOC(this.p.team==="enemy"?"ally":"enemy");
+            Q.BattleGrid.showZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
@@ -566,22 +567,26 @@ Quintus.HUD=function(Q){
         showAwards:function(){
             this.on("pressConfirm",this,"selectAwards");
             var cont = this.p.infoCont;
+            var width = cont.p.w;
+            var spacing = 10;
+            this.p.bigAwardsBox = cont.insert(new Q.BigAwardsBox({x:spacing,w:width/3-spacing,h:this.p.h-spacing*2,y:spacing,target:this.p.target,box:this,bigAwardsMenu:this.p.bigAwardsMenu}));
+            this.p.bigAwardsDescBox = cont.insert(new Q.BigAwardsDescBox({x:spacing+width/3,w:width/1.5-spacing*2,h:this.p.h/2-spacing*2,y:spacing,target:this.p.target}));
+            this.p.bigAwardsDescBox.hide();
         },
         //When hovering "Skills" and the pressing confirm, give control over to the skills
         selectSkills:function(){
             //Tracks which BigSkillsBox we're in
             this.p.bigSkillsNum = 1;
             this.p.box1.menuControls.turnOnInputs();
-            this.p.box1.menuControls.selected = 0;
             this.p.box1.menuControls.cycle(this.p.box1.menuControls.selected);
         },
         selectStatus:function(){
             this.p.bigStatusConditionsBox.menuControls.turnOnInputs();
-            this.p.bigStatusConditionsBox.menuControls.selected = 0;
             this.p.bigStatusConditionsBox.menuControls.cycle(this.p.bigStatusConditionsBox.menuControls.selected);
         },
         selectAwards:function(){
-            
+            this.p.bigAwardsBox.menuControls.turnOnInputs();
+            this.p.bigAwardsBox.menuControls.cycle(this.p.bigAwardsBox.menuControls.selected);
         },
         //Shows a single skill's info when it's hovered from the BigSkillsBox
         loadSkill:function(skill){
@@ -596,8 +601,81 @@ Quintus.HUD=function(Q){
         loadStatus:function(status){
             this.p.bigStatusConditionsDescBox.show();
             this.p.bigStatusConditionsDescBox.setText(Q.state.get("status")[status]);
+        },
+        loadAwards:function(award){
+            this.p.bigAwardsDescBox.show();
+            this.p.bigAwardsDescBox.setText(Q.state.get("awards")[award]);
         }
     });
+    Q.UI.Container.extend("BigAwardsBox",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                fill:"cyan",
+                border:2,
+                stroke:"yellow",
+                skillsOptions:[],
+                options:[[]]
+            });
+            this.on("inserted");
+        },
+        inserted:function(){
+            this.add("menuControls");
+            //When the user presses back
+            this.on("pressBack");
+            //Turn on when an option is hovered
+            this.on("hoverOption");
+            this.displayMenu();
+        },
+        displayMenu:function(){
+            var target = this.p.target;
+            var awards = target.p.awards;
+            var data = Q.state.get("awards");
+            this.p.conts = [];
+            var keys = Object.keys(awards);
+            for(var i=0;i<keys.length;i++){
+                var info = data[keys[i]];
+                var cont = this.insert(new Q.UI.Container({x:10,y:10+i*25,w:this.p.w-20,h:25,cx:0,cy:0,fill:"red",radius:0}));
+                cont.insert(new Q.UI.Text({label:info.name,align:"left",x:10,y:cont.p.h/2-6,size:12}));
+                cont.insert(new Q.UI.Text({label:awards[keys[i]]+"",align:"right",x:cont.p.w-10,y:cont.p.h/2-6,size:12}));
+                this.p.conts.push(cont);
+                this.p.options[0].push(keys[i]);
+            }
+        },
+        showInfo:function(num){
+            this.p.box.loadAwards(this.p.options[0][num]);
+        },
+        //Give control back to the BigStatusMenu
+        pressBack:function(){
+            this.menuControls.turnOffInputs();
+            this.menuControls.fillAllRed();
+            this.p.bigAwardsMenu.menuControls.turnOnInputs();
+        },
+        //Display the information from the section
+        hoverOption:function(num){
+            this.showInfo(num);
+        }
+    });
+    Q.UI.Container.extend("BigAwardsDescBox",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                fill:"cyan",
+                border:2,
+                stroke:"yellow"
+            });
+            this.p.textWidth = this.p.w-20;
+            this.on("inserted");
+        },
+        setText:function(award){
+            this.p.descText.p.label = "Description: "+award.desc;
+        },
+        inserted:function(){
+            var textSize = 14;
+            this.p.descText = this.insert(new Q.UI.Text({label:"Description: ",x:10,y:10,size:textSize,cx:0,cy:0,align:"left"}));
+        }
+    });
+    
     Q.UI.Container.extend("BigStatusConditionsBox",{
         init:function(p){
             this._super(p,{

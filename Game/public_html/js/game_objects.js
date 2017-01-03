@@ -335,6 +335,7 @@ Quintus.GameObjects=function(Q){
                     var tileThere = this.getZOC(obj.p.team,tileLoc);
                     if(tileThere){
                         tileThere.p.number++;
+                        obj.p.zocTiles.push(tileThere);
                     } else {
                         //Keep a reference to the ZOC tiles in each object and also here
                         var tile = this.stage.insert(new Q.ZOCTile({loc:tileLoc}));
@@ -351,8 +352,9 @@ Quintus.GameObjects=function(Q){
             if(!obj.p.zoc) return;
             var grid = this.getGrid(obj);
             obj.p.zocTiles.forEach(function(tile){
-                tile.p.number--;
-                if(tile.p.number<=0){
+                var gridTile = grid[tile.p.loc[1]][tile.p.loc[0]];
+                gridTile.p.number--;
+                if(gridTile.p.number<=0){
                     grid[tile.p.loc[1]][tile.p.loc[0]] = false;
                     tile.destroy();
                 }
@@ -495,20 +497,28 @@ Quintus.GameObjects=function(Q){
             
             this.startTurn();
         },
+        finishBattle:function(){
+            this.allies.forEach(function(ally){
+                ally.p.savedData.awards = ally.p.awards;  
+            });
+            Q.clearStages();
+        },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
             if(this.allies.length===0){
-                Q.clearStages();
+                //Do anything that happens after a battle
+                this.finishBattle();
                 var defeat = this.stage.options.battleData.defeat;
                 if(defeat.func==="loadBattleScene"){
                     Q.stageScene("battleScene",0,{data:this.stage.options.data, path:defeat.scene});
-                } else if(victory.func==="loadDialogue"){
+                } else if(defeat.func==="loadDialogue"){
                     Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:defeat.scene});
                 }
                 return true;
             }
             if(this.enemies.length===0){
-                Q.clearStages();
+                //Do anything that happens after a battle
+                this.finishBattle();
                 var victory = this.stage.options.battleData.victory;
                 if(victory.func==="loadBattleScene"){
                     Q.stageScene("battleScene",0,{data:this.stage.options.data, path:victory.scene});
@@ -523,7 +533,8 @@ Quintus.GameObjects=function(Q){
         startTurn:function(){
             var obj = this.turnOrder[0];
             //Hide and disable the pointer if it's not an ally's turn
-            if(obj.p.team!=="ally"&&Q.pointer){
+            //TEMP (Take out false to enable)
+            if(false&&obj.p.team!=="ally"&&Q.pointer){
                 Q.pointer.hide();
                 Q.pointer.off("checkInputs");
                 Q.pointer.off("checkConfirm");
@@ -704,6 +715,9 @@ Quintus.GameObjects=function(Q){
             var text = [];
             //Give the exp to all participants
             sorted.forEach(function(obj,i){
+                Q.setAward(obj,"assisted",1);
+                //Don't give exp to dead people
+                if(obj.p.hp<=0) return;
                 var gain = Math.floor(exp/(i+1));
                 if(lastHit.p.id===obj.p.id){
                     gain*=2;
@@ -993,7 +1007,8 @@ Quintus.GameObjects=function(Q){
             Q.BatCon.removeMarked();
             //If this character has now attacked and moved, end their turn.
             if(active.p.didMove){
-                if(active.p.team!=="enemy"){
+                //TEMP
+                if(true||active.p.team!=="enemy"){
                     Q.BatCon.showEndTurnDirection(active);
                 } else {
                     //Set the AI's direction and end its turn
@@ -1008,7 +1023,8 @@ Quintus.GameObjects=function(Q){
                 //Snap the pointer to the current character
                 Q.pointer.snapTo(active);
                 //If the current character is not AI
-                if(active.p.team!=="enemy"){
+                //TEMP
+                if(true||active.p.team!=="enemy"){
                     Q.pointer.displayCharacterMenu();
                 } else {
                     //Do whatever the AI does after attacking and can still move
@@ -1081,6 +1097,8 @@ Quintus.GameObjects=function(Q){
         
         //Item functions below
         healHp:function(amount,target,user){
+            Q.setAward(target,"selfHealed",amount);
+            Q.setAward(user,"targetHealed",amount);
             var text = [];
             if(target.p.hp+amount>target.p.maxHp) amount=target.p.maxHp-target.p.hp;
             target.p.hp+=amount;
