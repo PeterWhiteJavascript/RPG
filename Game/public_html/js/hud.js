@@ -1335,17 +1335,38 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             //Get the comparison between the two char's directions
-            this.p.attackingFrom = Q.BatCon.getDirComparison(this.p.attacker,this.p.targets[0]);
+            this.p.attackingFrom = Q.BatCon.attackFuncs.compareDirection(this.p.attacker,this.p.targets[0]);
+            var attacker = this.p.attacker;
+            var defender = this.p.targets[0];
+            var atkTile = attacker.p.tileEffect;
+            var defTile = defender.p.tileEffect;
+            var low = attacker.p.totalDamageLow;
+            var high = attacker.p.totalDamageHigh;
+            if(atkTile.stat==="damage"){
+                low*=atkTile.amount;
+                high*=atkTile.amount;
+            }
+            var strike = attacker.p.strike;
+            if(atkTile.stat==="strike") strike*=atkTile.amount;
+            var armour = defender.p.armour;
+            if(defTile.stat==="armour") armour*=defTile.amount;
+            if(defender.p.status.sturdy) armour*=1.5;
+            var parry = defender.p.parry;
+            if(defTile.stat==="parry") parry*=defTile.amount;
+            //The comparison between the attacker's dir and defender's dir
+            var dir = Q.BatCon.attackFuncs.compareDirection(attacker,defender);
+            var accuracy = Math.floor((strike-parry)*dir);
             //If the attack is a skill, display different information
             if(this.p.skill){
                 if(this.p.skill.damageLow&&this.p.skill.damageHigh){
-                    var atkPercent = this.p.attacker.p.strike;
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
-                    var missChance = "Pretty high, I guess";
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
-                    var damageLow = this.p.attacker.p.totalDamageLow+this.p.skill.damageLow-this.p.targets[0].p.armour;
-                    var damageHigh = this.p.attacker.p.totalDamageHigh+this.p.skill.damageHigh-this.p.targets[0].p.armour;
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:accuracy+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
+                    var skillLow = this.p.skill.damageLow;
+                    var skillHigh = this.p.skill.damageHigh;
+                    if(atkTile.stat==="damage"){
+                        skillLow*=atkTile.amount;
+                        skillHigh*=atkTile.amount;
+                    }
+                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+Math.floor(low+skillLow-armour)+" and "+Math.floor(high+skillHigh-armour)+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:70,label:"The skill's name is "+this.p.skill.name+".",size:12,cx:0,cy:0,align:"center"}));
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"It is targetting "+this.p.targets.length+" targets.",size:12,cx:0,cy:0,align:"center"}));
                 }
@@ -1354,14 +1375,8 @@ Quintus.HUD=function(Q){
                     this.insert(new Q.UI.Text({x:10+this.p.w/2,y:110,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
                 }
             } else {
-                //This accuracy will need to be thought out more thoroughly.
-                var atkPercent = this.p.attacker.p.strike;
-                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:atkPercent+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
-                var missChance = "Pretty high, I guess";
-                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:30,label:missChance+"% chance of missing.",size:12,cx:0,cy:0,align:"center"}));
-                var damageLow = this.p.attacker.p.totalDamageLow-this.p.targets[0].p.armour;
-                var damageHigh = this.p.attacker.p.totalDamageHigh-this.p.targets[0].p.armour;
-                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+damageLow+" and "+damageHigh+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
+                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:accuracy+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
+                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+Math.floor(low)+" and "+Math.floor(high)+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
             }
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
         }

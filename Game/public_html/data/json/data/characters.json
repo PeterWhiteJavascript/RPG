@@ -8,24 +8,23 @@
             "lefthand":["shield","woodenShield"],
             "body":["body","shirt"],
             "feet":["feet","sandals"],
-            "accessory":["accessory","movementCharm"]
+            "accessory":false
         },
         "stats":{
-            "str":1110,
+            "str":10,
             "end":10,
             "dex":10,
             "wsk":10,
             "rfl":10
         },
         "skills":{
-            "sword":["stab","slash","whirlwind"],
-            "shield":["defend"],
-            "bow":["sonicboom","shoot","blind","poison"]
+            "sword":["stab"],
+            "shield":["defend","firstAid"]
         },
         "value":50,
         "method":50,
         "charClass":"knight",
-        "exp":0
+        "exp":70
     },
     "astrea":{
         "name": "Astrea",
@@ -46,11 +45,37 @@
             "rfl":10
         },
         "skills":{
-            "bow":["shoot","holdback"]
+            "bow":["shoot"]
         },
         "value":50,
         "method":50,
         "charClass":"archer",
-        "exp":0
+        "exp":80
+    },
+    "peter":{
+        "name": "Peter",
+        "level":1,
+        "gender":"male",
+        "equipment":{
+            "righthand":["weapon","woodenSpear"],
+            "lefthand":false,
+            "body":["body","shirt"],
+            "feet":["feet","sandals"],
+            "accessory":false
+        },
+        "stats":{
+            "str":10,
+            "end":10,
+            "dex":8,
+            "wsk":12,
+            "rfl":12
+        },
+        "skills":{
+            "spear":["puncture","push"]
+        },
+        "value":50,
+        "method":50,
+        "charClass":"barbarian",
+        "exp":90
     }
 }

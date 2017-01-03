@@ -133,13 +133,12 @@ Q.newGame=function(options){
     alex.gender = options.gender;
     var storyAlex = Q.setUpStoryCharacter(alex);
     Q.state.set("alex",storyAlex);
-    //For now, alex is the only character
-    Q.state.set("allies",[storyAlex]);
+    //For now, alex is the only character (just added more people)
+    Q.state.set("allies",[storyAlex,Q.setUpStoryCharacter(Q.state.get("characters").astrea),Q.setUpStoryCharacter(Q.state.get("characters").peter)]);
     //Set up the new game bag
-    Q.state.set("Bag",new Q.Bag(
-            {items:{
+    Q.state.set("Bag",new Q.Bag({items:{
         consumable:[
-            ["potion",1]
+            ["potion",3]
         ],
         weapon:[],
         shield:[],
@@ -191,6 +190,8 @@ var files = [
     "sfx/confirm.mp3",
     "sfx/dying.mp3",
     "sfx/explosion.mp3",
+    "sfx/critical_hit.mp3",
+    "sfx/glancing_blow.mp3",
     "sfx/hit1.mp3",
     "sfx/inflict_status.mp3",
     "sfx/shooting.mp3",

@@ -130,7 +130,7 @@ Quintus.QFunctions=function(Q){
             var tile = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])];
             var move = tile.move;
             //If there is something required for standing on this tile and the character does not have it
-            if(tile.required&&(!required||!required[tile.required])) move = 0;
+            if(tile.required&&(!required||!required[tile.required])) move = 1000000;
             return move?move:1000000;
         }
         function getTarget(){
@@ -149,7 +149,7 @@ Quintus.QFunctions=function(Q){
                 if(type==="walk"){
                     cost = getWalkable();
                     //Don't check for other objects and ZOC in the story
-                    if(team!=="story"){
+                    if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
                         zocOn = getZOC();
                     }

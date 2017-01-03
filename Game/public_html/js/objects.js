@@ -229,9 +229,19 @@ Quintus.Objects=function(Q){
                 var eq = equipment[type+"Sorted"][lv-1][Math.floor(Math.random()*equipment[type+"Sorted"][lv-1].length)];
                 return eq;
             }
+            var rh = rand(types[Math.floor(Math.random()*2)]);
+            var lh = {};
+            if(rh){
+                //Chance that there's no equipment here
+                if(Math.random()*100>9){
+                   lh = rand(types[Math.floor(Math.random()*2)]);
+                }
+            } else {
+                lh = rand(types[Math.floor(Math.random()*2)]);
+            }
             p.equipment={
-                righthand:rand(types[Math.floor(Math.random()*2)]),
-                lefthand:rand(types[Math.floor(Math.random()*2)]),
+                righthand:rh,
+                lefthand:lh,
                 body:rand(types[2]),
                 feet:rand(types[3]),
                 accessory:rand(types[4])
@@ -239,7 +249,7 @@ Quintus.Objects=function(Q){
             //If they have a set equipment type, make sure they get it
             while(p.equipmentType&&p.equipment.righthand.equipmentType!==p.equipmentType&&p.equipment.lefthand.equipmentType!==p.equipmentType){
                 p.equipment.righthand = rand(types[0]);
-                //If the equipment is two handed, the left hand hould be empty
+                //If the equipment is two handed, the left hand should be empty
                 if(p.equipment.righthand.twoHanded){
                     p.equipment.lefthand = {};
                 } else {
@@ -285,11 +295,29 @@ Quintus.Objects=function(Q){
                 shield:{}
             };
             //To do: Come up with a way to give reasonable skills
+            //For now, only give skills that are less than or equal to the character's skill rank
+            var skillrank = Math.ceil(p.level/5);
             if(p.equipment.righthand.equipmentType){
-                skills[p.equipment.righthand.equipmentType] = allSkills[p.equipment.righthand.equipmentType];
+                var weaponSkills = allSkills[p.equipment.righthand.equipmentType];
+                var keys = Object.keys(weaponSkills);
+                for(var i=0;i<keys.length;i++){
+                    var sk = weaponSkills[keys[i]];
+                    if(sk.rank<=skillrank){
+                        skills[p.equipment.righthand.equipmentType][keys[i]]=sk;
+                    }
+                }
             }
             if(p.equipment.lefthand.equipmentType){
-                skills[p.equipment.lefthand.equipmentType] = allSkills[p.equipment.lefthand.equipmentType];
+                if(!p.equipment.righthand.equipmentType||p.equipment.lefthand.equipmentType!==p.equipment.righthand.equipmentType){
+                    var weaponSkills = allSkills[p.equipment.lefthand.equipmentType];
+                    var keys = Object.keys(weaponSkills);
+                    for(var i=0;i<keys.length;i++){
+                        var sk = weaponSkills[keys[i]];
+                        if(sk.rank<=skillrank){
+                            skills[p.equipment.lefthand.equipmentType][keys[i]]=sk;
+                        }
+                    }
+                }
             }
             return skills;
         }
@@ -321,57 +349,77 @@ Quintus.Objects=function(Q){
             p.range = this.getRange();
             p.zoc = Q.state.get("charClasses")[p.charClass].zoc;
         },
+        //Move is mainly based on the character's class. Certain armour, shoes, and accessories increase move
         getMove:function(base){
             var body = this.entity.p.equipment.body.move?this.entity.p.equipment.body.move:0;
             var feet = this.entity.p.equipment.feet.move?this.entity.p.equipment.feet.move:0;
             var accessory = this.entity.p.equipment.accessory.move?this.entity.p.equipment.accessory.move:0;
             return base+body+feet+accessory;
         },
+        //The user's hp is a bit complex :)
         getHp:function(base){
             var p = this.entity.p;
             //Every 5 levels, get a stat boost. every 10 levels, get a big stat boost
             return Math.floor(Math.ceil(p.level/5)*(base.end+base.str)+Math.ceil(p.level/10)*(p.stats.str+p.stats.end))+1;
         },
+        //The user's sp is a bit complex :)
         getSp:function(base){
             var p = this.entity.p;
             return Math.floor(Math.ceil(p.level/10)*(base.dex+p.stats.dex))+1;
         },
-        //Calculate damage based on attack + weapon1 +weapon2
+        //Damage Low is the lowest damaging weapon plus the user's strength. If the user has two weapons equipped, add the user's strength again
         getDamageLow:function(){
             var right = this.entity.p.equipment.righthand.damageLow?this.entity.p.equipment.righthand.damageLow:0;
             var left = this.entity.p.equipment.lefthand.damageLow?this.entity.p.equipment.lefthand.damageLow:0;
+            //Get lowest number
+            var dmg = right>left?left:right;
+            //If we only have one weapon, use that dmg
+            if(!right) dmg = left;
+            if(!left) dmg = right;
             var str = this.entity.p.stats.str;
             if(right&&left) str*=2;
-            return right+left+str;
+            return dmg+str;
         },
+        //Damage High is the highest damaging weapon plus the user's strength. If the user has two weapons equipped, add the user's strength again
         getDamageHigh:function(){
             var right = this.entity.p.equipment.righthand.damageHigh?this.entity.p.equipment.righthand.damageHigh:0;
             var left = this.entity.p.equipment.lefthand.damageHigh?this.entity.p.equipment.lefthand.damageHigh:0;
+            //Get highest number
+            var dmg = right<left?left:right;
             var str = this.entity.p.stats.str;
             if(right&&left) str*=2;
-            return right+left+str;
+            return dmg+str;
         },
+        //Total Speed is the highest speed weapon plus the user's dexterity.
         getSpeed:function(){
             var right = this.entity.p.equipment.righthand.speed?this.entity.p.equipment.righthand.speed:0;
             var left = this.entity.p.equipment.lefthand.speed?this.entity.p.equipment.lefthand.speed:0;
+            var spd = right<left?left:right;
             var dex = this.entity.p.stats.dex;
-            return right+Math.floor(left/2)+dex;
+            return spd+dex;
         },
+        //Base strike is 99 minus the weapon's wield plus the user's weapon skill
         getStrike:function(){
-            var right = this.entity.p.equipment.righthand.wield?this.entity.p.equipment.righthand.wield:0;
-            var left = this.entity.p.equipment.lefthand.wield?this.entity.p.equipment.lefthand.wield:0;
-            var wsk = this.entity.p.stats.wsk;
-            return Math.floor((right+left)/2)+wsk;
+            var strike = 99;
+            strike -= this.entity.p.equipment.righthand.wield?this.entity.p.equipment.righthand.wield:0;
+            strike -= this.entity.p.equipment.lefthand.wield?this.entity.p.equipment.lefthand.wield:0;
+            strike += this.entity.p.stats.wsk;
+            if(strike>99) strike = 99;
+            return Math.floor(strike);
         },
+        //Base parry is 0 plus the wield of the weapons plus the user's reflexes
         getParry:function(){
-            var right = this.entity.p.equipment.righthand.wield?this.entity.p.equipment.righthand.wield:0;
-            var left = this.entity.p.equipment.lefthand.wield?this.entity.p.equipment.lefthand.wield:0;
-            var rfl = this.entity.p.stats.rfl;
-            return Math.floor((right+left)/2)+rfl;
+            var parry = 0;
+            parry += this.entity.p.equipment.righthand.wield?this.entity.p.equipment.righthand.wield:0;
+            parry += this.entity.p.equipment.lefthand.wield?this.entity.p.equipment.lefthand.wield:0;
+            parry += this.entity.p.stats.rfl;
+            return Math.floor(parry);
         },
+        //Critical Chance is the user's strike divided by ten.
         getCriticalChance:function(){
             return Math.floor(this.entity.p.strike/10);
         },
+        //Armour is just all of the user's equipment's armour added up.
         getArmour:function(){
             var right = this.entity.p.equipment.righthand.defense?this.entity.p.equipment.righthand.defense:0;
             var left = this.entity.p.equipment.lefthand.defense?this.entity.p.equipment.lefthand.defense:0;
@@ -380,6 +428,7 @@ Quintus.Objects=function(Q){
             var accessory = this.entity.p.equipment.accessory.defense?this.entity.p.equipment.accessory.defense:0;
             return right+left+body+feet+accessory; 
         },
+        //Range is the weapon with the highest range's range.
         getRange:function(){
             var right = this.entity.p.equipment.righthand.range?this.entity.p.equipment.righthand.range:0;
             var left = this.entity.p.equipment.lefthand.range?this.entity.p.equipment.lefthand.range:0;
@@ -447,7 +496,7 @@ Quintus.Objects=function(Q){
                 return time?time:300;
             },
             //Displays the damage dynamic number
-            showDamage:function(dmg,time){
+            showDamage:function(dmg,time,sound){
                 this.stage.insert(new Q.DynamicNumber({color:"red", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
                 //Show the death animation at this point
                 if(this.p.hp<=0){
@@ -455,7 +504,8 @@ Quintus.Objects=function(Q){
                     //Probably want to do unit specific death sounds
                     Q.playSound("dying.mp3");
                 } else {
-                    Q.playSound("hit1.mp3");
+                    var sound = sound?sound:"hit1.mp3";
+                    Q.playSound(sound);
                 }
                 return time?time:300;
             },
@@ -487,7 +537,7 @@ Quintus.Objects=function(Q){
                 this.trigger("saveProp",{name:"hp",value:this.p.hp});
                 Q.setAward(attacker,"damageDealt",dmg);
                 Q.setAward(this,"damageTaken",dmg);
-                //Only add the attacker if ther is one (no attacker for hurt by poison, etc...)
+                //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
                 if(attacker) this.addToHitBy(attacker);
                 if(this.p.hp<=0){
                     Q.BattleGrid.removeZOC(this);
@@ -768,7 +818,7 @@ Quintus.Objects=function(Q){
                 },
                 //All enemies that hit this character are added so the exp can be divided when this character dies
                 hitBy:[],
-                //Temporarily 0. Eventually take numbers from a level table if needed
+                //The current exp
                 exp:0
             });
             this.p.sheet = this.p.charClass;
@@ -785,6 +835,7 @@ Quintus.Objects=function(Q){
             this.playStand(this.p.dir);
             Q._generatePoints(this,true);
             this.p.z = this.p.y;
+            this.updateTileEffect(this.p.loc);
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function
@@ -823,6 +874,11 @@ Quintus.Objects=function(Q){
                 }*/
                 }});
         },
+        updateTileEffect:function(loc){
+            var tile = Q.BatCon.getTileType(loc);
+            var data = Q.state.get("tileTypes")[tile];
+            this.p.tileEffect = data.effect;
+        },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
             Q.pointer.off("checkInputs");
@@ -848,7 +904,8 @@ Quintus.Objects=function(Q){
                     Q.pointer.p.loc = t.p.loc;
                     Q.BatCon.setXY(Q.pointer);
                     //Do the AI action
-                    if(this.p.team==="enemy") {
+                    //TEMP
+                    if(false&&this.p.team==="enemy") {
                         this.trigger("startAIAction");
                     } 
                     //Load the action menu
@@ -856,7 +913,8 @@ Quintus.Objects=function(Q){
                         Q.pointer.displayCharacterMenu();
                     }
                 } else {
-                    if(this.p.team==="enemy"){
+                    //TEMP
+                    if(false&&this.p.team==="enemy"){
                         this.trigger("setAIDirection");
                     } else {
                         Q.pointer.off("checkInputs");

@@ -10,6 +10,7 @@
         "interaction":[
             {"text":["Welcome to Greece Lightning! Welcome to Greeece Light5ning! Welcome to Grshereece Lightning! Wregelcome to Greece Lightning! Welvggome to Greece Lightning!","Please press enter to begin your journey :)"],"asset":[false,"pyro.png"],"pos":"right"},
             {"func":"confirmation","props":[[
+                {"next":"dialogue/battleBalance","text":"Battle Balance"},
                 {"next":"dialogue/preBattle","text":"Act 1"},
                 {"next":"dialogue/battle","text":"Act 1_1 Battle"},
                 {"next":"dialogue/nextAct","text":"Act 1_2"},
@@ -84,6 +85,12 @@
                     {"func":"confirmation","props":[[{"next":"dialogue/coolQuestions","text":"Yes"},{"next":"dialogue/on_to_battle","text":"No"}]]}
                 ]
             }
+        },
+        "battleBalance":{
+            "bg":"bg/forest.jpg",
+            "interaction":[
+                {"func":"loadScene","props":["battle_balance","battle1","battle"]}
+            ]
         },
         "preBattle":{
             "bg":"bg/forest.jpg",

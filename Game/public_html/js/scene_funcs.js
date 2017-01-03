@@ -100,7 +100,6 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
-        console.log(stage.options.data,stage.options.path)
         var music = battleData.music;
         if(!music) music = Q.state.get("currentMusic"); 
         Q.playMusic(music,function(){
