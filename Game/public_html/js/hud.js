@@ -266,13 +266,13 @@ Quintus.HUD=function(Q){
     Q.UI.Container.extend("ActionMenu",{
         init: function(p) {
             this._super(p, {
-                w:200,h:300,
+                w:200,h:350,
                 cx:0,cy:0,
                 fill:"blue",
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
-                options:[["Move","Attack","Skill","Item","Status","End Turn"],["Status","Exit Menu"],[]],
-                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
+                options:[["Move","Attack","Skill","Lift","Item","Status","End Turn"],["Status","Exit Menu"],[]],
+                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[]
             });
             this.p.x = Q.width-this.p.w;
@@ -282,10 +282,11 @@ Quintus.HUD=function(Q){
             
             //Add the inputs for the menu
             this.add("menuControls");
-            //If this is the active character, setup the skills options
+            //If this is the active character, set up the skills options and check for lifted
             if(this.p.active){
                 this.menuControls.menuNum = 0;
                 this.setSkillOptions();
+                this.checkLifting();
             } else this.menuControls.menuNum = 1;
         },
         inserted:function(){
@@ -363,6 +364,13 @@ Quintus.HUD=function(Q){
             this.p.funcs[3]=funcs;
             this.p.items=itms;  
         },
+        checkLifting:function(){
+            var lifting = this.p.target.p.lifting;
+            if(lifting){
+                this.p.options[0][3] = "Drop";
+                this.p.funcs[0][3] = "loadDrop";
+            }
+        },
         //Checks if some containers should be gray
         checkGray:function(menuNum){
             if(menuNum===0){
@@ -371,6 +379,7 @@ Quintus.HUD=function(Q){
                     this.p.conts[1].p.fill="gray";
                     this.p.conts[2].p.fill="gray";
                     this.p.conts[3].p.fill="gray";
+                    this.p.conts[4].p.fill="gray";
                 };
             }
         },
@@ -412,6 +421,26 @@ Quintus.HUD=function(Q){
         //Shows the attack grid
         loadAttack:function(){
             this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
+            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
+            this.menuControls.turnOffInputs();
+            this.hide();
+            Q.pointer.p.user = this.p.target;
+            Q.pointer.addControls();
+            Q.pointer.snapTo(this.p.target);
+        },
+        //Show the range for lifting (4 squares around the user)
+        loadLift:function(){
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"lift"}));
+            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
+            this.menuControls.turnOffInputs();
+            this.hide();
+            Q.pointer.p.user = this.p.target;
+            Q.pointer.addControls();
+            Q.pointer.snapTo(this.p.target);
+        },
+        //Shows the range for dropping
+        loadDrop:function(){
+            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"drop"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
@@ -1106,6 +1135,14 @@ Quintus.HUD=function(Q){
                             break;
                     }
                     break;
+                //Shows the tiles that the user can lift
+                case "lift":
+                    this.getTileRange(user.p.loc,1,user.p["attackMatrix"]);
+                    break;
+                //Shows the tiles that an object can be dropped on
+                case "drop":
+                    this.getTileRange(user.p.loc,1,user.p["attackMatrix"]);
+                    break;
             }
         },
         fullDestroy:function(){
@@ -1181,6 +1218,10 @@ Quintus.HUD=function(Q){
             if(valid) return true;
             return false;
         },
+        cannotDo:function(){
+            Q.playSound("cannot_do.mp3");
+            this.p.cannotDo = true;
+        },
         step:function(){
             //Run this when pressing confirm on a range tile
             if(Q.inputs['confirm']){
@@ -1189,15 +1230,12 @@ Quintus.HUD=function(Q){
                     var user = this.p.user;
                     switch(this.p.kind){
                         case "walk":
-                            if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
-                                Q.playSound("cannot_do.mp3");
-                                Q.inputs['confirm']=false;
-                                return;                            
-                            }
-                            //Hide the zoc
-                            Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
-                            //Make the character move to the spot
-                            user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
+                            if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                                //Hide the zoc
+                                Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
+                                //Make the character move to the spot
+                                user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
+                            } else {this.cannotDo();}
                             break;
                         case "attack":
                             //Make sure there's a target there
@@ -1205,12 +1243,7 @@ Quintus.HUD=function(Q){
                                 Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
-                            } else {
-                                //Play a "cannot do that" sound
-                                Q.playSound("cannot_do.mp3");
-                                Q.inputs['confirm']=false;
-                                return;
-                            }
+                            } else {this.cannotDo();}
                             break;
                         case "skill":
                             var skill = this.p.skill?this.p.skill:this.p.item;
@@ -1225,21 +1258,58 @@ Quintus.HUD=function(Q){
                                 Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.item?this.p.item:skill);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
-                            } else {
-                                //Play a "cannot do that" sound
-                                Q.playSound("cannot_do.mp3");
-                                Q.inputs['confirm']=false;
-                                return;
-                            }
+                            } else {this.cannotDo();}
                             
                             break;
+                        case "lift":
+                            var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
+                            if(obj&&Q.BatCon.isLiftable(user,obj)){
+                                Q.BatCon.liftObject(user,obj);
+                                user.p.didAction = true;
+                                if(user.p.didMove){
+                                    Q.BatCon.showEndTurnDirection(user);
+                                } else {
+                                    Q.pointer.off("checkInputs");
+                                    Q.pointer.off("checkConfirm");
+                                    Q.pointer.snapTo(user);
+                                    //Go back to the menu right away
+                                    Q.stage(2).ActionMenu.displayMenu(0,0);
+                                    Q.stage(2).ActionMenu.show();
+                                    Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+                                }
+                            } else {this.cannotDo();}
+                            break;
+                        case "drop":
+                            var lifting = user.p.lifting;
+                            //The location the user wants to drop the object on
+                            var locTo = Q.pointer.p.loc;
+                            //If there's nothing on the square
+                            if(!Q.BattleGrid.getObject(locTo)&&Q.BatCon.getTileType(locTo)!=="impassable"){
+                                Q.BatCon.dropObject(user,lifting,locTo);
+                                user.p.didAction = true;
+                                if(user.p.didMove){
+                                    Q.BatCon.showEndTurnDirection(user);
+                                } else {
+                                    Q.pointer.off("checkInputs");
+                                    Q.pointer.off("checkConfirm");
+                                    Q.pointer.snapTo(user);
+                                    //Go back to the menu right away
+                                    Q.stage(2).ActionMenu.displayMenu(0,0);
+                                    Q.stage(2).ActionMenu.show();
+                                    Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+                                }
+                            } else {this.cannotDo();}
+                            break;
                     }
-                    this.fullDestroy();
-                    if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
+                    if(!this.p.cannotDo){
+                        this.fullDestroy();
+                        if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
+                    }
                 } else {
-                    Q.playSound("cannot_do.mp3");
+                    this.cannotDo();
                 }
                 Q.inputs['confirm']=false;
+                this.p.cannotDo=false;
             } else if(Q.inputs['esc']){
                 //Hide the zoc
                 Q.BattleGrid.hideZOC(this.p.user.p.team==="enemy"?"ally":"enemy");

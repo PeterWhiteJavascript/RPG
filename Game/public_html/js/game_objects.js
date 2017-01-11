@@ -275,12 +275,7 @@ Quintus.GameObjects=function(Q){
             }
             //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
             Q.stage(0).on("inserted",this,function(itm){
-                if(itm.has("interactable")){
-                    //Place the object in the grid
-                    this.setObject(itm.p.loc,itm);
-                    //If the object has ZOC, create the tiles
-                    this.setZOC(itm.p.loc,itm);
-                }
+                this.addObjectToBattle(itm);
             });
         },
         //Returns the correct grid
@@ -391,6 +386,19 @@ Quintus.GameObjects=function(Q){
         removeObject:function(loc){
             this.grid[loc[1]][loc[0]] = false;
         },
+        addObjectToBattle:function(obj){
+            if(obj.has("interactable")){
+                //Place the object in the grid
+                this.setObject(obj.p.loc,obj);
+                //If the object has ZOC, create the tiles
+                this.setZOC(obj.p.loc,obj);
+            }
+        },
+        //Used to get rid of the object. Used in lifting and if an interactable is destroyed(TODO)
+        removeObjectFromBattle:function(obj){
+            if(obj.p.zoc) this.removeZOC(obj);
+            this.removeObject(obj.p.loc);
+        },
         //Gets objects around a space based on the passed in aoe
         getObjectsAround:function(loc,aoe,target){
             var objects = [];
@@ -436,6 +444,24 @@ Quintus.GameObjects=function(Q){
                 });
             }
             return objects;
+        },
+        //Gets the closest empty tiles around a location
+        getEmptyAround:function(loc,required){
+            var tiles = [];
+            var radius = 1;
+            //If the search fails for the closest 4 tiles, try the next range
+            while(!tiles.length){
+                for(var i=-radius;i<radius+1;i++){
+                    for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                        var curLoc = [loc[0]+i,loc[1]+j-(radius-Math.abs(i))];
+                        var object = this.getObject(curLoc);
+                        var tile = Q.BatCon.getTileType(curLoc);
+                        if(!object&&tile!=="impassable"&&(!tile.required||(tile.required&&required[tile.required]))) tiles.push(curLoc);
+                    }
+                }
+                radius++;
+            }
+            return tiles;
         },
         //Removes any objects that are dead in an array
         removeDead:function(arr){
@@ -618,9 +644,22 @@ Quintus.GameObjects=function(Q){
                 this.markedForRemoval = [];
             }
         },
+        addToTurnOrder:function(obj){
+            this.turnOrder.push(obj);
+        },
         //Removes an object from the turn order
         removeFromTurnOrder:function(obj){
-            this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
+            for(var i=0;i<this.turnOrder.length;i++){
+                if(this.turnOrder[i].p.id===obj.p.id){
+                    this.turnOrder.splice(i,1);
+                    return;
+                }
+            }
+            //this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
+        },
+        addToTeam:function(obj){
+            var team = obj.p.team==="ally"?this.allies:this.enemies;
+            team.push(obj);
         },
         removeFromTeam:function(obj){
             if(obj.p.team==="ally"){
@@ -628,6 +667,11 @@ Quintus.GameObjects=function(Q){
             } else if(obj.p.team==="enemy"){
                 this.enemies.splice(this.enemies.indexOf(this.enemies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             }
+        },
+        //Adds an object to battle (currently used when dropping a lifted object)
+        addToBattle:function(obj){
+            this.addToTurnOrder(obj);
+            this.addToTeam(obj);
         },
         //Removes the object from battle (at end of turn)
         removeFromBattle:function(obj){
@@ -734,10 +778,48 @@ Quintus.GameObjects=function(Q){
                 text.push({func:"showExpGain",obj:obj,props:[gain,leveledUp]});
             });
             return text;
+        },
+        //The user lifts the object
+        liftObject:function(user,obj){
+            //Set the obj to be lifted by the user
+            user.p.lifting = obj;
+            //Remove the obj from battle (lifted units cannot be targetted nor take up space)
+            Q.BattleGrid.removeObjectFromBattle(obj);
+            //The lifts object doesn't get a turn
+            this.removeFromTurnOrder(obj);
+            obj.p.loc = [user.p.loc[0],user.p.loc[1]-1];
+            this.setXY(obj);
+            obj.p.z = user.p.y+Q.tileH;
+            obj.playLifted(obj.p.dir);
+            user.playLift(user.p.dir);
+        },
+        dropObject:function(user,obj,locTo){
+            user.p.lifting = false;
+            obj.p.loc = locTo;
+            Q.BatCon.setXY(obj);
+            obj.p.z = obj.p.y;
+            obj.playStand(obj.p.dir);
+            user.playStand(user.p.dir);
+            //Add the object to the grid
+            Q.BattleGrid.setObject(locTo,obj);
+            //Only add into the battle if the object is alive
+            if(obj.p.hp>0){
+                //Set the character's ZOC
+                Q.BattleGrid.setZOC(locTo,obj);
+                //Add the object to allies/enemies and the turnorder
+                this.addToBattle(obj);
+            }
+        },
+        //Returns true if the object is liftable
+        isLiftable:function(user,obj){
+            if(!obj.p.lifting&&(obj.p.interactable||obj.p.team===user.p.team||obj.p.hp<=0)){
+                return true;
+            }
+            return false;
         }
 
     });
-    //TO DO - USE THE SKILL'S DAMAGE LOW AND DAMAGE HIGH IN THE CALCULATION
+    
     Q.component("attackFuncs",{
         added:function(){
             //Any feedback from the attack is stored here
@@ -1185,7 +1267,7 @@ Quintus.GameObjects=function(Q){
                 //Check if there's either no more enemies, or no more allies
                 if(Q.BatCon.checkBattleOver()) return;
                 //Get the new walk matrix since objects may have moved
-                active.p.walkMatrix = new Q.Graph(Q.getMatrix("walk"));
+                active.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",active.p.team,active.p.canMoveOn));
                 //Snap the pointer to the current character
                 Q.pointer.snapTo(active);
                 //If the current character is not AI

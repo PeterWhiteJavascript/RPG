@@ -94,7 +94,15 @@ Quintus.Objects=function(Q){
             },
             playStand:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
-                this.play("standing"+this.p.dir);
+                if(this.p.lifting){
+                    this.play("countering"+this.p.dir);
+                }
+                else if(this.p.hp<=this.p.maxHp/5){
+                    this.play("hurt"+this.p.dir);
+                } 
+                else {
+                    this.play("standing"+this.p.dir);
+                }
             },
             playWalk:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
@@ -124,10 +132,18 @@ Quintus.Objects=function(Q){
                     this.playAttack(dir,callback);
                 });
             },
-            playHurt:function(dir){
+            playLift:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("lift"+this.p.dir);
+            },
+            playLifted:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("lifted"+this.p.dir);
+            },
+            /*playHurt:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("hurt"+this.p.dir);
-            },
+            },*/
             playDying:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("dying"+this.p.dir);
@@ -540,6 +556,17 @@ Quintus.Objects=function(Q){
                 //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
                 if(attacker) this.addToHitBy(attacker);
                 if(this.p.hp<=0){
+                    //If this character that is dying is lifting another object
+                    if(this.p.lifting){
+                        this.on("doneDying",function(){
+                            //Get all of the empty tiles around this object (prioritize closer squares)
+                            var locs = Q.BattleGrid.getEmptyAround(this.p.loc,this.p.lifting.p.canMoveOn);
+                            //Select a random spot
+                            var dropLoc = Math.floor(Math.random()*locs.length);
+                            //Randomly place the lifted object around in the area around the character
+                            Q.BatCon.dropObject(this,this.p.lifting,locs[dropLoc]);
+                        });
+                    }
                     Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
                     //Q.BattleGrid.removeObject(this.p.loc);
@@ -727,6 +754,11 @@ Quintus.Objects=function(Q){
                 p.x += p.diffX * dt / p.stepDelay;
                 p.y += p.diffY * dt / p.stepDelay;
                 p.z=p.y;
+                if(p.lifting){
+                    p.lifting.p.x += p.diffX * dt / p.stepDelay;
+                    p.lifting.p.y += p.diffY * dt / p.stepDelay;
+                    p.lifting.p.z=p.y+Q.tileH;
+                }
             }
 
             if(p.stepWait > 0) {return; }

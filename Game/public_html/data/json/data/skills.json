@@ -67,8 +67,8 @@
         "strike":{
             "name":"Strike",
             "cost":10,
-            "damageLow":30,
-            "damageHigh":35,
+            "damageLow":10,
+            "damageHigh":15,
             "range":["normal",1],
             "desc":"A basic striking skill.",
             "rank":1
@@ -107,7 +107,7 @@
             "effect":{
                 "func":"push",
                 "props":[1],
-                "accuracy":80
+                "accuracy":100
             },
             "desc":"A basic pushing skill. This attack pushes the target one space.",
             "rank":2
