@@ -89,6 +89,7 @@
         "battleBalance":{
             "bg":"bg/forest.jpg",
             "interaction":[
+                {"func":"useSave","props":["sample_save_data"]},
                 {"func":"loadScene","props":["battle_balance","battle1","battle"]}
             ]
         },
@@ -159,7 +160,7 @@
         "music":"battle.mp3",
         "map":"demo0.tmx",
         "victory":{"func":"loadBattleScene","scene":"victory"},
-        "defeat":{"func":"loadBattleScene","scene":"defeat"},
+        "defeat":{"func":"dialogue","scene":"defeat"},
         "placementSquares":[[14,11,"down"]],
         "enemies":[
             {"loc":[14,13],"charClass":"archer","level":1,"equipmentRank":2,"dir":"up"},

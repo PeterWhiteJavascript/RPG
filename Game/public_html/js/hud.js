@@ -598,7 +598,7 @@ Quintus.HUD=function(Q){
             var cont = this.p.infoCont;
             var width = cont.p.w;
             var spacing = 10;
-            this.p.bigAwardsBox = cont.insert(new Q.BigAwardsBox({x:spacing,w:width/3-spacing,h:this.p.h-spacing*2,y:spacing,target:this.p.target,box:this,bigAwardsMenu:this.p.bigAwardsMenu}));
+            this.p.bigAwardsBox = cont.insert(new Q.BigAwardsBox({x:spacing,w:width/3-spacing,h:this.p.h-spacing*2,y:spacing,target:this.p.target,box:this,bigStatusMenu:this.p.bigStatusMenu}));
             this.p.bigAwardsDescBox = cont.insert(new Q.BigAwardsDescBox({x:spacing+width/3,w:width/1.5-spacing*2,h:this.p.h/2-spacing*2,y:spacing,target:this.p.target}));
             this.p.bigAwardsDescBox.hide();
         },
@@ -678,7 +678,7 @@ Quintus.HUD=function(Q){
         pressBack:function(){
             this.menuControls.turnOffInputs();
             this.menuControls.fillAllRed();
-            this.p.bigAwardsMenu.menuControls.turnOnInputs();
+            this.p.bigStatusMenu.menuControls.turnOnInputs();
         },
         //Display the information from the section
         hoverOption:function(num){

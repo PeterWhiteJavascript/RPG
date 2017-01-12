@@ -7,56 +7,79 @@
             "level":1,
             "gender":"female",
             "equipment":{
-                "righthand":["shield","potLid"],
-                "lefthand":["weapon","woodenSpear"],
+                "righthand":["weapon","woodenSword"],
+                "lefthand":["shield","woodenShield"],
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
-                "accessory":["accessory","movementCharm"]
+                "accessory":false
             },
             "stats":{
-                "str":10,
-                "end":10,
-                "dex":10,
-                "wsk":10,
+                "str":15,
+                "end":15,
+                "dex":5,
+                "wsk":5,
                 "rfl":10
             },
             "skills":{
-                "sword":["whirlwind","superwhirlwind"],
-                "spear":["pierce","puncture","push"],
-                "shield":["defend","protect","totaldefense"]
+                "sword":["stab"],
+                "shield":["defend","firstAid"]
             },
-            "value":20,
-            "method":80,
+            "value":50,
+            "method":50,
             "charClass":"knight",
             "exp":0
+        },
+        {
+            "name": "Astrea",
+            "level":1,
+            "gender":"female",
+            "equipment":{
+                "righthand":false,
+                "lefthand":["weapon","woodenBow"],
+                "body":["body","shirt"],
+                "feet":["feet","sandals"],
+                "accessory":false
+            },
+            "stats":{
+                "str":8,
+                "end":8,
+                "dex":12,
+                "wsk":12,
+                "rfl":10
+            },
+            "skills":{
+                "bow":["shoot"]
+            },
+            "value":50,
+            "method":50,
+            "charClass":"archer",
+            "exp":80
         },
         {
             "name": "Peter",
             "level":1,
             "gender":"male",
             "equipment":{
-                "righthand":["weapon","woodenBow"],
+                "righthand":["weapon","woodenSpear"],
                 "lefthand":false,
                 "body":["body","shirt"],
                 "feet":["feet","sandals"],
-                "accessory":["accessory","movementCharm"]
+                "accessory":false
             },
             "stats":{
                 "str":10,
                 "end":10,
-                "dex":10,
-                "wsk":10,
-                "rfl":10
+                "dex":8,
+                "wsk":12,
+                "rfl":12
             },
             "skills":{
-                "sword":["stab","slash","whirlwind","superwhirlwind"],
-                "spear":["pierce","push"],
-                "bow":["shoot","blind","sonicboom","crosshair","poison","holdback"]
+                "spear":["puncture","push"]
             },
-            "value":40,
-            "method":60,
-            "charClass":"archer",
-            "exp":0
+            "value":50,
+            "method":50,
+            "charClass":"barbarian",
+            "exp":90
         }
     ],
     "inventory":{

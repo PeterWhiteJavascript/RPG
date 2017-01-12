@@ -158,12 +158,14 @@ Quintus.UIObjects=function(Q){
             Q.clearStages();
             this.destroy();
             Q.stageScene("location",0,{data:Q.state.get("locations")[location],menu:menu});
+            this.p.cantCycle = true;
             return true;
         },
         //Load the battle scene, which is a dialogue scene with the tmx map and story characters walking around
         loadBattleScene:function(path){
             var stage = this.stage;
             Q.stageScene("battleScene",0,{data:stage.options.data, path:path});
+            this.p.cantCycle = true;
             return true;
         },
         //Load the battle scene
@@ -172,12 +174,35 @@ Quintus.UIObjects=function(Q){
             Q.stageScene("battle",0,{data:stage.options.data, path:path});
             //Clear this stage
             Q.clearStage(1);
+            this.p.cantCycle = true;
             return true;
         },
         //Loads another json file's scene
         loadScene:function(sceneName,start,type){
             Q.startScene(sceneName,start,type);
+            this.p.cantCycle = true;
             return true;
+        },
+        //Probably only used for testing. May be used for loading data from save without saving.
+        useSave:function(name){
+            Q.load("json/save/"+name+".json",function(){
+                var save = Q.assets['json/save/sample_save_data.json'];
+                Q.state.set({
+                    sceneName:save.sceneName,
+                    day:save.day,
+                    options:save.options,
+                    acceptedQuests:save.acceptedQuests
+                });
+                var storyChars = [];
+                save.allies.forEach(function(ally){
+                    storyChars.push(Q.setUpStoryCharacter(ally));
+                });
+                Q.state.set("alex",storyChars.filter(function(ally){return ally.name==="Alex";})[0]);
+                Q.state.set("allies",storyChars);
+                //Set up the Bag.
+                Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
+            });
+            
         },
         //Shows additional dialogue (which will probably be determined by factors such as player choices, how well they did in battle, etc...)
         moreDialogue:function(path){

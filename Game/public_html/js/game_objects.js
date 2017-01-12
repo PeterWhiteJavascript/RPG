@@ -1064,7 +1064,7 @@ Quintus.GameObjects=function(Q){
             if(attackerTile.stat==="damage") damage*=attackerTile.amount;
             var rand = Math.ceil(Math.random()*100);
             //Maybe attack again!
-            if(rand<=speed&&defender.p.hp>0){
+            if(rand<=speed&&defender.p.hp-damage>0){
                 console.log("Attacking Again!");
                 this.calcAttack(attacker,defender);
             }

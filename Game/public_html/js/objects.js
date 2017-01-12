@@ -140,10 +140,11 @@ Quintus.Objects=function(Q){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("lifted"+this.p.dir);
             },
-            /*playHurt:function(dir){
+            //Used in the story
+            playHurt:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("hurt"+this.p.dir);
-            },*/
+            },
             playDying:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("dying"+this.p.dir);
@@ -588,6 +589,8 @@ Quintus.Objects=function(Q){
                             return Q.BatCon.giveExp(this,this.p.hitBy);
                         }
                     }
+                } else {
+                    this.playStand(this.p.dir);
                 }
             },
             healHp:function(amount){
