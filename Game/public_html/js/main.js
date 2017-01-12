@@ -134,7 +134,7 @@ Q.newGame=function(options){
     var storyAlex = Q.setUpStoryCharacter(alex);
     Q.state.set("alex",storyAlex);
     //For now, alex is the only character (just added more people)
-    Q.state.set("allies",[storyAlex,Q.setUpStoryCharacter(Q.state.get("characters").astrea),Q.setUpStoryCharacter(Q.state.get("characters").peter)]);
+    Q.state.set("allies",[storyAlex/*,Q.setUpStoryCharacter(Q.state.get("characters").astrea),Q.setUpStoryCharacter(Q.state.get("characters").peter)*/]);
     //Set up the new game bag
     Q.state.set("Bag",new Q.Bag({items:{
         consumable:[

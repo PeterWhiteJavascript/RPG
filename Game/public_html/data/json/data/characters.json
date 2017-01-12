@@ -11,10 +11,10 @@
             "accessory":false
         },
         "stats":{
-            "str":10,
-            "end":10,
-            "dex":10,
-            "wsk":10,
+            "str":15,
+            "end":15,
+            "dex":5,
+            "wsk":5,
             "rfl":10
         },
         "skills":{
@@ -24,7 +24,7 @@
         "value":50,
         "method":50,
         "charClass":"knight",
-        "exp":70
+        "exp":0
     },
     "astrea":{
         "name": "Astrea",
