@@ -150,7 +150,7 @@
         "music":"the_usual.mp3",
         "map":"demo0.tmx",
         "initialChars":[
-            {"loc":[24,15],"charClass":"archer","dir":"up","storyId":0,"anim":"Hurt"},
+            {"loc":[24,15],"charClass":"archer","dir":"up","storyId":0},
             {"loc":[24,14],"charClass":"barbarian","dir":"down","storyId":1},
             {"loc":[17,29],"name":"Alex","dir":"left","storyId":2,"team":"ally"}
         ]
