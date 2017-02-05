@@ -1,4 +1,19 @@
 Quintus.QFunctions=function(Q){
+    //Loads all unique assets that are used in a scene
+    Q.loadSceneAssets = function(data,callback){
+        var musicAssets = [];
+        var bgAssets = [];
+        for(var i=0;i<data.length;i++){
+            if(musicAssets.indexOf("bgm/"+data[i].music)<0) {
+                musicAssets.push("bgm/"+data[i].music);
+            }
+            if(bgAssets.indexOf(data[i].bg)<0){
+                bgAssets.push(data[i].bg);
+            }
+        }
+        Q.load(musicAssets.concat(bgAssets),callback);
+    };
+    
     //Sets up a character that is used in the story.
     Q.setUpStoryCharacter=function(data){
         function getEquipment(equipmentData){

@@ -1,13 +1,11 @@
 {
-    "homeland_forest":{
-        "name":"homeland_forest",
-        "bgs":["bg/pub.jpg","bg/city.jpg"],
-        "music":["bgm/the_usual.mp3","bgm/homeland.mp3","bgm/battle.mp3"],
+    "homelandForestTown":{
+        "name":"Homeland Forest Town",
         "start":{
             "music":"homeland.mp3",
             "bg":"bg/city.jpg",
             "interaction":[
-                {"text":["You have arrived in town."],"asset":[false,false],"pos":"left","skipLast":1},
+                {"text":["The party has arrived in town."],"asset":[false,false],"pos":"left","skipLast":1},
                 {"func":"confirmation","props":[[
                     {"next":"shop","text":"General Store"},
                     {"next":"blacksmith","text":"Blacksmith"},
@@ -84,6 +82,16 @@
                 {"func":"confirmation","props":[[
                     {"next":"start","text":"Leave the pub"}
                 ]]}
+            ]
+        },
+        "gatherInfo":{
+            "bg":"bg/Pumpkins.jpg",
+            "success":[
+                {"text":["The party found out about a hunting ground nearby!"],"asset":[false,false],"pos":"left"},
+                {"text":["*Hunting Ground unlocked*"],"asset":[false,false],"pos":"left"}
+            ],
+            "failure":[
+                
             ]
         }
         

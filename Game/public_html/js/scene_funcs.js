@@ -1,27 +1,45 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(scene,start,sceneType){
+    Q.startScene = function(scene){
         Q.load("json/story/"+scene+".json",function(){
             var data = Q.assets["json/story/"+scene+".json"];
-            //Load the bg assets and create the scene
-            Q.loadMusic(data.music.join(','),function(){
-                Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
-                    var starting = start?start:data.startScene[0];
-                    var sceneData = data[starting];
-                    //dialogue, battle, battleScene
-                    var type = sceneType?sceneType:"dialogue";
-                    var sceneNum = 1;
-                    if(type==="battleScene"||type==="battle"){sceneNum = 0;};
-                    Q.playMusic(sceneData.music,function(){
-                        Q.clearStages();
-                        //Stage the scene
-                        Q.stageScene(type,sceneNum,{data: data,path:starting});
+            //Do different code for different scene types
+            switch(data.kind){
+                case "story":
+                    Q.clearStages();
+                    Q.stageScene("story",1,{data:data});
+                    break;
+                case "battleScene":
+                    Q.loadMusic(data.music.join(','),function(){
+                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                            Q.clearStages();
+                            Q.stageScene("battleScene",0,{data:data,path:data.startScene[0]});
+                        });
                     });
-                });
-            });
+                    break;
+                case "battle":
+                    Q.loadMusic(data.music.join(','),function(){
+                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                            Q.clearStages();
+                            Q.stageScene("battle",0,{data:data,path:data.startScene[0]});
+                            
+                        });
+                    });
+                    
+                    break;
+            }
         });
     };
-    Q.scene("dialogue",function(stage){
+    Q.scene("story",function(stage){
+        var data = stage.options.data;
+        Q.loadSceneAssets(data.pages,function(){
+            Q.playMusic(data.pages[0].music,function(){
+                var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
+                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage}));
+            });
+        });
+    });
+   /* Q.scene("dialogue",function(stage){
         Q.inputs['confirm'] = false;
         var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
         var bgImage;
@@ -39,7 +57,7 @@ Quintus.SceneFuncs=function(Q){
         //The Dialogue is the text that is inside the dialogue area
         textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
         textBox.next();
-    }); 
+    }); */
     Q.scene("battleScene",function(stage){
         Q.inputs['confirm'] = false;
         Q.stageScene("fader",11);

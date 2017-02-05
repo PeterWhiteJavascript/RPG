@@ -1,0 +1,281 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+        text-decoration:none;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Start my style */
+
+input{
+    width:100%;
+}
+textarea{
+    width:100%;
+    resize:vertical;
+}
+
+
+a:visited {
+    color: black;
+}
+
+a:link {
+    color: black;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+}
+#wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    min-height: 90%;
+    background-image: url(../images/greek-flag.jpg);
+    background-size: 100% 100%;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    background-repeat: no-repeat;
+}
+#title {
+    padding: 2%;
+}
+#editor-title{
+    
+}
+h1 {
+    font-family:"Palatino Linotype";
+    font-size: 58px;
+    text-align: center;
+    background-color: #ddd;
+    color: black;
+    padding: 5px;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+}
+h2{
+    font-family:"Palatino Linotype";
+    font-size: 38px;
+    text-align: center;
+    background-color: #ddd;
+    color: black;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    height:100%;
+}
+#content{
+    margin-left:2%;
+}
+#editor-content{
+    
+}
+.menu {
+    font-size: 34px;
+    background-color: #f5f5f5;
+    width: 25%;
+    height: 60%;
+    text-align: center;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+    padding: 10px;
+}
+#editor-page-options{
+    float:left;
+    height:100%;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    padding:10px;
+    width:800px;
+}
+#music-select{
+    float:left;
+}
+#bg-select{
+    margin-left:10px;
+    float:right;
+}
+#bg-preview{
+    width:120px;
+    height:auto;
+    max-height:75px;
+    position:absolute;
+}
+#text-select{
+    margin-top:30px;
+}
+#text-select textarea{
+    height:300px;
+}
+.editor-left-menu{
+    float:left;
+    width:200px;
+    height:100%;
+}
+.editor-left-menu ul{
+    font-size: 22px;
+    background-color: #fbfbfb;
+    width:100%;
+    height: 100%;
+    text-align: center;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    padding: 10px;
+}
+#editor-interaction-menu{
+    margin-left:200px;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+}
+.menu li {
+    display: block;
+    padding: 5px;
+    margin: auto;
+}
+.btn {
+    font-size: initial;
+}
+.menu-button{
+    width: 100%;
+    cursor: pointer;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select:none; 
+    user-select:none;
+    -o-user-select:none;
+}
+.menu-button-modify{
+    width:100%;
+    height:50%;
+}
+.desc-text{
+    width:100%;
+}
+.desc-foot{
+    position:absolute;
+    bottom:5px;
+    left:50%;
+    transform:translate(-50%,0);
+}
+.left{
+    position:absolute;
+    left:2%;
+    overflow-y:auto;
+}
+.middle-left{
+    position:absolute;
+    left:33%;
+    transform:translate(-50%,0);
+    overflow-y:auto;
+}
+.middle{
+    position:absolute;
+    left:50%;
+    transform:translate(-50%,0);
+    overflow-y:auto;
+}
+.middle-right{
+    position:absolute;
+    left:66%;
+    transform:translate(-50%,0);
+    overflow-y:auto;
+}
+.right{
+    position:absolute;
+    right:2%;
+    overflow-y:auto;
+}
+
+#footer{
+    width:100%;
+    height:auto;
+    text-align: center;
+    bottom: 1%;
+    z-index:100;
+    position:fixed;
+    font-size:30px;
+}
+#footer a{
+    display:inline-block;
+    width:10%;
+    height:100%;
+}
+audio{
+    width:100px;
+}
+
+.remove-choice{
+    float:right;
+}
+
+#choices ul li{
+    background-color: #fbfbfb;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+}
+#choices ul li input{
+    width:50%;
+}

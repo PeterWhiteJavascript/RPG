@@ -1,6 +1,7 @@
 {
-    "sceneName":"act1_1",
+    "startScene":"The-player-starts-his-journey!",
     "day":10,
+    "gold":1000,
     "allies":[
         {
             "name": "Alex",
@@ -106,6 +107,9 @@
             ["goldCoin",1]
         ]
     },
+    "tasked":[
+        {"party":["Alex","Astrea"],"days":1,"job":"gatherInfo"}
+    ],
     
     "options":{
         "musicEnabled":false,
@@ -115,11 +119,5 @@
         "textSpeed":3,
         "autoScroll":true,
         "cursorSpeed":3
-    },
-    "acceptedQuests":{
-        "side_quest1_1":{
-            "name":"side_quest1_1",
-            "completed":false
-        }
     }
 }

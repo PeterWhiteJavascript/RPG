@@ -1,4 +1,79 @@
 Quintus.UIObjects=function(Q){
+    $(function(){
+        $('body').on('click', '.choice-div', function() {
+            var page = $(this).attr("page");
+            var desc = $(this).attr("desc");
+            Q.storyController.insertChoiceDesc(desc);
+            setTimeout(function(){
+                Q.storyController.changePage(page);
+            },desc.length*25);
+        });
+    });
+    //Using CSS/Jquery, create the story dialogue with options
+    Q.UI.Container.extend("StoryController",{
+        init:function(p){
+            this._super(p,{
+                x:0,y:0,
+                cx:0,cy:0,
+                w:Q.width/2,
+                h:Q.height-100
+            });
+            this.p.x+=10;
+            this.p.y+=10;
+            this.on("inserted");
+            this.p.container = $('<div id="text-container"></div>');
+            this.p.textContent = $('<div id="text-content"></div>');
+            $(this.p.container).append(this.p.textContent);
+            $(document.body).append(this.p.container);
+        },
+        insertPage:function(num){
+            var page = this.p.pages[num];
+            
+            //Make the background correct
+            this.p.bgImage.p.asset = page.bg;
+            
+            //Play the music for the page
+            Q.playMusic(page.music);
+            
+            var text = $('<div>'+page.text+'</div>');
+            var contentBox = this.p.textContent;
+            $(contentBox).append(text);
+            //Show the choices
+            page.choices.forEach(function(choice){
+                $(contentBox).append('<div class="btn btn-default choice-div" desc="'+choice.desc+'" page="'+choice.page+'"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
+            });
+        },
+        insertChoiceDesc:function(desc){
+            this.removePage();
+            var contentBox = this.p.textContent;
+            $(contentBox).append('<div>'+desc+'</div>');
+            
+        },
+        removeChoices:function(){
+            $(".choice-div").remove();
+        },
+        removePage:function(){
+            $(this.p.textContent).empty();
+        },
+        getPageNum:function(pageName){
+            for(var i=0;i<this.p.pages.length;i++){
+                if(this.p.pages[i].name===pageName){
+                    return i;
+                }
+            }
+        },
+        changePage:function(pageName){
+            var pageNum = this.getPageNum(pageName);
+            this.removePage(); 
+            this.insertPage(pageNum);
+        },
+        inserted:function(){
+            this.insertPage(this.p.pageNum);
+        }
+    });
+    
+    
+    
     //The background image user in dialogue and menus
     Q.Sprite.extend("BackgroundImage",{
         init:function(p){
@@ -9,6 +84,10 @@ Quintus.UIObjects=function(Q){
                 w:Q.width,h:Q.height
             });
             Q._generatePoints(this,true);
+        },
+        draw:function(ctx){
+            ctx.drawImage(this.asset(), 0, 0, this.asset().width,    this.asset().height,     // source rectangle
+                   0, 0, Q.width, Q.height); // destination rectangle
         }
     });
     //The person who is talking in the story

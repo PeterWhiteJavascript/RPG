@@ -122,7 +122,7 @@ Q.newGame=function(options){
     //Set up the game state with default values
     Q.state.set({
         //The scene name. This does not have to be 'act', but it does have to match the json.
-        sceneName:"act1_1",//"side_quest1",
+        sceneName:"The-player-starts-his-journey!",//"side_quest1",
         //The quests that have been accepted. Array full of strings
         acceptedQuests:[],
         //The current day. Affects when story quests trigger
@@ -167,7 +167,7 @@ Q.startGame=function(save){
     //Set up the Bag.
     Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     
-    Q.startScene(Q.state.get("sceneName"));
+    Q.startScene(Q.state.get("startScene").name);
 };
 var files = [
     //IMAGES SPRITES

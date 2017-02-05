@@ -530,7 +530,9 @@ Quintus.GameObjects=function(Q){
         },
         finishBattle:function(){
             this.allies.forEach(function(ally){
-                ally.p.savedData.awards = ally.p.awards;  
+                if(ally.p.savedData){
+                    ally.p.savedData.awards = ally.p.awards;  
+                }
             });
             Q.clearStages();
         },
