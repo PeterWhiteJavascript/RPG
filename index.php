@@ -1,3 +1,10 @@
+<?php
+//FOR TESTING, ACCEPT THE NAME AND SCENE IF WE ARE TESTING A SPECIFIC EVENT.
+$name = $_POST['name'];
+$scene = $_POST['scene'];
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,6 +29,14 @@
         
     </head>
     <body style="background-color:#B6B6CE">
+        <?php
+        if(isset($_POST['name'])){
+        ?>
+            <div id="title" hidden><?php echo $scene; ?></div>
+            <div id="title2" hidden><?php echo $name; ?></div>
+        <?php
+        }
+        ?>
         
         <script src='js/main.js'></script>
         <script src='js/objects.js'></script>

@@ -122,7 +122,7 @@ Q.newGame=function(options){
     //Set up the game state with default values
     Q.state.set({
         //The scene name. This does not have to be 'act', but it does have to match the json.
-        sceneName:"The-player-starts-his-journey!",//"side_quest1",
+        sceneName:options.eventName||"act1_1.json",
         //The quests that have been accepted. Array full of strings
         acceptedQuests:[],
         //The current day. Affects when story quests trigger
@@ -245,8 +245,44 @@ Q.load(files.join(','),function(){
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
+    
+    
+    
+    
+    /* TESTING EVENT */
+    if(document.getElementById("title")){
+        $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
+        $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
+        var scene = document.getElementById("title").innerHTML.toLowerCase();
+        var name = document.getElementById("title2").innerHTML.toLowerCase();
+        //Q.load("../../data/events/"+scene+"/"+name+".json",function(){
+        Q.load("json/story/"+name+".json",function(){
+            Q.state.set("testingScene",Q.assets["json/story/"+name+".json"]);
+            var kind = Q.state.get("testingScene").kind;
+            switch(kind){
+                case "story":
+                    Q.newGame({gender:"female",eventName:name});
+                    $("#back-button").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        form.submit();
+                    });
+                    $("#back-button2").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        form.submit();
+                    });
+                    break;
+            }
+        });
+    } 
+    /* END TESTING EVENT */
+    else {
     //For now, just start a new game when we load in. -> main.js
-    Q.newGame({gender:"female"});
+        Q.newGame({gender:"female"});
+    }
     //Start the game from the JSON save data
     //Q.startGame(Q.assets['json/save/sample_save_data.json']);
     //Make it so that you can open the options menu at all times
