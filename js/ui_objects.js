@@ -1,8 +1,15 @@
 Quintus.UIObjects=function(Q){
     $(function(){
         $('body').on('click', '.choice-div', function() {
-            var page = $(this).attr("page");
-            var desc = $(this).attr("desc");
+            Q.storyController.p.choice = Q.storyController.p.pages[Q.storyController.p.pageNum].choices[$(".choice-div").index(this)];
+            //Check if something happens before doing the default change page
+            //Will be true if all conditions are met
+            if(Q.storyController.p.choice.cond&&Q.storyController.checkConds(Q.storyController.p.choice.cond)){
+                Q.storyController.executeEffects(Q.storyController.p.choice.effect);
+            }
+            var choice = Q.storyController.p.choice;
+            var page = choice.page;
+            var desc = choice.desc;
             Q.storyController.insertChoiceDesc(desc);
             setTimeout(function(){
                 Q.storyController.changePage(page);
@@ -40,7 +47,7 @@ Quintus.UIObjects=function(Q){
             $(contentBox).append(text);
             //Show the choices
             page.choices.forEach(function(choice){
-                $(contentBox).append('<div class="btn btn-default choice-div" desc="'+choice.desc+'" page="'+choice.page+'"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
+                $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
             });
         },
         insertChoiceDesc:function(desc){
@@ -63,12 +70,47 @@ Quintus.UIObjects=function(Q){
             }
         },
         changePage:function(pageName){
-            var pageNum = this.getPageNum(pageName);
+            var lastPage = this.p.pages[this.p.pageNum];
+            var pageNum = this.p.pageNum = this.getPageNum(pageName);
             this.removePage(); 
             this.insertPage(pageNum);
         },
+        checkConds:function(cond){
+            var condsMet = true;
+            //Loop through each condition
+            for(var i=0;i<cond.length;i++){
+                //Run the condition's function (idx 0) with properties (idx 1)
+                condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
+            }
+            return condsMet;
+        },
+        executeEffects:function(effects){
+            //Loop through each effect and run their functions
+            for(var i=0;i<effects.length;i++){
+                //Run the effects's function (idx 0) with properties (idx 1)
+                this["effectFuncs"][effects[i][0]](this,effects[i][1]);
+            }
+        },
         inserted:function(){
             this.insertPage(this.p.pageNum);
+        },
+        condFuncs:{
+            _none_:function(t,obj){
+                if(obj.vl) return true;
+            },
+            checkVar:function(t,obj){
+                if(t.p.vrs[obj.vr]===obj.vl){
+                    return true;
+                }
+            }
+        },
+        effectFuncs:{
+            setVar:function(t,obj){
+                t.p.vrs[obj.vr] = obj.vl;
+            },
+            changePage:function(t,obj){
+                t.p.choice = obj;
+            }
         }
     });
     

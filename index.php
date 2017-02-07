@@ -1,7 +1,9 @@
 <?php
 //FOR TESTING, ACCEPT THE NAME AND SCENE IF WE ARE TESTING A SPECIFIC EVENT.
-$name = $_POST['name'];
-$scene = $_POST['scene'];
+$name;
+$scene;
+if(isset($_POST['name'])){$name = $_POST['name'];}
+if(isset($_POST['name'])){$scene = $_POST['scene'];}
 
 ?>
 

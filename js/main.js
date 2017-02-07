@@ -122,7 +122,7 @@ Q.newGame=function(options){
     //Set up the game state with default values
     Q.state.set({
         //The scene name. This does not have to be 'act', but it does have to match the json.
-        sceneName:options.eventName||"act1_1.json",
+        sceneName:options.eventName||"The-player-starts-his-journey!",
         //The quests that have been accepted. Array full of strings
         acceptedQuests:[],
         //The current day. Affects when story quests trigger

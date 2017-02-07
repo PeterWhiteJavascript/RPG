@@ -35,7 +35,7 @@ Quintus.SceneFuncs=function(Q){
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
-                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage}));
+                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs}));
             });
         });
     });
