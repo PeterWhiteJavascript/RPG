@@ -2,8 +2,8 @@
 include("php-config.php");
 $scene = addDashes($_POST["scene"]);
 //Get the event order
-$order = json_decode(file_get_contents('data/scenes/'.$scene.'.json'), true)['eventOrder'];
-$directory = 'data/events/'.$scene;
+$order = json_decode(file_get_contents('../../data/json/story/scenes/'.$scene.'.json'), true)['eventOrder'];
+$directory = '../../data/json/story/events/'.$scene;
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 
 $sorted = [];

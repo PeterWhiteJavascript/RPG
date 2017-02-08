@@ -3,7 +3,7 @@ include("php-config.php");
 $original_name = addDashes($_POST['origName']);
 $name = addDashes($_POST["name"]);
 $desc = $_POST["desc"];
-$directory = 'data/scenes';
+$directory = '../../data/json/story/scenes/';
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 $data;
 while ($file = current($scanned_directory)) {
@@ -26,7 +26,7 @@ $newFile = [
 $json = json_encode($newFile);
 
 //write json to file
-if (file_put_contents('data/scenes/'.$name.'.json', $json)){
+if (file_put_contents($directory.$name.'.json', $json)){
     header("Location: load.php");
 } else {
     echo "Oops! Error creating json file...";

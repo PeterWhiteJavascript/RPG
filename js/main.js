@@ -148,7 +148,7 @@ Q.newGame=function(options){
         key:[]
     }}));
     //Start a scene
-    Q.startScene(Q.state.get("sceneName"));
+    Q.startScene(Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 //Start the game from the save data
 Q.startGame=function(save){
@@ -167,7 +167,7 @@ Q.startGame=function(save){
     //Set up the Bag.
     Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     
-    Q.startScene(Q.state.get("startScene").name);
+    Q.startScene(Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 var files = [
     //IMAGES SPRITES
@@ -255,9 +255,11 @@ Q.load(files.join(','),function(){
         $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
         var scene = document.getElementById("title").innerHTML.toLowerCase();
         var name = document.getElementById("title2").innerHTML.toLowerCase();
+        Q.state.set("startSceneName",scene);
+        Q.state.set("startEventName",name);
         //Q.load("../../data/events/"+scene+"/"+name+".json",function(){
-        Q.load("json/story/"+name+".json",function(){
-            Q.state.set("testingScene",Q.assets["json/story/"+name+".json"]);
+        Q.load("json/story/events/"+scene+"/"+name+".json",function(){
+            Q.state.set("testingScene",Q.assets["json/story/events/"+scene+"/"+name+".json"]);
             var kind = Q.state.get("testingScene").kind;
             switch(kind){
                 case "story":

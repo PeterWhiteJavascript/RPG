@@ -4,7 +4,7 @@ $name = addDashes($_POST["name"]);
 
 $desc = $_POST["desc"];
 //Make sure there's no other scene with this name
-$directory = 'data/scenes';
+$directory = '../../data/json/story/scenes';
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 
 if (in_array($name.'.json', $scanned_directory)) {
@@ -22,9 +22,9 @@ if (in_array($name.'.json', $scanned_directory)) {
     $json = json_encode($newFile);
 
     //write json to file
-    if (file_put_contents('data/scenes/'.$name.'.json', $json)){
+    if (file_put_contents('../../data/json/story/scenes/'.$name.'.json', $json)){
         //Create a new directory in the events folder
-        mkdir("data/events/".$name);
+        mkdir("../../data/json/story/events/".$name);
         header("Location: load.php");
     } else {
         echo "Oops! Error creating json file...";

@@ -2,10 +2,10 @@
 include("php-config.php");
 $scene = addDashes($_POST['scene']);
 
-$directory = "data/events/".$scene;
+$directory = "../../data/json/story/events/".$scene;
 //Get the events
 $events = array_diff(scandir($directory), array('..', '.'));
-$eventOrder = json_decode(file_get_contents("data/scenes/".$scene.'.json'), true)['eventOrder'];
+$eventOrder = json_decode(file_get_contents("../../data/json/story/scenes/".$scene.'.json'), true)['eventOrder'];
 
 $sorted = [];
 //Sort the files by the eventsOrder

@@ -4,7 +4,7 @@ $name = addDashes($_POST['name']);
 $scene = addDashes($_POST['scene']);
 
 
-$directory = 'data/events/'.$scene;
+$directory = '../../data/json/story/events/'.$scene;
 //Get the event
 $event = json_decode(file_get_contents($directory."/".$name.'.json'), true);
 
@@ -22,9 +22,9 @@ $json = json_encode($event);
 //write json to file
 if (file_put_contents($directory.'/'.$name."(".$num.")".'.json', $json)){
     //Add the file to the order
-    $sceneData = json_decode(file_get_contents("data/scenes/".$scene.'.json'), true);
+    $sceneData = json_decode(file_get_contents("../../data/json/story/scenes/".$scene.'.json'), true);
     $sceneData['eventOrder'][] = $name."(".$num.")";
-    file_put_contents("data/scenes/".$scene.'.json', json_encode($sceneData));
+    file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData));
 } else {
     echo "Oops! Error creating json file...";
 }

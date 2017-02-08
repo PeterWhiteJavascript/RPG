@@ -1,8 +1,8 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(scene){
-        Q.load("json/story/"+scene+".json",function(){
-            var data = Q.assets["json/story/"+scene+".json"];
+    Q.startScene = function(scene,event){
+        Q.load("json/story/events/"+scene+"/"+event+".json",function(){
+            var data = Q.assets["json/story/events/"+scene+"/"+event+".json"];
             //Do different code for different scene types
             switch(data.kind){
                 case "story":

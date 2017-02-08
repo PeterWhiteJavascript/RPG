@@ -2,7 +2,7 @@
 $scene = $_POST['scene'];
 $name = $_POST['name'];
 
-$event = json_decode(file_get_contents('data/events/'.$scene.'/'.$name.'.json'), true);
+$event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 $pages = $event['pages'];
 
 $bg_directory = '../../images/bg';
@@ -33,7 +33,7 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                 </ul>
             </div>
             <div class="editor-left-menu" id="pages">
-                <ul id="sortable">
+                <ul class="sortable">
                 <?php
                 foreach ($pages as $key => $value) {
                     $mus = $value['music'];
@@ -75,15 +75,14 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                     <a id="add-new-choice"><div class="btn btn-default">Add Choice</div></a>
                 </div>
                 <div id="choices">Choices:
-                    <ul>
+                    <ul class="sortable">
                         <?php
                         forEach($pages as $key => $value){
                             forEach($value['choices'] as $key2 => $value2){
                                 $display = $value2['displayText'];
                                 $desc = $value2['desc'];
-                                $page = $value2['page'];
-                                $effect = $value2['effect'];
-                                echo '<li class="choice-'.$key.' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div>Display Text: <input class="display-text" value="'.$display.'"></input></div><div>Desc: <textarea class="desc-text">'.$desc.'</textarea></div><div>To Page: <select class="pages-to" initialValue="'.$page.'"></select></div><div>Effect: <select class="on-page-effect" initialValue="'.$effect.'"></select></div></li>';
+                                $page = $value2['page']; 
+                                echo '<li class="choice-'.$key.' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div>Display Text: <input class="display-text" value="'.$display.'"></input></div><div>Desc: <textarea class="desc-text">'.$desc.'</textarea></div><div>To Page: <select class="pages-to" initialValue="'.$page.'"></select></div></li>';
                             }
                         }
                         ?>

@@ -3,15 +3,15 @@ include("php-config.php");
 $scene = addDashes($_POST["scene"]);
 $name = addDashes($_POST["name"]);
 //Delete the file
-$directory = 'data/events/'.$scene;
+$directory = '../../data/json/story/events/'.$scene;
 unlink($directory.'/'.$name.".json");
 //Remove the event from the order in the scene
-$sceneData = json_decode(file_get_contents("data/scenes/".$scene.'.json'), true);
+$sceneData = json_decode(file_get_contents("../../data/json/story/scenes/".$scene.'.json'), true);
 if (($key = array_search($name, $sceneData['eventOrder'])) !== false) {
     unset($sceneData['eventOrder'][$key]);
 }
 
-file_put_contents("data/scenes/".$scene.'.json', json_encode($sceneData));
+file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData));
 
 ?>
 <!DOCTYPE html>

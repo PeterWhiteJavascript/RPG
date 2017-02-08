@@ -1,8 +1,8 @@
 $(function(){
-    $( "#sortable" ).sortable({
+    $( ".sortable" ).sortable({
         axis: "y"
     });
-    $( "#sortable" ).disableSelection();
+    $( ".sortable" ).disableSelection();
     //Store the page that has been clicked on
     var selectedPage;
 
@@ -129,7 +129,7 @@ $(function(){
     $('#remove-page').click( function(e) {
         if($('#pages ul li').length>1){
             $(selectedPage).parent().remove();
-            $(".scene-button").first().trigger("click");
+            $(".scene-button").last().trigger("click");
         }
     });
     //Copies the page, but give a new unique id
@@ -254,7 +254,10 @@ $(function(){
     //If there are no pages, create one
     if($("#pages ul li").length===0){
         $('#add-new-page').trigger("click");
+    } else {
+        $(".scene-button").first().trigger("click");
     }
+    
     
 });
 

@@ -31,10 +31,10 @@ for($i=0;$i<count($pagesid);$i++){
         ];
     }
 }
-$file = json_decode(file_get_contents('data/events/'.$scene.'/'.$name.'.json'), true);
+$file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
 $file['pages'] = $pages;
-file_put_contents('data/events/'.$scene.'/'.$name.'.json', json_encode($file));
+file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file));
 
 ?>
 

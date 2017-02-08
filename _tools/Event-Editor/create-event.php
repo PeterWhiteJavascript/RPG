@@ -8,7 +8,7 @@ $kind = "story";
 //Check if name is set, otherwise it's a new event
 if(isset($_POST['name'])){
     $name = addDashes($_POST["name"]);
-    $event = json_decode(file_get_contents('data/events/'.$scene.'/'.$name.'.json'), true);
+    $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
     $desc = $event['desc'];
     $kind = $event['kind'];
 }

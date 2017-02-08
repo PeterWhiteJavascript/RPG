@@ -1,6 +1,6 @@
 <?php
 //Get all of the scene data
-$directory = 'data/scenes';
+$directory = '../../data/json/story/scenes';
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 ?>
 <!DOCTYPE html>

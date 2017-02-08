@@ -2,7 +2,7 @@
 include("php-config.php");
 $scene = addDashes($_POST["scene"]);
 $event = addDashes($_POST["event"]);
-$directory = 'data/scenes';
+$directory = '../../data/json/story/scenes';
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 ?>
 <!DOCTYPE html>
