@@ -82,6 +82,7 @@ Quintus.UIObjects=function(Q){
                 //Run the condition's function (idx 0) with properties (idx 1)
                 condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
             }
+            
             return condsMet;
         },
         executeEffects:function(effects){
@@ -95,9 +96,6 @@ Quintus.UIObjects=function(Q){
             this.insertPage(this.p.pageNum);
         },
         condFuncs:{
-            _none_:function(t,obj){
-                if(obj.vl) return true;
-            },
             checkVar:function(t,obj){
                 if(t.p.vrs[obj.vr]===obj.vl){
                     return true;

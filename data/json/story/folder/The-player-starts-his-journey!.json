@@ -11,19 +11,18 @@
             "displayText": "Left Path",
             "desc": "The party decides to go left.",
             "page": "Left Path",
-            "cond": [["_none_",{"vr":"_none_","vl":1}]],
-            "effect":[["setVar",{"vr":"wentLeft","vl":1}]]
+            "effect":[["setVar",{"scope":"Event","vr":"wentLeft","vl":1}]]
         }, {
             "displayText": "Middle Path",
             "desc": "The party decides to take the middle path.",
             "page": "Middle Path",
-            "cond":[["checkVar",{"vr":"wentLeft","vl":1}]],
-            "effect":[["changePage",{"page":"Middle Path Secret","desc":"Since the party went left first, they have unlocked a secret path down this road! P.S. If you go back and then try to come back again, the variable will be reset and it will be impassable again!"}],["setVar",{"vr":"wentLeft","vl":0}]]
+            "cond":[["checkVar",{"scope":"Event","vr":"wentLeft","vl":1}]],
+            "effect":[["changePage",{"page":"Middle Path Secret","desc":"Since the party went left first, they have unlocked a secret path down this road! P.S. If you go back and then try to come back again, the variable will be reset and it will be impassable again!"}],["setVar",{"scope":"Event","vr":"wentLeft","vl":0}]]
         }, {
             "displayText": "Right Path",
             "desc": "The party goes right.",
-            "page": "Right Path",
-            "effect": "TODO"
+            "page": "Right Path"
+             
         }]
     }, {
         "name": "Left Path",
@@ -37,8 +36,8 @@
         }, {
             "displayText": "Look at log",
             "desc": "The party looks at the log. They notice a secret path behind the log!",
-            "page": "Left Path Secret",
-            "effect": "TODO"
+            "page": "Left Path Secret"
+             
         }]
     }, {
         "name": "Left Path Secret",
@@ -48,13 +47,13 @@
         "choices": [{
             "displayText": "Go back to the entrance",
             "desc": "The party gets scared and leaves before anything bad happens.",
-            "page": "Entrance",
-            "effect": "TODO"
+            "page": "Entrance"
+             
         }, {
             "displayText": "Rest here",
             "desc": "The party rests for a few minutes and restores their health.",
-            "page": "Left Path Secret Battle",
-            "effect": "TODO"
+            "page": "Left Path Secret Battle"
+             
         }]
     }, {
         "name": "Left Path Secret Battle",
@@ -64,13 +63,13 @@
         "choices": [{
             "displayText": "Fight",
             "desc": "The party readies for battle!",
-            "page": "LPS Do Battle",
-            "effect": "TODO"
+            "page": "LPS Do Battle"
+             
         }, {
             "displayText": "Flee",
             "desc": "The party runs as fast as they can back to the entrance.",
-            "page": "Entrance",
-            "effect": "TODO"
+            "page": "Entrance"
+             
         }]
     }, {
         "name": "LPS Do Battle",
@@ -80,8 +79,8 @@
         "choices": [{
             "displayText": "Back to entrance",
             "desc": "The party leaves this dark area and goes back to the entrance to the forest.",
-            "page": "Entrance",
-            "effect": "TODO"
+            "page": "Entrance"
+             
         }]
     }, {
         "name": "Middle Path",
@@ -111,18 +110,18 @@
         "choices": [{
             "displayText": "Go Left",
             "desc": "The party goes left.",
-            "page": "Right Left",
-            "effect": "TODO"
+            "page": "Right Left"
+             
         }, {
             "displayText": "Go Right",
             "desc": "The party goes right.",
-            "page": "Right Right",
-            "effect": "TODO"
+            "page": "Right Right"
+             
         }, {
             "displayText": "Go Back to the Entrance",
             "desc": "The party goes back to the entrance",
-            "page": "Entrance",
-            "effect": "TODO"
+            "page": "Entrance"
+             
         }]
     }, {
         "name": "Right Path 2",
@@ -132,18 +131,18 @@
         "choices": [{
             "displayText": "Go Left",
             "desc": "The party goes back to the village.",
-            "page": "Right Left",
-            "effect": "TODO"
+            "page": "Right Left"
+             
         }, {
             "displayText": "Go Right",
             "desc": "The party goes right.",
-            "page": "Right Right",
-            "effect": "TODO"
+            "page": "Right Right"
+             
         }, {
             "displayText": "Go Back to the Entracne",
             "desc": "The party goes back to the entrance.",
-            "page": "Entrance",
-            "effect": "TODO"
+            "page": "Entrance"
+             
         }]
     }, {
         "name": "Right Left",
@@ -153,13 +152,13 @@
         "choices": [{
             "displayText": "Go in",
             "desc": "The party goes into the village.",
-            "page": "Village",
-            "effect": "TODO"
+            "page": "Village"
+             
         }, {
             "displayText": "Go back to the split path",
             "desc": "The party goes back.",
-            "page": "Right Path",
-            "effect": "TODO"
+            "page": "Right Path"
+             
         }]
     }, {
         "name": "Village",
@@ -169,8 +168,8 @@
         "choices": [{
             "displayText": "Go back to the fork",
             "desc": "The party leaves the village.",
-            "page": "Right Path 2",
-            "effect": "TODO"
+            "page": "Right Path 2"
+             
         }]
     }, {
         "name": "Right Right",
@@ -194,7 +193,7 @@
         }]
     }],
     "vrs":{
-        "wentLeft":0
-         
+        "wentLeft":0,
+        "didIt":1
     }
 }

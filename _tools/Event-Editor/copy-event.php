@@ -40,6 +40,7 @@ if (file_put_contents($directory.'/'.$name."(".$num.")".'.json', $json)){
         <script>
         var scene = $("#title").text();
         var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
         form.submit();
         </script>
     </body>

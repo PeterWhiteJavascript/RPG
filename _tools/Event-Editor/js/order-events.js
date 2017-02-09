@@ -10,11 +10,15 @@ $( function() {
             form.append('<input type="text" name="order[]" value="'+$(this).attr("name")+'">');
         });
         form.append('<input type="text" name="scene" value="'+$("#title").text()+'">');
+        
+        $("body").append(form);
         form.submit();
     });
     $('#footer').click( function(e) {
         var form = $('<form action="show-events.php" method="post"></form>');
         form.append('<input type="text" name="scene" value="'+$("#title").text()+'">');
+        
+        $("body").append(form);
         form.submit();
     });
     

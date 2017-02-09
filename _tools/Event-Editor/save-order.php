@@ -18,6 +18,7 @@ file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($s
         <script>
         var scene = $("#title").text();
         var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
         form.submit();
         </script>
     </body>

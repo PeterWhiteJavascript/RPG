@@ -9,6 +9,7 @@ $(function(){
     $('#new-event').click( function(e) {
         var scene = $("#title").text();
         var form = $('<form action="create-event.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
         form.submit();
     });
     $('#edit-event').click( function(e) {
@@ -16,6 +17,8 @@ $(function(){
             var scene = $("#title").text();
             var name = $(selectedEvent).parent().attr("name");
             var form = $('<form action="create-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+            
+            $("body").append(form);
             form.submit();
         }
     });
@@ -25,6 +28,8 @@ $(function(){
             var name = $(selectedEvent).parent().attr("name");
             var kind = $(selectedEvent).parent().attr("kind");
             var form = $('<form action="test-'+kind+'-event.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="name" value="'+name+'"></form>');
+            
+            $("body").append(form);
             form.submit();
         }
     });
@@ -35,6 +40,8 @@ $(function(){
             var name = $(selectedEvent).parent().attr("name");
             var scene = $("#title").text();
             var form = $('<form action="copy-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+            
+            $("body").append(form);
             form.submit();
         }
     });
@@ -44,6 +51,8 @@ $(function(){
         if(selectedEvent){
             var scene = $("#title").text();
             var form = $('<form action="order-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+            
+            $("body").append(form);
             form.submit();
         }
     });
@@ -53,6 +62,8 @@ $(function(){
             var event = $(selectedEvent).parent().attr("name");
             var scene = $("#title").text();
             var form = $('<form action="change-scene.php" method="post"><input type="text" name="event" value="'+event+'"><input type="text" name="scene" value="'+scene+'"></form>');
+            
+            $("body").append(form);
             form.submit();
         }
     });
@@ -63,6 +74,8 @@ $(function(){
                 var name = $(selectedEvent).parent().attr("name");
                 var scene = $("#title").text();
                 var form = $('<form action="delete-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                
+                $("body").append(form);
                 form.submit();
             }
         }

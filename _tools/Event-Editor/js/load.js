@@ -9,6 +9,7 @@ $(function(){
     $('#open-scene').click(function(e){
         var scene = $(selectedScene).parent().attr("name");
         var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
         form.submit();
     });
     $('#create-new-scene').click( function(e) {
@@ -18,6 +19,7 @@ $(function(){
         var desc = $(selectedScene).parent().attr("desc");
         var scene = $(selectedScene).parent().attr("name");
         var form = $('<form action="edit-scene.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="desc" value="'+desc+'"></form>');
+        $("body").append(form);
         form.submit();
     });
     $('#delete-scene').click( function(e) {
@@ -25,6 +27,7 @@ $(function(){
         if(yes){
             var scene = $(selectedScene).parent().attr("name");
             var form = $('<form action="delete-scene.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+            $("body").append(form);
             form.submit();
         }
     });

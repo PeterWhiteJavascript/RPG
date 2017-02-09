@@ -3,6 +3,9 @@ include("php-config.php");
 $name = addDashes($_POST['name']);
 $scene = addDashes($_POST['scene']);
 
+$varnames = $_POST['varnames'];
+$varvalues = $_POST['varvalues'];
+
 $pagesid = $_POST['pagesid'];
 $pagesname = $_POST['pagesname'];
 $music = $_POST['music'];
@@ -10,6 +13,10 @@ $bg = $_POST['bg'];
 $text = $_POST['text'];
 $choices = json_decode($_POST['choices'],true);
 
+$vrs = (object)[];
+for($i=0;$i<count($varnames);$i++){
+    $vrs->$varnames[$i] = $varvalues[$i];
+}
 
 $pages = [];
 for($i=0;$i<count($pagesid);$i++){
@@ -33,6 +40,7 @@ for($i=0;$i<count($pagesid);$i++){
 }
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
+$file['vrs'] = $vrs;
 $file['pages'] = $pages;
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file));
 
@@ -54,12 +62,15 @@ file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json
         var scene = $("#title").text();
         var name = $("#title2").text();
         var form = $('<form action="../../index.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="name" value="'+name+'"></form>');
+        $("body").append(form);
         form.submit();
         <?php
         } else {
         ?>
         var scene = $("#title").text();
-        var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        var name = $("#title2").text();
+        var form = $('<form action="edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
         form.submit();
         <?php
         }

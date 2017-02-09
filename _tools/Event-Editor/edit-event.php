@@ -68,6 +68,7 @@ if(!in_array($name, $sceneData['eventOrder'])){
         var form = $('<form action="edit-'+$("#kind").text()+'-event.php" method="post"></form>');
         form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
+        $("body").append(form);
         form.submit();
         </script>
     </body>

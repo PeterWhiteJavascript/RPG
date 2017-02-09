@@ -268,12 +268,14 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        $("body").append(form);
                         form.submit();
                     });
                     $("#back-button2").click(function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        $("body").append(form);
                         form.submit();
                     });
                     break;
