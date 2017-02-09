@@ -65,7 +65,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                 </ul>
             </div>
             <div id="editor-page-options">
-                <div id="music-select">Music:
+                <div id="music-select">
+                    <p class="editor-descriptor">Music:</p>
                     <select>
                         <?php
                         forEach($music as $song){
@@ -78,7 +79,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                     <source type="audio/mp3" src="">Sorry, your browser does not support HTML5 audio.
                 </audio>
                 <img id="bg-preview">
-                <div id="bg-select">BG: 
+                <div id="bg-select">
+                    <p class="editor-descriptor">BG:</p> 
                     <select>
                         <?php 
                         forEach($bgs as $bg){
@@ -88,7 +90,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                     </select>
                 </div>
                 <br>
-                <div id="text-select">Text: 
+                <div id="text-select">
+                    <p class="editor-descriptor">Text: </p>
                 </div>
                 <div id="choices"><h2>Choices:</h2>
                     <ul class="sortable">
@@ -103,10 +106,11 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                     <a class="remove-choice">
                                         <div class="btn btn-default">x</div>
                                     </a>
-                                    <div>Display Text: <input class="display-text" value="<?php echo $display; ?>"></div>
-                                    <div>Desc: <textarea class="desc-text"><?php echo $desc; ?></textarea></div>
-                                    <div>To Page: <select class="pages-to" initialValue="<?php echo $page; ?>"></select></div>
-                                    <div class="conditions">Conditions: 
+                                    <div><p class="editor-descriptor">Display Text: </p><input class="display-text" value="<?php echo $display; ?>"></div>
+                                    <div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text"><?php echo $desc; ?></textarea></div>
+                                    <div><p class="editor-descriptor">To Page: </p><select class="pages-to" initialValue="<?php echo $page; ?>"></select></div>
+                                    <div class="conditions">
+                                        <p class="editor-descriptor">Conditions: </p>
                                         <?php
                                         if(isset($value2['cond'])){
                                             $conds = $value2['cond'];
@@ -135,7 +139,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                         }
                                         ?>
                                     </div>
-                                    <div class="effects">Effects: 
+                                    <div class="effects">
+                                        <p class="editor-descriptor">Effects: </p>
                                         <?php
                                         if(isset($value2['effect'])){
                                             $effects = $value2['effect'];

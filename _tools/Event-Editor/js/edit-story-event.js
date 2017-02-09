@@ -223,7 +223,7 @@ $(function(){
         $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div>Display Text: <input class="display-text" placeholder="Choice"></input></div><div>Desc: <textarea class="desc-text"></textarea></div><div>To Page: <select class="pages-to"></select></div></div><div class="conditions">Conditions: </div><div class="effects">Effects: </div></li>');
         //Loop through the pages and put them in the select
         appendPagesOptions($(".pages-to").last());
-        //appendOnPageEffects($(".on-page-effect").last());
+        $(".choice-li").last().trigger("click");
     });
     
     $('#add-new-condition').click( function(e) {
@@ -413,7 +413,6 @@ $(function(){
     appendVarTypes($(".cond-var-type"));
     appendConditions($(".conditions-select"));
     varFuncs["appendEventVars"]($(".cond-vars"));
-    //TODO: select the correct vars and from scope
     
     //Fill the effects selects
     appendVarTypes($(".effect-var-type"));

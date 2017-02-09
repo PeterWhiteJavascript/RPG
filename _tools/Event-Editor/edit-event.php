@@ -4,22 +4,31 @@ $scene = addDashes($_POST['scene']);
 $name = addDashes($_POST['name']);
 $desc = $_POST['desc'];
 $eventType = $_POST['event-type'];
+if(isset($_POST['vrs'])){
+    $vrs = $_POST['vrs'];
+}
 $newFile;
+//Editing an event
 if(isset($_POST['origName'])){
     $file = "../../data/json/story/events/".$scene."/".addDashes($_POST['origName']).".json";
     $newFile = json_decode(file_get_contents($file), true);
     $newFile['name'] = $name;
     $newFile['desc'] = $desc;
     $newFile['kind'] = $eventType;
+    $newFile['vrs'] = $vrs;
     file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile));
     if($name!==$_POST['origName']){
         unlink($file);
     }
-}  else {
+}  
+//A new event
+else {
     $newFile = [
         'name' => $name,
         'desc' => $desc,
-        'kind' => $eventType
+        'kind' => $eventType,
+        'vrs' => (object)[]
+            
     ];
     switch($eventType){
         case "story":
@@ -45,13 +54,12 @@ if(!in_array($name, $sceneData['eventOrder'])){
     //If the orig name is in here, remove it
     if(isset($_POST['origName'])){
         $index = array_search($_POST['origName'],$sceneData['eventOrder']);
-        if($index !== FALSE){
+        if($index !== false){
             unset($sceneData['eventOrder'][$index]);
         }
     }
     $sceneData['eventOrder'] = array_values($sceneData['eventOrder']);
-    file_put_contents("data/scenes/".$scene.".json", json_encode($sceneData));
-    
+    file_put_contents("../../data/json/story/events/".$scene.".json", json_encode($sceneData));
 }
 ?>
 

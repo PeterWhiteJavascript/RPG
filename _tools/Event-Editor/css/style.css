@@ -152,7 +152,7 @@ h2{
 #bg-preview{
     width:120px;
     height:auto;
-    max-height:75px;
+    max-height:80px;
     position:absolute;
 }
 #text-select{
@@ -298,4 +298,7 @@ audio{
     background-color: #fbfbfb;
     margin:5px auto;
     border:double;
+}
+.editor-descriptor{
+    font-size:22px;
 }
