@@ -93,7 +93,11 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                 <div id="text-select">
                     <p class="editor-descriptor">Text: </p>
                 </div>
-                <div id="choices"><h2>Choices:</h2>
+                <div id="on-load">
+                    <h2>On load:</h2>
+                </div>
+                <div id="choices">
+                    <h2>Choices:</h2>
                     <ul class="sortable">
                         <?php
                         forEach($pages as $key => $value){
