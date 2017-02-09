@@ -174,8 +174,7 @@ $(function(){
     $('#add-new-variable').click( function(e) {
         uniqueVars++;
         $("#editor-variables ul").append('<li><div class="menu-button var-button"><input class="var-name" value="Var'+uniqueVars+'" placeholder="varname"></input><input class="var-value" value="0" placeholder="value"></input></div></li>');
-        //TODO run function to append new variable
-        //appendNewPageOption();
+
     });
     
     $('#remove-variable').click( function(e) {
@@ -220,7 +219,7 @@ $(function(){
     
     
     $('#add-new-choice').click( function(e) {
-        $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div>Display Text: <input class="display-text" placeholder="Choice"></input></div><div>Desc: <textarea class="desc-text"></textarea></div><div>To Page: <select class="pages-to"></select></div></div><div class="conditions">Conditions: </div><div class="effects">Effects: </div></li>');
+        $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"></input></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select></div></div><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effects: </p></div></li>');
         //Loop through the pages and put them in the select
         appendPagesOptions($(".pages-to").last());
         $(".choice-li").last().trigger("click");
