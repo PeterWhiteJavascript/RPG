@@ -3,6 +3,7 @@
     "desc": "Walk through a forest.",
     "kind": "story",
     "pages": [{
+        "onload":[[{"cond":[["checkVar",{"scope":"Event","vr":"wentLeft","vl":1}]],"effect":[["enableChoice",{"choice":"Left Path"}]]}]],
         "name": "Entrance",
         "music": "the_usual.mp3",
         "bg": "bg\/forest.jpg",
@@ -11,13 +12,13 @@
             "displayText": "Left Path",
             "desc": "The party decides to go left.",
             "page": "Left Path",
-            "effect":[["setVar",{"scope":"Event","vr":"wentLeft","vl":1}]]
+            "group":[[{"effect":[["setVar",{"scope":"Event","vr":"wentLeft","vl":1}]]}]]
         }, {
             "displayText": "Middle Path",
             "desc": "The party decides to take the middle path.",
             "page": "Middle Path",
-            "cond":[["checkVar",{"scope":"Event","vr":"wentLeft","vl":1}]],
-            "effect":[["changePage",{"page":"Middle Path Secret","desc":"Since the party went left first, they have unlocked a secret path down this road! P.S. If you go back and then try to come back again, the variable will be reset and it will be impassable again!"}],["setVar",{"scope":"Event","vr":"wentLeft","vl":0}]]
+            "group":[[{"cond":[["checkVar",{"scope":"Event","vr":"wentLeft","vl":1}]],"effect":[["changePage",{"page":"Middle Path Secret","desc":"Since the party went left first, they have unlocked a secret path down this road! P.S. If you go back and then try to come back again, the variable will be reset and it will be impassable again!"}],["setVar",{"scope":"Event","vr":"wentLeft","vl":0}]]}]],
+            "disabled":1
         }, {
             "displayText": "Right Path",
             "desc": "The party goes right.",

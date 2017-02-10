@@ -269,11 +269,11 @@ audio{
 .remove-choice{
     float:right;
 }
-
 #choices ul li{
     background-color: #fbfbfb;
     border-width: initial;
     border-style: solid;
+    padding:10px;
 }
 #choices ul li input{
     width:50%;
@@ -285,7 +285,7 @@ audio{
     width:100%;
     height:100%;
     min-height:150px;
-    padding:20px;
+    padding:10px;
     background-color: #fbfbfb;
     margin:5px auto;
     border:double;
@@ -294,7 +294,7 @@ audio{
     width:100%;
     height:100%;
     min-height:150px;
-    padding:20px;
+    padding:10px;
     background-color: #fbfbfb;
     margin:5px auto;
     border:double;
@@ -302,4 +302,9 @@ audio{
 .editor-descriptor{
     font-size:22px;
     padding:2px;
+}
+.cond-group{
+    border-width: initial;
+    border-style: solid;
+    padding:10px;
 }

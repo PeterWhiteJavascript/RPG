@@ -32,9 +32,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                     <li><a id="remove-page"><div class="menu-button btn btn-default">Remove Page</div></a></li>
                     <li><a id="copy-page"><div class="menu-button btn btn-default">Copy Page</div></a></li>
                     <br>
+                    <li><a id="add-new-onload"><div class="menu-button btn btn-default">Add Onload</div></a></li>
                     <li><a id="add-new-choice"><div class="menu-button btn btn-default">Add Choice</div></a></li>
-                    <li><a id="add-new-condition"><div class="menu-button btn btn-default">Add Condition</div></a></li>
-                    <li><a id="add-new-effect"><div class="menu-button btn btn-default">Add Effect</div></a></li>
                     <br>
                     <li><a id="save-event"><div class="menu-button btn btn-default">Save Event</div></a></li>
                     <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
@@ -93,8 +92,119 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                 <div id="text-select">
                     <p class="editor-descriptor">Text: </p>
                 </div>
-                <div id="on-load">
+                <div id="onload">
                     <h2>On load:</h2>
+                    <ul>
+                        <?php
+                        forEach($pages as $key => $value){
+                            if(isset($value['onload'])){
+                                $onload = $value['onload'];
+                                forEach($onload as $ky => $vl){
+                                ?>
+                                <li class="onload-<?php echo $key; ?> onload-li">
+                                    <a class="remove-choice">
+                                        <div class="btn btn-default">x</div>
+                                    </a>
+                                    <p class="editor-descriptor">Condition/Effect Groups: </p>
+                                    <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
+                                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>
+                                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>
+                                    <div class="cond-group">
+                                        <a class="remove-choice"><div class="btn btn-default">x</div></a>
+                                        <div class="conditions">
+                                            <p class="editor-descriptor">Conditions: </p>
+                                            <?php
+                                            if(isset($vl[$ky]['cond'])){
+                                                $conds = $vl[$ky]['cond'];
+                                                forEach($conds as $cond => $val){
+                                                    switch($val[0]){
+                                                        case "checkVar":
+                                            ?>
+                                                            <div class="condition onload <?php echo $key; ?>">
+                                                                <a class="remove-choice">
+                                                                    <div class="btn btn-default">x</div>
+                                                                </a>
+                                                                <select class="conditions-select" value="<?php echo $val[0] ?>"></select>
+                                                                <div class="cond-cont">
+                                                                    <select class="cond-var-type" initialValue="<?php echo $val[1]['scope']; ?>"></select>
+                                                                    <div class="cond">
+                                                                        <select class="cond-vars" initialValue="<?php echo $val[1]['vr']; ?>"></select>
+                                                                        <input class="cond-vals" value="<?php echo $val[1]['vl']; ?>">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                            <?php
+                                                            break;
+                                                    }
+                                                }
+
+                                            }
+                                            ?>
+                                        </div>
+                                        <div class="effects">
+                                            <p class="editor-descriptor">Effects: </p>
+                                            <?php
+                                            if(isset($vl[$ky]['effect'])){
+                                                $effects = $vl[$ky]['effect'];
+                                                forEach($effects as $effect => $val2){
+                                                    switch($val2[0]){
+                                                        case "setVar":
+                                            ?>
+                                                        <div class="effect onload <?php echo $key; ?>">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" value="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="effect-var-type" initialValue="<?php echo $val2[1]['scope'];?>"></select>
+                                                                <div class="eff">
+                                                                    <select class="eff-vars" initialValue="<?php echo $val2[1]['vr']; ?>"></select>
+                                                                    <input class="eff-vals" value="<?php echo $val2[1]['vl']; ?>">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                            <?php
+                                                            break;
+                                                        case "changePage":
+                                            ?>
+                                                        <div class="effect onload <?php echo $key; ?>">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="effect-pages" initialValue="<?php echo $val2[1]['page']?>"></select>
+                                                                <textarea class="effect-page-to-desc" placeholder="display text"><?php echo $val2[1]['desc']?></textarea>
+                                                            </div>
+                                                        </div>
+                                            <?php
+                                                            break;
+                                                        case "enableChoice":
+                                            ?>
+                                                        <div class="effect onload <?php echo $key; ?>">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="page-choices" initialValue="<?php echo $val2[1]['choice']?>"></select>
+                                                            </div>
+                                                        </div>
+                                            <?php
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                </li>
+                                <?php
+                                }
+                            }
+                        }
+                        ?>
+                    </ul>
                 </div>
                 <div id="choices">
                     <h2>Choices:</h2>
@@ -111,82 +221,112 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                         <div class="btn btn-default">x</div>
                                     </a>
                                     <div><p class="editor-descriptor">Display Text: </p><input class="display-text" value="<?php echo $display; ?>"></div>
+                                    <div><p class="editor-descriptor">Enabled: </p><div class="btn btn-default disable">Enabled</div></div>
                                     <div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text"><?php echo $desc; ?></textarea></div>
                                     <div><p class="editor-descriptor">To Page: </p><select class="pages-to" initialValue="<?php echo $page; ?>"></select></div>
-                                    <div class="conditions">
-                                        <p class="editor-descriptor">Conditions: </p>
-                                        <?php
-                                        if(isset($value2['cond'])){
-                                            $conds = $value2['cond'];
-                                            forEach($conds as $cond => $val){
-                                                switch($val[0]){
-                                                    case "checkVar":
-                                        ?>
-                                                        <div class="condition">
+                                    <p class="editor-descriptor">Condition/Effect Groups: </p>
+                                    <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
+                                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>
+                                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>
+                                    <?php
+                                    if(isset($value2['group'])){
+                                        $groups = $value2['group'];
+                                        forEach($groups as $group => $v){
+                                    ?>
+                                    <div class="cond-group">
+                                        <a class="remove-choice"><div class="btn btn-default">x</div></a>
+                                        <div class="conditions">
+                                            <p class="editor-descriptor">Conditions: </p>
+                                            <?php
+                                            if(isset($v[$group]['cond'])){
+                                                $conds = $v[$group]['cond'];
+                                                forEach($conds as $cond => $val){
+                                                    switch($val[0]){
+                                                        case "checkVar":
+                                            ?>
+                                                            <div class="condition choice <?php echo $key; ?>">
+                                                                <a class="remove-choice">
+                                                                    <div class="btn btn-default">x</div>
+                                                                </a>
+                                                                <select class="conditions-select" value="<?php echo $val[0] ?>"></select>
+                                                                <div class="cond-cont">
+                                                                    <select class="cond-var-type" initialValue="<?php echo $val[1]['scope']; ?>"></select>
+                                                                    <div class="cond">
+                                                                        <select class="cond-vars" initialValue="<?php echo $val[1]['vr']; ?>"></select>
+                                                                        <input class="cond-vals" value="<?php echo $val[1]['vl']; ?>">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                            <?php
+                                                            break;
+                                                    }
+                                                }
+
+                                            }
+                                            ?>
+                                        </div>
+                                        <div class="effects">
+                                            <p class="editor-descriptor">Effects: </p>
+                                            <?php
+                                            if(isset($v[$group]['effect'])){
+                                                $effects = $v[$group]['effect'];
+                                                forEach($effects as $effect => $val2){
+                                                    switch($val2[0]){
+                                                        case "setVar":
+                                            ?>
+                                                        <div class="effect choice <?php echo $key; ?>">
                                                             <a class="remove-choice">
                                                                 <div class="btn btn-default">x</div>
                                                             </a>
-                                                            <select class="conditions-select" value="<?php echo $val[0] ?>"></select>
-                                                            <div class="cond-cont">
-                                                                <select class="cond-var-type" initialValue="<?php echo $val[1]['scope']; ?>"></select>
-                                                                <div class="cond">
-                                                                    <select class="cond-vars" initialValue="<?php echo $val[1]['vr']; ?>"></select>
-                                                                    <input class="cond-vals" value="<?php echo $val[1]['vl']; ?>"></input>
+                                                            <select class="effects-select" value="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="effect-var-type" initialValue="<?php echo $val2[1]['scope'];?>"></select>
+                                                                <div class="eff">
+                                                                    <select class="eff-vars" initialValue="<?php echo $val2[1]['vr']; ?>"></select>
+                                                                    <input class="eff-vals" value="<?php echo $val2[1]['vl']; ?>">
                                                                 </div>
                                                             </div>
                                                         </div>
-                                        <?php
-                                                        break;
-                                                }
-                                            }
 
-                                        }
-                                        ?>
-                                    </div>
-                                    <div class="effects">
-                                        <p class="editor-descriptor">Effects: </p>
-                                        <?php
-                                        if(isset($value2['effect'])){
-                                            $effects = $value2['effect'];
-                                            forEach($effects as $effect => $val2){
-                                                switch($val2[0]){
-                                                    case "setVar":
-                                        ?>
-                                                    <div class="effect">
-                                                        <a class="remove-choice">
-                                                            <div class="btn btn-default">x</div>
-                                                        </a>
-                                                        <select class="effects-select" value="<?php echo $val2[0] ?>"></select>
-                                                        <div class="effect-cont">
-                                                            <select class="effect-var-type" initialValue="<?php echo $val2[1]['scope'];?>"></select>
-                                                            <div class="eff">
-                                                                <select class="eff-vars" initialValue="<?php echo $val2[1]['vr']; ?>"></select>
-                                                                <input class="eff-vals" value="<?php echo $val2[1]['vl']; ?>"></input>
+                                            <?php
+                                                            break;
+                                                        case "changePage":
+                                            ?>
+                                                        <div class="effect choice <?php echo $key; ?>">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="effect-pages" initialValue="<?php echo $val2[1]['page']?>"></select>
+                                                                <textarea class="effect-page-to-desc" placeholder="display text"><?php echo $val2[1]['desc']?></textarea>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                        
-                                        <?php
-                                                        break;
-                                                    case "changePage":
-                                        ?>
-                                                    <div class="effect">
-                                                        <a class="remove-choice">
-                                                            <div class="btn btn-default">x</div>
-                                                        </a>
-                                                        <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
-                                                        <div class="effect-cont">
-                                                            <select class="effect-pages" initialValue="<?php echo $val2[1]['page']?>"></select>
-                                                            <textarea class="effect-page-to-desc" placeholder="display text"><?php echo $val2[1]['desc']?></textarea>
+                                            <?php
+                                                            break;
+                                                        case "enableChoice":
+                                            ?>
+                                                        <div class="effect choice <?php echo $key; ?>">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <div class="effect-cont">
+                                                                <select class="page-choices" initialValue="<?php echo $val2[1]['choice']?>"></select>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                        <?php
-                                                        break;
+                                            <?php
+                                                            break;
+                                                    }
                                                 }
                                             }
-                                        }
-                                        ?>
+                                            ?>
+                                        </div>
                                     </div>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
                                 </li>
                         <?php
                                 

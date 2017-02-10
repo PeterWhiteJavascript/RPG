@@ -7,8 +7,8 @@ $(function(){
     var selectedPage;
     //Store the variable that is selected
     var selectedVar;
-    //Store the choice that is selected
-    var selectedChoice;
+    //Store the group that is selected
+    var selectedGroup;
 
     var uniqueVars = $("#editor-variables ul li").length;
     //Increment every time a new page is added (so we don't have duplicate page names if a page was deleted)
@@ -16,24 +16,23 @@ $(function(){
     
     //CONDITIONS AND EFFECTS CODE IS IN ui_objects.js
     //The possible conditions
-    var conditions = {
-        checkVar:["vr","vl"]
-    };
+    var conditions = [
+        "checkVar"
+    ];
     //The possible effects
-    var effects = {
-        setVar:["vr","vl"],
-        changePage:["page","desc"]
-    };
+    var effects = [
+        "setVar",
+        "changePage",
+        "enableChoice"
+    ];
     function appendConditions(to){
-        var keys = Object.keys(conditions);
-        for(var i=0;i<keys.length;i++){
-            $(to).append('<option value="'+keys[i]+'">'+keys[i]+'</option>');
+        for(var i=0;i<conditions.length;i++){
+            $(to).append('<option value="'+conditions[i]+'">'+conditions[i]+'</option>');
         }
     }
     function appendEffects(to){
-        var keys = Object.keys(effects);
-        for(var i=0;i<keys.length;i++){
-            $(to).append('<option value="'+keys[i]+'">'+keys[i]+'</option>');
+        for(var i=0;i<effects.length;i++){
+            $(to).append('<option value="'+effects[i]+'">'+effects[i]+'</option>');
         }
     }
     //Show all of the types of variables (global, scene, event)
@@ -42,6 +41,19 @@ $(function(){
         for(var i=0;i<types.length;i++){
             $(to).append('<option value="'+types[i]+'">'+types[i]+'</option>');
         }
+    };
+    //Append all choices on the current page
+    function appendPageChoices(to){
+        //Get the page id from the effect/condition
+        var pageId = $(to).parent().parent().attr("class").split(' ')[2];
+        $(".choice-"+pageId).each(function(){
+            $(to).append('<option value="'+$(this).children("div").first().children(".display-text").val()+'">'+$(this).children("div").first().children(".display-text").val()+'</option>');
+        });
+        /*
+        $("#pages ul li").each(function(){
+            
+        });
+        */
     };
     
     var varFuncs = {
@@ -52,7 +64,7 @@ $(function(){
                 $(to).append('<option value="'+name+'">'+name+'</option>');
             }
         }
-    }
+    };
     
     //When editing a name, set to true
     var editingName = false;
@@ -155,6 +167,11 @@ $(function(){
                                     desc:$(eff).children(".effect-cont").children(".effect-page-to-desc").val()
                                 };
                                 break;
+                            case "enablePage":
+                                choice.effect[idx][1] = {
+                                    page:$(eff).children(".effect-cont").children(".effect-pages").val()
+                                };
+                                break;
                         }
                     });
                 } else {
@@ -216,31 +233,40 @@ $(function(){
         });
         $(".scene-button").last().trigger("click");
     });
-    
-    
+    $('#add-new-onload').click( function(e) {
+        //Only allow one onload
+        if(!$('.onload-'+$(selectedPage).parent().attr("id")).length){
+            $("#onload ul").append('<li class="onload-'+$(selectedPage).parent().attr("id")+' onload-li"><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
+            //Loop through the pages and put them in the select
+            appendPagesOptions($(".pages-to").last());
+        }
+    });
     $('#add-new-choice').click( function(e) {
-        $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"></input></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select></div></div><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effects: </p></div></li>');
+        $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"></input></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text" placeholder="Desc"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
         //Loop through the pages and put them in the select
         appendPagesOptions($(".pages-to").last());
-        $(".choice-li").last().trigger("click");
     });
     
-    $('#add-new-condition').click( function(e) {
-        if(selectedChoice){
-            $(selectedChoice).children(".conditions").append('<div class="condition"><a class="remove-choice"><div class="btn btn-default">x</div></a><select class="conditions-select"></select></div>');
-            appendConditions($(selectedChoice).children(".conditions").children(".condition").children("select").last());
-            $(selectedChoice).children(".conditions").children(".condition").children(".conditions-select").last().trigger("change");
+    
+    $(document).on("click",".add-new-group",function(){
+        $(this).parent().append('<div class="cond-group"><a class="remove-choice"><div class="btn btn-default">x</div></a><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
+        $(this).parent().children(".cond-group").last().trigger("click");
+    });
+    $(document).on("click",".add-new-condition",function(){
+        if(selectedGroup){
+            $(selectedGroup).children(".conditions").append('<div class="condition"><a class="remove-choice"><div class="btn btn-default">x</div></a><select class="conditions-select"></select></div>');
+            appendConditions($(selectedGroup).children(".conditions").children(".condition").children("select").last());
+            $(selectedGroup).children(".conditions").children(".condition").children(".conditions-select").last().trigger("change");
         }
     });
     
-    $('#add-new-effect').click( function(e) {
-        if(selectedChoice){
-            $(selectedChoice).children(".effects").append('<div class="effect"><a class="remove-choice"><div class="btn btn-default">x</div></a><select class="effects-select"></select></div>');
-            appendEffects($(selectedChoice).children(".effects").children(".effect").children("select").last());
-            $(selectedChoice).children(".effects").children(".effect").children(".effects-select").last().trigger("change");
+    $(document).on("click",".add-new-effect",function(){
+        if(selectedGroup){
+            $(selectedGroup).children(".effects").append('<div class="effect"><a class="remove-choice"><div class="btn btn-default">x</div></a><select class="effects-select"></select></div>');
+            appendEffects($(selectedGroup).children(".effects").children(".effect").children("select").last());
+            $(selectedGroup).children(".effects").children(".effect").children(".effects-select").last().trigger("change");
         }
     });
-    
     
     //Test the event in the same conditions as in game!
     $('#test-event').click( function(e) {
@@ -317,6 +343,10 @@ $(function(){
                 $(this).parent().append('<div class="effect-cont"><select class="effect-pages"></select><textarea class="effect-page-to-desc" placeholder="display text"></textarea></div>');
                 appendPagesOptions($(this).parent().children(".effect-cont").children(".effect-pages"));
                 break;
+            case "enableChoice":
+                $(this).parent().append('<div class="effect-cont"><select class="page-choices"></select></div>');
+                appendPageChoices($(this).parent().children(".effect-cont").children(".page-choices"));
+                break;
         }
     });
     $(document).on('change', '.effect-var-type', function() {
@@ -353,10 +383,10 @@ $(function(){
         selectedVar = this;
         $(selectedVar).addClass("selected-color");
     });
-    $(document).on("click",".choice-li",function(e){
-        $(selectedChoice).removeClass("selected-color");
-        selectedChoice = this;
-        $(selectedChoice).addClass("selected-color");
+    $(document).on("click",".cond-group",function(e){
+        $(selectedGroup).removeClass("selected-color");
+        selectedGroup = this;
+        $(selectedGroup).addClass("selected-color");
     });
     //When an individual page is clicked
     $(document).on("click",".scene-button",function(e){
@@ -373,6 +403,11 @@ $(function(){
                 editingName=true;
             }
         } else {
+            //Hide the onloads from the last page
+            $(".onload-"+$(selectedPage).parent().attr("id")).hide();
+            //Show the onloads for the current page
+            $(".onload-"+$(this).parent().attr("id")).show();
+            
             //Hide the choices from the last page
             $(".choice-"+$(selectedPage).parent().attr("id")).hide();
             //Show the choices for the current page
@@ -401,6 +436,13 @@ $(function(){
     $(document).on("click",".remove-choice",function(e){
         $(this).parent().remove();
     });
+    $(document).on("click",".disable",function(e){
+        if($(this).html()==="Disabled"){
+            $(this).html("Enabled");       
+        } else {
+            $(this).html("Disabled");
+        }
+    });
     
     $("audio").first().attr("src","../../audio/bgm/"+$("#music-select select").val());
     $("#bg-preview").attr("src","../../images/"+$("#bg-select select").val());
@@ -418,6 +460,8 @@ $(function(){
     appendEffects($(".effects-select"));
     varFuncs["appendEventVars"]($(".eff-vars"));
     appendPagesOptions($(".effect-pages"));
+    appendPageChoices($(".page-choices"));
+    
     //Hide all choices
     $(".choice-li").hide();
     //If there are no pages, create one
