@@ -94,28 +94,30 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                 </div>
                 <div id="onload">
                     <h2>On load:</h2>
+                    <a class="remove-choice">
+                        <div class="btn btn-default">x</div>
+                    </a>
+                    <p class="editor-descriptor">Condition/Effect Groups: </p>
+                    <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
+                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>
+                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>
                     <ul>
                         <?php
                         forEach($pages as $key => $value){
+                                ?>
+                            <?php
                             if(isset($value['onload'])){
                                 $onload = $value['onload'];
                                 forEach($onload as $ky => $vl){
-                                ?>
+                                    ?>
                                 <li class="onload-<?php echo $key; ?> onload-li">
-                                    <a class="remove-choice">
-                                        <div class="btn btn-default">x</div>
-                                    </a>
-                                    <p class="editor-descriptor">Condition/Effect Groups: </p>
-                                    <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
-                                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>
-                                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>
                                     <div class="cond-group">
                                         <a class="remove-choice"><div class="btn btn-default">x</div></a>
                                         <div class="conditions">
                                             <p class="editor-descriptor">Conditions: </p>
                                             <?php
-                                            if(isset($vl[$ky]['cond'])){
-                                                $conds = $vl[$ky]['cond'];
+                                            if(isset($vl[0]['cond'])){
+                                                $conds = $vl[0]['cond'];
                                                 forEach($conds as $cond => $val){
                                                     switch($val[0]){
                                                         case "checkVar":
@@ -144,8 +146,8 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                         <div class="effects">
                                             <p class="editor-descriptor">Effects: </p>
                                             <?php
-                                            if(isset($vl[$ky]['effect'])){
-                                                $effects = $vl[$ky]['effect'];
+                                            if(isset($vl[0]['effect'])){
+                                                $effects = $vl[0]['effect'];
                                                 forEach($effects as $effect => $val2){
                                                     switch($val2[0]){
                                                         case "setVar":

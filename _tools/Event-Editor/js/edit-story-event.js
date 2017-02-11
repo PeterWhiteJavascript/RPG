@@ -92,6 +92,37 @@ $(function(){
             
         }
     }
+    function getSavableCondition(cond){
+        //Get which condition we are checking and find the proper data
+        var selectValue = $(cond).children(".conditions-select").val();
+        switch(selectValue){
+            case "checkVar":
+                var cont = $(cond).children(".cond-cont");
+                return [selectValue,{scope:$(cont).children(".cond-var-type").val(),vr:$(cont).children(".cond").children(".cond-vars").val(),vl:$(cont).children(".cond").children(".cond-vals").val()}];
+                break;
+        }
+    }
+    function getSavableEffect(eff){
+        //Get which condition we are checking and find the proper data
+        var selectValue = $(eff).children(".effects-select").val();
+        switch(selectValue){
+            case "setVar":
+                var cont = $(eff).children(".effect-cont");
+                return [selectValue,{scope:$(cont).children(".eff-var-type").val(),vr:$(cont).children(".eff-vars").val(),vl:$(cont).children(".eff-vals").val()}];
+                break;
+            case "changePage":
+                var cont = $(eff).children(".effect-cont");
+                return [selectValue,{page:$(cont).children(".eff-vars").val(),desc:$(cont).children(".effects-select").val()}];
+                break;
+            case "enableChoice":
+                var cont = $(eff).children(".effect-cont");
+                return [selectValue,{choice:$(cont).children(".page-choices").val()}];
+                break;
+        }
+        console.log(selectValue)
+        console.log(eff)
+        
+    }
     function createSaveForm(){
         $(selectedPage).parent().attr("text",$("#text-select textarea").val()); 
         var form = $('<form action="save-story-pages.php" method="post"></form>');
@@ -109,9 +140,34 @@ $(function(){
             form.append('<input type="text" name="bg[]" value="'+$(li).attr("bg")+'">');
             form.append('<input type="text" name="text[]" value="'+$(li).attr("text")+'">');
             ids.push($(li).attr("id"));
+            //Check if there's an onload
+            if($(".onload-"+i)){
+                //var json = 
+                var groups = [];
+                $(".onload-"+i).children(".cond-group").each(function(x,g){
+                    groups[x] = {cond:[],effect:[]};
+                    //Get conditions
+                    $(g).children(".conditions").children(".condition").each(function(a){
+                        groups[x].cond.push(getSavableCondition(this));
+                    });
+                    //Get effects
+                    $(g).children(".effects").children(".effect").each(function(b){
+                        groups[x].effect.push(getSavableEffect(this));
+                    });
+                });
+                var json = JSON.stringify(groups, null, 2);
+                console.log(json)
+                form.append('<input type="text" name="onload[]" value="'+json+'">');
+            } else{
+                form.append('<input type="text" name="onload[]" value="[]">');
+            }
         });
+        var onload = [];
+        //Cond/effects from onload for each id
+        onload[i] = [];
+        
         var choices = {};
-        //Loop through each id
+        //Loop through each page's id. All pages are looped
         for(var i=0;i<ids.length;i++){
             var id = ids[i];
             choices[id] = [];
@@ -121,6 +177,7 @@ $(function(){
                 choice.displayText = $(".choice-"+id+" .display-text")[j].value;
                 choice.desc = $(".choice-"+id+" .desc-text")[j].value;
                 choice.page = $(".choice-"+id+" .pages-to")[j].value;
+                choice.group = [];
                 //Loop through the conditions and effects
                 var conds = $(".choice-"+id+":nth-child("+(j+1)+")").children(".conditions").children(".condition");
                 if(conds.length){
@@ -167,7 +224,7 @@ $(function(){
                                     desc:$(eff).children(".effect-cont").children(".effect-page-to-desc").val()
                                 };
                                 break;
-                            case "enablePage":
+                            case "enableChoice":
                                 choice.effect[idx][1] = {
                                     page:$(eff).children(".effect-cont").children(".effect-pages").val()
                                 };
@@ -180,8 +237,8 @@ $(function(){
                 choices[id].push(choice);
             }
         }
-        var json = JSON.stringify(choices);
-        
+        var json = JSON.stringify(choices, null, 2);
+        //console.log(json)
         //Send the choices as a JSON string
         form.append("<input type='text' name='choices' value='"+json+"'>");
         return form;
@@ -289,7 +346,7 @@ $(function(){
     $('#save-event').click( function(e) {
         var form = createSaveForm();
         $("body").append(form);
-        form.submit();
+        //form.submit();
     });
     //END MAIN OPTIONS BUTTONS
     $(document).on('change', '#music-select select', function() {
@@ -461,7 +518,8 @@ $(function(){
     varFuncs["appendEventVars"]($(".eff-vars"));
     appendPagesOptions($(".effect-pages"));
     appendPageChoices($(".page-choices"));
-    
+    //Hide all onloads
+    $(".onload-li").hide();
     //Hide all choices
     $(".choice-li").hide();
     //If there are no pages, create one
