@@ -3,8 +3,6 @@ include("php-config.php");
 $name = addDashes($_POST['name']);
 $scene = addDashes($_POST['scene']);
 
-$varnames = $_POST['varnames'];
-$varvalues = $_POST['varvalues'];
 
 $pagesid = $_POST['pagesid'];
 $pagesname = $_POST['pagesname'];
@@ -13,11 +11,17 @@ $bg = $_POST['bg'];
 $text = $_POST['text'];
 $choices = json_decode($_POST['choices'],true);
 
-$vrs = (object)[];
-for($i=0;$i<count($varnames);$i++){
-    $vrs->$varnames[$i] = $varvalues[$i];
-}
 
+if(isset($_POST['varnames'])){
+    $varnames = $_POST['varnames'];
+    $varvalues = $_POST['varvalues'];
+    $vrs = (object)[];
+    for($i=0;$i<count($varnames);$i++){
+        $vrs->$varnames[$i] = $varvalues[$i];
+    }
+} else {
+    $vrs = (object)[];
+}
 $pages = [];
 for($i=0;$i<count($pagesid);$i++){
     $pages[$i] = (object)[
@@ -42,7 +46,7 @@ $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'
 
 $file['vrs'] = $vrs;
 $file['pages'] = $pages;
-file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file));
+file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 
 ?>
 

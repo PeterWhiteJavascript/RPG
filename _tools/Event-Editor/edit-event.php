@@ -4,9 +4,7 @@ $scene = addDashes($_POST['scene']);
 $name = addDashes($_POST['name']);
 $desc = $_POST['desc'];
 $eventType = $_POST['event-type'];
-if(isset($_POST['vrs'])){
-    $vrs = $_POST['vrs'];
-}
+
 $newFile;
 //Editing an event
 if(isset($_POST['origName'])){
@@ -15,8 +13,7 @@ if(isset($_POST['origName'])){
     $newFile['name'] = $name;
     $newFile['desc'] = $desc;
     $newFile['kind'] = $eventType;
-    $newFile['vrs'] = $vrs;
-    file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile));
+    file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile,JSON_PRETTY_PRINT));
     if($name!==$_POST['origName']){
         unlink($file);
     }
@@ -28,7 +25,6 @@ else {
         'desc' => $desc,
         'kind' => $eventType,
         'vrs' => (object)[]
-            
     ];
     switch($eventType){
         case "story":
@@ -44,7 +40,7 @@ else {
             $newFile['battle'] = (object)[];
             break;
     }
-    file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile));
+    file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile,JSON_PRETTY_PRINT));
 }
 
 //Add the event to the event order of the scene
@@ -59,7 +55,7 @@ if(!in_array($name, $sceneData['eventOrder'])){
         }
     }
     $sceneData['eventOrder'] = array_values($sceneData['eventOrder']);
-    file_put_contents("../../data/json/story/events/".$scene.".json", json_encode($sceneData));
+    file_put_contents("../../data/json/story/events/".$scene.".json", json_encode($sceneData,null,true));
 }
 ?>
 

@@ -299,6 +299,16 @@ audio{
     margin:5px auto;
     border:double;
 }
+.cond-cont li{
+    border:none !important;
+    margin:0 !important;
+    padding:0 !important;
+}
+.effect-cont li{
+    border:none !important;
+    margin:0 !important;
+    padding:0 !important;
+}
 .editor-descriptor{
     font-size:22px;
     padding:2px;

@@ -42,18 +42,14 @@ $(function(){
             $(to).append('<option value="'+types[i]+'">'+types[i]+'</option>');
         }
     };
+    function getPageId(page){
+        return $(page).attr("class").split(' ')[1];
+    }
     //Append all choices on the current page
-    function appendPageChoices(to){
-        //Get the page id from the effect/condition
-        var pageId = $(to).parent().parent().attr("class").split(' ')[2];
+    function appendPageChoices(to,pageId){console.log(pageId)
         $(".choice-"+pageId).each(function(){
             $(to).append('<option value="'+$(this).children("div").first().children(".display-text").val()+'">'+$(this).children("div").first().children(".display-text").val()+'</option>');
         });
-        /*
-        $("#pages ul li").each(function(){
-            
-        });
-        */
     };
     
     var varFuncs = {
@@ -97,7 +93,7 @@ $(function(){
         var selectValue = $(cond).children(".conditions-select").val();
         switch(selectValue){
             case "checkVar":
-                var cont = $(cond).children(".cond-cont");
+                var cont = $(cond).children(".cond-cont").children("li");
                 return [selectValue,{scope:$(cont).children(".cond-var-type").val(),vr:$(cont).children(".cond").children(".cond-vars").val(),vl:$(cont).children(".cond").children(".cond-vals").val()}];
                 break;
         }
@@ -107,21 +103,18 @@ $(function(){
         var selectValue = $(eff).children(".effects-select").val();
         switch(selectValue){
             case "setVar":
-                var cont = $(eff).children(".effect-cont");
+                var cont = $(eff).children(".effect-cont").children("li");
                 return [selectValue,{scope:$(cont).children(".eff-var-type").val(),vr:$(cont).children(".eff-vars").val(),vl:$(cont).children(".eff-vals").val()}];
                 break;
             case "changePage":
-                var cont = $(eff).children(".effect-cont");
-                return [selectValue,{page:$(cont).children(".eff-vars").val(),desc:$(cont).children(".effects-select").val()}];
+                var cont = $(eff).children(".effect-cont").children("li");
+                return [selectValue,{page:$(cont).children(".eff-pages").val(),desc:$(cont).children(".effect-page-to-desc").val()}];
                 break;
             case "enableChoice":
-                var cont = $(eff).children(".effect-cont");
+                var cont = $(eff).children(".effect-cont").children("li");
                 return [selectValue,{choice:$(cont).children(".page-choices").val()}];
                 break;
         }
-        console.log(selectValue)
-        console.log(eff)
-        
     }
     function createSaveForm(){
         $(selectedPage).parent().attr("text",$("#text-select textarea").val()); 
@@ -147,16 +140,15 @@ $(function(){
                 $(".onload-"+i).children(".cond-group").each(function(x,g){
                     groups[x] = {cond:[],effect:[]};
                     //Get conditions
-                    $(g).children(".conditions").children(".condition").each(function(a){
+                    $(g).children(".conditions").children(".condition").each(function(){
                         groups[x].cond.push(getSavableCondition(this));
                     });
                     //Get effects
-                    $(g).children(".effects").children(".effect").each(function(b){
+                    $(g).children(".effects").children(".effect").each(function(){
                         groups[x].effect.push(getSavableEffect(this));
                     });
                 });
                 var json = JSON.stringify(groups, null, 2);
-                console.log(json)
                 form.append('<input type="text" name="onload[]" value="'+json+'">');
             } else{
                 form.append('<input type="text" name="onload[]" value="[]">');
@@ -179,66 +171,24 @@ $(function(){
                 choice.page = $(".choice-"+id+" .pages-to")[j].value;
                 choice.group = [];
                 //Loop through the conditions and effects
-                var conds = $(".choice-"+id+":nth-child("+(j+1)+")").children(".conditions").children(".condition");
-                if(conds.length){
-                    choice.cond = [];
-                    $(conds).each(function(idx,con){
-                        choice.cond[idx] = [];
-                        //Set the cond name
-                        choice.cond[idx][0] = $(con).children(".conditions-select").last().val();
-                        //Set the cond props
-                        switch(choice.cond[idx][0]){
-                            case "checkVar":
-                                //Need the scope, vr, and vl.
-                                choice.cond[idx][1] = {
-                                    scope:$(con).children(".cond-cont").children(".cond-var-type").val(),
-                                    vr:$(con).children(".cond-cont").children(".cond").children(".cond-vars").val(),
-                                    vl:$(con).children(".cond-cont").children(".cond").children(".cond-vals").val()
-                                };
-                                break;
-                        }
+                var groups = $(".choice-"+id+":nth-child("+(j+1)+")").children(".cond-group");
+                if(groups.length){
+                    $(groups).each(function(idx,gr){
+                        choice.group[idx] = {cond:[],effect:[]};
+                        //Get conditions
+                        $(gr).children(".conditions").children(".condition").each(function(){
+                            choice.group[idx].cond.push(getSavableCondition(this));
+                        });
+                        //Get effects
+                        $(gr).children(".effects").children(".effect").each(function(){
+                            choice.group[idx].effect.push(getSavableEffect(this));
+                        });
                     });
-                } else {
-                    choice.cond = [];
-                }
-                var effect = $(".choice-"+id+":nth-child("+(j+1)+")").children(".effects").children(".effect");
-                if(effect.length){
-                    choice.effect = [];
-                    $(effect).each(function(idx,eff){
-                        choice.effect[idx] = [];
-                        //Set the effect name
-                        choice.effect[idx][0] = $(eff).children(".effects-select").last().val();
-                        //Set the effect props
-                        switch(choice.effect[idx][0]){
-                            case "setVar":
-                                //Need the scope, vr, and vl.
-                                choice.effect[idx][1] = {
-                                    scope:$(eff).children(".effect-cont").children(".effect-var-type").val(),
-                                    vr:$(eff).children(".effect-cont").children(".eff").children(".eff-vars").val(),
-                                    vl:$(eff).children(".effect-cont").children(".eff").children(".eff-vals").val()
-                                };
-                                break;
-                            case "changePage":
-                                choice.effect[idx][1] = {
-                                    page:$(eff).children(".effect-cont").children(".effect-pages").val(),
-                                    desc:$(eff).children(".effect-cont").children(".effect-page-to-desc").val()
-                                };
-                                break;
-                            case "enableChoice":
-                                choice.effect[idx][1] = {
-                                    page:$(eff).children(".effect-cont").children(".effect-pages").val()
-                                };
-                                break;
-                        }
-                    });
-                } else {
-                    choice.effect = [];
                 }
                 choices[id].push(choice);
             }
         }
         var json = JSON.stringify(choices, null, 2);
-        //console.log(json)
         //Send the choices as a JSON string
         form.append("<input type='text' name='choices' value='"+json+"'>");
         return form;
@@ -289,15 +239,15 @@ $(function(){
             $(".choice-"+id).find("select").eq(i).val($(select).val());
         });
         $(".scene-button").last().trigger("click");
-    });
+    });/*
     $('#add-new-onload').click( function(e) {
         //Only allow one onload
-        if(!$('.onload-'+$(selectedPage).parent().attr("id")).length){
+        if(!$('#onload ul li').length){
             $("#onload ul").append('<li class="onload-'+$(selectedPage).parent().attr("id")+' onload-li"><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
             //Loop through the pages and put them in the select
             appendPagesOptions($(".pages-to").last());
         }
-    });
+    });*/
     $('#add-new-choice').click( function(e) {
         $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"></input></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text" placeholder="Desc"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
         //Loop through the pages and put them in the select
@@ -306,8 +256,14 @@ $(function(){
     
     
     $(document).on("click",".add-new-group",function(){
-        $(this).parent().append('<div class="cond-group"><a class="remove-choice"><div class="btn btn-default">x</div></a><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
-        $(this).parent().children(".cond-group").last().trigger("click");
+        if($(this).parent().attr("id")==="onload"){
+            var pageId = $(selectedPage).parent().attr("id");
+            $(this).parent().children("ul").append('<li class="onload-'+pageId+' '+pageId+' onload-li"><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
+            $(this).parent().children("ul").children("li").last().append('<div class="cond-group"><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
+        } else {
+            $(this).parent().append('<div class="cond-group"><a class="remove-choice"><div class="btn btn-default">x</div></a><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
+            $(this).parent().children(".cond-group").last().trigger("click");
+        }
     });
     $(document).on("click",".add-new-condition",function(){
         if(selectedGroup){
@@ -346,7 +302,7 @@ $(function(){
     $('#save-event').click( function(e) {
         var form = createSaveForm();
         $("body").append(form);
-        //form.submit();
+        form.submit();
     });
     //END MAIN OPTIONS BUTTONS
     $(document).on('change', '#music-select select', function() {
@@ -363,9 +319,9 @@ $(function(){
         var val = $(this).val();
         switch(val){
             case "checkVar":
-                $(this).parent().append('<div class="cond-cont"><select class="cond-var-type"></select></div>');
-                appendVarTypes($(this).parent().children(".cond-cont").children(".cond-var-type").last());
-                $(this).parent().children(".cond-cont").children(".cond-var-type").trigger("change");
+                $(this).parent().append('<ul class="cond-cont"><li><select class="cond-var-type"></select></li></ul>');
+                appendVarTypes($(this).parent().children(".cond-cont").children("li").children(".cond-var-type").last());
+                $(this).parent().children(".cond-cont").children("li").children(".cond-var-type").trigger("change");
                 break;
         }
     });
@@ -375,7 +331,7 @@ $(function(){
         var val = $(this).val();
         switch(val){
             case "Event":
-                $(this).parent().append('<div class="cond"><select class="cond-vars"></select><input class="cond-vals" placeholder="value"></input></div>');
+                $(this).parent().append('<div class="cond"><select class="cond-vars"></select><input class="cond-vals" placeholder="value"></div>');
                 varFuncs.appendEventVars($(this).parent().children(".cond").children(".cond-vars").last());
                 break;
             case "Scene":
@@ -392,17 +348,18 @@ $(function(){
         var val = $(this).val();
         switch(val){
             case "setVar":
-                $(this).parent().append('<div class="effect-cont"><select class="effect-var-type"></select><div class="eff"><select class="eff-vars"></select><input class="eff-vals"></input></div></div>');
-                appendVarTypes($(this).parent().children(".effect-cont").children(".effect-var-type").last());
-                varFuncs["appendEventVars"]($(this).parent().children(".effect-cont").children(".eff").children(".eff-vars").last());
+                $(this).parent().append('<ul class="effect-cont"><li><select class="effect-var-type"></select></li><li><select class="eff-vars"></select><input class="eff-vals"></li></ul>');
+                appendVarTypes($(this).parent().children(".effect-cont").children("li").children(".effect-var-type").last());
+                varFuncs["appendEventVars"]($(this).parent().children(".effect-cont").children("li").children(".eff-vars").last());
                 break;
             case "changePage":
-                $(this).parent().append('<div class="effect-cont"><select class="effect-pages"></select><textarea class="effect-page-to-desc" placeholder="display text"></textarea></div>');
-                appendPagesOptions($(this).parent().children(".effect-cont").children(".effect-pages"));
+                $(this).parent().append('<ul class="effect-cont"><li><select class="effect-pages"></select></li><li><textarea class="effect-page-to-desc" placeholder="display text"></textarea></li></ul>');
+                appendPagesOptions($(this).parent().children(".effect-cont").children("li").children(".effect-pages"));
                 break;
             case "enableChoice":
-                $(this).parent().append('<div class="effect-cont"><select class="page-choices"></select></div>');
-                appendPageChoices($(this).parent().children(".effect-cont").children(".page-choices"));
+                var id=getPageId($(this).parent().parent().parent().parent());
+                $(this).parent().append('<ul class="effect-cont"><li><select class="page-choices '+id+'"></select></li></ul>');
+                appendPageChoices($(this).parent().children(".effect-cont").children("li").children(".page-choices"),id);
                 break;
         }
     });
@@ -517,7 +474,9 @@ $(function(){
     appendEffects($(".effects-select"));
     varFuncs["appendEventVars"]($(".eff-vars"));
     appendPagesOptions($(".effect-pages"));
-    appendPageChoices($(".page-choices"));
+    $(".page-choices").each(function(i,page){
+        appendPageChoices(page,getPageId(page));
+    });
     //Hide all onloads
     $(".onload-li").hide();
     //Hide all choices
