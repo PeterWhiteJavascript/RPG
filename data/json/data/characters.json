@@ -23,7 +23,7 @@
         },
         "value":50,
         "method":50,
-        "charClass":"knight",
+        "charClass":"legionnaire",
         "exp":0
     },
     "astrea":{
@@ -75,7 +75,7 @@
         },
         "value":50,
         "method":50,
-        "charClass":"barbarian",
+        "charClass":"rager",
         "exp":90
     }
 }

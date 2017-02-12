@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            table{
+                border-collapse: collapse;
+                    border-spacing: 0;
+                    width:100%;
+                    height:100%;
+                    margin:0px;padding:0px;
+
+            }tr:last-child td:last-child {
+                    -moz-border-radius-bottomright:0px;
+                    -webkit-border-bottom-right-radius:0px;
+                    border-bottom-right-radius:0px;
+            }
+            table tr:first-child td:first-child {
+                    -moz-border-radius-topleft:0px;
+                    -webkit-border-top-left-radius:0px;
+                    border-top-left-radius:0px;
+            }
+            table tr:first-child td:last-child {
+                    -moz-border-radius-topright:0px;
+                    -webkit-border-top-right-radius:0px;
+                    border-top-right-radius:0px;
+            }tr:last-child td:first-child{
+                    -moz-border-radius-bottomleft:0px;
+                    -webkit-border-bottom-left-radius:0px;
+                    border-bottom-left-radius:0px;
+            }tr:hover td{
+                    background-color:#ffffff;
+
+
+            }
+            td{
+                    vertical-align:middle;
+                            background:-o-linear-gradient(bottom, #aad4ff 5%, #ffffff 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #aad4ff), color-stop(1, #ffffff) ); 
+                    background:-moz-linear-gradient( center top, #aad4ff 5%, #ffffff 100% );
+                    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#aad4ff", endColorstr="#ffffff");	background: -o-linear-gradient(top,#aad4ff,ffffff);
+
+                    background-color:#aad4ff;
+
+                    border:1px solid #000000;
+                    border-width:0px 1px 1px 0px;
+                    text-align:left;
+                    padding:7px;
+                    font-size:15px;
+                    font-family:Arial;
+                    font-weight:normal;
+                    color:#000000;
+
+            }tr:last-child td{
+                    border-width:0px 1px 0px 0px;
+            }tr td:last-child{
+                    border-width:0px 0px 1px 0px;
+            }tr:last-child td:last-child{
+                    border-width:0px 0px 0px 0px;
+            }
+            tr:first-child td{
+                            background:-o-linear-gradient(bottom, #005fbf 5%, #003f7f 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #005fbf), color-stop(1, #003f7f) );
+                    background:-moz-linear-gradient( center top, #005fbf 5%, #003f7f 100% );
+                    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf", endColorstr="#003f7f");	background: -o-linear-gradient(top,#005fbf,003f7f);
+
+                    background-color:#005fbf;
+                    border:0px solid #000000;
+                    text-align:center;
+                    border-width:0px 0px 1px 1px;
+                    font-size:14px;
+                    font-family:Arial;
+                    font-weight:bold;
+                    color:#ffffff;
+            }
+            tr:first-child:hover td{
+                    background:-o-linear-gradient(bottom, #005fbf 5%, #003f7f 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #005fbf), color-stop(1, #003f7f) );
+                    background:-moz-linear-gradient( center top, #005fbf 5%, #003f7f 100% );
+                    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf", endColorstr="#003f7f");	background: -o-linear-gradient(top,#005fbf,003f7f);
+
+                    background-color:#005fbf;
+            }
+            tr:first-child td:first-child{
+                    border-width:0px 0px 1px 0px;
+            }
+            tr:first-child td:last-child{
+                    border-width:0px 0px 1px 1px;
+            }
+        </style>
+    </head>
+    <body>
+        <select id="chapters"></select>
+        <button onclick="generateCharacter()">Generate New Character</button>
+        <button onclick="deleteCharacter()">Delete Top Character</button>
+        <table id="charTable">
+            <tr>
+                <th>Level</th>
+                <th>Nationality</th>
+                <th>Character Class</th>
+                <th>Gender</th>
+                <th>Value</th>
+                <th>Method</th>
+                <th>Personality</th>
+            </tr>
+        </table>
+        <script>
+            
+            var personalities = {
+                "muchValues":[
+                    "A little",
+                    "Somewhat",
+                    "",
+                    "Very",
+                    "Extremely"
+                ],
+                "traits":{
+                    "sensitive":{
+                        "name":"Sensitive",
+                        "much":[
+                            {"desc":"Changes in Morale 10% larger"},
+                            {"desc":"Changes in Morale 25% larger"},
+                            {"desc":"Changes in Morale 50% larger"},
+                            {"desc":"Changes in Morale 100% larger"},
+                            {"desc":"Changes in Morale 150% larger"}
+                        ]
+                    },
+                    "impassive":{
+                        "name":"Impassive",
+                        "much":[
+                            {"desc":"Changes in Morale 10% smaller (minimum 1)"},
+                            {"desc":"Changes in Morale 25% smaller (minimum 1)"},
+                            {"desc":"Changes in Morale 50% smaller (minimum 1)"},
+                            {"desc":"Changes in Morale 100% smaller (minimum 1)"},
+                            {"desc":"Changes in Morale 150% smaller (minimum 1)"}
+                        ]
+                    },
+                    "unmotivated":{
+                        "name":"Unmotivated",
+                        "much":[
+                            {"desc":"EXP earned reduced by 5%"},
+                            {"desc":"EXP earned reduced by 10%"},
+                            {"desc":"EXP earned reduced by 15%"},
+                            {"desc":"EXP earned reduced by 20%"},
+                            {"desc":"EXP earned reduced by 25%"}
+                        ]
+                    },
+                    "curious":{
+                        "name":"Curious",
+                        "much":[
+                            {"desc":"EXP earned increased by 5%"},
+                            {"desc":"EXP earned increased by 10%"},
+                            {"desc":"EXP earned increased by 15%"},
+                            {"desc":"EXP earned increased by 20%"},
+                            {"desc":"EXP earned increased by 25%"}
+                        ]
+                    },
+                    "clingy":{
+                        "name":"Clingy",
+                        "much":[
+                            {"desc":"Changes in Loyalty 10% larger"},
+                            {"desc":"Changes in Loyalty 25% larger"},
+                            {"desc":"Changes in Loyalty 50% larger"},
+                            {"desc":"Changes in Loyalty 100% larger"},
+                            {"desc":"Changes in Loyalty 150% larger"}
+                        ]
+                    },
+                    "nonpartisan":{
+                        "name":"Nonpartisan",
+                        "much":[
+                            {"desc":"Changes in Loyalty 10% smaller (minimum 1)"},
+                            {"desc":"Changes in Loyalty 25% smaller (minimum 1)"},
+                            {"desc":"Changes in Loyalty 50% smaller (minimum 1)"},
+                            {"desc":"Changes in Loyalty 100% smaller (minimum 1)"},
+                            {"desc":"Changes in Loyalty 150% smaller (minimum 1)"}
+                        ]
+                    },
+                    "charismatic":{
+                        "name":"Charismatic",
+                        "much":[
+                            {"desc":"+1 to Morale and Loyalty boosts given to other Followers"},
+                            {"desc":"+2 to Morale and Loyalty boosts given to other Followers"},
+                            {"desc":"+3 to Morale and Loyalty boosts given to other Followers"},
+                            {"desc":"+4 to Morale and Loyalty boosts given to other Followers"},
+                            {"desc":"+5 to Morale and Loyalty boosts given to other Followers"}
+                        ]
+                    },
+                    "awkward":{
+                        "name":"Awkward",
+                        "much":[
+                            {"desc":"-1 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                            {"desc":"-2 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                            {"desc":"-3 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                            {"desc":"-4 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                            {"desc":"-5 to Morale and Loyalty boosts given to other Followers (minimum 1)"}
+                        ]
+                    },
+                    "violent":{
+                        "name":"Violent",
+                        "much":[
+                            {"desc":"+1 additional Morale from defeating an enemy"},
+                            {"desc":"+2 additional Morale from defeating an enemy"},
+                            {"desc":"+3 additional Morale from defeating an enemy"},
+                            {"desc":"+4 additional Morale from defeating an enemy"},
+                            {"desc":"+5 additional Morale from defeating an enemy"}
+                        ]
+                    },
+                    "pacifistic":{
+                        "name":"Pacifistic",
+                        "much":[
+                            {"desc":"-1 additional Morale from defeating an enemy"},
+                            {"desc":"-2 additional Morale from defeating an enemy"},
+                            {"desc":"-3 additional Morale from defeating an enemy"},
+                            {"desc":"-4 additional Morale from defeating an enemy"},
+                            {"desc":"-5 additional Morale from defeating an enemy"}
+                        ]
+                    },
+                    "hedonistic":{
+                        "name":"Hedonistic",
+                        "much":[
+                            {"desc":"+1 additional Morale from Feasts"},
+                            {"desc":"+2 additional Morale from Feasts"},
+                            {"desc":"+3 additional Morale from Feasts"},
+                            {"desc":"+4 additional Morale from Feasts"},
+                            {"desc":"+5 additional Morale from Feasts"}
+                        ]
+                    },
+                    "ascetic":{
+                        "name":"Ascetic",
+                        "much":[
+                            {"desc":"Only 75% Morale boost from Feasts"},
+                            {"desc":"Only 25% Morale boost from Feasts"},
+                            {"desc":"No Morale boost from Feasts"},
+                            {"desc":"No Morale boost from Feasts plus lose 3 Morale"},
+                            {"desc":"No Morale boost from Feasts plus lose 5 Morale"}
+                        ]
+                    },
+                    "extraverted":{
+                        "name":"Extraverted",
+                        "much":[
+                            {"desc":"+1 Morale after a new Follower is recruited"},
+                            {"desc":"+2 Morale after a new Follower is recruited"},
+                            {"desc":"+3 Morale after a new Follower is recruited"},
+                            {"desc":"+4 Morale after a new Follower is recruited"},
+                            {"desc":"+5 Morale after a new Follower is recruited"}
+                        ]
+                    },
+                    "shy":{
+                        "name":"Shy",
+                        "much":[
+                            {"desc":"-1 Morale after a new Follower is recruited"},
+                            {"desc":"-2 Morale after a new Follower is recruited"},
+                            {"desc":"-3 Morale after a new Follower is recruited"},
+                            {"desc":"-4 Morale after a new Follower is recruited"},
+                            {"desc":"-5 Morale after a new Follower is recruited"}
+                        ]
+                    }
+                }
+            };
+            var traitsKeys = Object.keys(personalities.traits);
+            //The levels and nationalities spread
+            var levNatSpread = {
+                "scenes":{
+                    "Chapter1-1":{
+                        "startLevel":1,
+                        "spread":[75,15,7,3],
+                        "natSpread":[80,10,7,1,2]
+                    },
+                    "Chapter1-2":{
+                        "startLevel":3,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[80,5,4,1,10]
+                    },
+                    "Chapter1-3":{
+                        "startLevel":7,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[80,15,3,1,1]
+                    },
+                    "Chapter1-4":{
+                        "startLevel":11,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[70,5,15,5,5]
+                    },
+                    "Chapter2-1":{
+                        "startLevel":15,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[5,15,75,1,4]
+                    },
+                    "Chapter2-2":{
+                        "startLevel":19,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[5,15,75,1,4]
+                    },
+                    "Chapter2-3":{
+                        "startLevel":23,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[5,15,75,1,4]
+                    },
+                    "Chapter2-4":{
+                        "startLevel":27,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[5,15,75,1,4]
+                    },
+                    "Chapter3-1":{
+                        "startLevel":31,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[15,60,15,7,3]
+                    },
+                    "Chapter3-2":{
+                        "startLevel":35,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[2,2,1,94,1]
+                    },
+                    "Chapter3-3":{
+                        "startLevel":39,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[4,10,4,80,2]
+                    },
+                    "Chapter3-4":{
+                        "startLevel":43,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[2,2,1,94,1]
+                    },
+                    "FinalChapter":{
+                        "startLevel":47,
+                        "spread":[5,20,40,20,10,5],
+                        "natSpread":[60,10,10,10,10]
+                    }
+                }
+            };
+            var nationalities = ["Venorian","Dardorian","Aliudramilan","Talumpatuan","Nomadic"];
+            var values = ["Egoist","Nepotist","Altruist"];
+            var methodologies = ["Pragmatic","Intuitive","Kind"];
+            var classNames = ["Legionnaire","Rager","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"];
+            var natClasses = {
+                "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
+                "dardorian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
+                "aliudraman":{"classSpread":[15, 4, 1, 25, 15, 15, 3, 5, 17]},
+                "talumpatuan":{"classSpread":[8, 15, 5, 8, 12, 12, 10, 17, 13]},
+                "nomadic":{"classSpread":[1, 60, 1, 1, 10, 10, 2, 5, 10]}
+            };
+            var natKeys = Object.keys(natClasses);
+            var classes = {
+                "legionnaire":{"gender":[90,50,95,40,60],"value":[[30,40,30],[5,75,20],[20,40,40],[30,30,40],[20,60,20]],"methodology":[[45,30,25],[45,30,25],[45,30,25],[45,30,25],[45,30,25]]},
+                "rager":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
+                "vanguard":{"gender":[75,40,95,10,60],"value":[[20,50,30],[50,25,25],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[35,35,30],[35,35,30],[35,35,30],[35,35,30],[35,35,30]]},
+                "assassin":{"gender":[60,30,5,80,60],"value":[[25,50,25],[33,34,33],[33,44,23],[30,40,30],[20,60,20]],"methodology":[[90,9,1],[90,9,1],[90,9,1],[90,9,1],[90,9,1]]},
+                "skirmisher":{"gender":[80,50,5,70,60],"value":[[40,30,30],[15,40,45],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[40,40,20],[40,40,20],[40,40,20],[40,40,20],[40,40,20]]},
+                "archer":{"gender":[30,50,5,40,60],"value":[[35,35,30],[33,34,33],[40,30,30],[30,30,40],[20,60,20]],"methodology":[[34,33,33],[34,33,33],[34,33,33],[34,33,33],[34,33,33]]},
+                "illusionist":{"gender":[60,40,40,20,30],"value":[[50,30,20],[50,40,10],[50,40,10],[20,30,50],[20,60,20]],"methodology":[[30,30,40],[30,30,40],[30,30,40],[30,30,40],[30,30,40]]},
+                "elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
+                "healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
+            };
+            var classKeys = Object.keys(classes);
+            
+            var genders = ["Male","Female"];
+            //Returns the index of an array based off of a random number
+            function getIdx(group,num){
+                //Loop through elements in array until a match is found
+                for(var i=0;i<group.length;i++){
+                    var sum = group.slice(0,i+1).reduce(function(a,b){return a+b;},0);
+                    if(num<=sum){
+                        return i;
+                    }
+                }
+            };
+            function deleteCharacter(){
+                document.getElementById("charTable").deleteRow(1);
+            };
+            function generateCharacter(){
+                var chapter = document.getElementById("chapters").value;
+                var charLevel = levNatSpread.scenes[chapter].startLevel+getIdx(levNatSpread.scenes[chapter].spread,Math.ceil(Math.random()*100));
+                var natNum = getIdx(levNatSpread.scenes[chapter].natSpread,Math.ceil(Math.random()*100));
+                var charNat = natKeys[natNum];
+                var classNum = getIdx(natClasses[charNat].classSpread,Math.ceil(Math.random()*100));
+                var charClass = classKeys[classNum];
+                var charGender = genders[getIdx([classes[charClass].gender[natNum],100],Math.ceil(Math.random()*100))];
+                var charValue = values[getIdx(classes[charClass].value[natNum],Math.ceil(Math.random()*100))];
+                var charMethod = methodologies[getIdx(classes[charClass].methodology[natNum],Math.ceil(Math.random()*100))];
+                
+                var randPersonalityText = personalities.muchValues[Math.floor(Math.random()*personalities.muchValues.length)];
+                var randPersonality = personalities.traits[traitsKeys[Math.floor(Math.random()*traitsKeys.length)]];
+                var char =  {
+                    level:charLevel,
+                    nationality:nationalities[natNum],
+                    charClass:classNames[classNum],
+                    gender:charGender,
+                    value:charValue,
+                    method:charMethod,
+                    personality:randPersonalityText+" "+randPersonality.name
+                };
+                insertCharToTable(char);
+                return char;
+            }
+            function insertCharToTable(char){
+                var table = document.getElementById("charTable");
+                var row = table.insertRow();
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var level = row.insertCell(0);
+                var nationality = row.insertCell(1);
+                var charClass = row.insertCell(2);
+                var gender = row.insertCell(3);
+                var value = row.insertCell(4);
+                var method = row.insertCell(5);
+                var personality = row.insertCell(6);
+
+                // Add some text to the new cells:
+                level.innerHTML = char.level;
+                nationality.innerHTML = char.nationality;
+                charClass.innerHTML = char.charClass;
+                gender.innerHTML = char.gender;
+                value.innerHTML = char.value;
+                method.innerHTML = char.method;
+                personality.innerHTML = char.personality;
+            };
+            var chapters = Object.keys(levNatSpread.scenes);
+            //Create the select items
+            var select = document.getElementById("chapters");
+            chapters.forEach(function(chapter){
+                var option = document.createElement("option");
+                option.text = chapter;
+                select.add(option);
+            });
+        </script>
+    </body>
+</html>

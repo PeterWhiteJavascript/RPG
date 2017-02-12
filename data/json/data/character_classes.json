@@ -1,7 +1,7 @@
 {
-    "knight":{
-        "name":"Knight",
-        "description":"A cool knight.",
+    "legionnaire":{
+        "name":"Legionnaire",
+        "description":"A cool legionnaire.",
         "baseStats":{
             "str":15,
             "end":12,
@@ -19,6 +19,27 @@
         "move":4,
         "zoc":1
     },
+    "rager":{
+        "name":"Rager",
+        "description":"A cool rager.",
+        "baseStats":{
+            "str":20,
+            "end":15,
+            "dex":5,
+            "wsk":10,
+            "rfl":10
+        },
+        "levelUp":{
+            "str":3,
+            "end":1,
+            "dex":1,
+            "wsk":1,
+            "rfl":0
+        },
+        "move":4,
+        "zoc":1
+    },
+    
     "vanguard":{
         "name":"Vanguard",
         "description":"A cool vanguard.",
@@ -39,27 +60,6 @@
         "move":4,
         "zoc":2
     },
-    "barbarian":{
-        "name":"Barbarian",
-        "description":"A cool barbarian.",
-        "baseStats":{
-            "str":20,
-            "end":15,
-            "dex":5,
-            "wsk":10,
-            "rfl":10
-        },
-        "levelUp":{
-            "str":3,
-            "end":1,
-            "dex":1,
-            "wsk":1,
-            "rfl":0
-        },
-        "move":4,
-        "zoc":1
-    },
-    
     "archer":{
         "name":"Archer",
         "description":"A cool archer.",
@@ -141,9 +141,9 @@
         "move":3,
         "zoc":0
     },
-    "pyromancer":{
-        "name":"Pyromancer",
-        "description":"A cool pyromancer.",
+    "elementalist":{
+        "name":"Elementalist",
+        "description":"A cool elementalist.",
         "baseStats":{
             "str":2,
             "end":12,
