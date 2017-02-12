@@ -10,7 +10,7 @@ $music = $_POST['music'];
 $bg = $_POST['bg'];
 $text = $_POST['text'];
 $choices = json_decode($_POST['choices'],true);
-
+$onloads = json_decode($_POST['onloads'],true);
 
 if(isset($_POST['varnames'])){
     $varnames = $_POST['varnames'];
@@ -29,7 +29,8 @@ for($i=0;$i<count($pagesid);$i++){
         'music' => $music[$i],
         'bg' => $bg[$i],
         'text' => $text[$i],
-        'choices' => (object)[]
+        'choices' => (object)[],
+        'onload' => $onloads[$i]
     ];
     if(isset($choices[$pagesid[$i]])){
         $pages[$i]->choices = $choices[$pagesid[$i]];

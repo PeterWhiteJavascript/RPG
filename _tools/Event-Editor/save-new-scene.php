@@ -1,7 +1,6 @@
 <?php
 include("php-config.php");
 $name = addDashes($_POST["name"]);
-
 $desc = $_POST["desc"];
 //Make sure there's no other scene with this name
 $directory = '../../data/json/story/scenes';
@@ -25,10 +24,25 @@ if (in_array($name.'.json', $scanned_directory)) {
     if (file_put_contents('../../data/json/story/scenes/'.$name.'.json', $json)){
         //Create a new directory in the events folder
         mkdir("../../data/json/story/events/".$name);
-        header("Location: load.php");
+        
     } else {
         echo "Oops! Error creating json file...";
     }
 }
-
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <?php include 'config.php';?>
+    </head>
+    <body>
+        <div id="title"><?php echo $name; ?></div>
+        <script>
+        var scene = $("#title").text();
+        var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
+        form.submit();
+        </script>
+    </body>
+</html>
 

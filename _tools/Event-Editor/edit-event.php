@@ -55,7 +55,7 @@ if(!in_array($name, $sceneData['eventOrder'])){
         }
     }
     $sceneData['eventOrder'] = array_values($sceneData['eventOrder']);
-    file_put_contents("../../data/json/story/events/".$scene.".json", json_encode($sceneData,null,true));
+    file_put_contents("../../data/json/story/scenes/".$scene.".json", json_encode($sceneData,JSON_PRETTY_PRINT));
 }
 ?>
 

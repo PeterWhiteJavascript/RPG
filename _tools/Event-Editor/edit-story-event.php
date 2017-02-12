@@ -217,13 +217,14 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                 $display = $value2['displayText'];
                                 $desc = $value2['desc'];
                                 $page = $value2['page'];
+                                $disabled = $value2['disabled']
                         ?>
                                 <li class="choice-<?php echo $key; ?> <?php echo $key; ?> choice-li">
                                     <a class="remove-choice">
                                         <div class="btn btn-default">x</div>
                                     </a>
                                     <div><p class="editor-descriptor">Display Text: </p><input class="display-text" value="<?php echo $display; ?>"></div>
-                                    <div><p class="editor-descriptor">Enabled: </p><div class="btn btn-default disable">Enabled</div></div>
+                                    <div><p class="editor-descriptor">Enabled: </p><div class="btn btn-default disable"><?php echo $disabled; ?></div></div>
                                     <div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text"><?php echo $desc; ?></textarea></div>
                                     <div><p class="editor-descriptor">To Page: </p><select class="pages-to" initialValue="<?php echo $page; ?>"></select></div>
                                     <p class="editor-descriptor">Condition/Effect Groups: </p>

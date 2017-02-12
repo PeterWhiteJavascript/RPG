@@ -42,7 +42,7 @@ $(function(){
             $(to).append('<option value="'+types[i]+'">'+types[i]+'</option>');
         }
     };
-    function getPageId(page){
+    function getPageId(page){console.log(page)
         return $(page).attr("class").split(' ')[1];
     }
     //Append all choices on the current page
@@ -122,6 +122,7 @@ $(function(){
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
         var ids = [];
+        var onloads = [];
         $("#editor-variables ul li").each(function(i,li){
             form.append('<input type="text" name="varnames[]" value="'+$(li).children(".menu-button").children(".var-name").val()+'">');
             form.append('<input type="text" name="varvalues[]" value="'+$(li).children(".menu-button").children(".var-value").val()+'">');
@@ -148,16 +149,14 @@ $(function(){
                         groups[x].effect.push(getSavableEffect(this));
                     });
                 });
-                var json = JSON.stringify(groups, null, 2);
-                form.append('<input type="text" name="onload[]" value="'+json+'">');
+                onloads.push(groups);
             } else{
-                form.append('<input type="text" name="onload[]" value="[]">');
+                onloads.push([]);
             }
         });
-        var onload = [];
-        //Cond/effects from onload for each id
-        onload[i] = [];
-        
+        var json = JSON.stringify(onloads, null, 2);
+        //Send the choices as a JSON string
+        form.append("<input type='text' name='onloads' value='"+json+"'>");
         var choices = {};
         //Loop through each page's id. All pages are looped
         for(var i=0;i<ids.length;i++){
@@ -169,6 +168,7 @@ $(function(){
                 choice.displayText = $(".choice-"+id+" .display-text")[j].value;
                 choice.desc = $(".choice-"+id+" .desc-text")[j].value;
                 choice.page = $(".choice-"+id+" .pages-to")[j].value;
+                choice.disabled = $(".choice-"+id+" .disable")[j].innerHTML;
                 choice.group = [];
                 //Loop through the conditions and effects
                 var groups = $(".choice-"+id+":nth-child("+(j+1)+")").children(".cond-group");
@@ -197,7 +197,7 @@ $(function(){
     
     $('#add-new-variable').click( function(e) {
         uniqueVars++;
-        $("#editor-variables ul").append('<li><div class="menu-button var-button"><input class="var-name" value="Var'+uniqueVars+'" placeholder="varname"></input><input class="var-value" value="0" placeholder="value"></input></div></li>');
+        $("#editor-variables ul").append('<li><div class="menu-button var-button"><input class="var-name" value="Var'+uniqueVars+'" placeholder="varname"><input class="var-value" value="0" placeholder="value"></div></li>');
 
     });
     
@@ -239,17 +239,9 @@ $(function(){
             $(".choice-"+id).find("select").eq(i).val($(select).val());
         });
         $(".scene-button").last().trigger("click");
-    });/*
-    $('#add-new-onload').click( function(e) {
-        //Only allow one onload
-        if(!$('#onload ul li').length){
-            $("#onload ul").append('<li class="onload-'+$(selectedPage).parent().attr("id")+' onload-li"><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
-            //Loop through the pages and put them in the select
-            appendPagesOptions($(".pages-to").last());
-        }
-    });*/
+    });
     $('#add-new-choice').click( function(e) {
-        $("#choices ul").append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"></input></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text" placeholder="Desc"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
+        $("#choices ul").first().append('<li class="choice-'+$(selectedPage).parent().attr("id")+' choice-li"><a class="remove-choice"><div class="btn btn-default">x</div></a><div><p class="editor-descriptor">Display Text: </p><input class="display-text" placeholder="Choice"><div><p class="editor-descriptor">Enabled: </p><div class="btn btn-default disable">Enabled</div></div></div><div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text" placeholder="Desc"></textarea></div><div><p class="editor-descriptor">To Page: </p><select class="pages-to"></select><p class="editor-descriptor">Condition/Effect Groups: </p><a class="add-new-group"><div class="btn btn-default">Add Group</div></a> <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a> <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a></li>');
         //Loop through the pages and put them in the select
         appendPagesOptions($(".pages-to").last());
     });
@@ -260,6 +252,7 @@ $(function(){
             var pageId = $(selectedPage).parent().attr("id");
             $(this).parent().children("ul").append('<li class="onload-'+pageId+' '+pageId+' onload-li"><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
             $(this).parent().children("ul").children("li").last().append('<div class="cond-group"><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
+            $(this).parent().children("ul").children("li").last().children(".cond-group").trigger("click");
         } else {
             $(this).parent().append('<div class="cond-group"><a class="remove-choice"><div class="btn btn-default">x</div></a><div class="conditions"><p class="editor-descriptor">Conditions: </p></div><div class="effects"><p class="editor-descriptor">Effect: </p></div></div>');
             $(this).parent().children(".cond-group").last().trigger("click");
@@ -369,7 +362,7 @@ $(function(){
         var val = $(this).val();
         switch(val){
             case "Event":
-                $(this).parent().append('<div class="eff"><select class="eff-vars"></select><input class="eff-vals"></input></div>');
+                $(this).parent().append('<div class="eff"><select class="eff-vars"></select><input class="eff-vals"></div>');
                 varFuncs.appendEventVars($(this).parent().children(".eff").children(".eff-vars").last());
                 break;
             case "Scene":
@@ -410,7 +403,7 @@ $(function(){
             if($(selectedPage).find(':first-child').is("div")){
                 var name = $(selectedPage).find(':first-child').text();
                 $(selectedPage).find(':first-child').remove();
-                $(selectedPage).append('<input class="rename-page" origValue="'+name+'" value="'+name+'"></input>');
+                $(selectedPage).append('<input class="rename-page" origValue="'+name+'" value="'+name+'">');
                 $(selectedPage).find(':first-child').select();
                 $(selectedPage).find(':first-child').focusout(finishEditPageName);
                 $(selectedPage).find(':first-child').change(finishEditPageName);

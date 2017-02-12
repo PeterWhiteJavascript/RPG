@@ -1,0 +1,98 @@
+{
+    "name": "ASD",
+    "desc": "wafawf",
+    "kind": "story",
+    "vrs": {
+        "Var1": "0"
+    },
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "This is a choice test!",
+            "choices": [
+                {
+                    "displayText": "Go to set the var to the correct value to display the hidden option",
+                    "desc": "The var is about to be set on load of the other page!",
+                    "page": "Page 2",
+                    "disabled": "Enabled",
+                    "group": []
+                },
+                {
+                    "displayText": "Hidden Option",
+                    "desc": "The var is set and this is enabled!",
+                    "page": "Page 3",
+                    "disabled": "Disabled",
+                    "group": []
+                }
+            ],
+            "onload": [
+                {
+                    "cond": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Event",
+                                "vr": "Var1",
+                                "vl": "1"
+                            }
+                        ]
+                    ],
+                    "effect": [
+                        [
+                            "enableChoice",
+                            {
+                                "choice": "Hidden Option"
+                            }
+                        ],
+                        [
+                            "setVar",
+                            {
+                                "vr": "Var1",
+                                "vl": ""
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Page 2",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "The var is now set!",
+            "choices": [
+                {
+                    "displayText": "Go Back",
+                    "desc": "You will see the hidden option on the load of the page.",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "group": []
+                }
+            ],
+            "onload": [
+                {
+                    "cond": [],
+                    "effect": [
+                        [
+                            "setVar",
+                            {
+                                "vr": "Var1",
+                                "vl": "1"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Page 3",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "You made it to the hidden page!",
+            "choices": [],
+            "onload": []
+        }
+    ]
+}

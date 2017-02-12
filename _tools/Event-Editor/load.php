@@ -26,10 +26,10 @@ $scanned_directory = array_diff(scandir($directory), array('..', '.'));
                     <div class="desc-text"></div>
                 </div>
                 <ul class="menu right btn-group">
+                    <li><a id="create-new-scene"><div class="menu-button btn btn-default">Create New Scene</div></a></li>
                     <li><a id="open-scene"><div class="menu-button btn btn-default">Open Scene</div></a></li>
                     <li><a id="edit-scene"><div class="menu-button btn btn-default">Edit Scene</div></a></li>
                     <li><a id="delete-scene"><div class="menu-button btn btn-default">Delete Scene</div></a></li>
-                    <li><a id="create-new-scene"><div class="menu-button btn btn-default">Create New Scene</div></a></li>
                 </ul>
                 <div id="footer"><a href="index.php"><div class="menu-button btn btn-default">BACK</div></a></div>
             </div>

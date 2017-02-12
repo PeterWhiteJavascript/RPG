@@ -1,5 +1,6 @@
 Quintus.UIObjects=function(Q){
     $(function(){
+        //When clicking a choice
         $('body').on('click', '.choice-div', function() {
             Q.storyController.p.choice = Q.storyController.p.pages[Q.storyController.p.pageNum].choices[$(".choice-div").index(this)];
             //Check if something happens before doing the default change page
@@ -35,7 +36,13 @@ Quintus.UIObjects=function(Q){
         },
         insertPage:function(num){
             var page = this.p.pages[num];
-            
+            //Do the onload conditions/effects
+            for(var i=0;i<page.onload.length;i++){
+                var on = page.onload[i];
+                if(this.checkConds(on.cond)){
+                    this.executeEffects(on.effect);
+                };
+            }
             //Make the background correct
             this.p.bgImage.p.asset = page.bg;
             
@@ -47,7 +54,9 @@ Quintus.UIObjects=function(Q){
             $(contentBox).append(text);
             //Show the choices
             page.choices.forEach(function(choice){
-                $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
+                if(choice.disabled==="Enabled"){
+                    $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
+                }
             });
         },
         insertChoiceDesc:function(desc){
@@ -72,7 +81,7 @@ Quintus.UIObjects=function(Q){
         changePage:function(pageName){
             var lastPage = this.p.pages[this.p.pageNum];
             var pageNum = this.p.pageNum = this.getPageNum(pageName);
-            this.removePage(); 
+            this.removePage();
             this.insertPage(pageNum);
         },
         checkConds:function(cond){
@@ -95,6 +104,11 @@ Quintus.UIObjects=function(Q){
         inserted:function(){
             this.insertPage(this.p.pageNum);
         },
+        getChoice:function(page,choice){
+            return page.choices.filter(function(ch){
+                return ch.displayText===choice;
+            })[0];
+        },
         condFuncs:{
             checkVar:function(t,obj){
                 if(t.p.vrs[obj.vr]===obj.vl){
@@ -108,6 +122,10 @@ Quintus.UIObjects=function(Q){
             },
             changePage:function(t,obj){
                 t.p.choice = obj;
+            },
+            enableChoice:function(t,obj){
+                //Find the page choice and enable it.
+                t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = "Enabled";
             }
         }
     });
