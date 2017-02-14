@@ -3,6 +3,10 @@ $(function(){
         axis: "y"
     });
     $( ".sortable" ).disableSelection();
+    
+    var scenes = JSON.parse($("#scenes").attr("value"));
+    var scenesKeys = Object.keys(scenes);
+    
     //Store the page that has been clicked on
     var selectedPage;
     //Store the variable that is selected
@@ -23,8 +27,21 @@ $(function(){
     var effects = [
         "setVar",
         "changePage",
-        "enableChoice"
+        "enableChoice",
+        "changeEvent"
     ];
+    function appendScenes(to){
+        for(var i=0;i<scenesKeys.length;i++){
+            $(to).append('<option value="'+scenesKeys[i]+'">'+scenesKeys[i]+'</option>');
+        }
+    }
+    function appendEvents(to,scene){
+        if(scene){
+            for(var i=0;i<scenes[scene].length;i++){
+                $(to).append('<option value="'+scenes[scene][i]+'">'+scenes[scene][i]+'</option>');
+            }
+        }
+    }
     function appendConditions(to){
         for(var i=0;i<conditions.length;i++){
             $(to).append('<option value="'+conditions[i]+'">'+conditions[i]+'</option>');
@@ -42,11 +59,11 @@ $(function(){
             $(to).append('<option value="'+types[i]+'">'+types[i]+'</option>');
         }
     };
-    function getPageId(page){console.log(page)
+    function getPageId(page){
         return $(page).attr("class").split(' ')[1];
     }
     //Append all choices on the current page
-    function appendPageChoices(to,pageId){console.log(pageId)
+    function appendPageChoices(to,pageId){
         $(".choice-"+pageId).each(function(){
             $(to).append('<option value="'+$(this).children("div").first().children(".display-text").val()+'">'+$(this).children("div").first().children(".display-text").val()+'</option>');
         });
@@ -113,6 +130,10 @@ $(function(){
             case "enableChoice":
                 var cont = $(eff).children(".effect-cont").children("li");
                 return [selectValue,{choice:$(cont).children(".page-choices").val()}];
+                break;
+            case "changeEvent":
+                var cont = $(eff).children(".effect-cont").children("li");
+                return [selectValue,{scene:$(cont).children(".scene-to").val(),event:$(cont).children(".event-to").val()}];
                 break;
         }
     }
@@ -354,6 +375,11 @@ $(function(){
                 $(this).parent().append('<ul class="effect-cont"><li><select class="page-choices '+id+'"></select></li></ul>');
                 appendPageChoices($(this).parent().children(".effect-cont").children("li").children(".page-choices"),id);
                 break;
+            case "changeEvent":
+                $(this).parent().append('<ul class="effect-cont"><li><select class="scene-to"></select></li></ul>');
+                appendScenes($(this).parent().children(".effect-cont").children("li").children(".scene-to"));
+                $(this).parent().children(".effect-cont").children("li").children(".scene-to").trigger("change");
+                break;
         }
     });
     $(document).on('change', '.effect-var-type', function() {
@@ -372,6 +398,11 @@ $(function(){
                 //TODO
                 break;
         }
+    });
+    $(document).on('change', '.scene-to', function() {
+        $(this).parent().children(".effect-to").remove();
+        $(this).parent().append('<select class="effect-to"></select>');
+        appendEvents($(this).parent().children(".effect-to").last(),$(this).val());
     });
     
     function finishEditPageName(){
@@ -465,6 +496,8 @@ $(function(){
     //Fill the effects selects
     appendVarTypes($(".effect-var-type"));
     appendEffects($(".effects-select"));
+    appendScenes($(".scene-to"));
+    appendEvents($(".event-to"),$(".scene-to").val());
     varFuncs["appendEventVars"]($(".eff-vars"));
     appendPagesOptions($(".effect-pages"));
     $(".page-choices").each(function(i,page){

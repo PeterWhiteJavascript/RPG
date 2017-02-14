@@ -99,6 +99,8 @@ and open the template in the editor.
         <button onclick="deleteCharacter()">Delete Top Character</button>
         <table id="charTable">
             <tr>
+                <th>LV UP</th>
+                <th>Name</th>
                 <th>Level</th>
                 <th>Nationality</th>
                 <th>Character Class</th>
@@ -106,6 +108,15 @@ and open the template in the editor.
                 <th>Value</th>
                 <th>Method</th>
                 <th>Personality</th>
+                <th>STR</th>
+                <th>END</th>
+                <th>DEX</th>
+                <th>WSK</th>
+                <th>RFL</th>
+                <th>INI</th>
+                <th>ENR</th>
+                <th>SKL</th>
+                <th>EFF</th>
             </tr>
         </table>
         <script>
@@ -332,13 +343,13 @@ and open the template in the editor.
                     }
                 }
             };
-            var nationalities = ["Venorian","Dardorian","Aliudramilan","Talumpatuan","Nomadic"];
+            var nationalities = ["Venorian","Dardoian","Aliudramilan","Talumpatuan","Nomadic"];
             var values = ["Egoist","Nepotist","Altruist"];
             var methodologies = ["Pragmatic","Intuitive","Kind"];
-            var classNames = ["Legionnaire","Rager","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"];
+            var classNames = ["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"];
             var natClasses = {
                 "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
-                "dardorian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
+                "dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
                 "aliudraman":{"classSpread":[15, 4, 1, 25, 15, 15, 3, 5, 17]},
                 "talumpatuan":{"classSpread":[8, 15, 5, 8, 12, 12, 10, 17, 13]},
                 "nomadic":{"classSpread":[1, 60, 1, 1, 10, 10, 2, 5, 10]}
@@ -346,7 +357,7 @@ and open the template in the editor.
             var natKeys = Object.keys(natClasses);
             var classes = {
                 "legionnaire":{"gender":[90,50,95,40,60],"value":[[30,40,30],[5,75,20],[20,40,40],[30,30,40],[20,60,20]],"methodology":[[45,30,25],[45,30,25],[45,30,25],[45,30,25],[45,30,25]]},
-                "rager":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
+                "berserker":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
                 "vanguard":{"gender":[75,40,95,10,60],"value":[[20,50,30],[50,25,25],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[35,35,30],[35,35,30],[35,35,30],[35,35,30],[35,35,30]]},
                 "assassin":{"gender":[60,30,5,80,60],"value":[[25,50,25],[33,34,33],[33,44,23],[30,40,30],[20,60,20]],"methodology":[[90,9,1],[90,9,1],[90,9,1],[90,9,1],[90,9,1]]},
                 "skirmisher":{"gender":[80,50,5,70,60],"value":[[40,30,30],[15,40,45],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[40,40,20],[40,40,20],[40,40,20],[40,40,20],[40,40,20]]},
@@ -371,6 +382,54 @@ and open the template in the editor.
             function deleteCharacter(){
                 document.getElementById("charTable").deleteRow(1);
             };
+            var statTexts = ["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"];
+            var statNames = ["str","end","dex","wsk","rfl","ini","enr","skl","eff"];
+            //Ordered by charClass
+            var primaryStats = ["wsk","str","end","dex","rfl","ini","enr","skl","eff"];
+            var secondaryStats = ["str","end","wsk","ini","dex","rfl","eff","enr","skl"];
+            //Leveling order
+            var order = ["primary","secondary","primary","random","auto"];
+            //Auto chance
+            var autoChance = ["primary","primary","secondary","random"];
+            function levelUp(statTo,stats,primary,secondary){
+                switch(statTo){
+                    case "primary":
+                        stats[primary]+=1;
+                        break;
+                    case "secondary":
+                        stats[secondary]+=1;
+                        break;
+                    case "random":
+                        stats[statNames[Math.floor(Math.random()*statNames.length)]]+=1;
+                        break;
+                    case "auto":
+                        stats = levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary,secondary);
+                        break;
+                }
+                return stats;
+            };
+            function getStats(level,classNum){
+                var stats = {};
+                //Set all starting stats
+                statNames.forEach(function(st){
+                    stats[st] = Math.floor(Math.random()*10)+10;
+                });
+                var primary = primaryStats[classNum];
+                var secondary = secondaryStats[classNum];
+                stats[primary]+=5;
+                stats[secondary]+=3;
+                
+                for(var idx=0;idx<level;idx++){
+                    var num = idx%order.length;
+                    stats = levelUp(order[num],stats,primary,secondary);
+                }
+                return stats;
+            };
+            var characters = [];
+            names = {
+                "Male":["Peter","Bayden","Ben","Dare","Christian"],
+                "Female":["Rachel","Kyla"]
+            };
             function generateCharacter(){
                 var chapter = document.getElementById("chapters").value;
                 var charLevel = levNatSpread.scenes[chapter].startLevel+getIdx(levNatSpread.scenes[chapter].spread,Math.ceil(Math.random()*100));
@@ -379,19 +438,24 @@ and open the template in the editor.
                 var classNum = getIdx(natClasses[charNat].classSpread,Math.ceil(Math.random()*100));
                 var charClass = classKeys[classNum];
                 var charGender = genders[getIdx([classes[charClass].gender[natNum],100],Math.ceil(Math.random()*100))];
+                var charName = names[charGender][Math.floor(Math.random()*names[charGender].length)];
                 var charValue = values[getIdx(classes[charClass].value[natNum],Math.ceil(Math.random()*100))];
                 var charMethod = methodologies[getIdx(classes[charClass].methodology[natNum],Math.ceil(Math.random()*100))];
                 
                 var randPersonalityText = personalities.muchValues[Math.floor(Math.random()*personalities.muchValues.length)];
                 var randPersonality = personalities.traits[traitsKeys[Math.floor(Math.random()*traitsKeys.length)]];
                 var char =  {
+                    name:charName,
                     level:charLevel,
                     nationality:nationalities[natNum],
                     charClass:classNames[classNum],
                     gender:charGender,
                     value:charValue,
                     method:charMethod,
-                    personality:randPersonalityText+" "+randPersonality.name
+                    personality:randPersonalityText+" "+randPersonality.name,
+                    stats:getStats(charLevel,classNum),
+                    
+                    classNum:classNum
                 };
                 insertCharToTable(char);
                 return char;
@@ -401,15 +465,32 @@ and open the template in the editor.
                 var row = table.insertRow();
 
                 // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-                var level = row.insertCell(0);
-                var nationality = row.insertCell(1);
-                var charClass = row.insertCell(2);
-                var gender = row.insertCell(3);
-                var value = row.insertCell(4);
-                var method = row.insertCell(5);
-                var personality = row.insertCell(6);
-
+                var lvUp = row.insertCell(0);
+                var name = row.insertCell(1);
+                var level = row.insertCell(2);
+                var nationality = row.insertCell(3);
+                var charClass = row.insertCell(4);
+                var gender = row.insertCell(5);
+                var value = row.insertCell(6);
+                var method = row.insertCell(7);
+                var personality = row.insertCell(8);
+                
+                var lvUpButton = document.createElement("button");
+                lvUpButton.className = "lvUp";
+                lvUpButton.innerHTML = "UP";
+                lvUpButton.onclick = function() {
+                    var primary = primaryStats[char.classNum];
+                    var secondary = secondaryStats[char.classNum];
+                    levelUp(order[char.level%order.length],char.stats,primary,secondary);
+                    char.level++;
+                    level.innerHTML = char.level;
+                    statNames.forEach(function(st,i){
+                        row.cells[9+i].innerHTML = char.stats[st];
+                    });
+                };
+                lvUp.appendChild(lvUpButton);
                 // Add some text to the new cells:
+                name.innerHTML = char.name;
                 level.innerHTML = char.level;
                 nationality.innerHTML = char.nationality;
                 charClass.innerHTML = char.charClass;
@@ -417,6 +498,10 @@ and open the template in the editor.
                 value.innerHTML = char.value;
                 method.innerHTML = char.method;
                 personality.innerHTML = char.personality;
+                statNames.forEach(function(st,i){
+                    row.insertCell(9+i).innerHTML = char.stats[st];
+                });
+                characters.push(char);
             };
             var chapters = Object.keys(levNatSpread.scenes);
             //Create the select items

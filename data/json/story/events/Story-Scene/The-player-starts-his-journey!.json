@@ -13,19 +13,8 @@
                     "displayText": "Left Path",
                     "desc": "The party decides to go left.",
                     "page": "Left Path",
+                    "disabled": "Enabled",
                     "group": [
-                        {
-                            "cond": [],
-                            "effect": [
-                                [
-                                    "setVar",
-                                    {
-                                        "vr": "wentLeft",
-                                        "vl": "1"
-                                    }
-                                ]
-                            ]
-                        },
                         {
                             "cond": [],
                             "effect": [
@@ -44,51 +33,18 @@
                     "displayText": "Middle Path",
                     "desc": "The party decides to take the middle path.",
                     "page": "Middle Path",
-                    "group": [
-                        {
-                            "cond": [
-                                [
-                                    "checkVar",
-                                    {
-                                        "scope": "Event",
-                                        "vr": "wentLeft",
-                                        "vl": "1"
-                                    }
-                                ],
-                                [
-                                    "checkVar",
-                                    {
-                                        "scope": "Event",
-                                        "vr": "wentLeft",
-                                        "vl": "1"
-                                    }
-                                ]
-                            ],
-                            "effect": [
-                                [
-                                    "changePage",
-                                    {
-                                        "desc": "Since the party went left first, they have unlocked a secret path down this road! P.S. If you go back and then try to come back again, the variable will be reset and it will be impassable again!"
-                                    }
-                                ],
-                                [
-                                    "setVar",
-                                    {
-                                        "vr": "wentLeft",
-                                        "vl": "0"
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
+                    "disabled": "Enabled",
+                    "group": []
                 },
                 {
                     "displayText": "Right Path",
                     "desc": "The party goes right.",
                     "page": "Right Path",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Left Path",
@@ -98,17 +54,20 @@
             "choices": [
                 {
                     "displayText": "Look at rock",
-                    "desc": "The party looks at the rock. Nothing really happens and the party goes back to the entrance.",
+                    "desc": "The party looks at the rock. They somehow find out about a secret path from the middle path at the entrance. They go back to the entrance.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Look at log",
                     "desc": "The party looks at the log. They notice a secret path behind the log!",
                     "page": "Left Path Secret",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Left Path Secret",
@@ -120,15 +79,18 @@
                     "displayText": "Go back to the entrance",
                     "desc": "The party gets scared and leaves before anything bad happens.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Rest here",
                     "desc": "The party rests for a few minutes and restores their health.",
                     "page": "Left Path Secret Battle",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Left Path Secret Battle",
@@ -140,15 +102,18 @@
                     "displayText": "Fight",
                     "desc": "The party readies for battle!",
                     "page": "LPS Do Battle",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Flee",
                     "desc": "The party runs as fast as they can back to the entrance.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "LPS Do Battle",
@@ -160,9 +125,11 @@
                     "displayText": "Back to entrance",
                     "desc": "The party leaves this dark area and goes back to the entrance to the forest.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Middle Path",
@@ -174,7 +141,44 @@
                     "displayText": "Go Back",
                     "desc": "The party heads back to the start.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
+                },
+                {
+                    "displayText": "Middle Secret",
+                    "desc": "The party crosses the path in a secret way.",
+                    "page": "Middle Path Secret",
+                    "disabled": "Disabled",
+                    "group": []
+                }
+            ],
+            "onload": [
+                {
+                    "cond": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Event",
+                                "vr": "wentLeft",
+                                "vl": "1"
+                            }
+                        ]
+                    ],
+                    "effect": [
+                        [
+                            "enableChoice",
+                            {
+                                "choice": "Middle Secret"
+                            }
+                        ],
+                        [
+                            "setVar",
+                            {
+                                "vr": "wentLeft",
+                                "vl": ""
+                            }
+                        ]
+                    ]
                 }
             ]
         },
@@ -188,9 +192,11 @@
                     "displayText": "Go Back",
                     "desc": "The party heads back to the start.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Right Path",
@@ -202,21 +208,25 @@
                     "displayText": "Go Left",
                     "desc": "The party goes left.",
                     "page": "Right Left",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Go Right",
                     "desc": "The party goes right.",
                     "page": "Right Right",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Go Back to the Entrance",
                     "desc": "The party goes back to the entrance",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Right Path 2",
@@ -228,21 +238,25 @@
                     "displayText": "Go Left",
                     "desc": "The party goes back to the village.",
                     "page": "Right Left",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Go Right",
                     "desc": "The party goes right.",
                     "page": "Right Right",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Go Back to the Entracne",
                     "desc": "The party goes back to the entrance.",
                     "page": "Entrance",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Right Left",
@@ -254,15 +268,18 @@
                     "displayText": "Go in",
                     "desc": "The party goes into the village.",
                     "page": "Village",
+                    "disabled": "Enabled",
                     "group": []
                 },
                 {
                     "displayText": "Go back to the split path",
                     "desc": "The party goes back.",
                     "page": "Right Path",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Village",
@@ -274,9 +291,11 @@
                     "displayText": "Go back to the fork",
                     "desc": "The party leaves the village.",
                     "page": "Right Path 2",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Right Right",
@@ -288,9 +307,11 @@
                     "displayText": "Drink some water",
                     "desc": "The party drink some water and feels refreshed!",
                     "page": "Drink Water",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         },
         {
             "name": "Drink Water",
@@ -302,9 +323,11 @@
                     "displayText": "Back",
                     "desc": "The party leaves.",
                     "page": "Right Path",
+                    "disabled": "Enabled",
                     "group": []
                 }
-            ]
+            ],
+            "onload": []
         }
     ],
     "vrs": {

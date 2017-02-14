@@ -5,8 +5,11 @@ Quintus.UIObjects=function(Q){
             Q.storyController.p.choice = Q.storyController.p.pages[Q.storyController.p.pageNum].choices[$(".choice-div").index(this)];
             //Check if something happens before doing the default change page
             //Will be true if all conditions are met
-            if(Q.storyController.p.choice.cond&&Q.storyController.checkConds(Q.storyController.p.choice.cond)){
-                Q.storyController.executeEffects(Q.storyController.p.choice.effect);
+            //Loop through each group
+            for(var i=0;i<Q.storyController.p.choice.group.length;i++){
+                if(Q.storyController.checkConds(Q.storyController.p.choice.group[i].cond)){
+                    Q.storyController.executeEffects(Q.storyController.p.choice.group[i].effect);
+                }
             }
             var choice = Q.storyController.p.choice;
             var page = choice.page;
@@ -86,12 +89,13 @@ Quintus.UIObjects=function(Q){
         },
         checkConds:function(cond){
             var condsMet = true;
-            //Loop through each condition
-            for(var i=0;i<cond.length;i++){
-                //Run the condition's function (idx 0) with properties (idx 1)
-                condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
+            if(cond){
+                //Loop through each condition
+                for(var i=0;i<cond.length;i++){
+                    //Run the condition's function (idx 0) with properties (idx 1)
+                    condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
+                }
             }
-            
             return condsMet;
         },
         executeEffects:function(effects){
@@ -126,6 +130,10 @@ Quintus.UIObjects=function(Q){
             enableChoice:function(t,obj){
                 //Find the page choice and enable it.
                 t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = "Enabled";
+            },
+            changeEvent:function(t,obj){
+                Q.startScene(obj.scene,obj.event);
+                $("#text-container").remove();
             }
         }
     });

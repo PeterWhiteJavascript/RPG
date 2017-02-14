@@ -57,7 +57,9 @@ textarea{
     width:100%;
     resize:vertical;
 }
-
+select{
+    display:block;
+}
 
 a:visited {
     color: black;
@@ -112,7 +114,6 @@ h2{
     border-width: initial;
     border-style: solid;
     border-color: black;
-    height:100%;
 }
 #content{
     margin-left:2%;

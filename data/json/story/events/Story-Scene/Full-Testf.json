@@ -1,0 +1,39 @@
+{
+    "name": "Full-Testf",
+    "desc": "f",
+    "kind": "story",
+    "vrs": {
+        "Var1": "1"
+    },
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "This is a change event test. Click the NEXT EVENT button to go to the other event.",
+            "choices": [
+                {
+                    "displayText": "NEXT EVENT",
+                    "desc": "Not displayed.",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "group": [
+                        {
+                            "cond": [],
+                            "effect": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "Story-Scene",
+                                        "event": "The-player-starts-his-journey!"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": []
+        }
+    ]
+}

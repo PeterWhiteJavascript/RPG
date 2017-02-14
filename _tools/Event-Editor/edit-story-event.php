@@ -11,6 +11,22 @@ $bgs = array_diff(scandir($bg_directory), array('..', '.'));
 
 $music_directory = '../../audio/bgm';
 $music = array_diff(scandir($music_directory), array('..', '.'));
+
+
+$directory = '../../data/json/story/events';
+$scenes =  array_diff(scandir($directory), array('..', '.'));
+
+$eventsJSON = (object)[];
+foreach($scenes as $key => $val){
+    $ev =[];
+    $events = array_diff(scandir($directory."/".$val), array('..', '.'));
+    foreach($events as $key2 => $val2){
+        $ev[]=pathinfo($val2, PATHINFO_FILENAME);
+         
+    }
+    $eventsJSON->$val=$ev;
+}
+$eventsJSON = json_encode($eventsJSON);
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +35,7 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
         <?php include 'config.php';?>
     </head>
     <body>
+        <div id="scenes" value='<?php echo $eventsJSON; ?>'></div>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="editor-content">
@@ -194,6 +211,20 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                                         </div>
                                             <?php
                                                             break;
+                                                        case "changeEvent":
+                                            ?>
+                                                        <div class="effect">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <ul class="effect-cont">
+                                                                <li><select class="scene-to <?php echo $key;?>" initialValue="<?php echo $val2[1]['scene']?>"></select></li>
+                                                                <li><select class="event-to <?php echo $key;?>" initialValue="<?php echo $val2[1]['event']?>"></select></li>
+                                                            </ul>
+                                                        </div>
+                                            <?php
+                                                            break;
                                                     }
                                                 }
                                             }
@@ -316,6 +347,20 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
                                                             <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
                                                             <ul class="effect-cont">
                                                                 <li><select class="page-choices <?php echo $key;?>" initialValue="<?php echo $val2[1]['choice']?>"></select></li>
+                                                            </ul>
+                                                        </div>
+                                            <?php
+                                                            break;
+                                                        case "changeEvent":
+                                            ?>
+                                                        <div class="effect">
+                                                            <a class="remove-choice">
+                                                                <div class="btn btn-default">x</div>
+                                                            </a>
+                                                            <select class="effects-select" initialValue="<?php echo $val2[0] ?>"></select>
+                                                            <ul class="effect-cont">
+                                                                <li><select class="scene-to <?php echo $key;?>" initialValue="<?php echo $val2[1]['scene']?>"></select></li>
+                                                                <li><select class="event-to <?php echo $key;?>" initialValue="<?php echo $val2[1]['event']?>"></select></li>
                                                             </ul>
                                                         </div>
                                             <?php
