@@ -366,6 +366,46 @@ and open the template in the editor.
                 "elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
                 "healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
             };
+            //In nationality order
+            var nameParts = [
+                {
+                    "nameParts":[2,20,50,20,8],
+                    "addonMale":[25,15,25,15,20],
+                    "addonFemale":[25,25,20,20,10],
+                    "main":["ander","ale","arde","anth","ac","cal","cil","cas","cor","car","ic","in","is","it","im","neth","nic","ny","na","nod","ode","or","on","oc","ot","thea","tan","tor","ty","te","vita","vic","val","von","ve"],
+                    "Male":["der","on","an","ic"],
+                    "Female":["y","a","ra","da"]
+                },{
+                    "nameParts":[0,50,40,8,2],
+                    "addonMale":[25,25,20,20,10],
+                    "addonFemale":[10,25,25,20,10],
+                    "main":["as","av","ak","aud","ast","eig","eit","eir","er","el","hilde","öf","öl","öd","ös","ör","jio","jo","ji","je","ran","re","raut","reig","r","so","sa","se","si","sö","yg","yd","yt","yf","yl"],
+                    "Male":["or","ed","at","ig"],
+                    "Female":["ye","ae","ja","se"]
+                },{
+                    "nameParts":[20,30,30,15,5],
+                    "addonMale":[15,15,15,30,25],
+                    "addonFemale":[15,15,15,30,25],
+                    "main":["al", "ag", "ai", "ad", "af", "din", "dja", "daj", "dogh", "dji", "go", "gam", "gat", "gip", "get", "ji", "jo", "ja", "jaf", "jinn", "qu", "que", "quo", "qui", "’", "sim", "sin", "sihm", "sihj", "sihn", "zh", "zha", "zho", "zhin", "zhan"],
+                    "Male":["had","hed","ihm","aht"],
+                    "Female":["ba","la","get","af"]
+                },{
+                    "nameParts":[20,20,20,20,20],
+                    "addonMale":[0,0,0,0,100],
+                    "addonFemale":[0,0,0,0,100],
+                    "main":["bo", "ba", "bao", "buk", "bua", "do", "da", "dum", "dun", "dok", "fi", "fa", "fe", "fuo", "fua", "galo", "gam", "ga", "go", "gom", "ma", "mua", "mu", "mo", "mad", "tuo", "tua", "talu", "tam", "to", "zo", "za", "zu", "zala", "zolu"],
+                    "Male":[""],
+                    "Female":[""]
+                },{
+                    "nameParts":[0,33,44,23,0],
+                    "addonMale":[50,25,15,9,1],
+                    "addonFemale":[50,25,15,9,1],
+                    "main":["dug", "dunt", "du", "dull", "duur", "fan", "fen", "fon", "fur", "fell", "het", "hec", "hel", "herd", "hup", "kuul", "krey", "key", "kaz", "krep", "ran", "ren", "rom", "rud", "ruc", "won", "wun", "woth", "wurth", "went", "yu", "yer", "yop", "yun", "yeng"],
+                    "Male":["Pin-","Onk-","Merk-"],
+                    "Female":["Pincol-","Lied-","Wurk-"]
+                }
+            ];
+            
             var classKeys = Object.keys(classes);
             
             var genders = ["Male","Female"];
@@ -426,21 +466,30 @@ and open the template in the editor.
                 return stats;
             };
             var characters = [];
-            names = {
-                "Male":["Peter","Bayden","Ben","Dare","Christian"],
-                "Female":["Rachel","Kyla"]
-            };
+            function rand(){
+                return Math.ceil(Math.random()*100);
+            }
             function generateCharacter(){
                 var chapter = document.getElementById("chapters").value;
-                var charLevel = levNatSpread.scenes[chapter].startLevel+getIdx(levNatSpread.scenes[chapter].spread,Math.ceil(Math.random()*100));
-                var natNum = getIdx(levNatSpread.scenes[chapter].natSpread,Math.ceil(Math.random()*100));
+                var charLevel = levNatSpread.scenes[chapter].startLevel+getIdx(levNatSpread.scenes[chapter].spread,rand());
+                var natNum = getIdx(levNatSpread.scenes[chapter].natSpread,rand());
                 var charNat = natKeys[natNum];
-                var classNum = getIdx(natClasses[charNat].classSpread,Math.ceil(Math.random()*100));
+                var classNum = getIdx(natClasses[charNat].classSpread,rand());
                 var charClass = classKeys[classNum];
-                var charGender = genders[getIdx([classes[charClass].gender[natNum],100],Math.ceil(Math.random()*100))];
-                var charName = names[charGender][Math.floor(Math.random()*names[charGender].length)];
-                var charValue = values[getIdx(classes[charClass].value[natNum],Math.ceil(Math.random()*100))];
-                var charMethod = methodologies[getIdx(classes[charClass].methodology[natNum],Math.ceil(Math.random()*100))];
+                var charGender = genders[getIdx([classes[charClass].gender[natNum],100],rand())];
+                var numNameParts = getIdx(nameParts[natNum].nameParts,rand())+1;
+                var charName = "";
+                var main = nameParts[natNum].main;
+                for(var i=0;i<numNameParts;i++){
+                    charName+=main[Math.floor(Math.random()*main.length)];
+                }
+                
+                //Nomads have different prefix
+                if(nationalities[natNum]==="Nomadic") charName=nameParts[natNum][charGender][Math.floor(Math.random()*nameParts[natNum][charGender].length)]+charName;
+                else charName+=nameParts[natNum][charGender][Math.floor(Math.random()*nameParts[natNum][charGender].length)];
+                charName = charName.charAt(0).toUpperCase() + charName.slice(1);
+                var charValue = values[getIdx(classes[charClass].value[natNum],rand())];
+                var charMethod = methodologies[getIdx(classes[charClass].methodology[natNum],rand())];
                 
                 var randPersonalityText = personalities.muchValues[Math.floor(Math.random()*personalities.muchValues.length)];
                 var randPersonality = personalities.traits[traitsKeys[Math.floor(Math.random()*traitsKeys.length)]];

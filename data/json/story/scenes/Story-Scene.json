@@ -2,7 +2,8 @@
     "name": "Story-Scene",
     "desc": "A test for the story scene.",
     "eventOrder": [
+        "Full-Testf",
         "The-player-starts-his-journey!",
-        "Full-Testf"
+        "dfbdf"
     ]
 }

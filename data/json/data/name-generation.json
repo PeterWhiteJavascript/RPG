@@ -1,0 +1,288 @@
+{
+    "nationalities":["Venorian","Dardoian","Aliudramilan","Talumpatuan","Nomadic"],
+    "values":["Egoist","Nepotist","Altruist"],
+    "methodologies":["Pragmatic","Intuitive","Kind"],
+    "classNames":["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"],
+    "genders":["Male","Female"],
+    "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
+    "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
+    "primaryStats":["wsk","str","end","dex","rfl","ini","enr","skl","eff"],
+    "secondaryStats":["str","end","wsk","ini","dex","rfl","eff","enr","skl"],
+    "order":["primary","secondary","primary","random","auto"],
+    "autoChance":["primary","primary","secondary","random"],
+    "natClasses":{
+        "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
+        "dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
+        "aliudraman":{"classSpread":[15, 4, 1, 25, 15, 15, 3, 5, 17]},
+        "talumpatuan":{"classSpread":[8, 15, 5, 8, 12, 12, 10, 17, 13]},
+        "nomadic":{"classSpread":[1, 60, 1, 1, 10, 10, 2, 5, 10]}
+    },
+    "classes":{
+        "legionnaire":{"gender":[90,50,95,40,60],"value":[[30,40,30],[5,75,20],[20,40,40],[30,30,40],[20,60,20]],"methodology":[[45,30,25],[45,30,25],[45,30,25],[45,30,25],[45,30,25]]},
+        "berserker":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
+        "vanguard":{"gender":[75,40,95,10,60],"value":[[20,50,30],[50,25,25],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[35,35,30],[35,35,30],[35,35,30],[35,35,30],[35,35,30]]},
+        "assassin":{"gender":[60,30,5,80,60],"value":[[25,50,25],[33,34,33],[33,44,23],[30,40,30],[20,60,20]],"methodology":[[90,9,1],[90,9,1],[90,9,1],[90,9,1],[90,9,1]]},
+        "skirmisher":{"gender":[80,50,5,70,60],"value":[[40,30,30],[15,40,45],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[40,40,20],[40,40,20],[40,40,20],[40,40,20],[40,40,20]]},
+        "archer":{"gender":[30,50,5,40,60],"value":[[35,35,30],[33,34,33],[40,30,30],[30,30,40],[20,60,20]],"methodology":[[34,33,33],[34,33,33],[34,33,33],[34,33,33],[34,33,33]]},
+        "illusionist":{"gender":[60,40,40,20,30],"value":[[50,30,20],[50,40,10],[50,40,10],[20,30,50],[20,60,20]],"methodology":[[30,30,40],[30,30,40],[30,30,40],[30,30,40],[30,30,40]]},
+        "elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
+        "healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
+    },
+    "personalities":{
+        "muchValues":[
+            "A little",
+            "Somewhat",
+            "",
+            "Very",
+            "Extremely"
+        ],
+        "traits":{
+            "sensitive":{
+                "name":"Sensitive",
+                "much":[
+                    {"desc":"Changes in Morale 10% larger"},
+                    {"desc":"Changes in Morale 25% larger"},
+                    {"desc":"Changes in Morale 50% larger"},
+                    {"desc":"Changes in Morale 100% larger"},
+                    {"desc":"Changes in Morale 150% larger"}
+                ]
+            },
+            "impassive":{
+                "name":"Impassive",
+                "much":[
+                    {"desc":"Changes in Morale 10% smaller (minimum 1)"},
+                    {"desc":"Changes in Morale 25% smaller (minimum 1)"},
+                    {"desc":"Changes in Morale 50% smaller (minimum 1)"},
+                    {"desc":"Changes in Morale 100% smaller (minimum 1)"},
+                    {"desc":"Changes in Morale 150% smaller (minimum 1)"}
+                ]
+            },
+            "unmotivated":{
+                "name":"Unmotivated",
+                "much":[
+                    {"desc":"EXP earned reduced by 5%"},
+                    {"desc":"EXP earned reduced by 10%"},
+                    {"desc":"EXP earned reduced by 15%"},
+                    {"desc":"EXP earned reduced by 20%"},
+                    {"desc":"EXP earned reduced by 25%"}
+                ]
+            },
+            "curious":{
+                "name":"Curious",
+                "much":[
+                    {"desc":"EXP earned increased by 5%"},
+                    {"desc":"EXP earned increased by 10%"},
+                    {"desc":"EXP earned increased by 15%"},
+                    {"desc":"EXP earned increased by 20%"},
+                    {"desc":"EXP earned increased by 25%"}
+                ]
+            },
+            "clingy":{
+                "name":"Clingy",
+                "much":[
+                    {"desc":"Changes in Loyalty 10% larger"},
+                    {"desc":"Changes in Loyalty 25% larger"},
+                    {"desc":"Changes in Loyalty 50% larger"},
+                    {"desc":"Changes in Loyalty 100% larger"},
+                    {"desc":"Changes in Loyalty 150% larger"}
+                ]
+            },
+            "nonpartisan":{
+                "name":"Nonpartisan",
+                "much":[
+                    {"desc":"Changes in Loyalty 10% smaller (minimum 1)"},
+                    {"desc":"Changes in Loyalty 25% smaller (minimum 1)"},
+                    {"desc":"Changes in Loyalty 50% smaller (minimum 1)"},
+                    {"desc":"Changes in Loyalty 100% smaller (minimum 1)"},
+                    {"desc":"Changes in Loyalty 150% smaller (minimum 1)"}
+                ]
+            },
+            "charismatic":{
+                "name":"Charismatic",
+                "much":[
+                    {"desc":"+1 to Morale and Loyalty boosts given to other Followers"},
+                    {"desc":"+2 to Morale and Loyalty boosts given to other Followers"},
+                    {"desc":"+3 to Morale and Loyalty boosts given to other Followers"},
+                    {"desc":"+4 to Morale and Loyalty boosts given to other Followers"},
+                    {"desc":"+5 to Morale and Loyalty boosts given to other Followers"}
+                ]
+            },
+            "awkward":{
+                "name":"Awkward",
+                "much":[
+                    {"desc":"-1 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                    {"desc":"-2 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                    {"desc":"-3 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                    {"desc":"-4 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                    {"desc":"-5 to Morale and Loyalty boosts given to other Followers (minimum 1)"}
+                ]
+            },
+            "violent":{
+                "name":"Violent",
+                "much":[
+                    {"desc":"+1 additional Morale from defeating an enemy"},
+                    {"desc":"+2 additional Morale from defeating an enemy"},
+                    {"desc":"+3 additional Morale from defeating an enemy"},
+                    {"desc":"+4 additional Morale from defeating an enemy"},
+                    {"desc":"+5 additional Morale from defeating an enemy"}
+                ]
+            },
+            "pacifistic":{
+                "name":"Pacifistic",
+                "much":[
+                    {"desc":"-1 additional Morale from defeating an enemy"},
+                    {"desc":"-2 additional Morale from defeating an enemy"},
+                    {"desc":"-3 additional Morale from defeating an enemy"},
+                    {"desc":"-4 additional Morale from defeating an enemy"},
+                    {"desc":"-5 additional Morale from defeating an enemy"}
+                ]
+            },
+            "hedonistic":{
+                "name":"Hedonistic",
+                "much":[
+                    {"desc":"+1 additional Morale from Feasts"},
+                    {"desc":"+2 additional Morale from Feasts"},
+                    {"desc":"+3 additional Morale from Feasts"},
+                    {"desc":"+4 additional Morale from Feasts"},
+                    {"desc":"+5 additional Morale from Feasts"}
+                ]
+            },
+            "ascetic":{
+                "name":"Ascetic",
+                "much":[
+                    {"desc":"Only 75% Morale boost from Feasts"},
+                    {"desc":"Only 25% Morale boost from Feasts"},
+                    {"desc":"No Morale boost from Feasts"},
+                    {"desc":"No Morale boost from Feasts plus lose 3 Morale"},
+                    {"desc":"No Morale boost from Feasts plus lose 5 Morale"}
+                ]
+            },
+            "extraverted":{
+                "name":"Extraverted",
+                "much":[
+                    {"desc":"+1 Morale after a new Follower is recruited"},
+                    {"desc":"+2 Morale after a new Follower is recruited"},
+                    {"desc":"+3 Morale after a new Follower is recruited"},
+                    {"desc":"+4 Morale after a new Follower is recruited"},
+                    {"desc":"+5 Morale after a new Follower is recruited"}
+                ]
+            },
+            "shy":{
+                "name":"Shy",
+                "much":[
+                    {"desc":"-1 Morale after a new Follower is recruited"},
+                    {"desc":"-2 Morale after a new Follower is recruited"},
+                    {"desc":"-3 Morale after a new Follower is recruited"},
+                    {"desc":"-4 Morale after a new Follower is recruited"},
+                    {"desc":"-5 Morale after a new Follower is recruited"}
+                ]
+            }
+        }
+    },
+    "scenes":{
+        "Chapter1-1":{
+            "startLevel":1,
+            "spread":[75,15,7,3],
+            "natSpread":[80,10,7,1,2]
+        },
+        "Chapter1-2":{
+            "startLevel":3,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[80,5,4,1,10]
+        },
+        "Chapter1-3":{
+            "startLevel":7,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[80,15,3,1,1]
+        },
+        "Chapter1-4":{
+            "startLevel":11,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[70,5,15,5,5]
+        },
+        "Chapter2-1":{
+            "startLevel":15,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[5,15,75,1,4]
+        },
+        "Chapter2-2":{
+            "startLevel":19,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[5,15,75,1,4]
+        },
+        "Chapter2-3":{
+            "startLevel":23,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[5,15,75,1,4]
+        },
+        "Chapter2-4":{
+            "startLevel":27,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[5,15,75,1,4]
+        },
+        "Chapter3-1":{
+            "startLevel":31,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[15,60,15,7,3]
+        },
+        "Chapter3-2":{
+            "startLevel":35,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[2,2,1,94,1]
+        },
+        "Chapter3-3":{
+            "startLevel":39,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[4,10,4,80,2]
+        },
+        "Chapter3-4":{
+            "startLevel":43,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[2,2,1,94,1]
+        },
+        "FinalChapter":{
+            "startLevel":47,
+            "spread":[5,20,40,20,10,5],
+            "natSpread":[60,10,10,10,10]
+        }
+    },
+    "nameParts":[
+        {
+            "nameParts":[2,20,50,20,8],
+            "addonMale":[25,15,25,15,20],
+            "addonFemale":[25,25,20,20,10],
+            "main":["ander","ale","arde","anth","ac","cal","cil","cas","cor","car","ic","in","is","it","im","neth","nic","ny","na","nod","ode","or","on","oc","ot","thea","tan","tor","ty","te","vita","vic","val","von","ve"],
+            "Male":["der","on","an","ic"],
+            "Female":["y","a","ra","da"]
+        },{
+            "nameParts":[0,50,40,8,2],
+            "addonMale":[25,25,20,20,10],
+            "addonFemale":[10,25,25,20,10],
+            "main":["as","av","ak","aud","ast","eig","eit","eir","er","el","hilde","öf","öl","öd","ös","ör","jio","jo","ji","je","ran","re","raut","reig","r","so","sa","se","si","sö","yg","yd","yt","yf","yl"],
+            "Male":["or","ed","at","ig"],
+            "Female":["ye","ae","ja","se"]
+        },{
+            "nameParts":[20,30,30,15,5],
+            "addonMale":[15,15,15,30,25],
+            "addonFemale":[15,15,15,30,25],
+            "main":["al", "ag", "ai", "ad", "af", "din", "dja", "daj", "dogh", "dji", "go", "gam", "gat", "gip", "get", "ji", "jo", "ja", "jaf", "jinn", "qu", "que", "quo", "qui", "’", "sim", "sin", "sihm", "sihj", "sihn", "zh", "zha", "zho", "zhin", "zhan"],
+            "Male":["had","hed","ihm","aht"],
+            "Female":["ba","la","get","af"]
+        },{
+            "nameParts":[20,20,20,20,20],
+            "addonMale":[0,0,0,0,100],
+            "addonFemale":[0,0,0,0,100],
+            "main":["bo", "ba", "bao", "buk", "bua", "do", "da", "dum", "dun", "dok", "fi", "fa", "fe", "fuo", "fua", "galo", "gam", "ga", "go", "gom", "ma", "mua", "mu", "mo", "mad", "tuo", "tua", "talu", "tam", "to", "zo", "za", "zu", "zala", "zolu"],
+            "Male":[""],
+            "Female":[""]
+        },{
+            "nameParts":[0,33,44,23,0],
+            "addonMale":[50,25,15,9,1],
+            "addonFemale":[50,25,15,9,1],
+            "main":["dug", "dunt", "du", "dull", "duur", "fan", "fen", "fon", "fur", "fell", "het", "hec", "hel", "herd", "hup", "kuul", "krey", "key", "kaz", "krep", "ran", "ren", "rom", "rud", "ruc", "won", "wun", "woth", "wurth", "went", "yu", "yer", "yop", "yun", "yeng"],
+            "Male":["Pin-","Onk-","Merk-"],
+            "Female":["Pincol-","Lied-","Wurk-"]
+        }
+    ]
+    
+}

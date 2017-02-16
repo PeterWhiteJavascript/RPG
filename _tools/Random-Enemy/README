@@ -1,0 +1,5 @@
+Probably don't run the rand-character.php. It was a fun idea, but is sort of pointless.
+
+It takes a json file and creates inputs for all data in the json. 
+This means it loops through every array and object and creates an input for each value.
+It's probably just better to create a custom tool for any json that needs editing as my generic code here bring out every variable.

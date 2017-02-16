@@ -34,7 +34,10 @@ else {
             $newFile['interactions'] = (object)[];
             break;
         case "battleScene":
-            $newFile['battleScene'] = (object)[];
+            $newFile['scene'] = [];
+            $newFile['initialChars'] = [];
+            $newFile['music'] = "";
+            $newFile['map'] = "";
             break;
         case "battle":
             $newFile['battle'] = (object)[];

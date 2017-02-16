@@ -42,6 +42,13 @@
                     "page": "Right Path",
                     "disabled": "Enabled",
                     "group": []
+                },
+                {
+                    "displayText": "Go to Battle Scene",
+                    "desc": "The party goes to a battle scene.",
+                    "page": "Entrance",
+                    "disabled": "Enabled",
+                    "group": []
                 }
             ],
             "onload": []
