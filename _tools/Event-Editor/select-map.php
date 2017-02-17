@@ -41,13 +41,13 @@ foreach (glob("../../data/*.tmx") as $mp) {
         <script src="js/select-map.js"></script>
     </head>
     <body>
-        <h2>Select Map</h2>
         <div id="maps" value='<?php echo json_encode($maps); ?>'></div>
+        <h2>Select Map</h2>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="scene-kind" hidden><h2><?php echo $kind; ?></h2></div>
         <div id="options">
-            <select id="maps-select" initialValue="<?php echo $eventMap; ?>"></select>
+            <select id="maps-select" initialValue="<?php echo "../../".$eventMap; ?>"></select>
         </div>
         <ul class="menu right btn-group">
             <li><a id="go-to-scene"><div class="menu-button btn btn-default">Edit Battle/Battle Scene</div></a></li>

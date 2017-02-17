@@ -55,6 +55,7 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             //Loop through all of the characters and add them
             var characters = JSON.parse($("#characters").text());
             characters.forEach(function(char){
+                char.storyId = saveData.length;
                 saveData.push(char);
                 var cl = char.charClass.toLowerCase();
                 if(char.charClass==="") cl = Q.state.get("ng").charClasses[Math.floor(Math.random()*Q.state.get("ng").charClasses.length)];

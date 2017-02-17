@@ -7,7 +7,7 @@ $( ".sortable" ).disableSelection();
 
 var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio")
-        .setup({development: true, width:1000, height:800})
+        .setup({development: true, width:800, height:800})
         .touch().controls(true)
         .enableSound();
 Q.options.imagePath = "../.././images/";
@@ -20,11 +20,18 @@ Q.SPRITE_CHARACTER  = 8;
 
 var selectedCharacter;
 var allowSpriteSelecting;
+var selectedFunc;
+var cont = $(".menu");
+
 Q.showMap = function(map){
     Q.stageScene("map",0,{map:map});
 };
 
 var map = $("#event-map").text();
+var imageAssets = [];
+$("#images-holder").children("option").each(function(i,itm){
+    imageAssets.push($(this).val());
+});
 //Load all of the character sprites
 Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
     //Sprites
@@ -62,7 +69,7 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             characters.forEach(function(char){
                 var cl = char.charClass.toLowerCase();
                 if(char.charClass==="rand") cl = Q.state.get("ng").charClasses[Math.floor(Math.random()*Q.state.get("ng").charClasses.length)];
-                Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc}));
+                Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
             });
         });
     });
@@ -89,8 +96,7 @@ Q.Sprite.extend("CharacterSprite",{
 
 Q.addViewport = function(stage){
     stage.add("viewport");
-    stage.viewport.scale = 2;
-    var obj = stage.insert(new Q.UI.Container({w:Q.width/2,h:Q.height/2,type:Q.SPRITE_UI}));
+    var obj = Q.viewObj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
     obj.p.x = obj.p.w/2;
     obj.p.y = obj.p.h/2;
     obj.drag = function(touch){
@@ -105,9 +111,9 @@ Q.addViewport = function(stage){
     stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
     stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
     var minX=0;
-    var maxX=(stage.mapWidth*Q.tileW)*stage.viewport.scale;
+    var maxX=(stage.mapWidth*Q.tileW);
     var minY=0;
-    var maxY=(stage.mapHeight*Q.tileH)*stage.viewport.scale;
+    var maxY=(stage.mapHeight*Q.tileH);
     stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
 };
 function moveSelection(e) {
@@ -148,32 +154,276 @@ Q.scene("map",function(stage){
 },{sort:true});
 
 var removeOptions = function(){
-    var cont = $(".menu");
     cont.empty();
 };
 
+var deselectSprite = function(){
+    allowSpriteSelecting = false;
+    if(selectedCharacter){
+        selectedCharacter.removeSelectedBox();
+    }
+    selectedCharacter = false;
+};
 var appendMainOptions = function(){
-    var cont = $(".menu");
     $(cont).append('<li><a id="create-script-item"><div class="menu-button btn btn-default">Create Script Item</div></a></li>');
     $(cont).append('<li><a id="test-scene"><div class="menu-button btn btn-default">Test Scene</div></a></li>');
+    $(cont).append('<li><a id="save-scene"><div class="menu-button btn btn-default">Save Scene</div></a></li>');
     $(cont).append('<li><a id="return-to-character-placement"><div class="menu-button btn btn-default">Return to Character Placement</div></a></li>');
 };
 var appendScriptItemOptions = function(){
-    var cont = $(".menu");
     $(cont).append('<li><a id="add-function"><div class="menu-button btn btn-default">Add Function</div></a></li>');
     $(cont).append('<li><a id="add-text"><div class="menu-button btn btn-default">Add Text</div></a></li>');
     $(cont).append('<li><a id="back-to-main"><div class="menu-button btn btn-default">Go Back</div></a></li>');
 };
-var appendFunctionOptions = function(){
+var funcs = [
+    "setView",
+    "centerView",
+    "moveAlong",
+    "changeDir",
+    "allowCycle",
+    "hideDialogueBox",
+    "setCharacterAs",
     
+    "waitTime",
+    "fadeChar",
+    "changeMusic",
+    "changeMoveSpeed",
+    "playAnim",
+    
+    "changeEvent"
+    
+];
+//Each function within the array is in charge of a single prop value
+var setUpFuncs = {
+    setView:[
+        function(val){
+            $("#back-to-func-selection").before("<li><span>Select a character in the stage to set the view to</span><div id='view-character-selected' class='script-func'></div></li>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(){
+                if($("#view-character-selected").text()===""){
+                    $("#back-to-func-selection").before("<a id='add-func-to-script' value='setView'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+                }
+                $("#view-character-selected").text(selectedCharacter.p.storyId+"");
+            });
+            if(val!==undefined){
+                $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
+                selectCharacter(Q.getSpriteByStoryId(parseInt(val)));
+            }
+        }
+    ],
+    centerView:[
+        function(){}
+    ],
+    moveAlong:[
+        function(){}
+    ],
+    changeDir:[
+        function(){}
+    ],
+    allowCycle:[
+        function(){}
+    ],
+    hideDialogueBox:[
+        function(){}
+    ],
+    setCharacterAs:[
+        function(){}
+    ],
+    waitTime:[
+        function(){}
+    ],
+    fadeChar:[
+        function(){}
+    ],
+    changeMusic:[
+        function(){}
+    ],
+    changeMoveSpeed:[
+        function(){}
+    ],
+    playAnim:[
+        function(){}
+    ],
+    changeEvent:[
+        function(){}
+    ]
 };
-var appendTextOptions = function(){
+var funcs = Object.keys(setUpFuncs);
+var appendFunctionOptions = function(obj){
+    //var data = obj?obj:{text:[""],asset:["",""],pos:"Left",autoCycle:"0",noCycle:"No"};
+    $(cont).append('<li><span>Select a Function</span><select id="script-select-func" class="new-script-item"></select></li>');
+    $(cont).append('<li><a id="back-to-script-items"><div class="menu-button btn btn-default">Go Back</div></a></li>');
+    $("#script-select-func").append("<option></option>");
+    for(var i=0;i<funcs.length;i++){
+        $("#script-select-func").append('<option value="'+funcs[i]+'">'+funcs[i]+'</option>');
+    }
+    if(obj){
+        $("#script-select-func").val(obj.func);
+        $("#script-select-func").attr("props",obj.props);
+        $("#script-select-func").trigger("change");
+    }
+};
+$(document).on("change","#script-select-func",function(e){
+    removeOptions();
+    $(cont).append('<li><a id="back-to-func-selection"><div class="menu-button btn btn-default">Go Back</div></a></li>');
+    var props = $(this).attr("props");
+    if(props){
+        var p = JSON.parse(props);
+        for(var idx=0;idx<p.length;idx++){
+            setUpFuncs[$(this).val()][idx](p[idx]);
+        }
+    } else {
+        setUpFuncs[$(this).val()][0]();
+    }
+});
+$(document).on("click","#save-func-script-item",function(e){
+    var props = [];
+    $(".script-func").each(function(i,itm){
+        props.push($(this).text());
+    });
+    $(selectedFunc).parent().attr("props",JSON.stringify(props));
+    selectedFunc = false;
+    $("#back-to-func-selection").trigger("click");
+});
+$(document).on("click","#add-func-to-script",function(e){
+    deselectSprite();
+    var funcName = $(this).attr("value");
+    var props = [];
+    $(".script-func").each(function(i,itm){
+        props.push($(this).text());
+    });
+    var scCont = $("#script-menu");
+    $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(props)+"'><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $("#back-to-func-selection").trigger("click");
+});
+var appendTextOptions = function(obj){
+    var data = obj?obj:{text:[""],asset:["",""],pos:"Left",autoCycle:"0",noCycle:"No"};
+    $(cont).append('<li><span>Text</span><br><button id="add-new-text">Add New Text</button><ul class="sortable"></ul></li>');
+    for(var i=0;i<data.text.length;i++){
+        $(cont).children("li").children("ul").append('<li><textarea class="script-text new-script-item">'+data.text[i]+'</textarea><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
+    }
+    $(cont).append('<li><span>Left Asset</span><select id="script-asset1" class="new-script-item"></select><img class="new-script-img"></li>');
+    $(cont).append('<li><span>Right Asset</span><select id="script-asset2" class="new-script-item"></select><img class="new-script-img"></li>');
+    $(cont).append('<li><span>Scroll From: </span><button id="script-pos" class="new-script-item">'+data.pos+'</button></li>');
+    $(cont).append('<li><span>Auto Cycle After Number of Frames</span><input id="script-autoCycle" class="new-script-item" value="'+data.autoCycle+'"></input></li>');
+    $(cont).append('<li><span>Disable Cycle: </span><button id="script-noCycle" class="new-script-item">'+data.noCycle+'</button></li>');
+    $(cont).append('<li><a id="add-to-script" class="menu-button btn btn-default">Add to Script</a></li>');
+    $(cont).append('<li><a id="clear-values" class="menu-button btn btn-default">Clear Values</a></li>');
+    $(cont).append('<li><a id="back-to-script-items"><div class="menu-button btn btn-default">Go Back</div></a></li>');
+    for(var i=0;i<imageAssets.length;i++){
+        $("#script-asset1").append('<option value="'+imageAssets[i]+'">'+imageAssets[i]+'</option>');
+        $("#script-asset2").append('<option value="'+imageAssets[i]+'">'+imageAssets[i]+'</option>');
+    }
+    $("#script-asset1").val(data.asset[0]);
+    $("#script-asset2").val(data.asset[1]);
     
-};  
+    $("#script-asset1").trigger("change");
+    $("#script-asset2").trigger("change");
+    $( ".sortable" ).sortable({
+        axis: "y"
+    });
+    $( ".sortable" ).disableSelection();
+};
+
+$(document).on("change","#script-asset1",function(e){
+    if(!$(this).val()){
+        $(this).parent().children("img").css("display","none");
+    } else {
+        $(this).parent().children("img").attr("src","../../images/"+$(this).val());
+        $(this).parent().children("img").css("display","inline-block");
+    }
+});
+$(document).on("change","#script-asset2",function(e){
+    if(!$(this).val()){
+        $(this).parent().children("img").css("display","none");
+    } else {
+        $(this).parent().children("img").attr("src","../../images/"+$(this).val());
+        $(this).parent().children("img").css("display","inline-block");
+    }
+});
+
+$(document).on("click","#script-pos",function(e){
+    if($(this).text()==="Left"){
+        $(this).text("Right");
+    } else {
+        $(this).text("Left");
+    }
+});
+$(document).on("click","#script-noCycle",function(e){
+    if($(this).text()==="No"){
+        $(this).text("Yes");
+    } else {
+        $(this).text("No");
+    }
+});
+$(document).on("click",".remove-choice",function(e){
+    $(this).parent().remove();
+});
+
+$(document).on("click","#clear-values",function(e){
+    removeOptions();
+    appendTextOptions();
+});
+$(document).on("click","#add-new-text",function(e){
+    $(this).parent().children("ul").append('<li><textarea class="script-text new-script-item"></textarea><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
+    
+});
+$(document).on("click","#add-to-script",function(e){
+    if(!$(".script-text").length) return;
+    var textArr = [];
+    $(".script-text").each(function(i,t){
+        textArr.push($(t).val());
+    });
+    var asset1 = $("#script-asset1").val();
+    var asset2 = $("#script-asset2").val();
+    var pos = $("#script-pos").text();
+    var autoCycle = $("#script-autoCycle").val();
+    var noCycle = $("#script-noCycle").text();
+    var scCont = $("#script-menu");
+    var displayText = textArr[0].slice(0,19);
+    $(scCont).append("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+});
+
+$(document).on("click",".script-item",function(e){
+    deselectSprite();
+    var type = $(this).attr("class").split(" ")[1];
+    removeOptions();
+    var parent = $(this).parent();
+    if(type==="text"){
+        appendTextOptions({text:JSON.parse($(parent).attr("text")),asset:JSON.parse($(parent).attr("asset")),pos:$(parent).attr("pos"),autoCycle:$(parent).attr("autoCycle"),noCycle:$(parent).attr("noCycle")});
+    } else if(type==="func"){
+        selectedFunc = $(this);
+        appendFunctionOptions({func:$(parent).attr("func"),props:$(parent).attr("props")});
+    }
+});
 
 $(document).on("click","#create-script-item",function(e){
     removeOptions();
     appendScriptItemOptions();
+});
+var createSaveForm = function(){
+    //Get the script
+    var scriptData = [];
+    var script = $("#script-menu").children("li");
+    $(script).each(function(i,itm){
+        var type = $(itm).children(".script-item").attr("class").split(" ")[1];
+        if(type==="text"){
+            scriptData.push({text:$(itm).attr("text"),asset:$(itm).attr("asset"),pos:$(itm).attr("pos"),autoCycle:$(itm).attr("autoCycle"),noCycle:$(itm).attr("noCycle")});
+        } else if(type==="func"){
+            scriptData.push({func:$(itm).attr("func"),props:$(itm).attr("props")});
+        }
+    });
+    var json = JSON.stringify(scriptData);
+    var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
+    form.append("<input type='text' name='battleScene' value='"+json+"'></input>");
+    return form;
+};
+$(document).on("click","#save-scene",function(e){
+    var form = createSaveForm();
+    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+    $("body").append(form);
+    form.submit();
 });
 $(document).on("click","#test-scene",function(e){
     /*
@@ -202,29 +452,37 @@ $(document).on("click","#add-text",function(e){
     removeOptions();
     appendTextOptions();
 });
+$(document).on("click","#back-to-func-selection",function(e){
+    deselectSprite();
+    removeOptions();
+    appendFunctionOptions();
+});
 $(document).on("click","#back-to-main",function(e){
     removeOptions();
     appendMainOptions();
 });
+$(document).on("click","#back-to-script-items",function(e){
+    deselectSprite();
+    removeOptions();
+    appendScriptItemOptions();
+});
 
-Q.getObjAt = function(locX,locY){
-    return saveData.filter(function(d){
-        return d.loc[0]===locX&&d.loc[1]===locY;
-    })[0];
+Q.getSpriteAt = function(loc){
+    return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
 };
-Q.getSpriteAt = function(objAt){
-    return Q.stage(0).locate(objAt.loc[0]*Q.tileW+Q.tileW/2,objAt.loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
+Q.getSpriteByStoryId = function(id){
+    return Q("CharacterSprite").items.filter(function(char){
+        return char.p.storyId === id;
+    })[0];
 };
 
 var selectCharacter = function(objAt){
     if(selectedCharacter){
         selectedCharacter.removeSelectedBox();
     }
-    var obj = Q.getSpriteAt(objAt);
-    selectedCharacter = obj;
-    obj.createSelectedBox();
-    removeOptions();
-    appendCreateCharacterOptions(objAt);
+    selectedCharacter = objAt;
+    Q.stage(0).trigger("selectedCharacter");
+    objAt.createSelectedBox();
 };
 //Turn on clicking sprites
 Q.el.addEventListener("click",function(e){
@@ -238,7 +496,7 @@ Q.el.addEventListener("click",function(e){
             stageY = Q.canvasToStageY(y, stage);
         var locX = Math.floor(stageX/Q.tileW);
         var locY = Math.floor(stageY/Q.tileH);
-        var objAt = Q.getObjAt(locX,locY);
+        var objAt = Q.getSpriteAt([locX,locY]);
         if(objAt){
             selectCharacter(objAt);
         }

@@ -80,7 +80,9 @@ $('#go-to-scene').click( function(e) {
         var form = $('<form action="edit-battleScene-event.php" method="post"></form>');
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-        form.append('<input type="text" name="map" value="'+$("#maps-select").val()+'">');
+        //Trim the map string
+        var map = $("#maps-select").val().slice(5,$("#maps-select").val().length);
+        form.append('<input type="text" name="map" value="'+map+'">');
         $("body").append(form);
         form.submit();
     }

@@ -24,16 +24,6 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
 $directory = '../../data/json/story/events';
 $scenes =  array_diff(scandir($directory), array('..', '.'));
 
-$eventsJSON = (object)[];
-foreach($scenes as $key => $val){
-    $ev =[];
-    $events = array_diff(scandir($directory."/".$val), array('..', '.'));
-    foreach($events as $key2 => $val2){
-        $ev[]=pathinfo($val2, PATHINFO_FILENAME);
-         
-    }
-    $eventsJSON->$val=$ev;
-}
 ?>
 
 <!DOCTYPE html>
@@ -44,11 +34,10 @@ foreach($scenes as $key => $val){
         <script src="js/edit-battleScene-event.js"></script>
     </head>
     <body>
-        <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
-        <h2>Set initial characters</h2>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
+        <h2>Set initial characters</h2>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
-        <div id="event-map" hidden><?php echo $eventMap; ?></div>
+        <div id="event-map" hidden><?php echo "../../".$eventMap; ?></div>
         <div id="characters" hidden><?php echo $event['characters']; ?></div>
         
         <ul class="menu right btn-group" style="height:80%">
