@@ -14,13 +14,11 @@ Q.tileH = 32;
 Q.SPRITE_CHARACTER  = 8;
 
 var selectedCharacter;
-
 //Set to true when placing a character
 var placing = false;
 Q.showMap = function(map){
     Q.stageScene("map",0,{map:map});
 };
-
 var map = $("#event-map").text();
 //Load all of the character sprites
 Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
@@ -53,21 +51,66 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
         Q.state.set("ng",Q.assets["../../data/json/data/character-generation.json"]);
         Q.loadTMX(map,function(){
             Q.stageScene("map",0,{map:map});
+            
+            //Loop through all of the characters and add them
+            var characters = JSON.parse($("#characters").text());
+            characters.forEach(function(char){
+                saveData.push(char);
+                var cl = char.charClass.toLowerCase();
+                if(char.charClass==="") cl = Q.state.get("ng").charClasses[Math.floor(Math.random()*Q.state.get("ng").charClasses.length)];
+                Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc}));
+            });
         });
     });
 });
 Q.Sprite.extend("CharacterSprite",{
     init:function(p){
         this._super(p,{
-            type:Q.SPRITE_CHARACTER
+            type:Q.SPRITE_CHARACTER|Q.SPRITE_UI
         });
         this.p.z = this.p.y;
+        this.on("destroyed",function(){
+            if(this.p.selectionBox){
+                this.p.selectionBox.destroy();
+            }
+        });
     },
     createSelectedBox:function(){
         this.p.selectionBox = this.stage.insert(new Q.UI.Container({x:this.p.x,y:this.p.y,w:Q.tileW,h:Q.tileH,border:1,z:1}));
     },
     removeSelectedBox:function(){
         this.p.selectionBox.destroy();
+    },
+    move:function(){
+        this.p.x = this.p.loc[0]*Q.tileW+Q.tileW/2;
+        this.p.y = this.p.loc[1]*Q.tileH+Q.tileH/2;
+        this.p.selectionBox.p.x = this.p.x;
+        this.p.selectionBox.p.y = this.p.y;
+    },
+    checkMove:function(){
+        if(Q.inputs['left']){
+            if(this.p.loc[0]>0){
+                this.p.loc[0]--;
+            }
+            Q.inputs['left'] = false;
+        } else if(Q.inputs['right']){
+            if(this.p.loc[0]<Q.stage(0).mapWidth){
+                this.p.loc[0]++;
+            }
+            Q.inputs['right'] = false;
+        }
+        if(Q.inputs['up']){
+            if(this.p.loc[1]>0){
+                this.p.loc[1]--;
+            }
+            Q.inputs['up'] = false;
+        } else if(Q.inputs['down']){
+            if(this.p.loc[1]<Q.stage(0).mapHeight){
+                this.p.loc[1]++;
+            }
+            Q.inputs['down'] = false;
+        }
+        this.move();
     }
 });
 var saveData = [
@@ -85,22 +128,32 @@ var objFuncs = {
                 var val = $(d).val();
                 var id =$(d).attr("id");
                 if(val===""||!val){
-                    currentCharacter[id] =  "rand";
+                    currentCharacter[id] =  "";
                 } else {
                     currentCharacter[id] = val;
                 }
             });
             currentCharacter.loc = [x,y];
             saveData.push(currentCharacter);
-            Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:currentCharacter.charClass?currentCharacter.charClass:"vanguard",frame:1,loc:[x,y]}));
+            var cl = currentCharacter.charClass.toLowerCase();
+            if(currentCharacter.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
+            Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:[x,y]}));
             $("#go-back-to-character").trigger("click");
         }
+    },
+    removeCharacter:function(obj){
+        for(var i=0;i<saveData.length;i++){
+            if(saveData[i].loc[0]===obj.p.loc[0]&&saveData[i].loc[1]===obj.p.loc[1]){
+                saveData.splice(i,1);
+            }
+        }
+        obj.destroy();
+        selectedCharacter = null;
     }
 };
-
 Q.addViewport = function(stage){
     stage.add("viewport");
-    var obj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
+    var obj = Q.viewObj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
     obj.p.x = obj.p.w/2;
     obj.p.y = obj.p.h/2;
     obj.drag = function(touch){
@@ -163,15 +216,15 @@ var removeOptions = function(){
 
 var appendMainOptions = function(){
     var cont = $(".menu");
-    $(cont).append('<li><a id="create-character"><div class="menu-button btn btn-default">Create Character</div></a></li>');
+    $(cont).append('<li><a id="create-character"><div class="menu-button btn btn-default">Create Characters</div></a></li>');
     $(cont).append('<li><a id="set-up-scene-script"><div class="menu-button btn btn-default">Set up Scene Script</div></a></li>');
-    $(cont).append('<li><a id="test-scene"><div class="menu-button btn btn-default">Test Scene</div></a></li>');
     $(cont).append('<li><a id="return-to-map-selection"><div class="menu-button btn btn-default">Return to Map Selection</div></a></li>');
 };
 var appendCharacterOptions = function(){
     var cont = $(".menu");
     $(cont).append('<li><a id="place-character"><div class="menu-button btn btn-default">Place Character</div></a></li>');
     $(cont).append('<li><a id="save-character"><div class="menu-button btn btn-default">Save Character</div></a></li>');
+    $(cont).append('<li><a id="remove-character"><div class="menu-button btn btn-default">Remove Character</div></a></li>');
     $(cont).append('<li><a id="back-to-main"><div class="menu-button btn btn-default">Go Back</div></a></li>');
 };
 var appendCreateCharacterOptions = function(char){
@@ -179,31 +232,35 @@ var appendCreateCharacterOptions = function(char){
     var cont = $(".menu");
     $(cont).append('<li>Name<input id="name" class="new-character" value=""></li>');
     $(cont).append('<li>Level<input id="level" class="new-character" value=""></li>');
-    $(cont).append('<li>Nationality<select id="nationalities" class="new-character"></select></li>');
-    $(cont).append('<li>Character Class<select id="charClasses" class="new-character"></select></li>');
-    $(cont).append('<li>Gender<select id="genders" class="new-character"></select></li>');
-    $(cont).append('<li>Value<select id="values" class="new-character"></select></li>');
-    $(cont).append('<li>Method<select id="methodologies" class="new-character"></select></li>');
-    $(cont).append('<li>Personality<select id="personalities" class="new-character"></select></li>');
+    $(cont).append('<li>Nationality<select id="nationality" class="new-character"></select></li>');
+    $(cont).append('<li>Character Class<select id="charClass" class="new-character"></select></li>');
+    $(cont).append('<li>Gender<select id="gender" class="new-character"></select></li>');
+    $(cont).append('<li>Value<select id="value" class="new-character"></select></li>');
+    $(cont).append('<li>Method<select id="methodology" class="new-character"></select></li>');
+    $(cont).append('<li>Personality<select id="personality" class="new-character"></select></li>');
+    $(cont).append('<li>Team<select id="team" class="new-character"></select></li>');
     
     $(cont).children("li").children("select").append("<option></option>");
     data.nationalities.forEach(function(itm){
-        $(cont).children("li").children("#nationalities").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#nationality").append("<option>"+itm+"</option>");
     });
     data.classNames.forEach(function(itm){
-        $(cont).children("li").children("#charClasses").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#charClass").append("<option>"+itm+"</option>");
     });
     data.genders.forEach(function(itm){
-        $(cont).children("li").children("#genders").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#gender").append("<option>"+itm+"</option>");
     });
     data.values.forEach(function(itm){
-        $(cont).children("li").children("#values").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#value").append("<option>"+itm+"</option>");
     });
     data.methodologies.forEach(function(itm){
-        $(cont).children("li").children("#methodologies").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#methodology").append("<option>"+itm+"</option>");
     });
     data.personalityNames.forEach(function(itm){
-        $(cont).children("li").children("#personalities").append("<option>"+itm+"</option>");
+        $(cont).children("li").children("#personality").append("<option>"+itm+"</option>");
+    });
+    data.teams.forEach(function(itm){
+        $(cont).children("li").children("#team").append("<option>"+itm+"</option>");
     });
     appendCharacterOptions();
     if(char){
@@ -214,12 +271,13 @@ var fillCharacterOptions = function(char){
     var cont = $(".menu");
     $(cont).children("li").children("#name").val(char.name);
     $(cont).children("li").children("#level").val(char.level);
-    $(cont).children("li").children("#nationalities").val(char.nationalities);
-    $(cont).children("li").children("#charClasses").val(char.charClasses);
-    $(cont).children("li").children("#genders").val(char.genders);
-    $(cont).children("li").children("#values").val(char.values);
-    $(cont).children("li").children("#methodologies").val(char.methodologies);
-    $(cont).children("li").children("#personalities").val(char.personalities);
+    $(cont).children("li").children("#nationality").val(char.nationality);
+    $(cont).children("li").children("#charClass").val(char.charClass);
+    $(cont).children("li").children("#gender").val(char.gender);
+    $(cont).children("li").children("#value").val(char.value);
+    $(cont).children("li").children("#methodology").val(char.methodology);
+    $(cont).children("li").children("#personality").val(char.personality);
+    $(cont).children("li").children("#team").val(char.team);
 };
 //MAIN MENU OPTIONS START
 $(document).on("click","#create-character",function(e){
@@ -227,10 +285,12 @@ $(document).on("click","#create-character",function(e){
     appendCreateCharacterOptions();
 });
 $(document).on("click","#set-up-scene-script",function(e){
-    
-});
-$(document).on("click","#test-scene",function(e){
-    
+    var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
+    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+    form.append("<input type='text' name='characters' value='"+JSON.stringify(saveData)+"'>");
+    $("body").append(form);
+    form.submit();
 });
 $(document).on("click","#return-to-map-selection",function(e){
     var sure = confirm("Are you sure you want to go back without saving?");
@@ -250,7 +310,11 @@ $(document).on("click","#place-character",function(e){
     Q.addSelectionBox(Q.stage(0),"placeCharacter");
     var cont = $(".menu");
     $(cont).children("li").children("#place-character").parent().replaceWith('<li><a id="go-back-to-character"><div class="menu-button btn btn-default">Cancel</div></a></li>');
-    
+});
+$(document).on("click","#remove-character",function(e){
+    if(selectedCharacter){
+        objFuncs.removeCharacter(selectedCharacter);
+    }
 });
 $(document).on("click","#save-character",function(e){
     if(selectedCharacter){
@@ -260,11 +324,16 @@ $(document).on("click","#save-character",function(e){
             var val = $(d).val();
             var id =$(d).attr("id");
             if(val===""||!val){
-                obj[id] =  "rand";
+                obj[id] =  "";
             } else {
                 obj[id] = val;
             }
         });
+        //Change the sprite sheet
+        var sp = Q.getSpriteAt(obj);
+        var cl = obj.charClass;
+        if(obj.charClass==="") cl = "vanguard";
+        sp.p.sheet = cl.toLowerCase();
     }
 });
 
@@ -273,6 +342,7 @@ $(document).on("click","#go-back-to-character",function(e){
     var cont = $(".menu");
     $(cont).children("li").children("#go-back-to-character").parent().remove();
     $(cont).children("li").children("#back-to-main").parent().remove();
+    $(cont).children("li").children("#remove-character").parent().remove();
     $(cont).children("li").children("#save-character").parent().remove();
     appendCharacterOptions();
 });
@@ -280,7 +350,6 @@ $(document).on("click","#go-back-to-character",function(e){
 $(document).on("click","#back-to-main",function(e){
     removeOptions();
     appendMainOptions();
-    
 });
 Q.getObjAt = function(locX,locY){
     return saveData.filter(function(d){
@@ -294,9 +363,11 @@ Q.getSpriteAt = function(objAt){
 var selectCharacter = function(objAt){
     if(selectedCharacter){
         selectedCharacter.removeSelectedBox();
+        selectedCharacter.off("step",selectedCharacter,"checkMove");
     }
     var obj = Q.getSpriteAt(objAt);
     selectedCharacter = obj;
+    selectedCharacter.on("step",selectedCharacter,"checkMove");
     obj.createSelectedBox();
     removeOptions();
     appendCreateCharacterOptions(objAt);

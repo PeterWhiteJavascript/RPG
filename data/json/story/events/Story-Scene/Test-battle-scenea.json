@@ -1,10 +1,1 @@
-{
-    "name": "Test-battle-scenea",
-    "desc": "fawfawf",
-    "kind": "battleScene",
-    "vrs": {},
-    "scene": [],
-    "characters": {},
-    "music": "",
-    "map": ""
-}
+{"name":"Test-battle-scenea","desc":"fawfawf","kind":"battleScene","vrs":[],"scene":[],"characters":"[{\"name\":\"Berserk\",\"level\":\"6\",\"nationalities\":\"rand\",\"charClasses\":\"vanguard\",\"genders\":\"rand\",\"values\":\"rand\",\"methodologies\":\"rand\",\"personalities\":\"rand\",\"loc\":[19,5],\"nationality\":\"Dardoian\",\"charClass\":\"Berserker\",\"gender\":\"Male\",\"value\":\"Nepotist\",\"methodology\":\"Pragmatic\",\"personality\":\"Violent\",\"team\":\"enemy\"},{\"name\":\"Assassin Guy\",\"level\":\"3\",\"nationality\":\"Venorian\",\"charClass\":\"Assassin\",\"gender\":\"Male\",\"value\":\"Nepotist\",\"methodology\":\"Pragmatic\",\"personality\":\"Impassive\",\"loc\":[20,5],\"team\":\"ally\"}]","music":"","map":"..\/..\/data\/demo0.tmx"}

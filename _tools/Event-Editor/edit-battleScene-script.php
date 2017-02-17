@@ -4,15 +4,16 @@ $name = $_POST['name'];
 
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
-$battleScene = $event['scene'];
-$characters = $event['characters'];
-$eventMusic = $event['music'];
-$eventMap = $_POST['map'];
-//Save the map to the file
-$event['map'] = $eventMap;
-file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event),JSON_PRETTY_PRINT);
 
+$battleScene = $event['scene'];
+$eventMusic = $event['music'];
+$eventMap = $event['map'];
 $variables = $event['vrs'];
+
+//Save the characters to the file
+$characters = $_POST['characters'];
+$event['characters'] = $characters;
+file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event),JSON_PRETTY_PRINT);
 
 $bg_directory = '../../images/bg';
 $bgs = array_diff(scandir($bg_directory), array('..', '.'));
@@ -41,17 +42,20 @@ foreach($scenes as $key => $val){
     <head>
         <?php include 'quintus-lib.php'; ?>
         <?php include 'config.php';?>
-        <script src="js/edit-battleScene-event.js"></script>
+        <script src="js/edit-battleScene-script.js"></script>
     </head>
     <body>
         <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
-        <h2>Set initial characters</h2>
+        <h2>Create the script</h2>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="event-map" hidden><?php echo $eventMap; ?></div>
         <div id="characters" hidden><?php echo $event['characters']; ?></div>
         
-        <ul class="menu right btn-group" style="height:80%">
+        <ul class="menu right btn-group" style="height:30%">
+            
+        </ul>
+        <ul class="script-menu right btn-group sortable">
             
         </ul>
     </body>

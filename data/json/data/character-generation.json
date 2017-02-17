@@ -11,6 +11,7 @@
     "order":["primary","secondary","primary","random","auto"],
     "autoChance":["primary","primary","secondary","random"],
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
+    "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
         "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
         "dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
