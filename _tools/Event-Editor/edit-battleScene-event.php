@@ -4,10 +4,10 @@ $name = $_POST['name'];
 
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
-$initialChars = $event['initialChars'];
-$eventMap = $event['map'];
-$eventMusic = $event['music'];
 $battleScene = $event['scene'];
+$characters = $event['characters'];
+$eventMusic = $event['music'];
+$eventMap = $_POST['map'];
 $variables = $event['vrs'];
 
 $bg_directory = '../../images/bg';
@@ -30,17 +30,24 @@ foreach($scenes as $key => $val){
     }
     $eventsJSON->$val=$ev;
 }
-$eventsJSON = json_encode($eventsJSON);
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
+        <?php include 'quintus-lib.php'; ?>
         <?php include 'config.php';?>
+        <script src="js/edit-battleScene-event.js"></script>
     </head>
     <body>
-        <div id="scenes" value='<?php echo $eventsJSON; ?>'></div>
+        <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
+        <h2>Set initial characters</h2>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
+        <div id="event-map" hidden><?php echo $eventMap; ?></div>
+        
+        <ul class="menu right btn-group" style="height:80%">
+            
+        </ul>
     </body>
 </html>

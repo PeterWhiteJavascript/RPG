@@ -1,10 +1,10 @@
 {
-    "name": "dfbdf",
-    "desc": "fdb",
+    "name": "Test-battle-scenea",
+    "desc": "fawfawf",
     "kind": "battleScene",
     "vrs": {},
     "scene": [],
-    "initialChars": [],
+    "characters": {},
     "music": "",
     "map": ""
 }

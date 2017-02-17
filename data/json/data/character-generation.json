@@ -10,6 +10,7 @@
     "secondaryStats":["str","end","wsk","ini","dex","rfl","eff","enr","skl"],
     "order":["primary","secondary","primary","random","auto"],
     "autoChance":["primary","primary","secondary","random"],
+    "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "natClasses":{
         "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
         "dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
@@ -28,6 +29,7 @@
         "elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
         "healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
     },
+    
     "personalities":{
         "muchValues":[
             "A little",
@@ -36,148 +38,105 @@
             "Very",
             "Extremely"
         ],
-        "traits":{
-            "sensitive":{
-                "name":"Sensitive",
-                "much":[
-                    {"desc":"Changes in Morale 10% larger"},
-                    {"desc":"Changes in Morale 25% larger"},
-                    {"desc":"Changes in Morale 50% larger"},
-                    {"desc":"Changes in Morale 100% larger"},
-                    {"desc":"Changes in Morale 150% larger"}
-                ]
-            },
-            "impassive":{
-                "name":"Impassive",
-                "much":[
-                    {"desc":"Changes in Morale 10% smaller (minimum 1)"},
-                    {"desc":"Changes in Morale 25% smaller (minimum 1)"},
-                    {"desc":"Changes in Morale 50% smaller (minimum 1)"},
-                    {"desc":"Changes in Morale 100% smaller (minimum 1)"},
-                    {"desc":"Changes in Morale 150% smaller (minimum 1)"}
-                ]
-            },
-            "unmotivated":{
-                "name":"Unmotivated",
-                "much":[
-                    {"desc":"EXP earned reduced by 5%"},
-                    {"desc":"EXP earned reduced by 10%"},
-                    {"desc":"EXP earned reduced by 15%"},
-                    {"desc":"EXP earned reduced by 20%"},
-                    {"desc":"EXP earned reduced by 25%"}
-                ]
-            },
-            "curious":{
-                "name":"Curious",
-                "much":[
-                    {"desc":"EXP earned increased by 5%"},
-                    {"desc":"EXP earned increased by 10%"},
-                    {"desc":"EXP earned increased by 15%"},
-                    {"desc":"EXP earned increased by 20%"},
-                    {"desc":"EXP earned increased by 25%"}
-                ]
-            },
-            "clingy":{
-                "name":"Clingy",
-                "much":[
-                    {"desc":"Changes in Loyalty 10% larger"},
-                    {"desc":"Changes in Loyalty 25% larger"},
-                    {"desc":"Changes in Loyalty 50% larger"},
-                    {"desc":"Changes in Loyalty 100% larger"},
-                    {"desc":"Changes in Loyalty 150% larger"}
-                ]
-            },
-            "nonpartisan":{
-                "name":"Nonpartisan",
-                "much":[
-                    {"desc":"Changes in Loyalty 10% smaller (minimum 1)"},
-                    {"desc":"Changes in Loyalty 25% smaller (minimum 1)"},
-                    {"desc":"Changes in Loyalty 50% smaller (minimum 1)"},
-                    {"desc":"Changes in Loyalty 100% smaller (minimum 1)"},
-                    {"desc":"Changes in Loyalty 150% smaller (minimum 1)"}
-                ]
-            },
-            "charismatic":{
-                "name":"Charismatic",
-                "much":[
-                    {"desc":"+1 to Morale and Loyalty boosts given to other Followers"},
-                    {"desc":"+2 to Morale and Loyalty boosts given to other Followers"},
-                    {"desc":"+3 to Morale and Loyalty boosts given to other Followers"},
-                    {"desc":"+4 to Morale and Loyalty boosts given to other Followers"},
-                    {"desc":"+5 to Morale and Loyalty boosts given to other Followers"}
-                ]
-            },
-            "awkward":{
-                "name":"Awkward",
-                "much":[
-                    {"desc":"-1 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
-                    {"desc":"-2 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
-                    {"desc":"-3 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
-                    {"desc":"-4 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
-                    {"desc":"-5 to Morale and Loyalty boosts given to other Followers (minimum 1)"}
-                ]
-            },
-            "violent":{
-                "name":"Violent",
-                "much":[
+        "traits":[[
+                {"desc":"Changes in Morale 10% larger"},
+                {"desc":"Changes in Morale 25% larger"},
+                {"desc":"Changes in Morale 50% larger"},
+                {"desc":"Changes in Morale 100% larger"},
+                {"desc":"Changes in Morale 150% larger"}
+            ],
+            [
+                {"desc":"Changes in Morale 10% smaller (minimum 1)"},
+                {"desc":"Changes in Morale 25% smaller (minimum 1)"},
+                {"desc":"Changes in Morale 50% smaller (minimum 1)"},
+                {"desc":"Changes in Morale 100% smaller (minimum 1)"},
+                {"desc":"Changes in Morale 150% smaller (minimum 1)"}
+            ],
+            [
+                {"desc":"EXP earned reduced by 5%"},
+                {"desc":"EXP earned reduced by 10%"},
+                {"desc":"EXP earned reduced by 15%"},
+                {"desc":"EXP earned reduced by 20%"},
+                {"desc":"EXP earned reduced by 25%"}
+            ],
+            [
+                {"desc":"EXP earned increased by 5%"},
+                {"desc":"EXP earned increased by 10%"},
+                {"desc":"EXP earned increased by 15%"},
+                {"desc":"EXP earned increased by 20%"},
+                {"desc":"EXP earned increased by 25%"}
+            ],
+            [
+                {"desc":"Changes in Loyalty 10% larger"},
+                {"desc":"Changes in Loyalty 25% larger"},
+                {"desc":"Changes in Loyalty 50% larger"},
+                {"desc":"Changes in Loyalty 100% larger"},
+                {"desc":"Changes in Loyalty 150% larger"}
+                ],
+            [
+                {"desc":"Changes in Loyalty 10% smaller (minimum 1)"},
+                {"desc":"Changes in Loyalty 25% smaller (minimum 1)"},
+                {"desc":"Changes in Loyalty 50% smaller (minimum 1)"},
+                {"desc":"Changes in Loyalty 100% smaller (minimum 1)"},
+                {"desc":"Changes in Loyalty 150% smaller (minimum 1)"}
+            ],
+            [
+                {"desc":"+1 to Morale and Loyalty boosts given to other Followers"},
+                {"desc":"+2 to Morale and Loyalty boosts given to other Followers"},
+                {"desc":"+3 to Morale and Loyalty boosts given to other Followers"},
+                {"desc":"+4 to Morale and Loyalty boosts given to other Followers"},
+                {"desc":"+5 to Morale and Loyalty boosts given to other Followers"}
+            ],
+            [
+                {"desc":"-1 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                {"desc":"-2 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                {"desc":"-3 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                {"desc":"-4 to Morale and Loyalty boosts given to other Followers (minimum 1)"},
+                {"desc":"-5 to Morale and Loyalty boosts given to other Followers (minimum 1)"}
+            ],
+            [
                     {"desc":"+1 additional Morale from defeating an enemy"},
                     {"desc":"+2 additional Morale from defeating an enemy"},
                     {"desc":"+3 additional Morale from defeating an enemy"},
                     {"desc":"+4 additional Morale from defeating an enemy"},
                     {"desc":"+5 additional Morale from defeating an enemy"}
-                ]
-            },
-            "pacifistic":{
-                "name":"Pacifistic",
-                "much":[
-                    {"desc":"-1 additional Morale from defeating an enemy"},
-                    {"desc":"-2 additional Morale from defeating an enemy"},
-                    {"desc":"-3 additional Morale from defeating an enemy"},
-                    {"desc":"-4 additional Morale from defeating an enemy"},
-                    {"desc":"-5 additional Morale from defeating an enemy"}
-                ]
-            },
-            "hedonistic":{
-                "name":"Hedonistic",
-                "much":[
-                    {"desc":"+1 additional Morale from Feasts"},
-                    {"desc":"+2 additional Morale from Feasts"},
-                    {"desc":"+3 additional Morale from Feasts"},
-                    {"desc":"+4 additional Morale from Feasts"},
-                    {"desc":"+5 additional Morale from Feasts"}
-                ]
-            },
-            "ascetic":{
-                "name":"Ascetic",
-                "much":[
-                    {"desc":"Only 75% Morale boost from Feasts"},
-                    {"desc":"Only 25% Morale boost from Feasts"},
-                    {"desc":"No Morale boost from Feasts"},
-                    {"desc":"No Morale boost from Feasts plus lose 3 Morale"},
-                    {"desc":"No Morale boost from Feasts plus lose 5 Morale"}
-                ]
-            },
-            "extraverted":{
-                "name":"Extraverted",
-                "much":[
-                    {"desc":"+1 Morale after a new Follower is recruited"},
-                    {"desc":"+2 Morale after a new Follower is recruited"},
-                    {"desc":"+3 Morale after a new Follower is recruited"},
-                    {"desc":"+4 Morale after a new Follower is recruited"},
-                    {"desc":"+5 Morale after a new Follower is recruited"}
-                ]
-            },
-            "shy":{
-                "name":"Shy",
-                "much":[
-                    {"desc":"-1 Morale after a new Follower is recruited"},
-                    {"desc":"-2 Morale after a new Follower is recruited"},
-                    {"desc":"-3 Morale after a new Follower is recruited"},
-                    {"desc":"-4 Morale after a new Follower is recruited"},
-                    {"desc":"-5 Morale after a new Follower is recruited"}
-                ]
-            }
-        }
+            ],
+            [
+                {"desc":"-1 additional Morale from defeating an enemy"},
+                {"desc":"-2 additional Morale from defeating an enemy"},
+                {"desc":"-3 additional Morale from defeating an enemy"},
+                {"desc":"-4 additional Morale from defeating an enemy"},
+                {"desc":"-5 additional Morale from defeating an enemy"}
+            ],
+            [
+                {"desc":"+1 additional Morale from Feasts"},
+                {"desc":"+2 additional Morale from Feasts"},
+                {"desc":"+3 additional Morale from Feasts"},
+                {"desc":"+4 additional Morale from Feasts"},
+                {"desc":"+5 additional Morale from Feasts"}
+            ],
+            [
+                {"desc":"Only 75% Morale boost from Feasts"},
+                {"desc":"Only 25% Morale boost from Feasts"},
+                {"desc":"No Morale boost from Feasts"},
+                {"desc":"No Morale boost from Feasts plus lose 3 Morale"},
+                {"desc":"No Morale boost from Feasts plus lose 5 Morale"}
+            ],
+            [
+                {"desc":"+1 Morale after a new Follower is recruited"},
+                {"desc":"+2 Morale after a new Follower is recruited"},
+                {"desc":"+3 Morale after a new Follower is recruited"},
+                {"desc":"+4 Morale after a new Follower is recruited"},
+                {"desc":"+5 Morale after a new Follower is recruited"}
+            ],
+            [
+                {"desc":"-1 Morale after a new Follower is recruited"},
+                {"desc":"-2 Morale after a new Follower is recruited"},
+                {"desc":"-3 Morale after a new Follower is recruited"},
+                {"desc":"-4 Morale after a new Follower is recruited"},
+                {"desc":"-5 Morale after a new Follower is recruited"}
+            ]
+        ]
     },
     "scenes":{
         "Chapter1-1":{

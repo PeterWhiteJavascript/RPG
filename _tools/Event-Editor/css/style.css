@@ -319,3 +319,14 @@ audio{
     border-style: solid;
     padding:10px;
 }
+#quintus_container{
+    position:absolute !important;
+    left:0 !important;
+}
+li{
+    font-size:16px;
+}
+
+.new-character{
+    margin:0 auto;
+}

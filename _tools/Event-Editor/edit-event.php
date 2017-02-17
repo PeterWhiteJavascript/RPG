@@ -35,12 +35,14 @@ else {
             break;
         case "battleScene":
             $newFile['scene'] = [];
-            $newFile['initialChars'] = [];
+            $newFile['characters'] = (object)[];
             $newFile['music'] = "";
             $newFile['map'] = "";
             break;
         case "battle":
             $newFile['battle'] = (object)[];
+            $newFile['maxAllies'] = 0;
+            $newFile['characters'] = (object)[];
             break;
     }
     file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile,JSON_PRETTY_PRINT));
@@ -72,11 +74,25 @@ if(!in_array($name, $sceneData['eventOrder'])){
         <div id="scene"><?php echo $scene; ?></div>
         <div id="kind"><?php echo $eventType; ?></div>
         <script>
-        var form = $('<form action="edit-'+$("#kind").text()+'-event.php" method="post"></form>');
-        form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
-        form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
-        $("body").append(form);
-        form.submit();
+        var kind = $("#kind").text();
+        switch(kind){
+            case "story":
+                var form = $('<form action="edit-story-event.php" method="post"></form>');
+                form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
+                form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
+                $("body").append(form);
+                form.submit();
+                break;
+            case "battleScene":
+            case "battle":
+                var form = $('<form action="select-map.php" method="post"></form>');
+                form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
+                form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
+                form.append('<input type="text" name="kind" value="'+kind+'">');
+                $("body").append(form);
+                form.submit();
+                break;
+        }
         </script>
     </body>
 </html>

@@ -17,7 +17,7 @@
         </ul>
         <script>
             $(function(){
-                $.getJSON( "../../data/json/data/name-generation.json", function( data ) {
+                $.getJSON( "../../data/json/data/character-generation.json", function( data ) {
                     var personalities = data.personalities;
                     var traitsKeys = Object.keys(personalities.traits);
                     var scenes = data.scenes;
