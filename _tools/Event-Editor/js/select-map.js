@@ -81,7 +81,7 @@ $('#go-to-scene').click( function(e) {
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
         //Trim the map string
-        var map = $("#maps-select").val().slice(5,$("#maps-select").val().length);
+        var map = $("#maps-select").val().slice(11,$("#maps-select").val().length);
         form.append('<input type="text" name="map" value="'+map+'">');
         $("body").append(form);
         form.submit();

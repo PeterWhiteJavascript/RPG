@@ -16,10 +16,12 @@ Q.SPRITE_CHARACTER  = 8;
 var selectedCharacter;
 //Set to true when placing a character
 var placing = false;
+//The largest ID in the saveData
+var largestId = 0;
 Q.showMap = function(map){
     Q.stageScene("map",0,{map:map});
 };
-var map = $("#event-map").text();
+var map = "../../data/"+$("#event-map").text();
 //Load all of the character sprites
 Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
     //Sprites
@@ -55,11 +57,13 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             //Loop through all of the characters and add them
             var characters = JSON.parse($("#characters").text());
             characters.forEach(function(char){
-                char.storyId = saveData.length;
                 saveData.push(char);
                 var cl = char.charClass.toLowerCase();
-                if(char.charClass==="") cl = Q.state.get("ng").charClasses[Math.floor(Math.random()*Q.state.get("ng").charClasses.length)];
+                if(char.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
                 Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc}));
+                
+                //The highest id (used for unique id)
+                largestId = Math.max.apply(Math,saveData.map(function(o){return o.storyId;}));
             });
         });
     });
@@ -135,6 +139,8 @@ var objFuncs = {
                 }
             });
             currentCharacter.loc = [x,y];
+            largestId++;
+            currentCharacter.storyId = largestId;
             saveData.push(currentCharacter);
             var cl = currentCharacter.charClass.toLowerCase();
             if(currentCharacter.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
@@ -291,6 +297,7 @@ $(document).on("click","#set-up-scene-script",function(e){
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
     form.append("<input type='text' name='characters' value='"+JSON.stringify(saveData)+"'>");
     $("body").append(form);
+    
     form.submit();
 });
 $(document).on("click","#return-to-map-selection",function(e){

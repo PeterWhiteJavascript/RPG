@@ -172,8 +172,15 @@ Q.startGame=function(save){
 var files = [
     //IMAGES SPRITES
     "sprites/archer.png",
-    "sprites/barbarian.png",
-    "sprites/knight.png",
+    "sprites/assassin.png",
+    "sprites/berserker.png",
+    "sprites/elementalist.png",
+    "sprites/healer.png",
+    "sprites/illusionist.png",
+    "sprites/legionnaire.png",
+    "sprites/skirmisher.png",
+    "sprites/vanguard.png",
+    
     //IMAGES UI
     "ui/ui_objects.png",
     "ui/text_box.png",
@@ -201,6 +208,7 @@ var files = [
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA
+    "json/data/character-generation.json",
     "json/data/equipment.json",
     "json/data/items.json",
     "json/data/locations.json",
@@ -241,18 +249,19 @@ Q.load(files.join(','),function(){
     Q.state.set("status",Q.assets['json/data/status.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
+    //A bunch of values for generating random characters
+    Q.state.set("charGeneration",Q.assets['json/data/character-generation.json']);
     //Get the equipment in the proper format
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     
     
+    Q.charGen = new Q.CharacterGenerator();
     
     
     /* TESTING EVENT */
     if(document.getElementById("title")){
-        $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
-        $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
         var scene = document.getElementById("title").innerHTML.toLowerCase();
         var name = document.getElementById("title2").innerHTML.toLowerCase();
         Q.state.set("startSceneName",scene);
@@ -264,6 +273,8 @@ Q.load(files.join(','),function(){
             switch(kind){
                 case "story":
                     Q.newGame({gender:"female",eventName:name});
+                    $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
+                    $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
                     $("#back-button").click(function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
@@ -275,6 +286,25 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    break;
+                case "battleScene":
+                    Q.newGame({gender:"female",eventName:name});
+                    $(document.body).append('<div id="back-button" class="btn btn-default">TO SCRIPT</div>');
+                    $(document.body).append('<div id="back-button2" class="btn btn-default">TO CHARACTERS</div>');  
+                    $("#back-button").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-script.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    $("#back-button2").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });

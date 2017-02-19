@@ -7,10 +7,12 @@ $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/
 $battleScene = $event['scene'];
 $characters = $event['characters'];
 $eventMusic = $event['music'];
-$eventMap = $_POST['map'];
-//Save the map to the file
-$event['map'] = $eventMap;
-file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event),JSON_PRETTY_PRINT);
+if(isset($_POST['map'])){
+    //Save the map to the file
+    $event['map'] = $_POST['map'];
+}
+$eventMap = $event['map'];
+file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
 
 $variables = $event['vrs'];
 
@@ -37,8 +39,8 @@ $scenes =  array_diff(scandir($directory), array('..', '.'));
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <h2>Set initial characters</h2>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
-        <div id="event-map" hidden><?php echo "../../".$eventMap; ?></div>
-        <div id="characters" hidden><?php echo $event['characters']; ?></div>
+        <div id="event-map" hidden><?php echo $eventMap; ?></div>
+        <div id="characters" hidden><?php echo json_encode($event['characters']); ?></div>
         
         <ul class="menu right btn-group" style="height:80%">
             

@@ -47,7 +47,7 @@ foreach (glob("../../data/*.tmx") as $mp) {
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="scene-kind" hidden><h2><?php echo $kind; ?></h2></div>
         <div id="options">
-            <select id="maps-select" initialValue="<?php echo "../../".$eventMap; ?>"></select>
+            <select id="maps-select" initialValue="<?php echo "../../data/".$eventMap; ?>"></select>
         </div>
         <ul class="menu right btn-group">
             <li><a id="go-to-scene"><div class="menu-button btn btn-default">Edit Battle/Battle Scene</div></a></li>

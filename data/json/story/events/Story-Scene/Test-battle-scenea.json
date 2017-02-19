@@ -6,5 +6,5 @@
     "scene": "[{\"func\":\"setView\",\"props\":\"[\\\"1\\\"]\"},{\"text\":\"[\\\"Changes fds fsdf sdf sdfsd\\\"]\",\"asset\":\"[\\\"story\/knight.png\\\",\\\"story\/pyro.png\\\"]\",\"pos\":\"Left\",\"autoCycle\":\"0\",\"noCycle\":\"0\"}]",
     "characters": "[{\"name\":\"Berserk\",\"level\":\"6\",\"nationalities\":\"rand\",\"charClasses\":\"vanguard\",\"genders\":\"rand\",\"values\":\"rand\",\"methodologies\":\"rand\",\"personalities\":\"rand\",\"loc\":[19,5],\"nationality\":\"Dardoian\",\"charClass\":\"Berserker\",\"gender\":\"Male\",\"value\":\"Nepotist\",\"methodology\":\"Pragmatic\",\"personality\":\"Violent\",\"team\":\"Ally\",\"storyId\":0},{\"name\":\"Assassin Guy\",\"level\":\"3\",\"nationality\":\"Venorian\",\"charClass\":\"Assassin\",\"gender\":\"Male\",\"value\":\"Nepotist\",\"methodology\":\"Pragmatic\",\"personality\":\"Impassive\",\"loc\":[20,5],\"team\":\"Ally\",\"storyId\":1}]",
     "music": "",
-    "map": "\/data\/demo0.tmx"
+    "map": "demo0.tmx"
 }

@@ -27,7 +27,7 @@ Q.showMap = function(map){
     Q.stageScene("map",0,{map:map});
 };
 
-var map = $("#event-map").text();
+var map = "../../data/"+$("#event-map").text();
 var imageAssets = [];
 $("#images-holder").children("option").each(function(i,itm){
     imageAssets.push($(this).val());
@@ -68,7 +68,7 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             var characters = JSON.parse($("#characters").text());
             characters.forEach(function(char){
                 var cl = char.charClass.toLowerCase();
-                if(char.charClass==="rand") cl = Q.state.get("ng").charClasses[Math.floor(Math.random()*Q.state.get("ng").charClasses.length)];
+                if(char.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
                 Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
             });
         });
@@ -401,7 +401,7 @@ $(document).on("click","#create-script-item",function(e){
     removeOptions();
     appendScriptItemOptions();
 });
-var createSaveForm = function(){
+var createSaveForm = function(form){
     //Get the script
     var scriptData = [];
     var script = $("#script-menu").children("li");
@@ -413,24 +413,27 @@ var createSaveForm = function(){
             scriptData.push({func:$(itm).attr("func"),props:$(itm).attr("props")});
         }
     });
-    var json = JSON.stringify(scriptData);
-    var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
+    var json = JSON.stringify(scriptData, null, 2);
+    console.log(json);
     form.append("<input type='text' name='battleScene' value='"+json+"'></input>");
     return form;
 };
 $(document).on("click","#save-scene",function(e){
-    var form = createSaveForm();
+    var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
+    form = createSaveForm(form);
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
     form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
     $("body").append(form);
     form.submit();
 });
 $(document).on("click","#test-scene",function(e){
-    /*
-    var form = createSaveForm();
+    var form = $('<form action="../../index.php" method="post"></form>');
+    form = createSaveForm(form);
+    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
     form.append('<input type="text" name="testing" value="true">');
     $("body").append(form);
-    form.submit();*/
+    form.submit();
 });
 $(document).on("click","#return-to-character-placement",function(e){
     var sure = confirm("Are you sure you want to go back without saving?");

@@ -971,7 +971,7 @@ Quintus.Objects=function(Q){
                 sprite:"Character",
                 dir:"left"
             });
-            this.p.sheet = this.p.charClass;
+            this.p.sheet = this.p.charClass.toLowerCase();
             //Quintus components
             this.add("2d, animation, tween");
             this.add("animations");

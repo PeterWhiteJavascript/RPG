@@ -1,0 +1,87 @@
+{
+    "name": "Testing-Battle-SCENE",
+    "desc": "Yes",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [
+        {
+            "func": "setView",
+            "props": "[\"0\"]"
+        },
+        {
+            "text": "[\"SDFSDFSDFSDFSDF\"]",
+            "asset": "[\"story\/knight.png\",\"story\/l.jpg\"]",
+            "pos": "Left",
+            "autoCycle": "0",
+            "noCycle": "No"
+        }
+    ],
+    "characters": [
+        {
+            "name": "Archer 1",
+            "level": "1",
+            "nationality": "Venorian",
+            "charClass": "Archer",
+            "gender": "Male",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Enemy",
+            "loc": [
+                13,
+                7
+            ],
+            "storyId": 1
+        },
+        {
+            "name": "Archer 2",
+            "level": "1",
+            "nationality": "Venorian",
+            "charClass": "Archer",
+            "gender": "Male",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Enemy",
+            "loc": [
+                14,
+                7
+            ],
+            "storyId": 0
+        },
+        {
+            "name": "Legionnaire 1",
+            "level": "1",
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Male",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Enemy",
+            "loc": [
+                13,
+                8
+            ],
+            "storyId": 2
+        },
+        {
+            "name": "cvbn",
+            "level": "",
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "loc": [
+                17,
+                7
+            ],
+            "storyId": 3
+        }
+    ],
+    "music": "",
+    "map": "battle_balance1.tmx"
+}

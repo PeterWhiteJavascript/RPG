@@ -10,20 +10,17 @@ Quintus.SceneFuncs=function(Q){
                     Q.stageScene("story",1,{data:data});
                     break;
                 case "battleScene":
-                    Q.loadMusic(data.music.join(','),function(){
-                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
-                            Q.clearStages();
-                            Q.stageScene("battleScene",0,{data:data,path:data.startScene[0]});
-                        });
+                    Q.loadTMX(data.map, function() {
+                        Q.clearStages();
+                        Q.stageScene("battleScene",0,{data:data});
                     });
+                    
                     break;
                 case "battle":
-                    Q.loadMusic(data.music.join(','),function(){
-                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
-                            Q.clearStages();
-                            Q.stageScene("battle",0,{data:data,path:data.startScene[0]});
-                            
-                        });
+                    Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                        Q.clearStages();
+                        Q.stageScene("battle",0,{data:data});
+
                     });
                     
                     break;
@@ -58,11 +55,127 @@ Quintus.SceneFuncs=function(Q){
         textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
         textBox.next();
     }); */
+    Q.GameObject.extend("CharacterGenerator",{
+        init:function(){
+            var data = Q.state.get("charGeneration");
+            console.log(data)
+            this.personalities = data.personalities;
+            this.traitsKeys = Object.keys(this.personalities.traits);
+            this.scenes = data.scenes;
+            this.nationalities = data.nationalities;
+            this.values = data.values;
+            this.methodologies = data.methodologies;
+            this.classNames = data.classNames;
+            this.natClasses = data.natClasses;
+            this.natKeys = Object.keys(this.natClasses);
+            this.classes = data.classes;
+            this.classKeys = Object.keys(this.classes);
+            this.nameParts = data.nameParts;
+            this.genders = data.genders;
+            this.statTexts = data.statTexts;
+            this.statNames = data.statNames;
+            this.primaryStats = data.primaryStats;
+            this.secondaryStats = data.secondaryStats;
+            this.order = data.order;
+            this.autoChance = data.autoChance;
+        },
+        getIdx:function(group,num){
+            //Loop through elements in array until a match is found
+            for(var i=0;i<group.length;i++){
+                var sum = group.slice(0,i+1).reduce(function(a,b){return a+b;},0);
+                if(num<=sum){
+                    return i;
+                }
+            }
+        },
+        levelUp:function(statTo,stats,primary,secondary){
+            switch(statTo){
+                case "primary":
+                    stats[primary]+=1;
+                    break;
+                case "secondary":
+                    stats[secondary]+=1;
+                    break;
+                case "random":
+                    stats[this.statNames[Math.floor(Math.random()*this.statNames.length)]]+=1;
+                    break;
+                case "auto":
+                    stats = this.levelUp(this.autoChance[Math.floor(Math.random()*this.autoChance.length)],stats,primary,secondary);
+                    break;
+            }
+            return stats;
+        },
+        getStats:function(level,classNum){
+            var stats = {};
+            //Set all starting stats
+            this.statNames.forEach(function(st){
+                stats[st] = Math.floor(Math.random()*10)+10;
+            });
+            var primary = primaryStats[classNum];
+            var secondary = secondaryStats[classNum];
+            stats[primary]+=5;
+            stats[secondary]+=3;
+
+            for(var idx=0;idx<level;idx++){
+                var num = idx%this.order.length;
+                stats = this.levelUp(order[num],stats,primary,secondary);
+            }
+            return stats;
+        },
+        rand:function(){
+            return Math.ceil(Math.random()*100);
+        },
+        generateProp:function(prop,char){
+            var chapter = "Chapter1-1";
+            switch(prop){
+                case "name":
+                    var numNameParts = this.getIdx(this.nameParts[natNum].nameParts,this.rand())+1;
+                    var charName = "";
+                    var main = this.nameParts[natNum].main;
+                    for(var i=0;i<numNameParts;i++){
+                        charName+=main[Math.floor(Math.random()*main.length)];
+                    }
+
+                    //Nomads have different prefix
+                    if(this.nationalities[natNum]==="Nomadic") charName=this.nameParts[natNum][char.charGender][Math.floor(Math.random()*this.nameParts[natNum][char.charGender].length)]+charName;
+                    else charName+=this.nameParts[natNum][char.charGender][Math.floor(Math.random()*this.nameParts[natNum][char.charGender].length)];
+                    charName = charName.charAt(0).toUpperCase() + charName.slice(1);
+                    return charName;
+                case "level":
+                    
+                    return this.scenes[chapter].startLevel+this.getIdx(this.scenes[chapter].spread,this.rand());
+                case "nationality":
+                    var natNum = this.getIdx(this.scenes[chapter].natSpread,this.rand());
+                    char.natNum = natNum;
+                    var charNat = this.natKeys[natNum];
+                    return charNat;
+                case "charClass":
+                    var classNum = this.getIdx(this.natClasses[char.nationality].classSpread,this.rand());
+                    char.classNum = classNum;
+                    var charClass = this.classKeys[classNum];
+                    return charClass;
+                case "gender":
+                    
+                    return this.genders[this.getIdx([this.classes[char.charClass].gender[char.natNum],100],this.rand())];
+                case "value":
+                    
+                    return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
+                case "methodology":
+                    
+                    return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
+                case "personality":
+                    var randPersonalityText = this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
+                    var randPersonality = this.personalities.traits[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
+                    return randPersonalityText+randPersonality;
+                    
+            }
+        }
+    });
     Q.scene("battleScene",function(stage){
         Q.inputs['confirm'] = false;
         Q.stageScene("fader",11);
         //Get the data to play out this scene
-        var data = stage.options.sceneData = Q.getPathData(stage.options.data,stage.options.path);
+        var data = stage.options.data;
         var music = data.music;
         if(!music) music = Q.state.get("currentMusic");
         Q.playMusic(music,function(){
@@ -84,10 +197,16 @@ Quintus.SceneFuncs=function(Q){
             Q.viewFollow(stage.viewSprite,stage);
             
             var allyData = Q.state.get("allies");
-            var charData = data.initialChars;
+            var charData = data.characters;
             var chars = [];
             charData.forEach(function(char){
                 var character;
+                //Set values that are empty as random
+                ["level","nationality","charClass","gender","name","value","method","personality"].forEach(function(key){
+                    if(!char[key]||char[key].length===0){
+                        char[key] = Q.charGen.generateProp(key,char);
+                    }
+                });
                 //If the character is an ally, get the data from the allies array
                 if(char.team==="ally"){
                     //Find the data in the allies array
