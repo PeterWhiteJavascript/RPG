@@ -59,6 +59,7 @@ textarea{
 }
 select{
     display:block;
+    margin:0 auto;
 }
 
 a:visited {
@@ -363,4 +364,23 @@ li{
     max-width:50px;
     width:auto;
     height:50px;
+}
+#canvas-coordinates{
+    position:absolute;
+    left:10px;
+    z-index:10000;
+    top:60px;
+}
+
+.script-options-func-li{
+    border:dashed;
+}
+.editor-item{
+    width:100%;
+    min-height:50px;
+    background-color:tan;
+    padding:2px;
+}
+.script-edit{
+    float:left;
 }

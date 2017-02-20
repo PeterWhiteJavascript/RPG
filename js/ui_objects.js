@@ -434,22 +434,26 @@ Quintus.UIObjects=function(Q){
             obj.p.stepDelay = speed;
         },
         //Moves a character along a path
-        moveAlong:function(id,path,dir,atDest){
+        moveAlong:function(id,path,dir,allowCycle){
             var obj = this.getStoryCharacter(id);
             //If the is a function that should be played once the object reaches its destination
-            if(atDest){
-                var destObj;
-                if(atDest.obj==="text"){
-                    destObj = this;
-                } else if(atDest.obj==="char"){
-                    destObj = obj;
-                }
-                obj.on("doneAutoMove",destObj,atDest.func);
-            }
             obj.on("doneAutoMove",obj,function(){
                 this.playStand(dir);
+                //If we're cycling on arrival
+                if(allowCycle==="true"){
+                    Q.dialogueController.p.scriptNum++;
+                    Q.dialogueController.next();
+                    //Allow cycling to the next script item
+                    Q.dialogueController.p.noCycle = false;
+                }
+                
             });
             obj.moveAlongPath(path);
+            this.p.noCycle = true;
+            //If we're waiting on arrival
+            if(allowCycle==="true"){
+                return true;
+            }
         },
         //Fades a character to nothing
         fadeChar:function(id,time,wait){

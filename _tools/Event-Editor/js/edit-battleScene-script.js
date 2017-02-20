@@ -87,7 +87,7 @@ Q.Sprite.extend("CharacterSprite",{
         });
     },
     createSelectedBox:function(){
-        this.p.selectionBox = this.stage.insert(new Q.UI.Container({x:this.p.x,y:this.p.y,w:Q.tileW,h:Q.tileH,border:1,z:1}));
+        this.p.selectionBox = this.stage.insert(new Q.SelectedSquare({x:this.p.x,y:this.p.y,loc:this.p.loc,fill:"white"}));
     },
     removeSelectedBox:function(){
         this.p.selectionBox.destroy();
@@ -151,6 +151,37 @@ Q.removeSelectionBox = function(){
 Q.scene("map",function(stage){
     Q.stageTMX(stage.options.map, stage);
     Q.addViewport(stage);
+    
+    //Turn on clicking sprites
+    Q.el.addEventListener("click",function(e){
+        //Can't click sprite if placing one
+        if(allowSpriteSelecting){
+            var x = e.offsetX || e.layerX,
+                y = e.offsetY || e.layerY,
+                stage = Q.stage();
+
+            var stageX = Q.canvasToStageX(x, stage),
+                stageY = Q.canvasToStageY(y, stage);
+            var locX = Math.floor(stageX/Q.tileW);
+            var locY = Math.floor(stageY/Q.tileH);
+            var objAt = Q.getSpriteAt([locX,locY]);
+            if(objAt){
+                selectCharacter(objAt);
+            }
+            Q.stage(0).trigger("selectedLocation",[locX,locY]);
+        }
+    });
+    Q.el.addEventListener("mousemove",function(e) {
+        var x = e.offsetX || e.layerX,
+            y = e.offsetY || e.layerY,
+            stage = Q.stage();
+
+        var stageX = Q.canvasToStageX(x, stage),
+            stageY = Q.canvasToStageY(y, stage);
+        var locX = Math.floor(stageX/Q.tileW);
+        var locY = Math.floor(stageY/Q.tileH);
+        $("#canvas-coordinates").text(locX+","+locY);
+    });
 },{sort:true});
 
 var removeOptions = function(){
@@ -188,11 +219,37 @@ var funcs = [
 Q.getXY = function(loc){
     return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
 };
+Q.UI.Container.extend("SelectedSquare",{
+    init:function(p){
+        this._super(p,{
+            w:Q.tileW,
+            h:Q.tileH,
+            border:1,
+            z:2,
+            opacity:0.8,
+            fill:"black"
+        });
+        if(this.p.num){
+            this.on("inserted");
+        }
+    },
+    inserted:function(){
+        this.p.number = this.insert(new Q.Number({label:""+this.p.num,y:-this.p.h/2}));
+    }
+});
+Q.UI.Text.extend("Number",{
+    init:function(p){
+        this._super(p,{
+            color:"white",
+            z:3
+        });
+    }
+});
 //Each function within the array is in charge of a single prop value
 var setUpFuncs = {
     setView:[
         function(val){
-            $("#back-to-func-selection").before("<li><span>Select a character in the stage to set the view to</span><div id='view-character-selected' class='script-func'></div></li>");
+            $("#back-to-func-selection").before("<span>Select a character in the stage to set the view to</span><div id='view-character-selected' class='script-func'></div>");
             allowSpriteSelecting = true;
             Q.stage(0).on("selectedCharacter",function(){
                 if($("#view-character-selected").text()===""){
@@ -209,12 +266,16 @@ var setUpFuncs = {
             }
             Q.stage(0).on("finished",function(){
                 Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("finished");
+                Q("SelectedSquare",0).items.forEach(function(square){
+                    square.destroy();
+                });
             });
         }
     ],
     centerView:[
         function(val){
-            $("#back-to-func-selection").before("<li><span>Select a location in the stage to tween the view to. Selecting a character will set the view to it upon arrival.</span><div id='view-character-selected' class='script-func'></div></li>");
+            $("#back-to-func-selection").before("<span>Select a location in the stage to tween the view to. Selecting a character will set the view to it upon arrival.</span><div id='view-character-selected' class='script-func'></div>");
             allowSpriteSelecting = true;
             var selectedChar = false;
             Q.stage(0).on("selectedCharacter",function(){
@@ -233,34 +294,156 @@ var setUpFuncs = {
                     //show the selected box on the location
                     var pos = Q.getXY(loc);
                     if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                    Q.locSelectedBox = Q.stage(0).insert(new Q.UI.Container({x:pos.x,y:pos.y,w:Q.tileW,h:Q.tileH,border:1,z:1}));
+                    Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc}));
                     deselectSprite();
                     if($("#view-character-selected").text()===""){
                         $("#back-to-func-selection").before("<a id='add-func-to-script' value='centerView'><div class='menu-button btn btn-default'>Add to Script</div></a>");
                     }
                     $("#view-character-selected").text("Location: "+loc[0]+","+loc[1]);
                     $("#view-character-selected").attr("val",JSON.stringify(loc));
+                    $("#view-character-selected").attr("dataType","array");
                 } else {
                     selectedChar = false;
                 }
             });
             if(val!==undefined){
-                val = val.split(",");
                 $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
-                if(val.length>1){
-                    Q.stage(0).trigger("selectedLocation",[parseInt(val[0]),parseInt(val[1])]);
+                if(Q._isArray(val[0])){
+                    Q.stage(0).trigger("selectedLocation",[val[0][0],val[0][1]]);
                 } else {
-                    selectCharacter(Q.getSpriteByStoryId(parseInt(val[0])));
+                    selectCharacter(Q.getSpriteByStoryId(val[0]));
                 }
             }
             Q.stage(0).on("finished",function(){
                 Q.stage(0).off("selectedCharacter");
                 Q.stage(0).off("selectedLocation");
+                Q.stage(0).off("finished");
+                Q("SelectedSquare",0).items.forEach(function(square){
+                    square.destroy();
+                });
             });
         }
     ],
     moveAlong:[
-        function(){}
+        //Select the character
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='view-character-selected' class='script-func'></div></div>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(){
+                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
+                if($("#view-character-selected").text()===""){
+                    Q.stage(0).off("selectedCharacter");
+                    setUpFuncs.moveAlong[1](val);
+                }
+                $("#view-character-selected").text("Story Id: "+selectedCharacter.p.storyId);
+                $("#view-character-selected").attr("val",selectedCharacter.p.storyId);
+                $("#view-character-selected").attr("dataType","integer");
+            });
+            if(val){
+                selectCharacter(Q.getSpriteByStoryId(val[0]));
+            }
+        },
+        //Select the path
+        function(val){
+            //First time don't trigger the selectedLocation
+            var initial = true;
+            //The locations that have been selected for the path
+            var selectedLocs = [];
+            //The initial index of the dragged item
+            var initialIdx;
+            var saveLocs = function(){
+                var locs = [];
+                for(var i=0;i<selectedLocs.length;i++){
+                    locs.push(selectedLocs[i].p.loc);
+                }
+                $("#move-locations").attr("val",JSON.stringify(locs));
+            };
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select one or more locations to show the movement path.</span><ul id='move-locations' class='script-func sortable' dataType='array'></ul></div>");
+            $( "#move-locations" ).sortable({
+                axis: "y",
+                start: function( event, ui ) {
+                    initialIdx = $(ui.item[0]).index();
+                },
+                stop:function(event,ui){
+                    if(initialIdx!==$(ui.item[0]).index()){
+                        //Move the position of the item
+                        var itm = selectedLocs[initialIdx];
+                        selectedLocs.splice(initialIdx,1);
+                        selectedLocs.splice($(ui.item[0]).index(),0,itm);
+                        //Change any of the next selectedLocs's labels
+                        for(var j=0;j<selectedLocs.length;j++){
+                            selectedLocs[j].p.number.p.label = ""+(j+1);
+                        }
+                        saveLocs();
+                    }
+                }
+            });
+            $( ".sortable" ).disableSelection();
+            Q.stage(0).on("selectedLocation",function(loc){
+                if(initial){ 
+                    initial = false; 
+                    return;
+                };
+                //If the loc is already in the array, remove it.
+                for(var i=0;i<selectedLocs.length;i++){
+                    if(selectedLocs[i].p.loc[0]===loc[0]&&selectedLocs[i].p.loc[1]===loc[1]){
+                        $("#move-locations").children("li:nth-child("+(i+1)+")").remove();
+                        
+                        selectedLocs[i].destroy();
+                        selectedLocs.splice(i,1);
+                        //Change any of the next selectedLocs's labels
+                        for(var j=i;j<selectedLocs.length;j++){
+                            selectedLocs[j].p.number.p.label = ""+(j+1);
+                        }
+                        saveLocs();
+                        //Don't do the selectedLocs placement code
+                        return;
+                    }
+                }
+                //show the selected box on the location
+                var pos = Q.getXY(loc);
+                selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc,num:selectedLocs.length+1})));
+                $("#move-locations").append("<li class='loc-li'><div class='btn btn-default'>"+loc[0]+","+loc[1]+"</div></li>");
+                saveLocs();
+            });
+            
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select the direction on arrival.</span><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select></div><div class='editor-item'><a id='cycle-text-on-arrival'><div class='menu-button btn btn-default script-func' val='true'>Cycle Text On Arrival</div></a></div>");
+            $("#dir-on-arrival").val("up");
+            $("#cycle-text-on-arrival").on("click",function(){
+                if($("#cycle-text-on-arrival").children(".menu-button").attr("val")==="true"){
+                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text Instantly");
+                    $("#cycle-text-on-arrival").children(".menu-button").attr("val","false");
+                } else {
+                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text On Arrival");
+                    $("#cycle-text-on-arrival").children(".menu-button").attr("val","true");
+                }
+            });
+            if(val){
+                initial = false;
+                for(var i=0;i<val[1].length;i++){
+                    Q.stage(0).trigger("selectedLocation",val[1][i]);
+                }
+                $("#dir-on-arrival").val(val[2]);
+                $("#cycle-text-on-arrival").children(".menu-button").attr("val",val[3]);
+                if(val[3]==="true"){
+                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text On Arrival");
+                } else {
+                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text Instantly");
+                }
+                
+                $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
+            } else {
+                $("#back-to-func-selection").before("<a id='add-func-to-script' value='moveAlong'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+            }
+            Q.stage(0).on("finished",function(){
+                Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("selectedLocation");
+                Q("SelectedSquare",0).items.forEach(function(square){
+                    square.destroy();
+                });
+                Q.stage(0).off("finished");
+            });
+        }
     ],
     changeDir:[
         function(){}
@@ -304,16 +487,16 @@ var appendFunctionOptions = function(obj){
     }
     if(obj){
         $("#script-select-func").val(obj.func);
-        $("#script-select-func").attr("props",obj.props);
+        $("#script-select-func").attr("props",JSON.stringify(obj.props));
         $("#script-select-func").trigger("change");
     }
 };
 $(document).on("change","#script-select-func",function(e){
     removeOptions();
-    $(cont).append('<li><a id="back-to-func-selection"><div class="menu-button btn btn-default">Go Back</div></a></li>');
+    $(cont).append('<li class="script-options-func-li"><a id="back-to-func-selection"><div class="menu-button btn btn-default">Go Back</div></a></li>');
     var props = $(this).attr("props");
     if(props){
-        var p = props;
+        var p = JSON.parse(props);
         /*
         for(var idx=0;idx<p.length;idx++){
             console.log(p)
@@ -324,14 +507,19 @@ $(document).on("change","#script-select-func",function(e){
         setUpFuncs[$(this).val()][0]();
     }
 });
-$(document).on("click","#save-func-script-item",function(e){
+var getFuncProps = function(){
     var props = [];
     $(".script-func").each(function(i,itm){
         var value = $(this).attr("val");
+        if(!value) value = $(this).val();
         if($(this).attr("dataType")==="integer") value=parseInt(value);
-        props.push(JSON.parse(value));
+        if($(this).attr("dataType")==="array") value=JSON.parse(value);
+        props.push(value);
     });
-    $(selectedFunc).parent().attr("props",JSON.stringify(props));
+    return props;
+};
+$(document).on("click","#save-func-script-item",function(e){
+    $(selectedFunc).parent().attr("props",JSON.stringify(getFuncProps()));
     selectedFunc = false;
     $("#back-to-func-selection").trigger("click");
 });
@@ -339,14 +527,8 @@ $(document).on("click","#add-func-to-script",function(e){
     allowSpriteSelecting = false;
     deselectSprite();
     var funcName = $(this).attr("value");
-    var props = [];
-    $(".script-func").each(function(i,itm){
-        var value = $(this).attr("val");
-        if($(this).attr("dataType")==="integer") value=parseInt(value);
-        props.push(JSON.parse(value));
-    });
     var scCont = $("#script-menu");
-    $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(props)+"'><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(getFuncProps())+"'><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
     $("#back-to-func-selection").trigger("click");
 });
 var appendTextOptions = function(obj){
@@ -511,6 +693,7 @@ $(document).on("click","#add-text",function(e){
     appendTextOptions();
 });
 $(document).on("click","#back-to-func-selection",function(e){
+    Q.stage(0).trigger("finished");
     allowSpriteSelecting = false;
     deselectSprite();
     removeOptions();
@@ -521,6 +704,7 @@ $(document).on("click","#back-to-main",function(e){
     appendMainOptions();
 });
 $(document).on("click","#back-to-script-items",function(e){
+    Q.stage(0).trigger("finished");
     allowSpriteSelecting = false;
     deselectSprite();
     removeOptions();
@@ -551,24 +735,5 @@ var deselectSprite = function(){
     }
     selectedCharacter = false;
 };
-//Turn on clicking sprites
-Q.el.addEventListener("click",function(e){
-    //Can't click sprite if placing one
-    if(allowSpriteSelecting){
-        var x = e.offsetX || e.layerX,
-            y = e.offsetY || e.layerY,
-            stage = Q.stage();
-
-        var stageX = Q.canvasToStageX(x, stage),
-            stageY = Q.canvasToStageY(y, stage);
-        var locX = Math.floor(stageX/Q.tileW);
-        var locY = Math.floor(stageY/Q.tileH);
-        var objAt = Q.getSpriteAt([locX,locY]);
-        if(objAt){
-            selectCharacter(objAt);
-        }
-        Q.stage(0).trigger("selectedLocation",[locX,locY]);
-    }
-});
 appendMainOptions();
 });

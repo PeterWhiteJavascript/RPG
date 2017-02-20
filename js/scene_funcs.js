@@ -133,16 +133,16 @@ Quintus.SceneFuncs=function(Q){
             var chapter = "Chapter1-1";
             switch(prop){
                 case "name":
-                    var numNameParts = this.getIdx(this.nameParts[natNum].nameParts,this.rand())+1;
+                    var numNameParts = this.getIdx(this.nameParts[char.natNum].nameParts,this.rand())+1;
                     var charName = "";
-                    var main = this.nameParts[natNum].main;
+                    var main = this.nameParts[char.natNum].main;
                     for(var i=0;i<numNameParts;i++){
                         charName+=main[Math.floor(Math.random()*main.length)];
                     }
 
                     //Nomads have different prefix
-                    if(this.nationalities[natNum]==="Nomadic") charName=this.nameParts[natNum][char.charGender][Math.floor(Math.random()*this.nameParts[natNum][char.charGender].length)]+charName;
-                    else charName+=this.nameParts[natNum][char.charGender][Math.floor(Math.random()*this.nameParts[natNum][char.charGender].length)];
+                    if(this.nationalities[char.natNum]==="Nomadic") charName=this.nameParts[char.natNum][char.gender][Math.floor(Math.random()*this.nameParts[char.natNum][char.gender].length)]+charName;
+                    else charName+=this.nameParts[char.natNum][char.gender][Math.floor(Math.random()*this.nameParts[char.natNum][char.gender].length)];
                     charName = charName.charAt(0).toUpperCase() + charName.slice(1);
                     return charName;
                 case "level":

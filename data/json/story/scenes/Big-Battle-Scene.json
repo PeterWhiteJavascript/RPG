@@ -1,0 +1,7 @@
+{
+    "name": "Big-Battle-Scene",
+    "desc": "A big test for the battle scene.",
+    "eventOrder": [
+        "Test-1"
+    ]
+}

@@ -69,5 +69,6 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
             }
             ?>
         </select>
+        <div id="canvas-coordinates"></div>
     </body>
 </html>
