@@ -109,7 +109,7 @@ Quintus.QFunctions=function(Q){
         var maxX=(stage.mapWidth*Q.tileW)*stage.viewport.scale;
         var minY=0;
         var maxY=(stage.mapHeight*Q.tileH)*stage.viewport.scale;
-        stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
+        stage.follow(obj,{x:true,y:true}/*,{minX: minX, maxX: maxX, minY: minY,maxY:maxY}*/);
     };
     Q.pauseAllStages = function(){
         Q.stages.forEach(function(st){

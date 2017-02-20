@@ -36,29 +36,27 @@ Quintus.SceneFuncs=function(Q){
             });
         });
     });
-   /* Q.scene("dialogue",function(stage){
+    Q.scene("script",function(stage){
         Q.inputs['confirm'] = false;
-        var dialogueData = stage.options.dialogueData = Q.getPathData(stage.options.data,stage.options.path);
-        var bgImage;
-        if(dialogueData.bg){
-            bgImage = stage.insert(new Q.BackgroundImage({asset:dialogueData.bg}));
-        }
+        var scriptData = stage.options.scriptData = stage.options.data;
+        Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.scene}));
+        
+        /*
         //The textbox is in charge of all of the functions that need to be run to do custom events.
-        //It also shows the text_box.png
-        var textBox = stage.textBox = stage.insert(new Q.TextBox({dialogueData:dialogueData,bgImage:bgImage,bg:dialogueData.bg}));
+        var textBox = stage.textBox = stage.insert(new Q.TextBox({scriptData:scriptData,bg:scriptData.bg}));
         //The left/right Assets are the characters that are speaking in the dialogue
         textBox.p.leftAsset = stage.insert(new Q.StoryImage({x:100,y:Q.height-textBox.p.h-150}));
         textBox.p.rightAsset = stage.insert(new Q.StoryImage({x:Q.width-100,y:Q.height-textBox.p.h-150,flip:'x'}));
         //The Dialogue Area is the inner area of the text box. It will be transparent later on.
         textBox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
         //The Dialogue is the text that is inside the dialogue area
-        textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({text:dialogueData.interaction[0].text?dialogueData.interaction[0].text:"~",align: 'left', x: 10}));
-        textBox.next();
-    }); */
+        console.log(scriptData)
+        textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({align: 'left', x: 10}));
+        textBox.next();*/
+    }); 
     Q.GameObject.extend("CharacterGenerator",{
         init:function(){
             var data = Q.state.get("charGeneration");
-            console.log(data)
             this.personalities = data.personalities;
             this.traitsKeys = Object.keys(this.personalities.traits);
             this.scenes = data.scenes;
@@ -104,6 +102,12 @@ Quintus.SceneFuncs=function(Q){
                     break;
             }
             return stats;
+        },
+        getNatNum:function(nat){
+            return this.nationalities.indexOf(nat);
+        },
+        getClassNum:function(cl){
+            return this.classNames.indexOf(cl);
         },
         getStats:function(level,classNum){
             var stats = {};
@@ -156,13 +160,12 @@ Quintus.SceneFuncs=function(Q){
                     return charClass;
                 case "gender":
                     
-                    return this.genders[this.getIdx([this.classes[char.charClass].gender[char.natNum],100],this.rand())];
+                    return this.genders[this.getIdx([this.classes[char.charClass.toLowerCase()].gender[char.natNum],100],this.rand())];
                 case "value":
-                    
-                    return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
+                    return this.values[this.getIdx(this.classes[char.charClass.toLowerCase()].value[char.natNum],this.rand())];
                 case "methodology":
                     
-                    return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
+                    return this.methodologies[this.getIdx(this.classes[char.charClass.toLowerCase()].methodology[char.natNum],this.rand())];
                 case "personality":
                     var randPersonalityText = this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
                     var randPersonality = this.personalities.traits[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
@@ -201,6 +204,13 @@ Quintus.SceneFuncs=function(Q){
             var chars = [];
             charData.forEach(function(char){
                 var character;
+                
+                if(char.nationality){
+                    char.natNum = Q.charGen.getNatNum(char.nationality);
+                }
+                if(char.charClass){
+                    char.classNum = Q.charGen.getClassNum(char.charClass);
+                }
                 //Set values that are empty as random
                 ["level","nationality","charClass","gender","name","value","method","personality"].forEach(function(key){
                     if(!char[key]||char[key].length===0){
@@ -229,7 +239,7 @@ Quintus.SceneFuncs=function(Q){
             chars.forEach(function(char){
                 stage.insert(char);
             });
-            Q.stageScene("dialogue",1,{data:stage.options.data,path:stage.options.path});
+            Q.stageScene("script",1,{data:data});
         });
         
     },{sort:true});

@@ -3,21 +3,16 @@ $scene = $_POST['scene'];
 $name = $_POST['name'];
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
-$battleScene = $event['scene'];
-
-if(isset($_POST['battleScene'])){
-    $event['scene'] = json_decode($_POST['battleScene']);
+//Save the characters to the file
+if(isset($_POST['characters'])){
+    $event['characters'] = json_decode($_POST['characters']);
+    file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
+    $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 }
 
 $eventMusic = $event['music'];
 $eventMap = $event['map'];
 $variables = $event['vrs'];
-
-//Save the characters to the file
-if(isset($_POST['characters'])){
-    $event['characters'] = json_decode($_POST['characters']);
-}
-file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
 
 $bg_directory = '../../images/bg';
 $bgs = array_diff(scandir($bg_directory), array('..', '.'));
@@ -53,15 +48,15 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
         </ul>
         <ul id="script-menu" class="right btn-group sortable">
             <?php
-                forEach($battleScene as $scriptItem){
+                forEach($event['scene'] as $scriptItem){
                     if(isset($scriptItem['text'])){
-                        $text = json_decode($scriptItem['text']);
+                        $text = $scriptItem['text'];
                         $num = strlen($text[0]);
                         if($num>19){ $num=19;}
                         $displayText = substr($text[0], 0, $num);
-                        echo "<li text='".json_encode($text)."' asset='".$scriptItem['asset']."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
+                        echo "<li text='".json_encode($text)."' asset='".json_encode($scriptItem['asset'])."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     } else {
-                        echo "<li func='".$scriptItem['func']."' props='".$scriptItem['props']."'><a class='script-item func btn btn-default'>".$scriptItem['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
+                        echo "<li func='".$scriptItem['func']."' props='".json_encode($scriptItem['props'])."'><a class='script-item func btn btn-default'>".$scriptItem['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     }
                 }
             ?>

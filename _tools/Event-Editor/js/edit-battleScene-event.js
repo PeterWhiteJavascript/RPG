@@ -57,6 +57,7 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             //Loop through all of the characters and add them
             var characters = JSON.parse($("#characters").text());
             characters.forEach(function(char){
+                char.level = parseInt(char.level);
                 saveData.push(char);
                 var cl = char.charClass.toLowerCase();
                 if(char.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
@@ -238,7 +239,7 @@ var appendCreateCharacterOptions = function(char){
     var data = Q.state.get("ng");
     var cont = $(".menu");
     $(cont).append('<li>Name<input id="name" class="new-character" value=""></li>');
-    $(cont).append('<li>Level<input id="level" class="new-character" value=""></li>');
+    $(cont).append('<li>Level<input type="number" min="0" id="level" class="new-character" value=0></li>');
     $(cont).append('<li>Nationality<select id="nationality" class="new-character"></select></li>');
     $(cont).append('<li>Character Class<select id="charClass" class="new-character"></select></li>');
     $(cont).append('<li>Gender<select id="gender" class="new-character"></select></li>');

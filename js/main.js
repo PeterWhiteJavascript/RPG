@@ -183,7 +183,6 @@ var files = [
     
     //IMAGES UI
     "ui/ui_objects.png",
-    "ui/text_box.png",
     //IMAGES TILES
     "tiles/tiles.png",
     "tiles/interactables.png",

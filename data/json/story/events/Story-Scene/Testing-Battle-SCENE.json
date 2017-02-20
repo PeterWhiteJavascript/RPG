@@ -6,11 +6,50 @@
     "scene": [
         {
             "func": "setView",
-            "props": "[\"0\"]"
+            "props": [
+                3
+            ]
         },
         {
-            "text": "[\"SDFSDFSDFSDFSDF\"]",
-            "asset": "[\"story\/knight.png\",\"story\/l.jpg\"]",
+            "text": [
+                "sdg",
+                "asdasdasdawfawaw fawf awfaw fa wfaw faw fawf aw aegh reogj rioe r"
+            ],
+            "asset": [
+                "story\/l.jpg",
+                "story\/l.jpg"
+            ],
+            "pos": "Left",
+            "autoCycle": "0",
+            "noCycle": "No"
+        },
+        {
+            "text": [
+                "sdsegsegsegg",
+                "asdasdag segse gse gseg segsesdawfawaw fawf awfaw fa wfaw faw fawf aw aegh reogj rioe r"
+            ],
+            "asset": [
+                "story\/l.jpg",
+                "story\/l.jpg"
+            ],
+            "pos": "Left",
+            "autoCycle": "0",
+            "noCycle": "No"
+        },
+        {
+            "func": "setView",
+            "props": [
+                "1"
+            ]
+        },
+        {
+            "text": [
+                "HIay"
+            ],
+            "asset": [
+                "story\/shini.jpg",
+                "story\/skirm.png"
+            ],
             "pos": "Left",
             "autoCycle": "0",
             "noCycle": "No"
@@ -28,8 +67,8 @@
             "personality": "Sensitive",
             "team": "Enemy",
             "loc": [
-                13,
-                7
+                23,
+                9
             ],
             "storyId": 1
         },
@@ -44,8 +83,8 @@
             "personality": "Sensitive",
             "team": "Enemy",
             "loc": [
-                14,
-                7
+                23,
+                8
             ],
             "storyId": 0
         },
@@ -60,28 +99,28 @@
             "personality": "Sensitive",
             "team": "Enemy",
             "loc": [
-                13,
-                8
+                5,
+                7
             ],
             "storyId": 2
         },
         {
-            "name": "cvbn",
+            "name": "Guard",
             "level": "",
-            "nationality": "",
-            "charClass": "",
-            "gender": "",
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Male",
             "value": "",
             "methodology": "",
             "personality": "",
             "team": "",
             "loc": [
-                17,
+                7,
                 7
             ],
             "storyId": 3
         }
     ],
     "music": "",
-    "map": "battle_balance1.tmx"
+    "map": "demo2.tmx"
 }
