@@ -142,6 +142,7 @@ var objFuncs = {
             currentCharacter.loc = [x,y];
             largestId++;
             currentCharacter.storyId = largestId;
+            currentCharacter.level = parseInt(currentCharacter.level);
             saveData.push(currentCharacter);
             var cl = currentCharacter.charClass.toLowerCase();
             if(currentCharacter.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();

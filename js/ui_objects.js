@@ -168,7 +168,13 @@ Quintus.UIObjects=function(Q){
             $(this.p.rightImage).on("error",function(){$(this).attr("src","images/story/empty.png");});
             
             this.on("step",this,"checkInputs");
+            this.on("activateAutoCycle");
             this.next();
+        },
+        activateAutoCycle:function(){
+            this.p.scriptNum++;
+            this.next();
+            this.off("inputsTimerComplete",this,"activateAutoCycle");
         },
         next:function(){
             var data = this.p.script[this.p.scriptNum];
@@ -178,6 +184,13 @@ Quintus.UIObjects=function(Q){
                 $(this.p.leftImage).attr("src","images/"+data.asset[0]);
                 $(this.p.rightImage).attr("src","images/"+data.asset[1]);
                 $(this.p.textBox).text(data.text[this.p.textNum]);
+                if(data.autoCycle){
+                    this.off("step",this,"checkInputs");
+                    this.p.inputsTimer = data.autoCycle;
+                    this.on("step",this,"waitForInputsTimer");
+                    this.on("inputsTimerComplete",this,"activateAutoCycle");
+                }
+                if("noCycle"==="Yes") this.p.noCycle = true;
             } 
             //If it's a function
             else {
@@ -204,6 +217,7 @@ Quintus.UIObjects=function(Q){
             if(this.p.inputsTimer<=0){
                 this.on("step",this,"checkInputs");
                 this.off("step",this,"waitForInputsTimer");
+                this.trigger("inputsTimerComplete");
             }
         },
         checkInputs:function(){

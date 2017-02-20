@@ -646,7 +646,7 @@ var createSaveForm = function(form){
         var type = $(itm).children(".script-item").attr("class").split(" ")[1];
         
         if(type==="text"){
-            scriptData.push({text:JSON.parse($(itm).attr("text")),asset:JSON.parse($(itm).attr("asset")),pos:$(itm).attr("pos"),autoCycle:$(itm).attr("autoCycle"),noCycle:$(itm).attr("noCycle")});
+            scriptData.push({text:JSON.parse($(itm).attr("text")),asset:JSON.parse($(itm).attr("asset")),pos:$(itm).attr("pos"),autoCycle:parseInt($(itm).attr("autoCycle")),noCycle:$(itm).attr("noCycle")});
         } else if(type==="func"){
             scriptData.push({func:$(itm).attr("func"),props:JSON.parse($(itm).attr("props"))});
         }

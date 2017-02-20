@@ -12,14 +12,26 @@
         },
         {
             "text": [
-                "Let us go tell the others something!"
+                "Let us go tell the others something! This will change after 80 frames!"
             ],
             "asset": [
                 "story\/knight.png",
                 ""
             ],
             "pos": "Left",
-            "autoCycle": "0",
+            "autoCycle": 80,
+            "noCycle": "No"
+        },
+        {
+            "text": [
+                "Changed :)"
+            ],
+            "asset": [
+                "story\/knight.png",
+                ""
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
             "noCycle": "No"
         },
         {
@@ -76,7 +88,7 @@
                 "story\/knight.png"
             ],
             "pos": "Left",
-            "autoCycle": "0",
+            "autoCycle": 0,
             "noCycle": "No"
         },
         {
@@ -132,7 +144,7 @@
                 "story\/knight.png"
             ],
             "pos": "Left",
-            "autoCycle": "0",
+            "autoCycle": 0,
             "noCycle": "No"
         },
         {
@@ -150,7 +162,7 @@
                 "story\/shini.jpg"
             ],
             "pos": "Left",
-            "autoCycle": "0",
+            "autoCycle": 0,
             "noCycle": "No"
         },
         {
@@ -199,6 +211,18 @@
         },
         {
             "text": [
+                "This will change after 80 frames!"
+            ],
+            "asset": [
+                "story\/knight.png",
+                ""
+            ],
+            "pos": "Left",
+            "autoCycle": 80,
+            "noCycle": "No"
+        },
+        {
+            "text": [
                 "It is done."
             ],
             "asset": [
@@ -206,7 +230,45 @@
                 "story\/shini.jpg"
             ],
             "pos": "Left",
-            "autoCycle": "0",
+            "autoCycle": 0,
+            "noCycle": "No"
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                3,
+                [
+                    [
+                        13,
+                        24
+                    ],
+                    [
+                        16,
+                        23
+                    ],
+                    [
+                        18,
+                        24
+                    ],
+                    [
+                        18,
+                        28
+                    ]
+                ],
+                "right",
+                "true"
+            ]
+        },
+        {
+            "text": [
+                "It is done."
+            ],
+            "asset": [
+                "story\/l.jpg",
+                "story\/shini.jpg"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
             "noCycle": "No"
         }
     ],
@@ -245,7 +307,7 @@
         },
         {
             "name": "",
-            "level": "1",
+            "level": 1,
             "nationality": "Venorian",
             "charClass": "Legionnaire",
             "gender": "Male",
@@ -261,7 +323,7 @@
         },
         {
             "name": "",
-            "level": "1",
+            "level": 1,
             "nationality": "Venorian",
             "charClass": "Legionnaire",
             "gender": "Male",
