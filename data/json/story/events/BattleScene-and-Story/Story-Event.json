@@ -1,0 +1,105 @@
+{
+    "name": "Story Event",
+    "desc": "The story event.",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Start",
+            "music": "the_usual.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "The party finds themselves in a forest.",
+            "choices": [
+                {
+                    "displayText": "Go Left",
+                    "desc": "The party goes left.",
+                    "page": "Go Left",
+                    "disabled": "Enabled",
+                    "group": []
+                },
+                {
+                    "displayText": "Go Right",
+                    "desc": "The party goes right.",
+                    "page": "Go Right",
+                    "disabled": "Enabled",
+                    "group": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Go Left",
+            "music": "the_usual.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "The party arrives at a river.",
+            "choices": [
+                {
+                    "displayText": "Take a closer look.",
+                    "desc": "The party takes a real close look at the river.",
+                    "page": "Look at river",
+                    "disabled": "Enabled",
+                    "group": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Look at river",
+            "music": "the_usual.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "",
+            "choices": [],
+            "onload": [
+                {
+                    "cond": [],
+                    "effect": [
+                        [
+                            "changeEvent",
+                            {
+                                "scene": "BattleScene-and-Story",
+                                "event": "Look-at-the-river"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Go Right",
+            "music": "the_usual.mp3",
+            "bg": "bg\/Pumpkins.jpg",
+            "text": "The party sees some pumpkins.",
+            "choices": [
+                {
+                    "displayText": "Look at the pumpkins",
+                    "desc": "The party looks at the pumpkins.",
+                    "page": "Page 5",
+                    "disabled": "Enabled",
+                    "group": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Page 5",
+            "music": "the_usual.mp3",
+            "bg": "bg\/Pumpkins.jpg",
+            "text": "",
+            "choices": [],
+            "onload": [
+                {
+                    "cond": [],
+                    "effect": [
+                        [
+                            "setVar",
+                            {
+                                "vr": null,
+                                "vl": ""
+                            }
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}

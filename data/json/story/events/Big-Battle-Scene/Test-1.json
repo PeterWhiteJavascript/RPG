@@ -5,34 +5,30 @@
     "vrs": [],
     "scene": [
         {
+            "func": "changeMusic",
+            "props": [
+                "prebattle"
+            ]
+        },
+        {
+            "func": "changeMoveSpeed",
+            "props": [
+                2,
+                "0.01"
+            ]
+        },
+        {
             "func": "setView",
             "props": [
                 2
             ]
         },
         {
-            "text": [
-                "Let us go tell the others something! This will change after 80 frames!"
-            ],
-            "asset": [
-                "story\/knight.png",
-                ""
-            ],
-            "pos": "Left",
-            "autoCycle": 80,
-            "noCycle": "No"
-        },
-        {
-            "text": [
-                "Changed :)"
-            ],
-            "asset": [
-                "story\/knight.png",
-                ""
-            ],
-            "pos": "Left",
-            "autoCycle": 0,
-            "noCycle": "No"
+            "func": "fadeChar",
+            "props": [
+                4,
+                "out"
+            ]
         },
         {
             "func": "moveAlong",
@@ -80,196 +76,43 @@
         },
         {
             "text": [
-                "Something.",
-                "Bye :)"
+                "Hi"
             ],
             "asset": [
                 "story\/empty.png",
-                "story\/knight.png"
+                "story\/empty.png"
             ],
             "pos": "Left",
             "autoCycle": 0,
             "noCycle": "No"
         },
         {
-            "func": "moveAlong",
-            "props": [
-                2,
-                [
-                    [
-                        15,
-                        15
-                    ],
-                    [
-                        20,
-                        15
-                    ],
-                    [
-                        20,
-                        0
-                    ]
-                ],
-                "up",
-                "false"
-            ]
-        },
-        {
-            "func": "moveAlong",
-            "props": [
-                1,
-                [
-                    [
-                        14,
-                        14
-                    ],
-                    [
-                        19,
-                        14
-                    ],
-                    [
-                        19,
-                        0
-                    ]
-                ],
-                "up",
-                "true"
-            ]
-        },
-        {
-            "text": [
-                "We made it!"
-            ],
-            "asset": [
-                "story\/knight.png",
-                "story\/knight.png"
-            ],
-            "pos": "Left",
-            "autoCycle": 0,
-            "noCycle": "No"
-        },
-        {
-            "func": "centerView",
-            "props": [
-                3
-            ]
-        },
-        {
-            "text": [
-                "Neheheh, something."
-            ],
-            "asset": [
-                "story\/l.jpg",
-                "story\/shini.jpg"
-            ],
-            "pos": "Left",
-            "autoCycle": 0,
-            "noCycle": "No"
-        },
-        {
-            "func": "moveAlong",
-            "props": [
-                3,
-                [
-                    [
-                        14,
-                        22
-                    ],
-                    [
-                        17,
-                        22
-                    ],
-                    [
-                        17,
-                        29
-                    ]
-                ],
-                "down",
-                "false"
-            ]
-        },
-        {
-            "func": "moveAlong",
+            "func": "playAnim",
             "props": [
                 4,
-                [
-                    [
-                        15,
-                        21
-                    ],
-                    [
-                        18,
-                        21
-                    ],
-                    [
-                        18,
-                        29
-                    ]
-                ],
-                "down",
-                "true"
+                "Hurt",
+                "left",
+                "coin"
             ]
         },
         {
             "text": [
-                "This will change after 80 frames!"
+                "Hi"
             ],
             "asset": [
-                "story\/knight.png",
-                ""
-            ],
-            "pos": "Left",
-            "autoCycle": 80,
-            "noCycle": "No"
-        },
-        {
-            "text": [
-                "It is done."
-            ],
-            "asset": [
-                "story\/l.jpg",
-                "story\/shini.jpg"
+                "story\/empty.png",
+                "story\/empty.png"
             ],
             "pos": "Left",
             "autoCycle": 0,
             "noCycle": "No"
         },
         {
-            "func": "moveAlong",
+            "func": "changeEvent",
             "props": [
-                3,
-                [
-                    [
-                        13,
-                        24
-                    ],
-                    [
-                        16,
-                        23
-                    ],
-                    [
-                        18,
-                        24
-                    ],
-                    [
-                        18,
-                        28
-                    ]
-                ],
-                "right",
-                "true"
+                "Story-Scene",
+                "The-player-starts-his-journey!"
             ]
-        },
-        {
-            "text": [
-                "It is done."
-            ],
-            "asset": [
-                "story\/l.jpg",
-                "story\/shini.jpg"
-            ],
-            "pos": "Left",
-            "autoCycle": 0,
-            "noCycle": "No"
         }
     ],
     "characters": [

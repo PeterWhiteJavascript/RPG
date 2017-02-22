@@ -144,8 +144,12 @@ Quintus.UIObjects=function(Q){
                 cx:0,cy:0,
                 w:Q.width,
                 h:200,
+                //Which text are we on (array of text)
+                textNum:0,
                 //Start on the first entry
                 scriptNum:0,
+                //Which character we're on for the text
+                textIndex:0,
                 
                 cantCycle:false,
                 noCycle:false,
@@ -168,27 +172,41 @@ Quintus.UIObjects=function(Q){
             $(this.p.rightImage).on("error",function(){$(this).attr("src","images/story/empty.png");});
             
             this.on("step",this,"checkInputs");
-            this.on("activateAutoCycle");
+            //this.on("activateAutoCycle");
             this.next();
         },
         activateAutoCycle:function(){
+            this.off("inputsTimerComplete",this,"activateAutoCycle");
             this.p.scriptNum++;
             this.next();
-            this.off("inputsTimerComplete",this,"activateAutoCycle");
+        },
+        cycleText:function(){
+            if(this.p.textIndex>this.p.script[this.p.scriptNum].text[this.p.textNum].length-1){
+                this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
+                this.off("step",this,"cycleText");
+                return;
+            }
+            //Q.playSound("text_stream.mp3");
+            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.scriptNum].text[this.p.textNum][this.p.textIndex]);
+            this.p.textIndex++;
         },
         next:function(){
             var data = this.p.script[this.p.scriptNum];
             //If it's text
             if(data.text){
                 this.p.textNum = 0;
+                this.p.textIndex = 0;
                 $(this.p.leftImage).attr("src","images/"+data.asset[0]);
                 $(this.p.rightImage).attr("src","images/"+data.asset[1]);
-                $(this.p.textBox).text(data.text[this.p.textNum]);
-                if(data.autoCycle){
+                $(this.p.textBox).text("");
+                
+                if(data.autoCycle>0){
                     this.off("step",this,"checkInputs");
                     this.p.inputsTimer = data.autoCycle;
                     this.on("step",this,"waitForInputsTimer");
                     this.on("inputsTimerComplete",this,"activateAutoCycle");
+                } else {
+                    this.on("step",this,"cycleText");
                 }
                 if("noCycle"==="Yes") this.p.noCycle = true;
             } 
@@ -205,11 +223,13 @@ Quintus.UIObjects=function(Q){
         nextText:function(){
             this.p.textNum++;
             //If we're at the end of the text array
-            if(this.p.textNum<this.p.script[this.p.scriptNum].text.length){
-                $(this.p.textBox).text(this.p.script[this.p.scriptNum].text[this.p.textNum]);
-            } else {
+            if(this.p.textNum>=this.p.script[this.p.scriptNum].text.length){
                 this.p.scriptNum++;
                 this.next();
+            } else {
+                this.p.textIndex = 0;
+                $(this.p.textBox).text("");
+                this.on("step",this,"cycleText");
             }
         },
         waitForInputsTimer:function(){
@@ -224,75 +244,25 @@ Quintus.UIObjects=function(Q){
             if(Q.inputs['confirm']){
                 if(!this.p.cantCycle&&!this.p.noCycle){
                     //Check if the text is complete
-                    if($(this.p.textBox).text()===this.p.script[this.p.scriptNum].text[this.p.textNum]){
+                    if($(this.p.textBox).text().length===this.p.script[this.p.scriptNum].text[this.p.textNum].length){
+                        if(this.p.nextTextTri) this.p.nextTextTri.destroy();
                         this.nextText();
                     } else {
                         $(this.p.textBox).text(this.p.script[this.p.scriptNum].text[this.p.textNum]);
+                        this.p.textIndex = this.p.script[this.p.scriptNum].text[this.p.textNum].length;
                     }
-                    this.p.inputsTimer=this.p.inputsTime;
+                    /*this.p.inputsTimer=this.p.inputsTime;
                     this.off("step",this,"checkInputs");
-                    this.on("step",this,"waitForInputsTimer");
+                    this.on("step",this,"waitForInputsTimer");*/
                     Q.inputs['confirm']=false;
                 };
             }
         },
         //SCRIPT FUNCTIONS BELOW
-        loadLocation:function(location,menu){
-            var stage = this.stage;
-            //Make sure the battle is gone
-            Q.clearStages();
-            this.destroy();
-            Q.stageScene("location",0,{data:Q.state.get("locations")[location],menu:menu});
-            this.p.cantCycle = true;
-            return true;
-        },
-        //Load the battle scene, which is a dialogue scene with the tmx map and story characters walking around
-        loadBattleScene:function(path){
-            var stage = this.stage;
-            Q.stageScene("battleScene",0,{data:stage.options.data, path:path});
-            this.p.cantCycle = true;
-            return true;
-        },
-        //Load the battle scene
-        loadBattle:function(path){
-            var stage = this.stage;
-            Q.stageScene("battle",0,{data:stage.options.data, path:path});
-            //Clear this stage
-            Q.clearStage(1);
-            this.p.cantCycle = true;
-            return true;
-        },
-        //Loads another json file's scene
-        loadScene:function(sceneName,start,type){
-            Q.startScene(sceneName,start,type);
-            this.p.cantCycle = true;
-            return true;
-        },
-        //Probably only used for testing. May be used for loading data from save without saving.
-        useSave:function(name){
-            Q.load("json/save/"+name+".json",function(){
-                var save = Q.assets['json/save/sample_save_data.json'];
-                Q.state.set({
-                    sceneName:save.sceneName,
-                    day:save.day,
-                    options:save.options,
-                    acceptedQuests:save.acceptedQuests
-                });
-                var storyChars = [];
-                save.allies.forEach(function(ally){
-                    storyChars.push(Q.setUpStoryCharacter(ally));
-                });
-                Q.state.set("alex",storyChars.filter(function(ally){return ally.name==="Alex";})[0]);
-                Q.state.set("allies",storyChars);
-                //Set up the Bag.
-                Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
-            });
-            
-        },
-        //Shows additional dialogue (which will probably be determined by factors such as player choices, how well they did in battle, etc...)
-        moreDialogue:function(path){
-            var stage = this.stage;
-            Q.stageScene("dialogue",1,{data:stage.options.data, path:path});
+        changeEvent:function(scene,event){
+            //Remove everything related to this scene
+            $(this.p.container).remove();
+            Q.startScene(scene,event);
             return true;
         },
         //Enable cycling and cycle to the next text
@@ -319,29 +289,14 @@ Quintus.UIObjects=function(Q){
             }
             this.p.dialogueText.p.autoCycle--;
         },
-        //Any time the user needs to make a decision during dialogue
-        confirmation:function(options){
-            this.p.cantCycle = true;
-            this.p.noCycle = true;
-            var stage = this.stage;
-            //Create the options menu box and put it into focus
-            stage.insert(new Q.ConfirmBox({maxIndex:options.length-1,options:options}));
-            return true;
-        },
         getProp:function(prop){
             return this.p[prop];
-        },
-        changeBg:function(bg){
-            this.p.bg = bg;
-            this.p.bgImage.p.asset = bg;
-        },
-        doDefeat:function(){
-            //This will run on defeat. TODO
         },
         //Battle Scene Below
         changeMusic:function(music){
             var t = this;
-            Q.playMusic(music,function(){t.forceCycle();});
+            Q.playMusic(music+".mp3",function(){t.forceCycle();});
+            return true;
         },
         checkAddCharacter:function(name){
             //For now, just add the character to the party 100% of the time
@@ -368,14 +323,21 @@ Quintus.UIObjects=function(Q){
             });
         },
         waitTime:function(time){
-          var t = this;
-          setTimeout(function(){
-              t.forceCycle();
-          },time);
+            var t = this;
+            setTimeout(function(){
+                t.forceCycle();
+            },time);
+            this.p.noCycle = true;
+            //Don't cycle until the time is up
+            return true;
         },
-        //Hides the dialogue box
-        hideDialogueBox:function(){
-            $(this.p.container).css("display","none");
+        //Modifies the dialogue box from a set of options
+        modDialogueBox:function(display){
+            if(display==="hide"){
+                $(this.p.container).css("display","none");
+            } else if(display==="show"){
+                $(this.p.container).css("display","block");
+            }
         },
         showDialogueBox:function(){
             $(this.p.container).css("display","block");
@@ -401,7 +363,7 @@ Quintus.UIObjects=function(Q){
             this.p.cantCycle = true;
             this.p.noCycle = true;
             //Hide the dialogue box
-            this.hideDialogueBox();
+            this.modDialogueBox("hide");
             
             //Set the viewsprite to the current object that the viewport is following
             var spr = Q.stage(0).viewSprite;
@@ -427,21 +389,14 @@ Quintus.UIObjects=function(Q){
             return true;
             
         },
-        allowCycle:function(){
-            this.p.cantCycle = false;
-            this.p.noCycle = false;
-            this.p.dialogueText.p.autoCycle = 0;
-            this.p.dialogueText.createNextTri();
-        },
         //Changes the direction of a story character
         changeDir:function(id,dir){
             var obj = this.getStoryCharacter(id);
             obj.playStand(dir);
         },
-        playAnim:function(id,anim,dir,sound,callbackString){
+        playAnim:function(id,anim,dir,sound){
             Q.playSound(sound+".mp3");
-            var t = this;
-            this.getStoryCharacter(id)["play"+anim](dir,function(){t[callbackString]();});
+            this.getStoryCharacter(id)["play"+anim](dir);
         },
         changeMoveSpeed:function(id,speed){
             var obj = this.getStoryCharacter(id);
@@ -452,6 +407,7 @@ Quintus.UIObjects=function(Q){
             var obj = this.getStoryCharacter(id);
             //If the is a function that should be played once the object reaches its destination
             obj.on("doneAutoMove",obj,function(){
+                //If we have a new path, do it!
                 this.playStand(dir);
                 //If we're cycling on arrival
                 if(allowCycle==="true"){
@@ -460,7 +416,6 @@ Quintus.UIObjects=function(Q){
                     //Allow cycling to the next script item
                     Q.dialogueController.p.noCycle = false;
                 }
-                
             });
             obj.moveAlongPath(path);
             this.p.noCycle = true;
@@ -469,12 +424,17 @@ Quintus.UIObjects=function(Q){
                 return true;
             }
         },
-        //Fades a character to nothing
-        fadeChar:function(id,time,wait){
+        //Fades a character in or out
+        fadeChar:function(id,inout){
             var obj = this.getStoryCharacter(id);
-            var t =this;
-            obj.animate({opacity:0},time,Q.Easing.Linear,{callback:function(){if(wait){t.nextText();}}});
+            if(inout==="in"){
+                obj.animate({opacity:1},1,Q.Easing.Linear);
+                obj.show();
+            } else if(inout==="out"){
+                obj.animate({opacity:0},1,Q.Easing.Linear);
+            }
         },
+        /*
         setCharacterAs:function(setTo,amount,prop,team,filter){
             var objs = this.getStoryTeamCharacters(team);
             var obj = this[filter][amount](objs,prop);
@@ -503,114 +463,7 @@ Quintus.UIObjects=function(Q){
                     return a.p.awards[prop]<b.p.awards[prop];
                 })[0];
             }
-        }
-        
-    });
-    Q.Sprite.extend("TextBox",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                type:Q.SPRITE_NONE,
-                
-                interactionIndex:0,
-                textIndex:0,
-                cantCycle:false,
-                noCycle:false,
-                autoCycle:false,
-                
-                //The number of frames between inputs
-                inputsTime:15
-            });
-            //Uncomment if we add touch and set type to Q.SPRITE_UI
-            //Q._generatePoints(this,true);
-            this.p.y=Q.height-this.p.h;
-            this.on("step",this,"checkInputs");
-        },
-        next:function() {
-            var interaction = this.p.scriptData.scene[this.p.interactionIndex];
-            //Debug
-            if(!interaction){
-                alert("Check the console for error.");
-                console.log("No interaction becuase the interaction index may be too high")
-                console.log("Interaction:");
-                console.log(this.p.scriptData.scene);
-                console.log("Interaction Index:");
-                console.log(this.p.interactionIndex);
-            }
-            //Disallow user cycling for some dialogue
-            if(interaction.noCycle){
-                this.p.cantCycle = true;
-                this.p.noCycle = true;
-            }
-            if(interaction.autoCycle){
-                this.p.cantCycle = true;
-                this.p.dialogueText.p.autoCycle = interaction.autoCycle;
-                this.on("step",this,"autoCycle");
-            }
-            var type = this.checkDialogueType(this.p.scriptData.scene[this.p.interactionIndex]);
-            this['cycle' + type]();
-        },
-        nextText:function() {
-            //Destroy the blinking next text if it's there
-            this.p.dialogueText.destroyNextTextTri();
-            //Check if we're at the end of the text
-            this.checkTextNum();
-            //Do the next text (or func)
-            this.next();
-        },
-        checkDialogueType:function(interaction){
-            if(interaction.text){
-                return 'Text';
-            } else if(interaction.func){
-                return 'Func';
-            }
-        },
-        cycleText:function(){
-            this.showDialogueBox();
-            var interaction = this.p.scriptData.scene[this.p.interactionIndex];
-            this.p.dialogueText.setNewText(interaction.text[this.p.textIndex]);
-            this.p.dialogueText.p.align = interaction.pos;
-            
-            if(this.p.dialogueText.p.align == 'left') {
-                this.p.dialogueText.p.x = 10;
-            } else if(this.p.dialogueText.p.align == 'right') {
-                this.p.dialogueText.p.x = this.p.dialogueArea.p.w-10;
-            }
-            this.p.textIndex++;
-            
-            //Update the assets
-            if(interaction.asset[0]){
-                this.p.leftAsset.p.asset = "story/"+interaction.asset[0];
-            } else {
-                this.p.leftAsset.p.asset = "";
-            }
-            if(interaction.asset[1]){
-                this.p.rightAsset.p.asset = "story/"+interaction.asset[1];
-            } else {
-                this.p.rightAsset.p.asset = "";
-            }
-            // Check if we should run the next line in the action queue immediately without waiting for user confirmation (ie. to open a menu)
-            if(interaction.skipLast && interaction.text.length == this.p.textIndex) {
-                this.nextText();
-            }
-        },
-        cycleFunc:function(){
-            var interaction = this.p.scriptData.scene[this.p.interactionIndex];
-            //If the function finishes this dialogue, it will be true.
-            //This also runs the function that needs to be executed from the JSON
-            console.log(interaction,interaction.props);
-            if(this[interaction.func].apply(this,interaction.props)){return;};
-            //Don't run the next part yet
-            if(interaction.wait) return;
-            if(this.p.cantCycle||this.p.noCycle) return;
-            this.p.interactionIndex++;
-            this.next();
-        },
-        //START JSON FUNCTIONS
-        //Load location data (in town)
-        
-        //END JSON FUNCTIONS
+        }*/
     });
     
     
@@ -789,7 +642,7 @@ Quintus.UIObjects=function(Q){
     Q.Sprite.extend("NextTextTri",{
         init: function(p) {
             this._super(p, {
-                w:Q.tileW/2,h:Q.tileH/2,
+                w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE,
                 blinkNum:0,
                 blinkTime:15

@@ -707,10 +707,10 @@ Quintus.Objects=function(Q){
             var p = this.entity.p;
             p.loc = p.destLoc;
             Q.BatCon.setXY(this.entity);
-            this.entity.trigger("doneAutoMove");
-            this.entity.trigger("atDest",[(p.x-Q.tileW/2)/Q.tileW,(p.y-Q.tileH/2)/Q.tileH]);
             this.entity.playStand(p.dir);
             this.entity.del("autoMove");
+            this.entity.trigger("doneAutoMove");
+            this.entity.trigger("atDest",[(p.x-Q.tileW/2)/Q.tileW,(p.y-Q.tileH/2)/Q.tileH]);
         },
         moveAlong:function(to){
             if(!to){this.atDest();return;};

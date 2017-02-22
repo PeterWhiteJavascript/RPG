@@ -1,0 +1,8 @@
+{
+    "name": "BattleScene-and-Story",
+    "desc": "Go between the battle scene and story events.",
+    "eventOrder": [
+        "Story-Event",
+        "Look-at-the-river"
+    ]
+}

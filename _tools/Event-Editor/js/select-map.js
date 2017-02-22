@@ -60,7 +60,7 @@ Q.scene("map",function(stage){
     Q.addViewport(stage);
 });
 $('#footer a').click( function(e) {
-    var form = $('<form action="create-event.php" method="post"></form>');
+    var form = $('<form action="show-events.php" method="post"></form>');
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
     form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
     $("body").append(form);

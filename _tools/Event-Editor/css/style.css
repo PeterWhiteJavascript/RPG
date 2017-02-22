@@ -284,6 +284,9 @@ audio{
 .selected-color{
     border-color:red;
 }
+.selected-fill{
+    background-color:#EBEBEB;
+}
 .condition{
     width:100%;
     height:100%;
@@ -332,6 +335,28 @@ li{
 .new-character{
     margin:0 auto;
 }
+#character-options{
+    width:400px;
+    height:95%;
+    left:800px;
+    position:absolute;
+}
+#character-list{
+    position:absolute;
+    left:1200px;
+    font-size: 34px;
+    background-color: #f5f5f5;
+    width: 400px;
+    height: 95%;
+    text-align: center;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+    padding: 10px;
+}
+
 #script-options{
     width:400px;
     height:90%;
@@ -354,6 +379,14 @@ li{
     border-radius: 5px;
     padding: 10px;
 }
+#script-menu li:nth-child(odd) {
+    background: #f5f5f5;
+}
+
+#script-menu li:nth-child(even) {
+    background: #D3D3D3;
+}
+
 .script-text{
     width:80%;
 }
@@ -369,7 +402,7 @@ li{
     position:absolute;
     left:10px;
     z-index:10000;
-    top:60px;
+    top:15px;
 }
 
 .script-options-func-li{
@@ -383,4 +416,8 @@ li{
 }
 .script-edit{
     float:left;
+}
+.text-or-func{
+    float:left;
+    padding:10px;
 }

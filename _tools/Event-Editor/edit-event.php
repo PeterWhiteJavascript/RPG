@@ -2,27 +2,14 @@
 include("php-config.php");
 $scene = addDashes($_POST['scene']);
 $name = addDashes($_POST['name']);
-$desc = $_POST['desc'];
 $eventType = $_POST['event-type'];
 
 $newFile;
-//Editing an event
-if(isset($_POST['origName'])){
-    $file = "../../data/json/story/events/".$scene."/".addDashes($_POST['origName']).".json";
-    $newFile = json_decode(file_get_contents($file), true);
-    $newFile['name'] = $name;
-    $newFile['desc'] = $desc;
-    $newFile['kind'] = $eventType;
-    file_put_contents("../../data/json/story/events/".$scene."/".$name.".json", json_encode($newFile,JSON_PRETTY_PRINT));
-    if($name!==$_POST['origName']){
-        unlink($file);
-    }
-}  
-//A new event
-else {
+//New event
+if(!isset($_POST['origName'])){
     $newFile = [
-        'name' => $name,
-        'desc' => $desc,
+        'name' => $_POST['name'],
+        'desc' => $_POST['desc'],
         'kind' => $eventType,
         'vrs' => (object)[]
     ];

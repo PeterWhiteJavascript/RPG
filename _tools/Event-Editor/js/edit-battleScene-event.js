@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
 
 var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio")
-        .setup({development: true, width:1000, height:800})
+        .setup({development: true, width:800, height:800})
         .touch().controls(true)
         .enableSound();
 Q.options.imagePath = "../.././images/";
@@ -18,6 +18,17 @@ var selectedCharacter;
 var placing = false;
 //The largest ID in the saveData
 var largestId = 0;
+
+var characters = JSON.parse($("#characters").text());
+
+//Gets the name to be added to the character list
+var getCharListName = function(name){
+    if(!name.length){
+        name = "Unnamed";
+    }
+    return name;
+};
+
 Q.showMap = function(map){
     Q.stageScene("map",0,{map:map});
 };
@@ -55,16 +66,20 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             Q.stageScene("map",0,{map:map});
             
             //Loop through all of the characters and add them
-            var characters = JSON.parse($("#characters").text());
             characters.forEach(function(char){
                 char.level = parseInt(char.level);
                 saveData.push(char);
                 var cl = char.charClass.toLowerCase();
                 if(char.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
-                Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc}));
+                var c = Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
+                if(char.hidden==="hide") c.p.opacity = 0.5;
                 
                 //The highest id (used for unique id)
                 largestId = Math.max.apply(Math,saveData.map(function(o){return o.storyId;}));
+                
+                //Add the character (with id only)
+                var name = getCharListName(char.name)
+                $("#character-list").append("<li><div storyId='"+char.storyId+"' class='character btn btn-default'>"+name+"</div></li>");
             });
         });
     });
@@ -80,9 +95,10 @@ Q.Sprite.extend("CharacterSprite",{
                 this.p.selectionBox.destroy();
             }
         });
+        this.on("move");
     },
     createSelectedBox:function(){
-        this.p.selectionBox = this.stage.insert(new Q.UI.Container({x:this.p.x,y:this.p.y,w:Q.tileW,h:Q.tileH,border:1,z:1}));
+        this.p.selectionBox = this.stage.insert(new Q.UI.Container({x:this.p.x,y:this.p.y,w:Q.tileW,h:Q.tileH,border:1,z:this.p.y-Q.tileH}));
     },
     removeSelectedBox:function(){
         this.p.selectionBox.destroy();
@@ -92,31 +108,36 @@ Q.Sprite.extend("CharacterSprite",{
         this.p.y = this.p.loc[1]*Q.tileH+Q.tileH/2;
         this.p.selectionBox.p.x = this.p.x;
         this.p.selectionBox.p.y = this.p.y;
+        $("#locX").val(this.p.loc[0]);
+        $("#locY").val(this.p.loc[1]);
     },
     checkMove:function(){
         if(Q.inputs['left']){
             if(this.p.loc[0]>0){
                 this.p.loc[0]--;
+                this.trigger("move");
             }
             Q.inputs['left'] = false;
         } else if(Q.inputs['right']){
             if(this.p.loc[0]<Q.stage(0).mapWidth){
                 this.p.loc[0]++;
+                this.trigger("move");
             }
             Q.inputs['right'] = false;
         }
         if(Q.inputs['up']){
             if(this.p.loc[1]>0){
                 this.p.loc[1]--;
+                this.trigger("move");
             }
             Q.inputs['up'] = false;
         } else if(Q.inputs['down']){
             if(this.p.loc[1]<Q.stage(0).mapHeight){
                 this.p.loc[1]++;
+                this.trigger("move");
             }
             Q.inputs['down'] = false;
         }
-        this.move();
     }
 });
 var saveData = [
@@ -128,7 +149,7 @@ var objFuncs = {
             
         } else {
             //Go through each of the keys and randomly generate the ones that are not filled out
-            var charData = $(".menu").children("li").children(".new-character");
+            var charData = $("#character-options").children("li").children(".new-character");
             var currentCharacter = {};
             $(charData).each(function(i,d){
                 var val = $(d).val();
@@ -146,8 +167,16 @@ var objFuncs = {
             saveData.push(currentCharacter);
             var cl = currentCharacter.charClass.toLowerCase();
             if(currentCharacter.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
-            Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:[x,y]}));
+            
+            characters.push(currentCharacter);
+            var c = Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:[x,y],storyId:currentCharacter.storyId}));
+            if(currentCharacter.hidden==="hide") c.p.opacity = 0.5;
             $("#go-back-to-character").trigger("click");
+            selectCharacter(currentCharacter);
+            //Add the character (with id only)
+            var name = getCharListName(currentCharacter.name);
+            //Place the character in the list
+            $("#character-list").append("<li><div storyId='"+currentCharacter.storyId+"' class='character btn btn-default'>"+name+"</div></li>");
         }
     },
     removeCharacter:function(obj){
@@ -167,11 +196,11 @@ Q.addViewport = function(stage){
     obj.p.y = obj.p.h/2;
     obj.drag = function(touch){
        this.p.x = touch.origX - touch.dx;
-       this.p.y = touch.origY - touch.dy;
+       this.p.y = touch.origY - touch.dy;/*
        if(this.p.x<this.p.w/2){this.p.x=this.p.w/2;}
        else if(this.p.x>(stage.mapWidth*Q.tileW)-this.p.w/2){this.p.x=(stage.mapWidth*Q.tileW)-this.p.w/2;};
        if(this.p.y<this.p.h/2){this.p.y=this.p.h/2;}
-       else if(this.p.y>(stage.mapHeight*Q.tileH)-this.p.h/2){this.p.y=(stage.mapHeight*Q.tileH)-this.p.h/2;};
+       else if(this.p.y>(stage.mapHeight*Q.tileH)-this.p.h/2){this.p.y=(stage.mapHeight*Q.tileH)-this.p.h/2;};*/
     };
     obj.on("drag");
     stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
@@ -180,7 +209,7 @@ Q.addViewport = function(stage){
     var maxX=(stage.mapWidth*Q.tileW);
     var minY=0;
     var maxY=(stage.mapHeight*Q.tileH);
-    stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
+    stage.follow(obj,{x:true,y:true}/*,{minX: minX, maxX: maxX, minY: minY,maxY:maxY}*/);
 };
 function moveSelection(e) {
     var x = e.offsetX || e.layerX,
@@ -201,10 +230,11 @@ function clickSelection(e){
     var tileX = Math.floor(stageX/Q.tileW);
     var tileY = Math.floor(stageY/Q.tileH);
     objFuncs[Q.selectionBox.p.func](tileX,tileY);
+    Q.removeSelectionBox();
 }
 Q.addSelectionBox = function(stage,func){
     placing = true;
-    Q.selectionBox = stage.insert(new Q.UI.Container({w:Q.tileW,h:Q.tileH,fill:"black",opacity:0.5,cx:0,cy:0,func:func,x:-Q.tileW,y:-Q.tileH}));
+    Q.selectionBox = stage.insert(new Q.UI.Container({w:Q.tileW,h:Q.tileH,fill:"black",opacity:0.5,cx:0,cy:0,func:func,x:-Q.tileW,y:-Q.tileH,z:3}));
     Q.el.addEventListener('mousemove',moveSelection);
     Q.el.addEventListener('click',clickSelection);
 };
@@ -217,29 +247,96 @@ Q.removeSelectionBox = function(){
 Q.scene("map",function(stage){
     Q.stageTMX(stage.options.map, stage);
     Q.addViewport(stage);
+    
+    //Turn on clicking sprites
+    Q.el.addEventListener("click",function(e){
+        //Can't click sprite if placing one
+        if(!placing){
+            var x = e.offsetX || e.layerX,
+                y = e.offsetY || e.layerY,
+                stage = Q.stage();
+
+            var stageX = Q.canvasToStageX(x, stage),
+                stageY = Q.canvasToStageY(y, stage);
+            var locX = Math.floor(stageX/Q.tileW);
+            var locY = Math.floor(stageY/Q.tileH);
+            var objAt = Q.getObjAt(locX,locY);
+            if(objAt){
+                selectCharacter(objAt);
+            }
+        }
+    });
+    Q.el.addEventListener("mousemove",function(e) {
+        var x = e.offsetX || e.layerX,
+            y = e.offsetY || e.layerY,
+            stage = Q.stage();
+
+        var stageX = Q.canvasToStageX(x, stage),
+            stageY = Q.canvasToStageY(y, stage);
+        var locX = Math.floor(stageX/Q.tileW);
+        var locY = Math.floor(stageY/Q.tileH);
+        $("#canvas-coordinates").text(locX+","+locY);
+    });
+    
+    $( ".sortable" ).sortable({
+        axis: "y"
+    });
+    $( ".sortable" ).disableSelection();
 },{sort:true});
 var removeOptions = function(){
-    var cont = $(".menu");
+    var cont = $("#character-options");
     cont.empty();
 };
 
 var appendMainOptions = function(){
-    var cont = $(".menu");
-    $(cont).append('<li><a id="create-character"><div class="menu-button btn btn-default">Create Characters</div></a></li>');
+    var cont = $("#character-options");
+    $(cont).append('<li><a id="create-character"><div class="menu-button btn btn-default">Create Character</div></a></li>');
     $(cont).append('<li><a id="set-up-scene-script"><div class="menu-button btn btn-default">Set up Scene Script</div></a></li>');
+    $(cont).append('<li><a id="save-characters"><div class="menu-button btn btn-default">Save Characters</div></a></li>');
     $(cont).append('<li><a id="return-to-map-selection"><div class="menu-button btn btn-default">Return to Map Selection</div></a></li>');
 };
-var appendCharacterOptions = function(){
-    var cont = $(".menu");
-    $(cont).append('<li><a id="place-character"><div class="menu-button btn btn-default">Place Character</div></a></li>');
-    $(cont).append('<li><a id="save-character"><div class="menu-button btn btn-default">Save Character</div></a></li>');
+var appendCharacterOptions = function(char){
+    var cont = $("#character-options");
+    if(char){
+        $(cont).append('<li><a id="place-character"><div class="menu-button btn btn-default">Place Character</div></a></li>');
+    }
     $(cont).append('<li><a id="remove-character"><div class="menu-button btn btn-default">Remove Character</div></a></li>');
     $(cont).append('<li><a id="back-to-main"><div class="menu-button btn btn-default">Go Back</div></a></li>');
 };
 var appendCreateCharacterOptions = function(char){
     var data = Q.state.get("ng");
-    var cont = $(".menu");
+    var cont = $("#character-options");
+    
     $(cont).append('<li>Name<input id="name" class="new-character" value=""></li>');
+    $(cont).append('<li>LocationX<input type="number" id="locX" class="new-character" value=0></li>');
+    $(cont).append('<li>LocationY<input type="number" id="locY" class="new-character" value=0></li>');
+    $("#locX").on("change",function(){
+        if(!selectedCharacter){ 
+            var loc = [$(this).val(),$("#locY").val()];
+            objFuncs["placeCharacter"](loc[0],loc[1]);
+        }
+        selectedCharacter.p.loc = [$(this).val(),selectedCharacter.p.loc[1]];
+        selectedCharacter.trigger("move");
+        
+        var ch = characters.filter(function(c){
+            return c.storyId==selectedCharacter.p.storyId;
+        })[0];
+        ch.locX = selectedCharacter.p.loc[0];
+        ch.locY = selectedCharacter.p.loc[1];
+    });
+    $("#locY").on("change",function(){
+        if(!selectedCharacter){ 
+            var loc = [$("#locX").val(),$(this).val()];
+            objFuncs["placeCharacter"](loc[0],loc[1]);
+        }
+        selectedCharacter.p.loc = [selectedCharacter.p.loc[0],$(this).val()];
+        selectedCharacter.trigger("move");
+        var ch = characters.filter(function(c){
+            return c.storyId==selectedCharacter.p.storyId;
+        })[0];
+        ch.locX = selectedCharacter.p.loc[0];
+        ch.locY = selectedCharacter.p.loc[1];
+    });
     $(cont).append('<li>Level<input type="number" min="0" id="level" class="new-character" value=0></li>');
     $(cont).append('<li>Nationality<select id="nationality" class="new-character"></select></li>');
     $(cont).append('<li>Character Class<select id="charClass" class="new-character"></select></li>');
@@ -271,14 +368,47 @@ var appendCreateCharacterOptions = function(char){
     data.teams.forEach(function(itm){
         $(cont).children("li").children("#team").append("<option>"+itm+"</option>");
     });
-    appendCharacterOptions();
+    
+    //Add direction
+    $(cont).append('<li>Direction<select id="dir" class="new-character"></select></li>');
+    ["up","right","down","left"].forEach(function(itm){
+        $(cont).children("li").children("#dir").append("<option>"+itm+"</option>");
+    });
+    //Add hidden
+    var id = "";
+    if(char) id=char.storyId;
+    $(cont).append('<li>Display<select id="hidden" class="new-character" storyId="'+id+'"></select></li>');
+    ["show","hide"].forEach(function(itm){
+        $(cont).children("li").children("#hidden").append("<option>"+itm+"</option>");
+    });
+    if(char){
+        $("#hidden").on("change",function(){
+            var obj = Q.getSpriteFromId($(this).attr("storyId"));
+            if($(this).val()==="hide"){
+                obj.p.opacity = 0.5;
+            } else {
+                obj.p.opacity = 1;
+            }
+        });
+    }
+    $(cont).children("li").children("input").on("change",function(){
+        saveCharacter();
+    });
+    $(cont).children("li").children("select").on("change",function(){
+        saveCharacter();
+    });
+    appendCharacterOptions(char);
     if(char){
         fillCharacterOptions(char);
+    } else{
+        Q.addSelectionBox(Q.stage(0),"placeCharacter");
     }
 };
 var fillCharacterOptions = function(char){
-    var cont = $(".menu");
+    var cont = $("#character-options");
     $(cont).children("li").children("#name").val(char.name);
+    $(cont).children("li").children("#locX").val(char.loc[0]);
+    $(cont).children("li").children("#locY").val(char.loc[1]);
     $(cont).children("li").children("#level").val(char.level);
     $(cont).children("li").children("#nationality").val(char.nationality);
     $(cont).children("li").children("#charClass").val(char.charClass);
@@ -287,14 +417,40 @@ var fillCharacterOptions = function(char){
     $(cont).children("li").children("#methodology").val(char.methodology);
     $(cont).children("li").children("#personality").val(char.personality);
     $(cont).children("li").children("#team").val(char.team);
+    $(cont).children("li").children("#dir").val(char.dir);
+    $(cont).children("li").children("#hidden").val(char.hidden);
 };
 //MAIN MENU OPTIONS START
 $(document).on("click","#create-character",function(e){
     removeOptions();
     appendCreateCharacterOptions();
 });
+var sortSaveData = function(data){
+    //Sort the characters in their order
+    var order = [];
+    $("#character-list").children("li").each(function(i,li){
+        order.push($(li).children().first().attr("storyId"));
+    });
+    var sorted = [];
+    for(var i=0;i<order.length;i++){
+        sorted.push(data.filter(function(d){
+            return d.storyId==order[i];
+        })[0]);
+    }
+    return sorted;
+};
+//Save this and come back to this page
+$(document).on("click","#save-characters",function(e){
+    var form = $('<form action="save-battleScene-characters.php" method="post"></form>');
+    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+    form.append('<input type="text" name="saving" value="true">');
+    form.append("<input type='text' name='characters' value='"+JSON.stringify(sortSaveData(saveData))+"'>");
+    $("body").append(form);
+    form.submit();
+});
 $(document).on("click","#set-up-scene-script",function(e){
-    var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
+    var form = $('<form action="save-battleScene-characters.php" method="post"></form>');
     form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
     form.append("<input type='text' name='characters' value='"+JSON.stringify(saveData)+"'>");
@@ -318,18 +474,19 @@ $(document).on("click","#return-to-map-selection",function(e){
 
 $(document).on("click","#place-character",function(e){
     Q.addSelectionBox(Q.stage(0),"placeCharacter");
-    var cont = $(".menu");
+    var cont = $("#character-options");
     $(cont).children("li").children("#place-character").parent().replaceWith('<li><a id="go-back-to-character"><div class="menu-button btn btn-default">Cancel</div></a></li>');
 });
 $(document).on("click","#remove-character",function(e){
     if(selectedCharacter){
+        $(".character[storyId='"+selectedCharacter.p.storyId+"']").parent().remove();
         objFuncs.removeCharacter(selectedCharacter);
     }
 });
-$(document).on("click","#save-character",function(e){
+var saveCharacter = function(){
     if(selectedCharacter){
-        var obj = Q.getObjAt(selectedCharacter.p.loc[0],selectedCharacter.p.loc[1]);
-        var charData = $(".menu").children("li").children(".new-character");
+        var obj = Q.getObjFromId(selectedCharacter.p.storyId);
+        var charData = $("#character-options").children("li").children(".new-character");
         $(charData).each(function(i,d){
             var val = $(d).val();
             var id =$(d).attr("id");
@@ -340,34 +497,64 @@ $(document).on("click","#save-character",function(e){
             }
         });
         //Change the sprite sheet
-        var sp = Q.getSpriteAt(obj);
+        var sp = Q.getSpriteFromId(obj.storyId);
         var cl = obj.charClass;
         if(obj.charClass==="") cl = "vanguard";
         sp.p.sheet = cl.toLowerCase();
+        //Change the name in the character list
+        var name = getCharListName(obj.name);
+        $(".character[storyId='"+obj.storyId+"']").text(name);
+        
     }
-});
-
+};
 $(document).on("click","#go-back-to-character",function(e){
     Q.removeSelectionBox();
-    var cont = $(".menu");
+    var cont = $("#character-options");
     $(cont).children("li").children("#go-back-to-character").parent().remove();
     $(cont).children("li").children("#back-to-main").parent().remove();
     $(cont).children("li").children("#remove-character").parent().remove();
-    $(cont).children("li").children("#save-character").parent().remove();
     appendCharacterOptions();
 });
 
 $(document).on("click","#back-to-main",function(e){
     removeOptions();
     appendMainOptions();
+    
+    //Deselect the character
+    if(selectedCharacter){
+        selectedCharacter.removeSelectedBox();
+        selectedCharacter.off("step",selectedCharacter,"checkMove");
+    }
 });
+
+
+$(document).on("click",".character",function(e){
+    var id = $(this).attr("storyId");
+    //Get this character's data
+    var char = characters.filter(function(c){
+        return c.storyId==id;//Leave as two equals signs (string compared to int)
+    })[0];
+    selectCharacter(char);
+    if(char.loc){
+        Q.viewObj.p.x = char.loc[0]*Q.tileW+Q.tileW/2;
+        Q.viewObj.p.y = char.loc[1]*Q.tileH+Q.tileH/2;
+    }
+});
+
 Q.getObjAt = function(locX,locY){
     return saveData.filter(function(d){
         return d.loc[0]===locX&&d.loc[1]===locY;
     })[0];
 };
-Q.getSpriteAt = function(objAt){
-    return Q.stage(0).locate(objAt.loc[0]*Q.tileW+Q.tileW/2,objAt.loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
+Q.getObjFromId = function(id){
+    return saveData.filter(function(char){
+        return char.storyId==id;
+    })[0];
+};
+Q.getSpriteFromId = function(id){
+    return Q.stage(0).lists["CharacterSprite"].filter(function(char){
+        return char.p.storyId==id;
+    })[0];
 };
 
 var selectCharacter = function(objAt){
@@ -375,30 +562,15 @@ var selectCharacter = function(objAt){
         selectedCharacter.removeSelectedBox();
         selectedCharacter.off("step",selectedCharacter,"checkMove");
     }
-    var obj = Q.getSpriteAt(objAt);
+    var obj = Q.getSpriteFromId(objAt.storyId);
     selectedCharacter = obj;
     selectedCharacter.on("step",selectedCharacter,"checkMove");
     obj.createSelectedBox();
     removeOptions();
     appendCreateCharacterOptions(objAt);
+    
+    $(".character").removeClass("selected-fill");
+    $(".character[storyId='"+selectedCharacter.p.storyId+"']").addClass("selected-fill");
 };
-//Turn on clicking sprites
-Q.el.addEventListener("click",function(e){
-    //Can't click sprite if placing one
-    if(!placing){
-        var x = e.offsetX || e.layerX,
-            y = e.offsetY || e.layerY,
-            stage = Q.stage();
-
-        var stageX = Q.canvasToStageX(x, stage),
-            stageY = Q.canvasToStageY(y, stage);
-        var locX = Math.floor(stageX/Q.tileW);
-        var locY = Math.floor(stageY/Q.tileH);
-        var objAt = Q.getObjAt(locX,locY);
-        if(objAt){
-            selectCharacter(objAt);
-        }
-    }
-});
 appendMainOptions();
 });

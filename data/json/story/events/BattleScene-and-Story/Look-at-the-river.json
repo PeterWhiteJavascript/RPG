@@ -1,0 +1,209 @@
+{
+    "name": "Look at the river",
+    "desc": "The party stops to look at a river.",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [
+        {
+            "func": "changeMusic",
+            "props": [
+                "the_usual"
+            ]
+        },
+        {
+            "func": "setView",
+            "props": [
+                1
+            ]
+        },
+        {
+            "func": "waitTime",
+            "props": [
+                "2000"
+            ]
+        },
+        {
+            "text": [
+                "This is a pretty cool river.",
+                "We should go back to the forest, though."
+            ],
+            "asset": [
+                "story\/pyro.png",
+                "story\/skirm.png"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
+            "noCycle": "No"
+        },
+        {
+            "func": "fadeChar",
+            "props": [
+                3,
+                "in"
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                3,
+                [
+                    [
+                        26,
+                        7
+                    ],
+                    [
+                        27,
+                        7
+                    ],
+                    [
+                        27,
+                        13
+                    ],
+                    [
+                        26,
+                        13
+                    ]
+                ],
+                "left",
+                "true"
+            ]
+        },
+        {
+            "text": [
+                "Hey, you had better leave now or I will be angry or something!"
+            ],
+            "asset": [
+                "story\/pyro.png",
+                "story\/knight.png"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
+            "noCycle": "No"
+        },
+        {
+            "func": "changeDir",
+            "props": [
+                1,
+                "right"
+            ]
+        },
+        {
+            "func": "changeDir",
+            "props": [
+                2,
+                "left"
+            ]
+        },
+        {
+            "text": [
+                "Alright, let us go."
+            ],
+            "asset": [
+                "story\/pyro.png",
+                "story\/skirm.png"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
+            "noCycle": "No"
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                1,
+                [
+                    [
+                        23,
+                        17
+                    ]
+                ],
+                "down",
+                "false"
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                2,
+                [
+                    [
+                        24,
+                        17
+                    ]
+                ],
+                "down",
+                "true"
+            ]
+        },
+        {
+            "func": "changeEvent",
+            "props": [
+                "BattleScene-and-Story",
+                "Story-Event"
+            ]
+        }
+    ],
+    "characters": [
+        {
+            "name": "Alex",
+            "locX": "0",
+            "locY": "0",
+            "level": 0,
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Female",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Ally",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                23,
+                13
+            ],
+            "storyId": 1
+        },
+        {
+            "name": "Other Character",
+            "locX": "24",
+            "locY": "13",
+            "level": 0,
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Female",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Ally",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                24,
+                13
+            ],
+            "storyId": 2
+        },
+        {
+            "name": "Bad guy",
+            "locX": "26",
+            "locY": "3",
+            "level": 0,
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Female",
+            "value": "Egoist",
+            "methodology": "Pragmatic",
+            "personality": "Sensitive",
+            "team": "Enemy",
+            "dir": "up",
+            "hidden": "hide",
+            "loc": [
+                26,
+                3
+            ],
+            "storyId": 3
+        }
+    ],
+    "music": "",
+    "map": "battle_balance1.tmx"
+}

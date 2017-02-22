@@ -22,9 +22,12 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
 
 
 $directory = '../../data/json/story/events';
-$scenes =  array_diff(scandir($directory), array('..', '.'));
+$scenes =  array_values(array_diff(scandir($directory), array('..', '.')));
 
-
+$eventNames = [];
+foreach($scenes as $s){
+    $eventNames[] = array_values(array_diff(scandir($directory."/".$s), array('..', '.')));
+}
 $images =  array_diff(scandir("../../images/story"), array('..', '.'));
 
 ?>
@@ -37,7 +40,10 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
         <script src="js/edit-battleScene-script.js"></script>
     </head>
     <body>
-        <div id="editor-title"><h2><?php echo $name; ?></h2></div>
+        <div id="all-scene-names" hidden><?php echo json_encode($scenes); ?></div>
+        <div id="all-event-names" hidden><?php echo json_encode($eventNames); ?></div>
+        
+        <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
         <h2>Create the script</h2>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="event-map" hidden><?php echo $eventMap; ?></div>
@@ -54,15 +60,14 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
                         $num = strlen($text[0]);
                         if($num>19){ $num=19;}
                         $displayText = substr($text[0], 0, $num);
-                        echo "<li text='".json_encode($text)."' asset='".json_encode($scriptItem['asset'])."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
+                        echo "<li text='".json_encode($text)."' asset='".json_encode($scriptItem['asset'])."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     } else {
-                        echo "<li func='".$scriptItem['func']."' props='".json_encode($scriptItem['props'])."'><a class='script-item func btn btn-default'>".$scriptItem['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
+                        echo "<li func='".$scriptItem['func']."' props='".json_encode($scriptItem['props'])."'><div class='text-or-func'>Func</div><a class='script-item func btn btn-default'>".$scriptItem['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     }
                 }
             ?>
         </ul>
         <select id="images-holder" hidden>
-            <option value=''></option>
             <?php 
             forEach($images as $im){
                 echo '<option value=story/'.$im.'>story/'.$im.'</option>';

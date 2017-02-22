@@ -179,69 +179,67 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //Get the data to play out this scene
         var data = stage.options.data;
-        var music = data.music;
-        if(!music) music = Q.state.get("currentMusic");
-        Q.playMusic(music,function(){
-            //Display the tmx tile map
-            //If one is not passed in, we are re-using the map from the previous battle
-            if(data.map){
-                Q.stageTMX(data.map, stage);
+        //Display the tmx tile map
+        //If one is not passed in, we are re-using the map from the previous battle
+        if(data.map){
+            Q.stageTMX(data.map, stage);
+        }
+        stage.lists.TileLayer[0].p.z = 0;
+        stage.lists.TileLayer[1].p.z = 1;
+        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+        //The battle controller holds all battle specific functions
+        Q.BatCon = new Q.BattleController({stage:stage});
+        stage.add("viewport");
+        stage.viewport.scale = 2;
+        //The invisible sprite that the viewport follows
+        stage.viewSprite = stage.insert(new Q.ViewSprite());
+        Q.viewFollow(stage.viewSprite,stage);
+
+        var allyData = Q.state.get("allies");
+        var charData = data.characters;
+        var chars = [];
+        charData.forEach(function(char){
+            var character;
+
+            if(char.nationality){
+                char.natNum = Q.charGen.getNatNum(char.nationality);
             }
-            stage.lists.TileLayer[0].p.z = 0;
-            stage.lists.TileLayer[1].p.z = 1;
-            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-            //The battle controller holds all battle specific functions
-            Q.BatCon = new Q.BattleController({stage:stage});
-            stage.add("viewport");
-            stage.viewport.scale = 2;
-            //The invisible sprite that the viewport follows
-            stage.viewSprite = stage.insert(new Q.ViewSprite());
-            Q.viewFollow(stage.viewSprite,stage);
-            
-            var allyData = Q.state.get("allies");
-            var charData = data.characters;
-            var chars = [];
-            charData.forEach(function(char){
-                var character;
-                
-                if(char.nationality){
-                    char.natNum = Q.charGen.getNatNum(char.nationality);
+            if(char.charClass){
+                char.classNum = Q.charGen.getClassNum(char.charClass);
+            }
+            //Set values that are empty as random
+            ["level","nationality","charClass","gender","name","value","method","personality"].forEach(function(key){
+                if(!char[key]||char[key].length===0){
+                    char[key] = Q.charGen.generateProp(key,char);
                 }
-                if(char.charClass){
-                    char.classNum = Q.charGen.getClassNum(char.charClass);
-                }
-                //Set values that are empty as random
-                ["level","nationality","charClass","gender","name","value","method","personality"].forEach(function(key){
-                    if(!char[key]||char[key].length===0){
-                        char[key] = Q.charGen.generateProp(key,char);
-                    }
-                });
-                //If the character is an ally, get the data from the allies array
-                if(char.team==="ally"){
-                    //Find the data in the allies array
-                    var data = allyData.filter(function(ally){
-                        return ally.name===char.name;
-                    })[0];
-                    if(data){
-                        character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
-                        character.add("statCalcs");
-                    } else {
-                        character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team,awards:char.awards});
-                    }
+            });
+            //If the character is an ally, get the data from the allies array
+            if(char.team==="ally"){
+                //Find the data in the allies array
+                var data = allyData.filter(function(ally){
+                    return ally.name===char.name;
+                })[0];
+                if(data){
+                    character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
+                    character.add("statCalcs");
                 } else {
-                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
+                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team,awards:char.awards});
                 }
-                chars.push(character);
-                character.p.loc = char.loc;
-                character.p.anim = char.anim;
-            });
-            chars.forEach(function(char){
-                stage.insert(char);
-            });
-            Q.stageScene("script",1,{data:data});
+            } else {
+                character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
+            }
+            chars.push(character);
+            character.p.loc = char.loc;
+            character.p.anim = char.anim;
+            if(char.hidden==="hide"){
+                character.hide();
+            }
         });
-        
+        chars.forEach(function(char){
+            stage.insert(char);
+        });
+        Q.stageScene("script",1,{data:data});
     },{sort:true});
     Q.scene("battle",function(stage){
         Q.stageScene("fader",11);

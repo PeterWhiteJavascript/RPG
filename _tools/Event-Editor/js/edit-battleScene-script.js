@@ -20,6 +20,7 @@ Q.SPRITE_CHARACTER  = 8;
 
 var selectedCharacter;
 var allowSpriteSelecting;
+var selected;
 var selectedFunc;
 var cont = $(".menu");
 
@@ -69,7 +70,8 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
             characters.forEach(function(char){
                 var cl = char.charClass.toLowerCase();
                 if(char.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
-                Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
+                var c = Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
+                if(char.hidden==="hide") c.p.opacity = 0.5;
             });
         });
     });
@@ -100,12 +102,12 @@ Q.addViewport = function(stage){
     obj.p.x = obj.p.w/2;
     obj.p.y = obj.p.h/2;
     obj.drag = function(touch){
-       this.p.x = touch.origX - touch.dx;
-       this.p.y = touch.origY - touch.dy;
-       if(this.p.x<this.p.w/2){this.p.x=this.p.w/2;}
-       else if(this.p.x>(stage.mapWidth*Q.tileW)-this.p.w/2){this.p.x=(stage.mapWidth*Q.tileW)-this.p.w/2;};
-       if(this.p.y<this.p.h/2){this.p.y=this.p.h/2;}
-       else if(this.p.y>(stage.mapHeight*Q.tileH)-this.p.h/2){this.p.y=(stage.mapHeight*Q.tileH)-this.p.h/2;};
+        this.p.x = touch.origX - touch.dx;
+        this.p.y = touch.origY - touch.dy;
+        /*if(this.p.x<this.p.w/2){this.p.x=this.p.w/2;}
+        else if(this.p.x>(stage.mapWidth*Q.tileW)-this.p.w/2){this.p.x=(stage.mapWidth*Q.tileW)-this.p.w/2;};
+        if(this.p.y<this.p.h/2){this.p.y=this.p.h/2;}
+        else if(this.p.y>(stage.mapHeight*Q.tileH)-this.p.h/2){this.p.y=(stage.mapHeight*Q.tileH)-this.p.h/2;};*/
     };
     obj.on("drag");
     stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
@@ -114,7 +116,7 @@ Q.addViewport = function(stage){
     var maxX=(stage.mapWidth*Q.tileW);
     var minY=0;
     var maxY=(stage.mapHeight*Q.tileH);
-    stage.follow(obj,{x:true,y:true},{minX: minX, maxX: maxX, minY: minY,maxY:maxY});
+    stage.follow(obj,{x:true,y:true}/*,{minX: minX, maxX: maxX, minY: minY,maxY:maxY}*/);
 };
 function moveSelection(e) {
     var x = e.offsetX || e.layerX,
@@ -166,7 +168,7 @@ Q.scene("map",function(stage){
             var locY = Math.floor(stageY/Q.tileH);
             var objAt = Q.getSpriteAt([locX,locY]);
             if(objAt){
-                selectCharacter(objAt);
+                Q.stage(0).trigger("selectedCharacter",objAt);
             }
             Q.stage(0).trigger("selectedLocation",[locX,locY]);
         }
@@ -198,24 +200,6 @@ var appendScriptItemOptions = function(){
     $(cont).append('<li><a id="add-text"><div class="menu-button btn btn-default">Add Text</div></a></li>');
     $(cont).append('<li><a id="back-to-main"><div class="menu-button btn btn-default">Go Back</div></a></li>');
 };
-var funcs = [
-    "setView",
-    "centerView",
-    "moveAlong",
-    "changeDir",
-    "allowCycle",
-    "hideDialogueBox",
-    "setCharacterAs",
-    
-    "waitTime",
-    "fadeChar",
-    "changeMusic",
-    "changeMoveSpeed",
-    "playAnim",
-    
-    "changeEvent"
-    
-];
 Q.getXY = function(loc){
     return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
 };
@@ -249,20 +233,23 @@ Q.UI.Text.extend("Number",{
 var setUpFuncs = {
     setView:[
         function(val){
-            $("#back-to-func-selection").before("<span>Select a character in the stage to set the view to</span><div id='view-character-selected' class='script-func'></div>");
+            $("#back-to-func-selection").before("<span>Select a character in the stage or from the list to set the view to</span><div id='view-character-selected' class='script-func'>");
             allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(){
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
                 if($("#view-character-selected").text()===""){
                     $("#back-to-func-selection").before("<a id='add-func-to-script' value='setView'><div class='menu-button btn btn-default'>Add to Script</div></a>");
                 }
                 $("#view-character-selected").text("Story Id: "+selectedCharacter.p.storyId);
                 $("#view-character-selected").attr("val",selectedCharacter.p.storyId);
                 $("#view-character-selected").attr("dataType","integer");
-                Q.stage(0).off("selectedCharacter");
+                saveFuncScriptItem();
             });
             if(val!==undefined){
-                $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
-                selectCharacter(Q.getSpriteByStoryId(parseInt(val)));
+                var sprite = Q.getSpriteByStoryId(parseInt(val));
+                Q.stage(0).trigger("selectedCharacter",Q.getSpriteByStoryId(parseInt(val)));
+                Q.viewObj.p.x = sprite.p.x;
+                Q.viewObj.p.y = sprite.p.y;
             }
             Q.stage(0).on("finished",function(){
                 Q.stage(0).off("selectedCharacter");
@@ -275,10 +262,11 @@ var setUpFuncs = {
     ],
     centerView:[
         function(val){
-            $("#back-to-func-selection").before("<span>Select a location in the stage to tween the view to. Selecting a character will set the view to it upon arrival.</span><div id='view-character-selected' class='script-func'></div>");
+            $("#back-to-func-selection").before("<span>Select a location in the stage to tween the view to. Selecting a character (on the stage or from the list) will set the view to it upon arrival.</span><div id='view-character-selected' class='script-func'></div>");
             allowSpriteSelecting = true;
             var selectedChar = false;
-            Q.stage(0).on("selectedCharacter",function(){
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
                 selectedChar = true;
                 if(Q.locSelectedBox) Q.locSelectedBox.destroy();
                 if($("#view-character-selected").text()===""){
@@ -287,6 +275,7 @@ var setUpFuncs = {
                 $("#view-character-selected").text("Story Id: "+selectedCharacter.p.storyId);
                 $("#view-character-selected").attr("val",selectedCharacter.p.storyId);
                 $("#view-character-selected").attr("dataType","integer");
+                saveFuncScriptItem();
             });
             //Will be disabled if a character is selected
             Q.stage(0).on("selectedLocation",function(loc){
@@ -302,16 +291,23 @@ var setUpFuncs = {
                     $("#view-character-selected").text("Location: "+loc[0]+","+loc[1]);
                     $("#view-character-selected").attr("val",JSON.stringify(loc));
                     $("#view-character-selected").attr("dataType","array");
+                    saveFuncScriptItem();
                 } else {
                     selectedChar = false;
                 }
             });
             if(val!==undefined){
-                $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
                 if(Q._isArray(val[0])){
-                    Q.stage(0).trigger("selectedLocation",[val[0][0],val[0][1]]);
+                    var loc = [val[0][0],val[0][1]];
+                    Q.stage(0).trigger("selectedLocation",loc);
+                    Q.viewObj.p.x = loc[0]*Q.tileW+Q.tileW/2;
+                    Q.viewObj.p.y = loc[1]*Q.tileH+Q.tileH/2;
                 } else {
-                    selectCharacter(Q.getSpriteByStoryId(val[0]));
+                    console.log(val)
+                    var sprite = Q.getSpriteByStoryId(val[0]);
+                    Q.stage(0).trigger("selectedCharacter",sprite);
+                    Q.viewObj.p.x = sprite.p.x;
+                    Q.viewObj.p.y = sprite.p.y;
                 }
             }
             Q.stage(0).on("finished",function(){
@@ -329,7 +325,8 @@ var setUpFuncs = {
         function(val){
             $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='view-character-selected' class='script-func'></div></div>");
             allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(){
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
                 if(Q.locSelectedBox) Q.locSelectedBox.destroy();
                 if($("#view-character-selected").text()===""){
                     Q.stage(0).off("selectedCharacter");
@@ -339,8 +336,8 @@ var setUpFuncs = {
                 $("#view-character-selected").attr("val",selectedCharacter.p.storyId);
                 $("#view-character-selected").attr("dataType","integer");
             });
-            if(val){
-                selectCharacter(Q.getSpriteByStoryId(val[0]));
+            if(val!==undefined){
+                Q.stage(0).trigger("selectedCharacter",Q.getSpriteByStoryId(val[0]));
             }
         },
         //Select the path
@@ -375,6 +372,7 @@ var setUpFuncs = {
                             selectedLocs[j].p.number.p.label = ""+(j+1);
                         }
                         saveLocs();
+                        saveFuncScriptItem();
                     }
                 }
             });
@@ -403,13 +401,19 @@ var setUpFuncs = {
                 //show the selected box on the location
                 var pos = Q.getXY(loc);
                 selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc,num:selectedLocs.length+1})));
-                $("#move-locations").append("<li class='loc-li'><div class='btn btn-default'>"+loc[0]+","+loc[1]+"</div></li>");
+                $("#move-locations").append("<li class='loc-li' locX='"+loc[0]+"' locY='"+loc[1]+"'><div class='btn btn-default'>"+loc[0]+","+loc[1]+"</div></li>");
+                $(".loc-li").on("click",function(){
+                    Q.viewObj.p.x = $(this).attr("locX")*Q.tileW+Q.tileW/2;
+                    Q.viewObj.p.y = $(this).attr("locY")*Q.tileH+Q.tileH/2;
+                });
                 saveLocs();
             });
-            
             $("#back-to-func-selection").before("<div class='editor-item'><span>Select the direction on arrival.</span><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select></div><div class='editor-item'><a id='cycle-text-on-arrival'><div class='menu-button btn btn-default script-func' val='true'>Cycle Text On Arrival</div></a></div>");
             $("#dir-on-arrival").val("up");
-            $("#cycle-text-on-arrival").on("click",function(){
+            $("#dir-on-arrival").on("change",function(){
+                saveFuncScriptItem();
+            });
+            var changeCycle = function(){
                 if($("#cycle-text-on-arrival").children(".menu-button").attr("val")==="true"){
                     $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text Instantly");
                     $("#cycle-text-on-arrival").children(".menu-button").attr("val","false");
@@ -417,8 +421,12 @@ var setUpFuncs = {
                     $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text On Arrival");
                     $("#cycle-text-on-arrival").children(".menu-button").attr("val","true");
                 }
+            };
+            $("#cycle-text-on-arrival").on("click",function(){
+                changeCycle();
+                saveFuncScriptItem();
             });
-            if(val){
+            if(val!==undefined){
                 initial = false;
                 for(var i=0;i<val[1].length;i++){
                     Q.stage(0).trigger("selectedLocation",val[1][i]);
@@ -430,13 +438,16 @@ var setUpFuncs = {
                 } else {
                     $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text Instantly");
                 }
+                //Turn on saving for placing individual locations
+                Q.stage(0).on("selectedLocation",function(){
+                    saveFuncScriptItem();
+                });
                 
-                $("#back-to-func-selection").before("<a id='save-func-script-item'><div class='menu-button btn btn-default'>Save Script Item</div></a>");
             } else {
                 $("#back-to-func-selection").before("<a id='add-func-to-script' value='moveAlong'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+                
             }
             Q.stage(0).on("finished",function(){
-                Q.stage(0).off("selectedCharacter");
                 Q.stage(0).off("selectedLocation");
                 Q("SelectedSquare",0).items.forEach(function(square){
                     square.destroy();
@@ -446,34 +457,259 @@ var setUpFuncs = {
         }
     ],
     changeDir:[
-        function(){}
+        //Select a character
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='change-dir-char' class='script-func'></div></div>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
+                if($("#change-dir-char").text()===""){
+                    setUpFuncs.changeDir[1](val);
+                }
+                $("#change-dir-char").text("Story Id: "+selectedCharacter.p.storyId);
+                $("#change-dir-char").attr("val",selectedCharacter.p.storyId);
+                $("#change-dir-char").attr("dataType","integer");
+                Q.stage(0).off("selectedCharacter");
+            });
+            if(val!==undefined){
+                var sprite = Q.getSpriteByStoryId(val[0]);
+                Q.stage(0).trigger("selectedCharacter",sprite);
+                Q.viewObj.p.x = sprite.p.x;
+                Q.viewObj.p.y = sprite.p.y;
+            }
+            Q.stage(0).on("finished",function(){
+                Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("finished");
+            });
+        },
+        //Select a direction
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select the direction of the character.</span><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select></div>");
+            $("#dir-on-arrival").val("up");
+            if(val){
+                $("#dir-on-arrival").val(val[1]);
+                $("#dir-on-arrival").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='changeDir'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+            
+        }
     ],
-    allowCycle:[
-        function(){}
-    ],
-    hideDialogueBox:[
-        function(){}
-    ],
+    modDialogueBox:[
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Hide the dialogue box</span><select id='mod-dialogue-box' class='script-func'><option>hide</option><option>show</option></select></div>");
+            if(val!==undefined){
+                $("#mod-dialogue-box").val(val[0]);
+                $("#mod-dialogue-box").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='modDialogueBox'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
+    ],/*
     setCharacterAs:[
         function(){}
-    ],
+    ],*/
     waitTime:[
-        function(){}
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Wait time (in milliseconds) </span><input type='number' min='1' id='waiting-time' class='script-func' value='1000'></input></div>");
+            if(val!==undefined){
+                $("#waiting-time").val(parseInt(val[0]));
+                $("#waiting-time").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='waitTime'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ],
     fadeChar:[
-        function(){}
+        //Select a character
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='fade-char' class='script-func'></div></div>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
+                if($("#fade-char").text()===""){
+                    setUpFuncs.fadeChar[1](val);
+                }
+                $("#fade-char").text("Story Id: "+selectedCharacter.p.storyId);
+                $("#fade-char").attr("val",selectedCharacter.p.storyId);
+                $("#fade-char").attr("dataType","integer");
+                Q.stage(0).off("selectedCharacter");
+            });
+            if(val!==undefined){
+                var sprite = Q.getSpriteByStoryId(val[0]);
+                Q.stage(0).trigger("selectedCharacter",sprite);
+                Q.viewObj.p.x = sprite.p.x;
+                Q.viewObj.p.y = sprite.p.y;
+            }
+            Q.stage(0).on("finished",function(){
+                Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("finished");
+            });
+        },
+        //Get if it should fade in or out.
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Fade in or out.</span><select id='fade-inout' class='script-func'><option>out</option><option>in</option></select></div>");
+            $("#fade-inout").val("out");
+            if(val){
+                $("#fade-inout").val(val[1]);
+                $("#fade-inout").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='fadeChar'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ],
     changeMusic:[
-        function(){}
+        function(val){
+            var music = ["battle","demo","homeland","prebattle","the_usual"];
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Play music</span><select id='play-music' class='script-func'></select></div>");
+            music.forEach(function(mus){
+                $("#play-music").append("<option>"+mus+"</option>");
+            });
+            if(val!==undefined){
+                $("#play-music").val(val[0]);
+                $("#play-music").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='changeMusic'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ],
     changeMoveSpeed:[
-        function(){}
+        //Select a character
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='change-move-speed' class='script-func'></div></div>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
+                if($("#change-move-speed").text()===""){
+                    setUpFuncs.changeMoveSpeed[1](val);
+                }
+                $("#change-move-speed").text("Story Id: "+selectedCharacter.p.storyId);
+                $("#change-move-speed").attr("val",selectedCharacter.p.storyId);
+                $("#change-move-speed").attr("dataType","integer");
+                Q.stage(0).off("selectedCharacter");
+            });
+            if(val!==undefined){
+                var sprite = Q.getSpriteByStoryId(val[0]);
+                Q.stage(0).trigger("selectedCharacter",sprite);
+                Q.viewObj.p.x = sprite.p.x;
+                Q.viewObj.p.y = sprite.p.y;
+            }
+            Q.stage(0).on("finished",function(){
+                Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("finished");
+            });
+        },
+        //Type a movement speed
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Movement Speed </span><input type='number' step='0.01' min='0.01' id='move-speed' class='script-func' value='0.30'></input></div>");
+            if(val!==undefined){
+                $("#move-speed").val(parseFloat(val[1]).toFixed(2));
+                $("#move-speed").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='changeMoveSpeed'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ],
     playAnim:[
-        function(){}
+        function(val){
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Target Character: </span><div id='play-anim-char' class='script-func'></div></div>");
+            allowSpriteSelecting = true;
+            Q.stage(0).on("selectedCharacter",function(obj){
+                selectCharacter(obj);
+                if($("#play-anim-char").text()===""){
+                    setUpFuncs.playAnim[1](val);
+                }
+                $("#play-anim-char").text("Story Id: "+selectedCharacter.p.storyId);
+                $("#play-anim-char").attr("val",selectedCharacter.p.storyId);
+                $("#play-anim-char").attr("dataType","integer");
+                Q.stage(0).off("selectedCharacter");
+            });
+            if(val!==undefined){
+                var sprite = Q.getSpriteByStoryId(val[0]);
+                Q.stage(0).trigger("selectedCharacter",sprite);
+                Q.viewObj.p.x = sprite.p.x;
+                Q.viewObj.p.y = sprite.p.y;
+            }
+            Q.stage(0).on("finished",function(){
+                Q.stage(0).off("selectedCharacter");
+                Q.stage(0).off("finished");
+            });
+        },
+        function(val){
+            var anims = ["Stand","Walk","Attack","Counter","Miss","Lift","Lifted","Hurt","Dying","LevelUp","SonicBoom","Whirlwind","Piercing"];
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Play animation</span><select id='anims' class='script-func'></select></div>");
+            anims.forEach(function(anim){
+                $("#anims").append("<option>"+anim+"</option>");
+            });
+            
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select the direction of the character.</span><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select></div>");
+            $("#dir-on-arrival").val("up");
+            
+            var sounds = ["cannot_do","coin","confirm","critical_hit","dying","explosion","glancing_blow","hit1","inflict_status","shooting","slashing","text_stream","whirlwind"];
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Play sound</span><select id='sounds' class='script-func'></select></div>");
+            sounds.forEach(function(sound){
+                $("#sounds").append("<option>"+sound+"</option>");
+            });
+            if(val!==undefined){
+                $("#anims").val(val[1]);
+                $("#anims").on("change",function(){
+                    saveFuncScriptItem();
+                });
+                
+                $("#dir-on-arrival").val(val[2]);
+                $("#dir-on-arrival").on("change",function(){
+                    saveFuncScriptItem();
+                });
+                
+                $("#sounds").val(val[3]);
+                $("#sounds").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            }
+            
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='playAnim'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ],
     changeEvent:[
-        function(){}
+        //Select an event from the list of events/scenes
+        function(val){
+            var scenes = JSON.parse($("#all-scene-names").text());
+            var events = JSON.parse($("#all-event-names").text());
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select a scene</span><select id='scene-names' class='script-func'></select></div>");
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Select an event</span><select id='event-names' class='script-func'></select></div>");
+            scenes.forEach(function(scene){
+                $("#scene-names").append("<option>"+scene+"</option>");
+            });
+            //Fill the events select
+            $("#scene-names").on("change",function(){
+                $("#event-names").empty();
+                var event = events[$(this).prop("selectedIndex")];
+                event.forEach(function(ev){
+                    $("#event-names").append("<option>"+ev.substring(0, ev.lastIndexOf("."))+"</option>");
+                });
+            });
+            if(val!==undefined){
+                $("#scene-names").val(val[0]);
+                var event = events[$("#scene-names").prop("selectedIndex")];
+                event.forEach(function(ev){
+                    $("#event-names").append("<option>"+ev.substring(0, ev.lastIndexOf("."))+"</option>");
+                });
+                $("#event-names").val(val[1]);
+                $("#event-names").on("change",function(){
+                    saveFuncScriptItem();
+                });
+            } else {
+                $("#scene-names").val($("#scene-name").text());
+                $("#scene-names").trigger("change");
+            }
+            $("#back-to-func-selection").before("<a id='add-func-to-script' value='changeEvent'><div class='menu-button btn btn-default'>Add to Script</div></a>");
+        }
     ]
 };
 var funcs = Object.keys(setUpFuncs);
@@ -518,21 +754,16 @@ var getFuncProps = function(){
     });
     return props;
 };
-$(document).on("click","#save-func-script-item",function(e){
-    $(selectedFunc).parent().attr("props",JSON.stringify(getFuncProps()));
-    selectedFunc = false;
-    $("#back-to-func-selection").trigger("click");
-});
 $(document).on("click","#add-func-to-script",function(e){
     allowSpriteSelecting = false;
     deselectSprite();
     var funcName = $(this).attr("value");
     var scCont = $("#script-menu");
-    $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(getFuncProps())+"'><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(getFuncProps())+"'><div class='text-or-func'>Func</div><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
     $("#back-to-func-selection").trigger("click");
 });
 var appendTextOptions = function(obj){
-    var data = obj?obj:{text:[""],asset:["",""],pos:"Left",autoCycle:"0",noCycle:"No"};
+    var data = obj?obj:{text:[""],asset:["story/empty.png","story/empty.png"],pos:"Left",autoCycle:"0",noCycle:"No"};
     $(cont).append('<li><span>Text</span><br><button id="add-new-text">Add New Text</button><ul class="sortable"></ul></li>');
     for(var i=0;i<data.text.length;i++){
         $(cont).children("li").children("ul").append('<li><textarea class="script-text new-script-item">'+data.text[i]+'</textarea><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
@@ -540,7 +771,7 @@ var appendTextOptions = function(obj){
     $(cont).append('<li><span>Left Asset</span><select id="script-asset1" class="new-script-item"></select><img class="new-script-img"></li>');
     $(cont).append('<li><span>Right Asset</span><select id="script-asset2" class="new-script-item"></select><img class="new-script-img"></li>');
     $(cont).append('<li><span>Scroll From: </span><button id="script-pos" class="new-script-item">'+data.pos+'</button></li>');
-    $(cont).append('<li><span>Auto Cycle After Number of Frames</span><input id="script-autoCycle" class="new-script-item" value="'+data.autoCycle+'"></input></li>');
+    $(cont).append('<li><span>Auto Cycle After Number of Frames</span><input id="script-autoCycle" class="new-script-item" value="'+data.autoCycle+'" type="number"></input></li>');
     $(cont).append('<li><span>Disable Cycle: </span><button id="script-noCycle" class="new-script-item">'+data.noCycle+'</button></li>');
     $(cont).append('<li><a id="add-to-script" class="menu-button btn btn-default">Add to Script</a></li>');
     $(cont).append('<li><a id="clear-values" class="menu-button btn btn-default">Clear Values</a></li>');
@@ -554,6 +785,13 @@ var appendTextOptions = function(obj){
     
     $("#script-asset1").trigger("change");
     $("#script-asset2").trigger("change");
+    
+    $(cont).children("li").children("input").on("change",function(){
+        saveScriptText();
+    });
+    $(cont).children("li").children("select").on("change",function(){
+        saveScriptText();
+    });
     $( ".sortable" ).sortable({
         axis: "y"
     });
@@ -583,6 +821,7 @@ $(document).on("click","#script-pos",function(e){
     } else {
         $(this).text("Left");
     }
+    saveScriptText();
 });
 $(document).on("click","#script-noCycle",function(e){
     if($(this).text()==="No"){
@@ -590,9 +829,15 @@ $(document).on("click","#script-noCycle",function(e){
     } else {
         $(this).text("No");
     }
+    saveScriptText();
 });
 $(document).on("click",".remove-choice",function(e){
     $(this).parent().remove();
+    $(".script-item").removeClass("selected-fill");
+    
+    removeOptions();
+    appendMainOptions();
+    
 });
 
 $(document).on("click","#clear-values",function(e){
@@ -601,7 +846,7 @@ $(document).on("click","#clear-values",function(e){
 });
 $(document).on("click","#add-new-text",function(e){
     $(this).parent().children("ul").append('<li><textarea class="script-text new-script-item"></textarea><a class="remove-choice"><div class="btn btn-default">x</div></a></li>');
-    
+    saveScriptText();
 });
 $(document).on("click","#add-to-script",function(e){
     if(!$(".script-text").length) return;
@@ -616,10 +861,39 @@ $(document).on("click","#add-to-script",function(e){
     var noCycle = $("#script-noCycle").text();
     var scCont = $("#script-menu");
     var displayText = textArr[0].slice(0,19);
-    $(scCont).append("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(scCont).append("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
 });
 
+var saveFuncScriptItem = function(){
+    $(selectedFunc).parent().attr("props",JSON.stringify(getFuncProps()));
+};
+var saveScriptText = function(){
+    var idx = $(".script-item").index($(".selected-fill"));
+    if(!$(".script-text").length) return;
+    var textArr = [];
+    $(".script-text").each(function(i,t){
+        textArr.push($(t).val());
+    });
+    var asset1 = $("#script-asset1").val();
+    var asset2 = $("#script-asset2").val();
+    var pos = $("#script-pos").text();
+    var autoCycle = $("#script-autoCycle").val();
+    var noCycle = $("#script-noCycle").text();
+    var displayText = textArr[0].slice(0,19);
+    $(".selected-fill").parent().remove();
+    $("#script-menu > li:nth-child("+idx+")").after("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default selected-fill'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    
+};
 $(document).on("click",".script-item",function(e){
+    selectedFunc = false;
+    if(selected){
+        if($(selected).attr("class").split(" ")[1]==="text"){
+            saveScriptText();
+        }
+    }
+    selected = this;
+    $(".script-item").removeClass("selected-fill");
+    $(this).addClass("selected-fill");
     Q.stage(0).trigger("finished");
     allowSpriteSelecting = false;
     deselectSprite();
@@ -629,7 +903,7 @@ $(document).on("click",".script-item",function(e){
     if(type==="text"){
         appendTextOptions({text:JSON.parse($(parent).attr("text")),asset:JSON.parse($(parent).attr("asset")),pos:$(parent).attr("pos"),autoCycle:$(parent).attr("autoCycle"),noCycle:$(parent).attr("noCycle")});
     } else if(type==="func"){
-        selectedFunc = $(this);
+        selectedFunc = this;
         appendFunctionOptions({func:$(parent).attr("func"),props:JSON.parse($(parent).attr("props"))});
     }
 });
@@ -693,17 +967,22 @@ $(document).on("click","#add-text",function(e){
     appendTextOptions();
 });
 $(document).on("click","#back-to-func-selection",function(e){
+    $(".script-item").removeClass("selected-fill");
     Q.stage(0).trigger("finished");
     allowSpriteSelecting = false;
+    selectedFunc = false;
     deselectSprite();
     removeOptions();
     appendFunctionOptions();
 });
 $(document).on("click","#back-to-main",function(e){
+    $(".script-item").removeClass("selected-fill");
+    selectedFunc = false;
     removeOptions();
     appendMainOptions();
 });
 $(document).on("click","#back-to-script-items",function(e){
+    $(".script-item").removeClass("selected-fill");
     Q.stage(0).trigger("finished");
     allowSpriteSelecting = false;
     deselectSprite();
@@ -725,7 +1004,6 @@ var selectCharacter = function(objAt){
         selectedCharacter.removeSelectedBox();
     }
     selectedCharacter = objAt;
-    Q.stage(0).trigger("selectedCharacter");
     objAt.createSelectedBox();
 };
 

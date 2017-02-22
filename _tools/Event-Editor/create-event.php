@@ -20,6 +20,25 @@ if(isset($_POST['name'])){
         <title>Create an Event</title>
     </head>
     <body>
+        <div id="name"><?php echo $name; ?></div>
+        <div id="scene"><?php echo $scene; ?></div>
+        <?php
+        //If we're editing, go to the next page
+        if(isset($_POST['name'])){
+        ?>
+        <div id="kind"><?php echo $event['kind']; ?></div>
+            <script>
+            var form = $('<form action="edit-event.php" method="post"></form>');
+            form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
+            form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
+            form.append('<input type="text" name="event-type" value="'+$("#kind").text()+'">');
+            form.append('<input type="hidden" name="origName" value="'+$("#name").text()+'">');
+            $("body").append(form);
+            form.submit();
+            </script>
+            <?php
+        }
+        ?>
         <div id="wrapper">
             <div id="title"><h1><?php echo $scene; ?></h1></div>
             <div id="content">

@@ -1,3 +1,7 @@
+//To do:
+//When adding a new page, the game must be saved before it works properly.
+
+
 $(function(){
     $( ".sortable" ).sortable({
         axis: "y"
@@ -306,7 +310,7 @@ $(function(){
     $('#back').click( function(e) {
         var sure = confirm("Are you sure you want to go back without saving?");
         if(sure){
-            var form = $('<form action="create-event.php" method="post"></form>');
+            var form = $('<form action="show-events.php" method="post"></form>');
             form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
             form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
             $("body").append(form);

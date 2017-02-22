@@ -36,14 +36,18 @@ $scenes =  array_diff(scandir($directory), array('..', '.'));
         <script src="js/edit-battleScene-event.js"></script>
     </head>
     <body>
-        <div id="editor-title"><h2><?php echo $name; ?></h2></div>
+        <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
         <h2>Set initial characters</h2>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="event-map" hidden><?php echo $eventMap; ?></div>
         <div id="characters" hidden><?php echo json_encode($event['characters']); ?></div>
         
-        <ul class="menu right btn-group" style="height:80%">
+        <ul id="character-options" class="menu btn-group">
             
         </ul>
+        <ul id="character-list" class="menu btn-group sortable">
+            
+        </ul>
+        <div id="canvas-coordinates"></div>
     </body>
 </html>
