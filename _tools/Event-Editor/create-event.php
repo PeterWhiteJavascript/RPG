@@ -24,7 +24,7 @@ if(isset($_POST['name'])){
         <div id="scene"><?php echo $scene; ?></div>
         <?php
         //If we're editing, go to the next page
-        if(isset($_POST['name'])){
+        if(isset($_POST['name'])&&!isset($_POST['copying'])){
         ?>
         <div id="kind"><?php echo $event['kind']; ?></div>
             <script>
@@ -48,17 +48,24 @@ if(isset($_POST['name'])){
                         <input type="text" name="name" value="<?php echo $name; ?>" placeholder="Event Name"><br>
                         Description<br>
                         <textarea type="text" name="desc" placeholder="Description"><?php echo $desc; ?></textarea><br>
-                        Event Type<br>
-                        <select name="event-type">
+                        <?php
+                        if(isset($_POST['copying'])){
+                        ?>
+                        <select name="event-type" hidden>
                             <option <?php if($kind=="story"){echo "selected";}?> value="story">Story</option>
-                            <option <?php if($kind=="dialogue"){echo "selected";}?> value="dialogue">Dialogue</option>
                             <option <?php if($kind=="battleScene"){echo "selected";}?> value="battleScene">Battle Scene</option>
                             <option <?php if($kind=="battle"){echo "selected";}?> value="battle">Battle</option>
                         </select>
+                        <input type="hidden" name="copying" value="<?php echo $name; ?>">
                         <?php
-                        if(isset($_POST['name'])){
+                        } else {   
                         ?>
-                        <input type="hidden" name="origName" value="<?php echo $name; ?>">
+                        Event Type<br>
+                        <select name="event-type">
+                            <option <?php if($kind=="story"){echo "selected";}?> value="story">Story</option>
+                            <option <?php if($kind=="battleScene"){echo "selected";}?> value="battleScene">Battle Scene</option>
+                            <option <?php if($kind=="battle"){echo "selected";}?> value="battle">Battle</option>
+                        </select>
                         <?php
                         }
                         ?>

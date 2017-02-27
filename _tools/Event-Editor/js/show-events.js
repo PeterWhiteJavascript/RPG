@@ -12,22 +12,47 @@ $(function(){
         $("body").append(form);
         form.submit();
     });
-    $('#edit-event').click( function(e) {
+    
+    $('#edit-vars').click( function(e) {
         if(selectedEvent){
             var scene = $("#title").text();
-            var name = $(selectedEvent).parent().attr("name");
-            var form = $('<form action="create-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-            
+            var form = $('<form action="edit-vars.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
             $("body").append(form);
             form.submit();
+        }
+    });
+    
+    $('#edit-event').click( function(e) {
+        if(selectedEvent){
+            console.log(selectedEvent)
+            var kind = $(selectedEvent).parent().attr("kind")
+            switch(kind){
+                case "story":
+                    var scene = $("#title").text();
+                    var name = $(selectedEvent).parent().attr("name");
+                    var form = $('<form action="edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+
+                    $("body").append(form);
+                    form.submit();
+                    break;
+                case "battle":
+                case "battleScene":
+                    
+                    var scene = $("#title").text();
+                    var name = $(selectedEvent).parent().attr("name");
+                    var form = $('<form action="select-map.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="kind" value="'+kind+'"></form>');
+
+                    $("body").append(form);
+                    form.submit();
+                    break;
+            }
         }
     });
     $('#test-event').click( function(e) {
         if(selectedEvent){
             var scene = $("#title").text();
             var name = $(selectedEvent).parent().attr("name");
-            var kind = $(selectedEvent).parent().attr("kind");
-            var form = $('<form action="test-'+kind+'-event.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="name" value="'+name+'"></form>');
+            var form = $('<form action="../../index.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="name" value="'+name+'"></form>');
             
             $("body").append(form);
             form.submit();
@@ -39,7 +64,7 @@ $(function(){
         if(selectedEvent){
             var name = $(selectedEvent).parent().attr("name");
             var scene = $("#title").text();
-            var form = $('<form action="copy-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
+            var form = $('<form action="create-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="copying" value="true"></form>');
             
             $("body").append(form);
             form.submit();
@@ -98,7 +123,7 @@ $(function(){
     
     //Fill the events array
     var ev = $("#show-events").children();
-    for(var i=0;i<ev.length;i++){
+    for(var i=1;i<ev.length;i++){
         events.push({name:$(ev[i]).attr("name"),desc:$(ev[i]).attr("desc"),kind:$(ev[i]).attr("kind")});
     }
     //Default to top item being selected

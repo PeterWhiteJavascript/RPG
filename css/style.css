@@ -46,7 +46,11 @@ body {
     top:50px;
     left:10px;
 }
-
+#back-button3{
+    position:absolute;
+    top:90px;
+    left:10px;
+}
 
 #dialogue-cont{
     width:100%;

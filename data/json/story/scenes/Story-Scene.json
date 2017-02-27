@@ -2,13 +2,19 @@
     "name": "Story-Scene",
     "desc": "A test for the story scene.",
     "eventOrder": [
-        "Full-Testf",
-        "The-player-starts-his-journey!",
-        "Test-Battle-Scene",
-        "Battle-Scene",
-        "Test-battle-scenea",
-        "Testing-Battle-SCENE",
         "Integer-Test",
-        "New-testing-battle-scene"
+        "Test-battle-scenea",
+        "The-player-starts-his-journey!",
+        "Battle-Scene",
+        "New-testing-battle-scene",
+        "Full-Testf",
+        "zxc",
+        "batvartest"
+    ],
+    "vrs": [
+        {
+            "name": "TestingVar",
+            "val": "5"
+        }
     ]
 }

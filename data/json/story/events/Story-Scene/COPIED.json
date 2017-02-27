@@ -1,6 +1,6 @@
 {
-    "name": "Full-Testf",
-    "desc": "f",
+    "name": "COPIED",
+    "desc": "sdfsdfsd",
     "kind": "story",
     "vrs": [
         {
@@ -26,9 +26,9 @@
                                 [
                                     "checkVar",
                                     {
-                                        "scope": "scene",
-                                        "vr": "TestingVar",
-                                        "vl": "5"
+                                        "scope": "event",
+                                        "vr": "Hi",
+                                        "vl": "1"
                                     }
                                 ]
                             ],
@@ -59,9 +59,9 @@
                         [
                             "setVar",
                             {
-                                "scope": "scene",
-                                "vr": "TestingVar",
-                                "vl": "5"
+                                "scope": "event",
+                                "vr": "Hi",
+                                "vl": "2"
                             }
                         ]
                     ]

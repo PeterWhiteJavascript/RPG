@@ -24,7 +24,7 @@ if (file_put_contents($directory.'/'.$name."(".$num.")".'.json', $json)){
     //Add the file to the order
     $sceneData = json_decode(file_get_contents("../../data/json/story/scenes/".$scene.'.json'), true);
     $sceneData['eventOrder'][] = $name."(".$num.")";
-    file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData));
+    file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData,JSON_PRETTY_PRINT));
 } else {
     echo "Oops! Error creating json file...";
 }

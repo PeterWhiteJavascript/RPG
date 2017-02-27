@@ -1,6 +1,3 @@
-//To do:
-//When adding a new page, the game must be saved before it works properly.
-
 $(function(){
     //In charge of dynamic content
     var DC = {
@@ -19,7 +16,7 @@ $(function(){
                 this.addPage(p.name,p.music,p.bg,p.text,p.choices,p.onload);
             }
             //Create a page if there is not one
-            if(!pages.length) this.addPage();
+            if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[]);
             this.selectPage(0);
         },
         //Store properties here that track the current page, choice, etc...
@@ -37,11 +34,11 @@ $(function(){
             descText:$("#text-select").children("textarea").first(),
             onloadCont:$("#onload").children("ul").first(),
             choicesCont:$("#choices").children("ul").first(),
-            //Contains event variables
-            vars:[],
-            //Contains event pages
-            pages:[],
-            uniquePages:1
+            
+            uniquePages:1,
+            globalVars:JSON.parse($("#global-vars").attr("value")),
+            sceneVars:JSON.parse($("#scene-vars").attr("value"))
+                    
         },
         //Adds a var to the list
         addVar:function(name,val){
@@ -383,19 +380,23 @@ $(function(){
             return opts;
         },
         varOptions:function(scope){
+            var vars;
             switch(scope){
                 case "event":
-                    var vars = this.getVars();
-                    var opts = '';
-                    for(var i=0;i<vars.length;i++){
-                        opts+='<option value="'+vars[i].name+'">'+vars[i].name+'</option>';
-                    }
-                    return opts;
+                    vars = this.getVars();
+                    break;
                 case "scene":
-                    return;
+                    vars = this.p.sceneVars;
+                    break;
                 case "global":
-                    return;
+                    vars = this.p.globalVars;
+                    break;
             }
+            var opts = '';
+            for(var i=0;i<vars.length;i++){
+                opts+='<option value="'+vars[i].name+'">'+vars[i].name+'</option>';
+            }
+            return opts;
         },
         sceneOptions:function(){
             var opts = '';
@@ -468,6 +469,8 @@ $(function(){
             var spObj = DC.getSelectedPage();
             $(spObj).find(':first-child').trigger("change");
             DC.selectPage(clickedIdx);
+            $("#music-select select").trigger("change");
+            $("#bg-select select").trigger("change");
         }
     });
     

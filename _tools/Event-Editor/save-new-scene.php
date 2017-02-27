@@ -14,7 +14,8 @@ if (in_array($name.'.json', $scanned_directory)) {
     $newFile = [
         'name' => $name,
         'desc' => $desc,
-        'eventOrder' => []
+        'eventOrder' => [],
+        'vrs' => []
        ];
 
     // encode array to json

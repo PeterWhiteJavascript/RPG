@@ -116,23 +116,46 @@ Quintus.UIObjects=function(Q){
         },
         condFuncs:{
             checkVar:function(t,obj){
-                for(var i=0;i<t.p.vrs.length;i++){
-                    if(t.p.vrs[i].name===obj.vr){
-                        if(t.p.vrs[i].val===obj.vl){
+                var vars;
+                switch(obj.scope){
+                    case "event":
+                        var vars = t.p.vrs;
+                        break;
+                    case "scene":
+                        var vars = Q.state.get("sceneVars");
+                        break;
+                    case "global":
+                        var vars = Q.state.get("globalVars");
+                        break;
+                }
+                for(var i=0;i<vars.length;i++){
+                    if(vars[i].name===obj.vr){
+                        if(vars[i].val===obj.vl){
                             return true;
                         } else {
                             return false;
                         }
                     }
                 }
-                
             }
         },
         effectFuncs:{
             setVar:function(t,obj){
-                for(var i=0;i<t.p.vrs.length;i++){
-                    if(t.p.vrs[i].name===obj.vr){
-                        t.p.vrs[i].val = obj.vl;
+                var vars;
+                switch(obj.scope){
+                    case "event":
+                        var vars = t.p.vrs;
+                        break;
+                    case "scene":
+                        var vars = Q.state.get("sceneVars");
+                        break;
+                    case "global":
+                        var vars = Q.state.get("globalVars");
+                        break;
+                }
+                for(var i=0;i<vars.length;i++){
+                    if(vars[i].name===obj.vr){
+                        vars[i].val = obj.vl;
                     }
                 }
             },

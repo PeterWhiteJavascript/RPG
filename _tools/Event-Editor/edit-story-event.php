@@ -26,6 +26,9 @@ foreach($scenes as $key => $val){
     }
     $eventsJSON->$val=$ev;
 }
+$globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true)['vrs'];
+
+$sceneVars = json_decode(file_get_contents('../../data/json/story/scenes/'.$scene.'.json'), true)['vrs'];
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +37,8 @@ foreach($scenes as $key => $val){
         <?php include 'config.php';?>
     </head>
     <body>
+        <div id="global-vars" value='<?php echo json_encode($globalVars); ?>'></div>
+        <div id="scene-vars" value='<?php echo json_encode($sceneVars); ?>'></div>
         <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>

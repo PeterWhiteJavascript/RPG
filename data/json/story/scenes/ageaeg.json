@@ -1,7 +1,6 @@
 {
     "name": "ageaeg",
     "desc": "eag",
-    "eventOrder": [
-        "ASD"
-    ]
+    "eventOrder": [],
+    "vrs": []
 }

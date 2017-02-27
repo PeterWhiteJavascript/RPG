@@ -11,7 +11,7 @@ if (($key = array_search($name, $sceneData['eventOrder'])) !== false) {
     unset($sceneData['eventOrder'][$key]);
 }
 
-file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData));
+file_put_contents("../../data/json/story/scenes/".$scene.'.json', json_encode($sceneData,JSON_PRETTY_PRINT));
 
 ?>
 <!DOCTYPE html>

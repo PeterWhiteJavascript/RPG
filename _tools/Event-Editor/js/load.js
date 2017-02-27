@@ -53,6 +53,11 @@ $(function(){
     //Default to top item being selected
     $(".scene-button").first().trigger("click");
     
+    $('#edit-vars').click( function(e) {
+        var form = $('<form action="edit-vars.php" method="post"></form>');
+        $("body").append(form);
+        form.submit();
+    });
 });
 
 

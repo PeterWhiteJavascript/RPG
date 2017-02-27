@@ -337,8 +337,7 @@
             "onload": []
         }
     ],
-    "vrs": {
-        "wentLeft": "0",
-        "didIt": "1"
-    }
+    "vrs": [
+        {"name" :"wentLeft","val":"0"}
+    ]
 }

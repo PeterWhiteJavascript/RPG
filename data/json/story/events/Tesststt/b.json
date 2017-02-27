@@ -1,0 +1,50 @@
+{
+    "name": "b",
+    "desc": "kjuh",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [
+        {
+            "func": "setView",
+            "props": [
+                1
+            ]
+        },
+        {
+            "text": [
+                "uyg"
+            ],
+            "asset": [
+                "story\/empty.png",
+                "story\/empty.png"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
+            "noCycle": "No"
+        }
+    ],
+    "characters": [
+        {
+            "name": "",
+            "locX": "0",
+            "locY": "0",
+            "level": 0,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                14,
+                9
+            ],
+            "storyId": 1
+        }
+    ],
+    "music": "",
+    "map": "battle_balance1.tmx"
+}

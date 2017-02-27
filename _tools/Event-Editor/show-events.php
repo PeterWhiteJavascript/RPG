@@ -27,6 +27,7 @@ forEach($order as $name){
             <div id="title"><h1><?php echo $scene; ?></h1></div>
             <div id="content">
                 <ul id="show-events" class="menu left">
+                    <li><h2>Events</h2></li>
                     <?php
                     foreach($sorted as $file) {
                         $data = json_decode(file_get_contents($directory.'/'.$file), true);
@@ -41,8 +42,10 @@ forEach($order as $name){
                     <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
                     <li><a id="copy-event"><div class="menu-button btn btn-default">Copy Event</div></a></li>
                     <li><a id="order-events"><div class="menu-button btn btn-default">Order Events</div></a></li>
-                    <li><a id="change-scene"><div class="menu-button btn btn-default">Change Scene</div></a></li>
+                    <li><a id="change-scene"><div class="menu-button btn btn-default">Change Event's Scene</div></a></li>
                     <li><a id="delete-event"><div class="menu-button btn btn-default">Delete Event</div></a></li>
+                    <br>
+                    <li><a id="edit-vars"><div class="menu-button btn btn-default">Edit Scene Variables</div></a></li>
                 </ul>
                 <div id="footer"><a href="load.php"><div class="menu-button btn btn-default">BACK</div></a></div>
             </div>
