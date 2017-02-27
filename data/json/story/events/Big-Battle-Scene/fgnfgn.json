@@ -1,0 +1,206 @@
+{
+    "name": "fgnfgn",
+    "desc": "fgnfgn",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [
+        {
+            "func": "setView",
+            "props": [
+                1
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                1,
+                [
+                    [
+                        18,
+                        21
+                    ],
+                    [
+                        15,
+                        20
+                    ],
+                    [
+                        15,
+                        14
+                    ],
+                    [
+                        20,
+                        14
+                    ]
+                ],
+                "down",
+                "false"
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                2,
+                [
+                    [
+                        17,
+                        22
+                    ],
+                    [
+                        24,
+                        21
+                    ],
+                    [
+                        24,
+                        15
+                    ],
+                    [
+                        18,
+                        15
+                    ]
+                ],
+                "right",
+                "true"
+            ]
+        },
+        {
+            "text": [
+                "Hello"
+            ],
+            "asset": [
+                "story\/knight.png",
+                "story\/skirm.png"
+            ],
+            "pos": "Left",
+            "autoCycle": 0,
+            "noCycle": "No"
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                2,
+                [
+                    [
+                        15,
+                        15
+                    ],
+                    [
+                        15,
+                        18
+                    ],
+                    [
+                        16,
+                        18
+                    ]
+                ],
+                "left",
+                "false"
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                1,
+                [
+                    [
+                        18,
+                        17
+                    ]
+                ],
+                "up",
+                "true"
+            ]
+        },
+        {
+            "func": "changeDir",
+            "props": [
+                1,
+                "down"
+            ]
+        },
+        {
+            "func": "fadeChar",
+            "props": [
+                1,
+                "out"
+            ]
+        },
+        {
+            "func": "fadeChar",
+            "props": [
+                1,
+                "in"
+            ]
+        },
+        {
+            "func": "changeMusic",
+            "props": [
+                "demo"
+            ]
+        },
+        {
+            "func": "changeMoveSpeed",
+            "props": [
+                1,
+                "0.6"
+            ]
+        },
+        {
+            "func": "moveAlong",
+            "props": [
+                1,
+                [
+                    [
+                        18,
+                        24
+                    ]
+                ],
+                "up",
+                "true"
+            ]
+        }
+    ],
+    "characters": [
+        {
+            "name": "adsfadf",
+            "locX": "21",
+            "locY": "20",
+            "level": 0,
+            "nationality": "Nomadic",
+            "charClass": "Berserker",
+            "gender": "Female",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                18,
+                29
+            ],
+            "storyId": 1
+        },
+        {
+            "name": "adsfadfsdfsdfsdf",
+            "locX": "17",
+            "locY": "29",
+            "level": 0,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                17,
+                29
+            ],
+            "storyId": 2
+        }
+    ],
+    "music": "",
+    "map": "demo0.tmx"
+}

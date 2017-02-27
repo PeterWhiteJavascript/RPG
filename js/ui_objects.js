@@ -6,9 +6,10 @@ Quintus.UIObjects=function(Q){
             //Check if something happens before doing the default change page
             //Will be true if all conditions are met
             //Loop through each group
-            for(var i=0;i<Q.storyController.p.choice.group.length;i++){
-                if(Q.storyController.checkConds(Q.storyController.p.choice.group[i].cond)){
-                    Q.storyController.executeEffects(Q.storyController.p.choice.group[i].effect);
+            var len = Q.storyController.p.choice.groups.length;
+            for(var i=0;i<len;i++){
+                if(Q.storyController.checkConds(Q.storyController.p.choice.groups[i].conds)){
+                    Q.storyController.executeEffects(Q.storyController.p.choice.groups[i].effects);
                 }
             }
             var choice = Q.storyController.p.choice;
@@ -42,8 +43,8 @@ Quintus.UIObjects=function(Q){
             //Do the onload conditions/effects
             for(var i=0;i<page.onload.length;i++){
                 var on = page.onload[i];
-                if(this.checkConds(on.cond)){
-                    this.executeEffects(on.effect);
+                if(this.checkConds(on.conds)){
+                    this.executeEffects(on.effects);
                 };
             }
             //Make the background correct
@@ -115,17 +116,28 @@ Quintus.UIObjects=function(Q){
         },
         condFuncs:{
             checkVar:function(t,obj){
-                if(t.p.vrs[obj.vr]===obj.vl){
-                    return true;
+                for(var i=0;i<t.p.vrs.length;i++){
+                    if(t.p.vrs[i].name===obj.vr){
+                        if(t.p.vrs[i].val===obj.vl){
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
                 }
+                
             }
         },
         effectFuncs:{
             setVar:function(t,obj){
-                t.p.vrs[obj.vr] = obj.vl;
+                for(var i=0;i<t.p.vrs.length;i++){
+                    if(t.p.vrs[i].name===obj.vr){
+                        t.p.vrs[i].val = obj.vl;
+                    }
+                }
             },
             changePage:function(t,obj){
-                t.p.choice = obj;
+                t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];
             },
             enableChoice:function(t,obj){
                 //Find the page choice and enable it.

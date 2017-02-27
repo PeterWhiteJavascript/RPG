@@ -3,50 +3,10 @@ include("php-config.php");
 $name = addDashes($_POST['name']);
 $scene = addDashes($_POST['scene']);
 
-
-$pagesid = $_POST['pagesid'];
-$pagesname = $_POST['pagesname'];
-$music = $_POST['music'];
-$bg = $_POST['bg'];
-$text = $_POST['text'];
-$choices = json_decode($_POST['choices'],true);
-$onloads = json_decode($_POST['onloads'],true);
-
-if(isset($_POST['varnames'])){
-    $varnames = $_POST['varnames'];
-    $varvalues = $_POST['varvalues'];
-    $vrs = (object)[];
-    for($i=0;$i<count($varnames);$i++){
-        $vrs->$varnames[$i] = $varvalues[$i];
-    }
-} else {
-    $vrs = (object)[];
-}
-$pages = [];
-for($i=0;$i<count($pagesid);$i++){
-    $pages[$i] = (object)[
-        'name' => $pagesname[$i],
-        'music' => $music[$i],
-        'bg' => $bg[$i],
-        'text' => $text[$i],
-        'choices' => (object)[],
-        'onload' => $onloads[$i]
-    ];
-    if(isset($choices[$pagesid[$i]])){
-        $pages[$i]->choices = $choices[$pagesid[$i]];
-    } else {
-        $pages[$i]->choices[] = (object)[
-            'displayText' => "",
-            'desc' => "",
-            'page' => "",
-            'effect' => ""
-        ];
-    }
-}
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
-$file['vrs'] = $vrs;
-$file['pages'] = $pages;
+$file['vrs'] = json_decode($_POST['vrs']);
+$file['pages'] = json_decode($_POST['pages']);
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 
 ?>

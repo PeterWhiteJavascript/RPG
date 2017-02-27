@@ -229,7 +229,7 @@ Q.UI.Text.extend("Number",{
         });
     }
 });
-//Each function within the array is in charge of a single prop value
+
 var setUpFuncs = {
     setView:[
         function(val){
@@ -513,7 +513,7 @@ var setUpFuncs = {
     ],*/
     waitTime:[
         function(val){
-            $("#back-to-func-selection").before("<div class='editor-item'><span>Wait time (in milliseconds) </span><input type='number' min='1' id='waiting-time' class='script-func' value='1000'></input></div>");
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Wait time (in milliseconds) </span><input type='number' min='1' id='waiting-time' class='script-func' value='1000'></div>");
             if(val!==undefined){
                 $("#waiting-time").val(parseInt(val[0]));
                 $("#waiting-time").on("change",function(){
@@ -606,7 +606,7 @@ var setUpFuncs = {
         },
         //Type a movement speed
         function(val){
-            $("#back-to-func-selection").before("<div class='editor-item'><span>Movement Speed </span><input type='number' step='0.01' min='0.01' id='move-speed' class='script-func' value='0.30'></input></div>");
+            $("#back-to-func-selection").before("<div class='editor-item'><span>Movement Speed </span><input type='number' step='0.01' min='0.01' id='move-speed' class='script-func' value='0.30'></div>");
             if(val!==undefined){
                 $("#move-speed").val(parseFloat(val[1]).toFixed(2));
                 $("#move-speed").on("change",function(){
@@ -771,7 +771,7 @@ var appendTextOptions = function(obj){
     $(cont).append('<li><span>Left Asset</span><select id="script-asset1" class="new-script-item"></select><img class="new-script-img"></li>');
     $(cont).append('<li><span>Right Asset</span><select id="script-asset2" class="new-script-item"></select><img class="new-script-img"></li>');
     $(cont).append('<li><span>Scroll From: </span><button id="script-pos" class="new-script-item">'+data.pos+'</button></li>');
-    $(cont).append('<li><span>Auto Cycle After Number of Frames</span><input id="script-autoCycle" class="new-script-item" value="'+data.autoCycle+'" type="number"></input></li>');
+    $(cont).append('<li><span>Auto Cycle After Number of Frames</span><input id="script-autoCycle" class="new-script-item" value="'+data.autoCycle+'" type="number"></li>');
     $(cont).append('<li><span>Disable Cycle: </span><button id="script-noCycle" class="new-script-item">'+data.noCycle+'</button></li>');
     $(cont).append('<li><a id="add-to-script" class="menu-button btn btn-default">Add to Script</a></li>');
     $(cont).append('<li><a id="clear-values" class="menu-button btn btn-default">Clear Values</a></li>');
@@ -837,7 +837,6 @@ $(document).on("click",".remove-choice",function(e){
     
     removeOptions();
     appendMainOptions();
-    
 });
 
 $(document).on("click","#clear-values",function(e){
@@ -926,7 +925,7 @@ var createSaveForm = function(form){
         }
     });
     var json = JSON.stringify(scriptData, null, 2);
-    form.append("<input type='text' name='battleScene' value='"+json+"'></input>");
+    form.append("<input type='text' name='battleScene' value='"+json+"'>");
     return form;
 };
 $(document).on("click","#save-scene",function(e){
