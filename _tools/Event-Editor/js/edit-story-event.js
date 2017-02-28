@@ -13,7 +13,7 @@ $(function(){
             //Create the pages
             for(var i=0;i<pages.length;i++){
                 var p = pages[i];
-                this.addPage(p.name,p.music,p.bg,p.text,p.choices,p.onload);
+                this.addPage(decodeURI(p.name),p.music,p.bg,p.text,p.choices,p.onload);
             }
             //Create a page if there is not one
             if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[]);
@@ -50,7 +50,7 @@ $(function(){
         },
         //Adds a page to the list
         addPage:function(name,music,bg,text,choices,onload){
-            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+(text)+"' choices='"+JSON.stringify(choices)+"' onload='"+JSON.stringify(onload)+"'><div class='page-button menu-button btn btn-default'>"+(name)+"</div></li>");
+            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+decodeURI(text.replace(/'/g, "&#39;"))+"' choices="+JSON.stringify(choices)+" onload="+JSON.stringify(onload)+"><div class='page-button menu-button btn btn-default'>"+name+"</div></li>");
             this.p.uniquePages++;
         },
         //Removes a page from the list
@@ -293,7 +293,7 @@ $(function(){
         //Sets all of the pages and vrs for saving
         setSaveData:function(form){
             //Get all of the variables
-            form.append("<input type='text' name='vrs' value='"+JSON.stringify(this.getVars(),null,2)+"'>");
+            form.append("<input type='text' name='vrs' value="+JSON.stringify(this.getVars())+">");
             //Get all of the pages
             var pages = [];
             $(this.p.pagesCont).children(".page").each(function(idx,itm){
@@ -306,7 +306,8 @@ $(function(){
                     onload:JSON.parse($(itm).attr("onload"))
                 });
             });
-            form.append("<input type='text' name='pages' value='"+JSON.stringify(pages,null,2)+"'>");
+            var json = JSON.stringify(pages).trim().replace(/ /g, '%20');
+            form.append("<input type='text' name='pages' value="+json+">");
             form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
             form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
             return form;

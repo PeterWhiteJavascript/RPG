@@ -165,20 +165,44 @@
             "storyId": 3
         },
         {
-            "name": "",
+            "name": "a",
             "level": 1,
             "nationality": "Venorian",
             "charClass": "Legionnaire",
             "gender": "Male",
             "value": "",
             "methodology": "",
-            "personality": "",
+            "personality": "Sensitive",
             "team": "Enemy",
             "loc": [
                 15,
                 16
             ],
-            "storyId": 4
+            "storyId": 4,
+            "locX": "15",
+            "locY": "16",
+            "dir": "right",
+            "hidden": "show"
+        },
+        {
+            "name": "a",
+            "locX": "22",
+            "locY": "22",
+            "level": 1,
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "gender": "Male",
+            "value": "",
+            "methodology": "",
+            "personality": "Sensitive",
+            "team": "Enemy",
+            "dir": "right",
+            "hidden": "show",
+            "loc": [
+                23,
+                22
+            ],
+            "storyId": 6
         }
     ],
     "music": "",

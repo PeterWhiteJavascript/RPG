@@ -14,12 +14,10 @@ $(function(){
     });
     
     $('#edit-vars').click( function(e) {
-        if(selectedEvent){
-            var scene = $("#title").text();
-            var form = $('<form action="edit-vars.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
-            $("body").append(form);
-            form.submit();
-        }
+        var scene = $("#title").text();
+        var form = $('<form action="edit-vars.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        $("body").append(form);
+        form.submit();
     });
     
     $('#edit-event').click( function(e) {

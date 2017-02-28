@@ -60,7 +60,7 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
                         $num = strlen($text[0]);
                         if($num>19){ $num=19;}
                         $displayText = substr($text[0], 0, $num);
-                        echo "<li text='".json_encode($text)."' asset='".json_encode($scriptItem['asset'])."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
+                        echo "<li text=".json_encode($text)." asset='".json_encode($scriptItem['asset'])."' pos='".$scriptItem['pos']."' autoCycle='".$scriptItem['autoCycle']."' noCycle='".$scriptItem['noCycle']."'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     } else {
                         echo "<li func='".$scriptItem['func']."' props='".json_encode($scriptItem['props'])."'><div class='text-or-func'>Func</div><a class='script-item func btn btn-default'>".$scriptItem['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
                     }

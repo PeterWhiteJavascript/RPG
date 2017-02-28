@@ -1,0 +1,22 @@
+{
+    "name": "sTORY",
+    "desc": "h",
+    "kind": "story",
+    "vrs": [
+        {
+            "name": "asd",
+            "val": "6"
+        }
+    ],
+    "pages": [
+        {
+            "name": "Page%201",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "'sdfsdfsdf%20dfs%20sdf%20sd%20a%20wawf%20aw%20''sdgs'%20eaf'",
+            "choices": [],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

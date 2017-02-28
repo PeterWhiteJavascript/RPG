@@ -367,7 +367,7 @@ Quintus.UIObjects=function(Q){
             return true;
         },
         //Modifies the dialogue box from a set of options
-        modDialogueBox:function(display){
+        modDialogueBox:function(display){console.log(display)
             if(display==="hide"){
                 $(this.p.container).css("display","none");
             } else if(display==="show"){
@@ -397,8 +397,6 @@ Quintus.UIObjects=function(Q){
         centerView:function(obj,speed){
             this.p.cantCycle = true;
             this.p.noCycle = true;
-            //Hide the dialogue box
-            this.modDialogueBox("hide");
             
             //Set the viewsprite to the current object that the viewport is following
             var spr = Q.stage(0).viewSprite;
@@ -409,7 +407,6 @@ Quintus.UIObjects=function(Q){
                 var pos = Q.BatCon.getXY(obj);
                 spr.animate({x:pos.x,y:pos.y},1,Q.Easing.Quadratic.InOut,{callback:function(){
                     t.forceCycle();
-                    t.showDialogueBox();
                 }});
             } 
             //Follow object (passed in id number)

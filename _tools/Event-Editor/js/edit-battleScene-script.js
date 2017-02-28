@@ -860,7 +860,7 @@ $(document).on("click","#add-to-script",function(e){
     var noCycle = $("#script-noCycle").text();
     var scCont = $("#script-menu");
     var displayText = textArr[0].slice(0,19);
-    $(scCont).append("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(scCont).append("<li text="+JSON.stringify(textArr)+" asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
 });
 
 var saveFuncScriptItem = function(){
@@ -880,7 +880,7 @@ var saveScriptText = function(){
     var noCycle = $("#script-noCycle").text();
     var displayText = textArr[0].slice(0,19);
     $(".selected-fill").parent().remove();
-    $("#script-menu > li:nth-child("+idx+")").after("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default selected-fill'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $("#script-menu > li:nth-child("+idx+")").after("<li text="+JSON.stringify(textArr)+" asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default selected-fill'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
     
 };
 $(document).on("click",".script-item",function(e){
@@ -919,13 +919,19 @@ var createSaveForm = function(form){
         var type = $(itm).children(".script-item").attr("class").split(" ")[1];
         
         if(type==="text"){
-            scriptData.push({text:JSON.parse($(itm).attr("text")),asset:JSON.parse($(itm).attr("asset")),pos:$(itm).attr("pos"),autoCycle:parseInt($(itm).attr("autoCycle")),noCycle:$(itm).attr("noCycle")});
+            scriptData.push({
+                text:JSON.parse($(itm).attr("text")),
+                asset:JSON.parse($(itm).attr("asset")),
+                pos:$(itm).attr("pos"),
+                autoCycle:parseInt($(itm).attr("autoCycle")),
+                noCycle:$(itm).attr("noCycle")
+            });
         } else if(type==="func"){
             scriptData.push({func:$(itm).attr("func"),props:JSON.parse($(itm).attr("props"))});
         }
     });
-    var json = JSON.stringify(scriptData, null, 2);
-    form.append("<input type='text' name='battleScene' value='"+json+"'>");
+    var json = JSON.stringify(scriptData);
+    form.append("<input type='text' name='battleScene' value="+json+">");
     return form;
 };
 $(document).on("click","#save-scene",function(e){

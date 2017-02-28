@@ -5,7 +5,6 @@ $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/
 if(isset($_POST['battleScene'])){
     $event['scene'] = json_decode($_POST['battleScene']);
 }
-
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
 ?>
 

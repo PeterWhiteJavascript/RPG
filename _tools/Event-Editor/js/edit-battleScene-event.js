@@ -115,12 +115,14 @@ Q.Sprite.extend("CharacterSprite",{
         if(Q.inputs['left']){
             if(this.p.loc[0]>0){
                 this.p.loc[0]--;
+                this.p.save.loc[0]--;
                 this.trigger("move");
             }
             Q.inputs['left'] = false;
         } else if(Q.inputs['right']){
             if(this.p.loc[0]<Q.stage(0).mapWidth){
                 this.p.loc[0]++;
+                this.p.save.loc[0]++;
                 this.trigger("move");
             }
             Q.inputs['right'] = false;
@@ -128,12 +130,14 @@ Q.Sprite.extend("CharacterSprite",{
         if(Q.inputs['up']){
             if(this.p.loc[1]>0){
                 this.p.loc[1]--;
+                this.p.save.loc[1]--;
                 this.trigger("move");
             }
             Q.inputs['up'] = false;
         } else if(Q.inputs['down']){
             if(this.p.loc[1]<Q.stage(0).mapHeight){
                 this.p.loc[1]++;
+                this.p.save.loc[1]++;
                 this.trigger("move");
             }
             Q.inputs['down'] = false;
@@ -169,7 +173,7 @@ var objFuncs = {
             if(currentCharacter.charClass==="") cl = Q.state.get("ng").classNames[Math.floor(Math.random()*Q.state.get("ng").classNames.length)].toLowerCase();
             
             characters.push(currentCharacter);
-            var c = Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:[x,y],storyId:currentCharacter.storyId}));
+            var c = Q.stage(0).insert(new Q.CharacterSprite({x:currentCharacter.loc[0]*Q.tileW+Q.tileW/2,y:currentCharacter.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:[x,y],storyId:currentCharacter.storyId,save:currentCharacter}));
             if(currentCharacter.hidden==="hide") c.p.opacity = 0.5;
             $("#go-back-to-character").trigger("click");
             selectCharacter(currentCharacter);
