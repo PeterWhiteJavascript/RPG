@@ -1,6 +1,6 @@
 {
-    "dagger":{
-        "poke":{
+    "Legionnaire":[
+        {
             "name":"Poke",
             "cost":4,
             "damageLow":5,
@@ -9,7 +9,7 @@
             "desc":"A basic dagger skill.",
             "rank":1
         },
-        "throw":{
+        {
             "name":"Throw",
             "cost":8,
             "damageLow":3,
@@ -18,9 +18,9 @@
             "desc":"A basic throwing skill.",
             "rank":2
         }
-    },
-    "sword":{
-        "stab":{
+    ],
+    "Berserker":[
+        {
             "name":"Stab",
             "cost":4,
             "damageLow":6,
@@ -29,7 +29,7 @@
             "desc":"A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill.",
             "rank":1
         },
-        "slash":{
+        {
             "name":"Slash",
             "cost":6,
             "damageLow":8,
@@ -38,7 +38,7 @@
             "desc":"A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.",
             "rank":2
         },
-        "whirlwind":{
+        {
             "name":"Whirlwind",
             "cost":12,
             "damageLow":5,
@@ -50,7 +50,7 @@
             "desc":"A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A ",
             "rank":3
         },
-        "superwhirlwind":{
+        {
             "name":"Super Whirlwind",
             "cost":22,
             "damageLow":20,
@@ -62,9 +62,9 @@
             "desc":"A basic superwhirlwinding skill.",
             "rank":4
         }
-    },
-    "axe":{
-        "strike":{
+    ],
+    "Vanguard":[
+        {
             "name":"Strike",
             "cost":10,
             "damageLow":10,
@@ -73,10 +73,10 @@
             "desc":"A basic striking skill.",
             "rank":1
         }
-    },
+    ],
     
-    "spear":{
-        "puncture":{
+    "Assassin":[
+        {
             "name":"Puncture",
             "cost":4,
             "damageLow":5,
@@ -85,7 +85,7 @@
             "desc":"A basic puncturing skill.",
             "rank":1
         },
-        "pierce":{
+        {
             "name":"Pierce",
             "cost":6,
             "range":["straight",2],
@@ -98,7 +98,7 @@
             "desc":"A basic piercing skill. This attack hits all units in its path.",
             "rank":2
         },
-        "push":{
+        {
             "name":"Push",
             "cost":10,
             "damageLow":2,
@@ -112,9 +112,9 @@
             "desc":"A basic pushing skill. This attack pushes the target one space.",
             "rank":2
         }
-    },
-    "bow":{
-        "shoot":{
+    ],
+    "Skirmisher":[
+        {
             "name":"Shoot",
             "cost":4,
             "damageLow":3,
@@ -123,7 +123,7 @@
             "desc":"A basic shooting skill.",
             "rank":1
         },
-        "blind":{
+        {
             "name":"Blind",
             "cost":8,
             "range":["normal",3],
@@ -135,7 +135,7 @@
             "desc":"A basic blinding skill.",
             "rank":2
         },
-        "poison":{
+        {
             "name":"Poison",
             "cost":8,
             "range":["normal",3],
@@ -147,7 +147,7 @@
             "desc":"A basic poisoning skill.",
             "rank":2
         },
-        "holdback":{
+        {
             "name":"Hold Back",
             "cost":2,
             "range":["normal",6],
@@ -158,7 +158,7 @@
             "rank":3
         },
         
-        "crosshair":{
+        {
             "name":"Crosshair",
             "cost":15,
             "damageLow":5,
@@ -168,7 +168,7 @@
             "desc":"A basic crosshair skill.",
             "rank":4
         },
-        "sonicboom":{
+        {
             "name":"Sonic Boom!",
             "cost":20,
             "damageLow":999,
@@ -180,9 +180,9 @@
             "desc":"A basic sonicbooming skill.",
             "rank":5
         }
-    },
-    "shield":{
-        "defend":{
+    ],
+    "Archer":[
+        {
             "name":"Defend",
             "cost":3,
             "range":["self",0],
@@ -194,7 +194,7 @@
             "desc":"A basic defending skill.",
             "rank":1
         },
-        "firstAid":{
+        {
             "name":"First Aid",
             "cost":1,
             "range":["normal",1],
@@ -206,7 +206,7 @@
             "desc":"Heals 20 hp to a target.",
             "rank":1
         },
-        "protect":{
+        {
             "name":"Protect",
             "cost":8,
             "range":["self",0],
@@ -220,7 +220,7 @@
             "desc":"A basic protecting skill.",
             "rank":2
         },
-        "secondAid":{
+        {
             "name":"Second Aid",
             "cost":1,
             "range":["normal",1],
@@ -232,7 +232,7 @@
             "desc":"Heals 40 hp to a target.",
             "rank":2
         },
-        "totaldefense":{
+        {
             "name":"Total Defense",
             "cost":13,
             "range":["self",0],
@@ -246,7 +246,7 @@
             "desc":"A basic totaldefensing skill.",
             "rank":3
         },
-        "thirdAid":{
+        {
             "name":"Third Aid",
             "cost":1,
             "range":["normal",1],
@@ -258,6 +258,15 @@
             "desc":"Heals 75 hp to a target.",
             "rank":3
         }
-    }
-    
+    ],
+    "Illusionist":[
+        
+    ],
+    "Elementalist":[
+        
+    ],
+    "Healer":[
+        
+    ] 
+   
 }

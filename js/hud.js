@@ -567,10 +567,10 @@ Quintus.HUD=function(Q){
             //Create the bottom middle box which contains the range, zoc, and exp
             cont.insert(new Q.BigOverviewBox3({target:this.p.target,x:width/3+spacing/2,w:width/3-spacing,h:this.p.h/3-spacing,y:this.p.h/1.5}));
             //Create the rightmost box that contains the str, end, dex, wsk, and rfl.
-            cont.insert(new Q.BigOverviewBox4({target:this.p.target,x:width/3*2,w:width/3-spacing,h:this.p.h/2-spacing*2,y:spacing}));
+            cont.insert(new Q.BigOverviewBox4({target:this.p.target,x:width/3*2,w:width/3-spacing,h:this.p.h-spacing*2,y:spacing}));
         },
         showSkills:function(){
-            this.on("pressConfirm",this,"selectSkills");
+           /* this.on("pressConfirm",this,"selectSkills");
             var cont = this.p.infoCont;
             var width = cont.p.w;
             var spacing = 10;
@@ -582,7 +582,7 @@ Quintus.HUD=function(Q){
             this.p.box3 = cont.insert(new Q.BigSkillsBox({x:width/3*2,w:width/3-spacing,h:this.p.h-spacing*2-100,y:spacing,bigStatusMenu:this.p.bigStatusMenu,target:this.p.target,box:this,skills:["bow","shield"],skillNames:["Bow","Shield"]}));
             //The bottom description box
             this.p.bigSkillsDescBox = cont.insert(new Q.BigSkillsDescBox({x:10,y:this.p.h-spacing-100,w:width-spacing*2,h:100}));
-            this.p.bigSkillsDescBox.hide();
+            this.p.bigSkillsDescBox.hide();*/
         },
         showStatus:function(){
             this.on("pressConfirm",this,"selectStatus");
@@ -916,15 +916,15 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
-            var top = [target.p.name,"Lv. "+target.p.level,target.p.className];
+            var top = [target.name,"Lv. "+target.level,target.charClass];
             for(var i=0;i<top.length;i++){
                 this.insert(new Q.UI.Text({label:""+top[i],align:"center",x:this.p.w/2,y:20+35*i}));
             }
             var portraitCont = this.insert(new Q.UI.Container({cx:0,cy:0,x:this.p.w/6,y:this.p.h/2-30-75,w:this.p.w/1.5,h:150,fill:"red",radius:75}));
-            var portrait = portraitCont.insert(new Q.Sprite({sheet:target.p.charClass,sprite:"Character",x:portraitCont.p.w/2,y:portraitCont.p.h/2+20,scale:2}));
+            var portrait = portraitCont.insert(new Q.Sprite({sheet:target.charClass.toLowerCase(),sprite:"Character",x:portraitCont.p.w/2,y:portraitCont.p.h/2+20,scale:2}));
             portrait.add("animation");
             portrait.play("standingdown");
-            var eq = target.p.equipment;
+            var eq = target.equipment;
             var keys = Object.keys(eq);
             for(var i=0;i<keys.length;i++){
                 //If the target has equipment here
@@ -947,8 +947,8 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
-            var labels = ["HP","SP","DmgLo","DmgHi","Speed","Strike","Parry","CrtCh","Armour"];
-            var stats = [target.p.maxHp+"/"+target.p.hp,target.p.maxSp+"/"+target.p.sp,target.p.totalDamageLow,target.p.totalDamageHigh,target.p.totalSpeed,target.p.strike,target.p.parry,target.p.criticalChance,target.p.armour];
+            var labels = ["HP","TP","Speed","CrtCh","Defense"];
+            var stats = [target.combatStats.maxHp+"/"+target.combatStats.hp,target.combatStats.maxTp+"/"+target.combatStats.tp,target.combatStats.moveSpeed,target.combatStats.criticalChance,target.combatStats.defense];
             for(var i=0;i<labels.length;i++){
                 this.insert(new Q.UI.Text({label:labels[i],x:5,y:8+i*35,size:18,cx:0,cy:0,align:"left"}));
                 this.insert(new Q.UI.Text({label:""+stats[i],x:this.p.w-5,y:8+i*35,align:"right",size:18,cx:0,cy:0}));
@@ -969,7 +969,7 @@ Quintus.HUD=function(Q){
         inserted:function(){
             var target = this.p.target;
             var labels = ["Range","ZOC","Exp."];
-            var stats = [target.p.range,target.p.zoc,target.p.exp];
+            var stats = [target.combatStats.range,target.combatStats.zoc,target.exp];
             for(var i=0;i<labels.length;i++){
                 this.insert(new Q.UI.Text({label:labels[i],x:5,y:30+i*35,size:18,cx:0,cy:0,align:"left"}));
                 this.insert(new Q.UI.Text({label:""+stats[i],x:this.p.w-5,y:30+i*35,align:"right",size:18,cx:0,cy:0}));
@@ -988,9 +988,8 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
-            var st = target.p.stats;
-            var labels = ["STR","END","DEX","WSK","RFL"];
-            var stats = [st.str,st.end,st.dex,st.wsk,st.rfl];
+            var labels = ["STR","END","DEX","WSK","RFL","INI","ENR","SKL","EFF"];
+            var stats = [target.baseStats.str,target.baseStats.end,target.baseStats.dex,target.baseStats.wsk,target.baseStats.rfl,target.baseStats.ini,target.baseStats.enr,target.baseStats.skl,target.baseStats.eff];
             for(var i=0;i<labels.length;i++){
                 this.insert(new Q.UI.Text({label:labels[i],x:5,y:30+i*35,size:18,cx:0,cy:0,align:"left"}));
                 this.insert(new Q.UI.Text({label:""+stats[i],x:this.p.w-5,y:30+i*35,align:"right",size:18,cx:0,cy:0}));
@@ -1027,7 +1026,7 @@ Quintus.HUD=function(Q){
                 h:30,
                 cx:0,cy:0,
                 options:[["Overview","Skills","Status","Awards"]],
-                funcs:[["showOverview","showSkills","showStatus","showAwards"]],
+                funcs:[["showOverview"/*,"showSkills"*/,"showStatus","showAwards"]],
                 conts:[]
             });
             this.p.y-=this.p.h;

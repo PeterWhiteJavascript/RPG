@@ -1,0 +1,59 @@
+{
+    "characters":{
+        "story":[
+            
+        ],
+        "rand":[
+            
+        ]
+    },
+    "inventory":{
+        "consumable":[
+            
+        ],
+        "weapon":[
+            ["woodenSword",1]
+        ],
+        "shield":[
+            
+        ],
+        "body":[
+            
+        ],
+        "feet":[
+            ["leatherShoes",1]
+        ],
+        "accessory":[
+            
+        ],
+        "key":[
+            
+        ]
+    },
+    "money":2000,
+    "week":0,
+    "relations":{
+        "venoriae":[50,50],
+        "dardoine":[50,50],
+        "aljudramil":[50,50],
+        "nomads":[50,50],
+        "talumpatua":[50,50]
+    },
+    
+    "options":{
+        "musicEnabled":false,
+        "musicVolume":20,
+        "soundEnabled":true,
+        "soundVolume":100,
+        "textSpeed":3,
+        "autoScroll":true,
+        "cursorSpeed":3,
+        
+        "brightness":100,
+        "damageIndicators":true,
+        "factionHighlighting":true,
+        
+        "tooltips":true
+    }
+    
+}

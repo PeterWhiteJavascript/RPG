@@ -13,22 +13,22 @@
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
-        "venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
-        "dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
-        "aliudraman":{"classSpread":[15, 4, 1, 25, 15, 15, 3, 5, 17]},
-        "talumpatuan":{"classSpread":[8, 15, 5, 8, 12, 12, 10, 17, 13]},
-        "nomadic":{"classSpread":[1, 60, 1, 1, 10, 10, 2, 5, 10]}
+        "Venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
+        "Dardoian":{"classSpread":[10, 15, 30, 3, 17, 17, 3, 10, 2]},
+        "Aliudraman":{"classSpread":[15, 4, 1, 25, 15, 15, 3, 5, 17]},
+        "Talumpatuan":{"classSpread":[8, 15, 5, 8, 12, 12, 10, 17, 13]},
+        "Nomadic":{"classSpread":[1, 60, 1, 1, 10, 10, 2, 5, 10]}
     },
     "classes":{
-        "legionnaire":{"gender":[90,50,95,40,60],"value":[[30,40,30],[5,75,20],[20,40,40],[30,30,40],[20,60,20]],"methodology":[[45,30,25],[45,30,25],[45,30,25],[45,30,25],[45,30,25]]},
-        "berserker":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
-        "vanguard":{"gender":[75,40,95,10,60],"value":[[20,50,30],[50,25,25],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[35,35,30],[35,35,30],[35,35,30],[35,35,30],[35,35,30]]},
-        "assassin":{"gender":[60,30,5,80,60],"value":[[25,50,25],[33,34,33],[33,44,23],[30,40,30],[20,60,20]],"methodology":[[90,9,1],[90,9,1],[90,9,1],[90,9,1],[90,9,1]]},
-        "skirmisher":{"gender":[80,50,5,70,60],"value":[[40,30,30],[15,40,45],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[40,40,20],[40,40,20],[40,40,20],[40,40,20],[40,40,20]]},
-        "archer":{"gender":[30,50,5,40,60],"value":[[35,35,30],[33,34,33],[40,30,30],[30,30,40],[20,60,20]],"methodology":[[34,33,33],[34,33,33],[34,33,33],[34,33,33],[34,33,33]]},
-        "illusionist":{"gender":[60,40,40,20,30],"value":[[50,30,20],[50,40,10],[50,40,10],[20,30,50],[20,60,20]],"methodology":[[30,30,40],[30,30,40],[30,30,40],[30,30,40],[30,30,40]]},
-        "elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
-        "healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
+        "Legionnaire":{"gender":[90,50,95,40,60],"value":[[30,40,30],[5,75,20],[20,40,40],[30,30,40],[20,60,20]],"methodology":[[45,30,25],[45,30,25],[45,30,25],[45,30,25],[45,30,25]]},
+        "Berserker":{"gender":[90,60,95,70,80],"value":[[50,30,20],[40,40,20],[30,50,20],[40,30,30],[20,60,20]],"methodology":[[40,45,5],[40,45,5],[40,45,5],[40,45,5],[40,45,5]]},
+        "Vanguard":{"gender":[75,40,95,10,60],"value":[[20,50,30],[50,25,25],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[35,35,30],[35,35,30],[35,35,30],[35,35,30],[35,35,30]]},
+        "Assassin":{"gender":[60,30,5,80,60],"value":[[25,50,25],[33,34,33],[33,44,23],[30,40,30],[20,60,20]],"methodology":[[90,9,1],[90,9,1],[90,9,1],[90,9,1],[90,9,1]]},
+        "Skirmisher":{"gender":[80,50,5,70,60],"value":[[40,30,30],[15,40,45],[30,50,20],[30,30,40],[20,60,20]],"methodology":[[40,40,20],[40,40,20],[40,40,20],[40,40,20],[40,40,20]]},
+        "Archer":{"gender":[30,50,5,40,60],"value":[[35,35,30],[33,34,33],[40,30,30],[30,30,40],[20,60,20]],"methodology":[[34,33,33],[34,33,33],[34,33,33],[34,33,33],[34,33,33]]},
+        "Illusionist":{"gender":[60,40,40,20,30],"value":[[50,30,20],[50,40,10],[50,40,10],[20,30,50],[20,60,20]],"methodology":[[30,30,40],[30,30,40],[30,30,40],[30,30,40],[30,30,40]]},
+        "Elementalist":{"gender":[30,40,40,20,30],"value":[[34,33,33],[20,60,20],[34,43,23],[20,30,50],[20,60,20]],"methodology":[[5,75,20],[5,75,20],[5,75,20],[5,75,20],[5,75,20]]},
+        "Healer":{"gender":[20,40,40,40,30],"value":[[10,40,50],[10,60,30],[5,15,80],[10,30,60],[20,60,20]],"methodology":[[5,15,80],[5,15,80],[5,15,80],[5,15,80],[5,15,80]]}
     },
     
     "personalities":{
@@ -96,11 +96,11 @@
                 {"desc":"-5 to Morale and Loyalty boosts given to other Followers (minimum 1)"}
             ],
             [
-                    {"desc":"+1 additional Morale from defeating an enemy"},
-                    {"desc":"+2 additional Morale from defeating an enemy"},
-                    {"desc":"+3 additional Morale from defeating an enemy"},
-                    {"desc":"+4 additional Morale from defeating an enemy"},
-                    {"desc":"+5 additional Morale from defeating an enemy"}
+                {"desc":"+1 additional Morale from defeating an enemy"},
+                {"desc":"+2 additional Morale from defeating an enemy"},
+                {"desc":"+3 additional Morale from defeating an enemy"},
+                {"desc":"+4 additional Morale from defeating an enemy"},
+                {"desc":"+5 additional Morale from defeating an enemy"}
             ],
             [
                 {"desc":"-1 additional Morale from defeating an enemy"},

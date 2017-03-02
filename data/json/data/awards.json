@@ -34,13 +34,5 @@
     "timesRested":{
         "name":"Times Rested",
         "desc":"The number of times this character has rested at an inn."
-    },
-    "value":{
-        "name":"Value",
-        "desc":"Something Something Value Something..."
-    },
-    "method":{
-        "name":"Method",
-        "desc":"Something Method something asd'mas;ldma;sd."
     }
 }

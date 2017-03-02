@@ -10,10 +10,10 @@
     ],
     "pages": [
         {
-            "name": "Page%201",
+            "name": "Page 1",
             "music": "battle.mp3",
             "bg": "bg\/959396-river.jpg",
-            "text": "'sdfsdfsdf%20dfs%20sdf%20sd%20a%20wawf%20aw%20''sdgs'%20eaf'",
+            "text": "fdgg' sdf {e:asd}",
             "choices": [],
             "onload": []
         }

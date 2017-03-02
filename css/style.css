@@ -78,3 +78,33 @@ body {
     margin:10px 10px;
     font-size:30px;
 }
+
+/* LOCATIONS MENU */
+.selected-color{
+    border-color:red !important;
+}
+.main-menu{
+    position:absolute;
+    top:20%;
+    right:5%;
+    width:20%;
+    background:grey;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    padding:10px;
+}
+.main-menu ul{
+    list-style:none;
+    padding:0;
+}
+.main-menu ul li{
+    width:100%;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    text-align:center;
+    font-size:40px;
+}

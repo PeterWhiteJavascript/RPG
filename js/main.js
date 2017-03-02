@@ -119,22 +119,18 @@ Q.organizeEquipment=function(){
 };
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
-    //Set up the game state with default values
-    Q.state.set({
-        //The scene name. This does not have to be 'act', but it does have to match the json.
-        sceneName:options.eventName||"The-player-starts-his-journey!",
-        //The quests that have been accepted. Array full of strings
-        acceptedQuests:[],
-        //The current day. Affects when story quests trigger
-        day:1
-    });
     //The main character's object
     var alex = Q.state.get("characters").alex;
+    //Gender is based on what the player selected
     alex.gender = options.gender;
-    var storyAlex = Q.setUpStoryCharacter(alex);
-    Q.state.set("alex",storyAlex);
-    //For now, alex is the only character (just added more people)
-    Q.state.set("allies",[storyAlex/*,Q.setUpStoryCharacter(Q.state.get("characters").astrea),Q.setUpStoryCharacter(Q.state.get("characters").peter)*/]);
+    var storyAlex = Q.charGen.generateCharacter(alex);
+    //Alex doesn't have value/method properties
+    delete(storyAlex.value);
+    delete(storyAlex.method);
+    //Alex has an influence property
+    storyAlex.influence = alex.influence;
+    //For now, alex is the only character
+    Q.state.set("allies",[storyAlex,Q.charGen.generateCharacter(Q.state.get("characters").astrea)]);
     //Set up the new game bag
     Q.state.set("Bag",new Q.Bag({items:{
         consumable:[
@@ -149,18 +145,17 @@ Q.newGame=function(options){
     }}));
     //Start a scene
     Q.startScene(Q.state.get("startSceneName"),Q.state.get("startEventName"));
+    //Uncomment to go to location
+    //Q.stageScene("location",0,{location:"metaximo1"});
 };
 //Start the game from the save data
 Q.startGame=function(save){
     Q.state.set({
-        sceneName:save.sceneName,
-        day:save.day,
-        options:save.options,
-        acceptedQuests:save.acceptedQuests
+        options:save.options
     });
     var storyChars = [];
     save.allies.forEach(function(ally){
-        storyChars.push(Q.setUpStoryCharacter(ally));
+        storyChars.push(Q.charGen.generateCharacter(ally));
     });
     Q.state.set("alex",storyChars.filter(function(ally){return ally.name==="Alex";})[0]);
     Q.state.set("allies",storyChars);
@@ -211,8 +206,7 @@ var files = [
     "json/data/equipment.json",
     "json/data/items.json",
     "json/data/locations.json",
-    "json/data/quests.json",
-    "json/data/character_classes.json",
+    "json/data/character-classes.json",
     "json/data/characters.json",
     "json/data/skills.json",
     "json/data/status.json",
@@ -233,7 +227,7 @@ Q.load(files.join(','),function(){
     //All quests that can be taken by the player at the pub.
     Q.state.set("quests",Q.assets['json/data/quests.json']);
     //All base settings for character classes
-    Q.state.set("charClasses",Q.assets['json/data/character_classes.json']);
+    Q.state.set("charClasses",Q.assets['json/data/character-classes.json']);
     //The story characters that you can recruit (including alex)
     Q.state.set("characters",Q.assets['json/data/characters.json']);
     //The list of skills and their effects

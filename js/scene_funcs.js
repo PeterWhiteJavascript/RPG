@@ -41,19 +41,19 @@ Quintus.SceneFuncs=function(Q){
         var scriptData = stage.options.scriptData = stage.options.data;
         Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.scene}));
         
-        /*
-        //The textbox is in charge of all of the functions that need to be run to do custom events.
-        var textBox = stage.textBox = stage.insert(new Q.TextBox({scriptData:scriptData,bg:scriptData.bg}));
-        //The left/right Assets are the characters that are speaking in the dialogue
-        textBox.p.leftAsset = stage.insert(new Q.StoryImage({x:100,y:Q.height-textBox.p.h-150}));
-        textBox.p.rightAsset = stage.insert(new Q.StoryImage({x:Q.width-100,y:Q.height-textBox.p.h-150,flip:'x'}));
-        //The Dialogue Area is the inner area of the text box. It will be transparent later on.
-        textBox.p.dialogueArea = stage.insert(new Q.DialogueArea({w: Q.width-20}));
-        //The Dialogue is the text that is inside the dialogue area
-        console.log(scriptData)
-        textBox.p.dialogueText = textBox.p.dialogueArea.insert(new Q.Dialogue({align: 'left', x: 10}));
-        textBox.next();*/
     }); 
+    Q.scene("location",function(stage){
+        var location = stage.options.location;
+        Q.load("json/story/locations/"+location+".json",function(){
+            var data = Q.assets["json/story/locations/"+location+".json"];
+            Q.load("bg/"+data.bg,function(){
+                var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.bg}));
+                Q.playMusic(data.music,function(){
+                    Q.locationController = stage.insert(new Q.LocationController({location:Q.assets["json/story/locations/"+location+".json"],bgImage:bgImage}));
+                });
+            });
+        });
+    });
     Q.GameObject.extend("CharacterGenerator",{
         init:function(){
             var data = Q.state.get("charGeneration");
@@ -115,16 +115,83 @@ Quintus.SceneFuncs=function(Q){
             this.statNames.forEach(function(st){
                 stats[st] = Math.floor(Math.random()*10)+10;
             });
-            var primary = primaryStats[classNum];
-            var secondary = secondaryStats[classNum];
+            var primary = this.primaryStats[classNum];
+            var secondary = this.secondaryStats[classNum];
             stats[primary]+=5;
             stats[secondary]+=3;
-
+            
             for(var idx=0;idx<level;idx++){
                 var num = idx%this.order.length;
-                stats = this.levelUp(order[num],stats,primary,secondary);
+                stats = this.levelUp(this.order[num],stats,primary,secondary);
             }
             return stats;
+        },
+        
+        generateSkills:function(char){
+            var allSkills = Q.state.get("skills");
+            //To do: Come up with a way to give reasonable skills
+            var skills = {};
+            skills[char.charClass] = [allSkills[char.charClass][0],allSkills[char.charClass][1]];
+            return skills;
+        },
+        randomizeEquipment:function(char){
+            var el = 1;//p.equipmentRank;
+            var equipmentType = "sword";
+            var equipmentData = Q.state.get("equipment");
+            var types = ["weapon","shield","body","feet","accessory"];
+            
+            function rand(type){
+                //Chance of going up or down in rank
+                var lv = el;
+                lv+=Math.floor(Math.random()*3)-1;
+                if(lv===0) lv=1;
+                if(lv>Q.maxEquipmentRank) lv = Q.maxEquipmentRank;
+                var eq = equipmentData[type+"Sorted"][lv-1][Math.floor(Math.random()*(equipmentData[type+"Sorted"][lv-1].length))];
+                return eq;
+            }
+            var rh = rand(types[Math.floor(Math.random()*2)]);
+            var lh = {};
+            if(rh){
+                //Chance that there's no equipment here
+                if(Math.random()*100>9){
+                   lh = rand(types[Math.floor(Math.random()*2)]);
+                }
+            } else {
+                lh = rand(types[Math.floor(Math.random()*2)]);
+            }
+            var equipment = {
+                righthand:rh,
+                lefthand:lh,
+                body:rand(types[2]),
+                feet:rand(types[3]),
+                accessory:rand(types[4])
+            };
+            //Process the equipment
+            //If they have a set equipment type, make sure they get it
+            while(equipmentType&&equipment.righthand.equipmentType!==equipmentType&&equipment.lefthand.equipmentType!==equipmentType){
+                equipment.righthand = rand(types[0]);
+                //If the equipment is two handed, the left hand should be empty
+                if(equipment.righthand.twoHanded){
+                    equipment.lefthand = {};
+                } else {
+                    //If the righthand equipment is not two handed, find a weapon or shield for the left hand
+                    while(equipment.lefthand.twoHanded){
+                        equipment.lefthand = rand(types[Math.floor(Math.random()*2)]);
+                    }
+                }
+            }
+            //Make sure they are not holding a two handed weapon and something else
+            if(equipment.righthand.twoHanded){
+                equipment.lefthand = {};
+            }
+            if(equipment.lefthand.twoHanded){
+                equipment.righthand = {};
+            }
+            //Make sure that they are not holding two shields (unless we want that :D)
+            if(equipment.righthand.equipmentType==="shield"&&equipment.lefthand.equipmentType==="shield"){
+                equipment.righthand = rand(types[0]);
+            }
+            return equipment;
         },
         rand:function(){
             return Math.ceil(Math.random()*100);
@@ -133,6 +200,7 @@ Quintus.SceneFuncs=function(Q){
             var chapter = "Chapter1-1";
             switch(prop){
                 case "name":
+                    console.log(char.natNum)
                     var numNameParts = this.getIdx(this.nameParts[char.natNum].nameParts,this.rand())+1;
                     var charName = "";
                     var main = this.nameParts[char.natNum].main;
@@ -160,18 +228,119 @@ Quintus.SceneFuncs=function(Q){
                     return charClass;
                 case "gender":
                     
-                    return this.genders[this.getIdx([this.classes[char.charClass.toLowerCase()].gender[char.natNum],100],this.rand())];
+                    return this.genders[this.getIdx([this.classes[char.charClass].gender[char.natNum],100],this.rand())];
                 case "value":
-                    return this.values[this.getIdx(this.classes[char.charClass.toLowerCase()].value[char.natNum],this.rand())];
+                    return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
                 case "methodology":
                     
-                    return this.methodologies[this.getIdx(this.classes[char.charClass.toLowerCase()].methodology[char.natNum],this.rand())];
+                    return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
                 case "personality":
                     var randPersonalityText = this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
                     var randPersonality = this.personalities.traits[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
                     return randPersonalityText+randPersonality;
                     
             }
+        },
+        
+        generateStats:function(char){
+            var stats = {
+                maxHp:this.getHp(char.level,char.baseStats.str,char.baseStats.end),
+                painTolerance:100,
+                maxTp:this.getTp(char.level,char.baseStats.dex),
+                accuracy:100,
+                criticalChance:0,//this.getCriticalChance(base),
+                defense:0,//this.getDefense(base),
+                attackSpeed:100,
+                range:0,//this.getRange(base),
+                maxAtk:0,//this.getDamageHigh(base),
+                minAtk:0,//this.getDamageLow(base),
+                encThreshold:100,
+                totalWeight:100,
+                encPenalty:100,
+                moveSpeed:0,//this.getSpeed(base),
+                move:Q.state.get("charClasses")[char.charClass].move,
+                zoc:Q.state.get("charClasses")[char.charClass].zoc
+            };
+            stats.hp = stats.maxHp;
+            stats.tp = stats.maxTp;
+            return stats;
+        },
+        //The user's hp is a bit complex :)
+        getHp:function(level,str,end){
+            //Every 5 levels, get a stat boost. every 10 levels, get a big stat boost
+            return Math.floor(Math.ceil(level/5)*(end+str)+Math.ceil(level/10)*(str+end))+1;
+        },
+        //The user's tp is a bit complex :)
+        getTp:function(level,dex){
+            return Math.floor(Math.ceil(level/10)*(dex+dex))+1;
+        },
+        //Generates a character by filling in the blanks for data that is not set
+        generateCharacter:function(data){
+            function getEquipment(equipmentData){
+                var equipment = Q.state.get("equipment");
+                var keys = Object.keys(equipmentData);
+                var eq = {};
+                keys.forEach(function(key){
+                    if(equipmentData[key]){
+                        eq[key] = equipment[equipmentData[key][0]][equipmentData[key][1]];
+                    } else {
+                        eq[key] = {};
+                    }
+                });
+                return eq;
+            }
+            function getSkills(skillsData){
+                var skills = Q.state.get("skills");
+                var keys = Object.keys(skillsData);
+                
+                var sk = {};
+                keys.forEach(function(key){
+                    sk[key] = [];
+                    for(var i=0;i<skillsData[key].length;i++){
+                        sk[key].push(skills[key][skillsData[key][i]]);
+                    }
+                });
+                return sk; 
+            }
+            var char = {};
+            char.awards = data.awards?data.awards:this.setUpAwards();
+            
+            char.nationality = data.nationality?this.nationalities[data.nationality]:this.generateProp("nationality",char);
+            char.natNum = typeof char.natNum !== 'undefined'?char.natNum:data.nationality;
+            
+            char.charClass = data.charClass?this.classNames[data.charClass]:this.generateProp("charClass",char);
+            char.classNum = typeof char.classNum !== 'undefined'?char.classNum:data.charClass;
+            
+            char.skills = data.skills?getSkills(data.skills):
+            
+            char.gender = data.gender?data.gender:this.generateProp("gender",char);
+            char.level = data.level?data.level:this.generateProp("level",char);
+            char.exp = data.exp?data.exp:0;
+            char.baseStats = data.baseStats?data.baseStats:this.getStats(char.level,char.classNum);
+            
+            char.equipment = data.equipment?getEquipment(data.equipment):this.randomizeEquipment(char);
+            
+            char.value = data.value?data.value:50;
+            char.methodology = data.methodology?data.methodology:50;
+            char.loyalty = data.loyalty?data.loyalty:50;
+            char.morale = data.morale?data.morale:50;
+            char.name = data.name?data.name:this.generateProp("name",char);
+            char.combatStats = this.generateStats(char);
+            return char;
+        },
+        setUpAwards:function(){
+            var awards = Q.state.get("awards");
+            var keys = Object.keys(awards);
+            var obj = {};
+            //The default value for all awards is 0
+            keys.forEach(function(key){
+                obj[key] = 0;
+            });
+            return obj;
+        },
+        setAward:function(obj,prop,value){
+            if(!obj) return;
+            obj.p.awards[prop]+=value;
         }
     });
     Q.scene("battleScene",function(stage){
@@ -288,7 +457,7 @@ Quintus.SceneFuncs=function(Q){
                 var char;
                 //If the neutral character is a story character
                 if(ally){
-                    var storyChar = Q.setUpStoryCharacter(ally);
+                    var storyChar = Q.charGen.generateCharacter(ally);
                     char = new Q.Character({charClass:storyChar.charClass,level:storyChar.level,exp:storyChar.exp,name:storyChar.name,skills:storyChar.skills,equipment:storyChar.equipment,gender:storyChar.gender,stats:storyChar.stats,team:"ally",awards:storyChar.awards});
                     char.add("statCalcs");
                 } else {
@@ -396,17 +565,6 @@ Quintus.SceneFuncs=function(Q){
     });
     Q.scene("battleText",function(stage){
         stage.insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));
-    });
-    Q.scene("location",function(stage){
-        //Set the current menu. Default is 'start'
-        if(!stage.options.menu){alert("No Menu Given in JSON!!!");};
-        Q.state.set("currentMenu",stage.options.menu?stage.options.menu:Q.state.get("currentMenu"));
-        //Load any bgs for this location
-        Q.load(stage.options.data.bgs.join(','),function(){
-            Q.playMusic(stage.options.data[stage.options.menu].music,function(){
-                Q.stageScene("dialogue", 1, {data: stage.options.data, path: Q.state.get("currentMenu")});
-            });
-        });
     });
     Q.scene("fader",function(stage){
         stage.insert(new Q.Fader());

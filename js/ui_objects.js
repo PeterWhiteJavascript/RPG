@@ -21,6 +21,149 @@ Quintus.UIObjects=function(Q){
             },desc.length*25);
         });
     });
+    //Using CSS/Jquery, create the locations controller
+    //This is used when the player goes to a location and selects from different menu options.
+    Q.UI.Container.extend("LocationController",{
+        init:function(p){
+            this._super(p,{
+                x:0,y:0,
+                cx:0,cy:0,
+                w:Q.width/2,
+                h:Q.height-100
+            });
+            this.p.x+=10;
+            this.p.y+=10;
+            this.on("inserted");
+            
+        },
+        inserted:function(){
+            this.createCont("main-menu");
+            this.createMainMenu();
+        },
+        createCont:function(cl){
+            var cont = $('<div class='+cl+'></div>');
+            $(document.body).append(cont);
+            this.p.menuCont = cont;
+        },
+        createMainMenu:function(){
+            var cont = this.p.menuCont;
+            cont.empty();
+            cont.append(
+                '<ul id="main-menu-ul">\n\
+                    <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
+                    <li id="lc-briony" class="btn btn-default" func="createBrionyMenu">Briony</li>\n\
+                    <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
+                    <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
+                    <li id="lc-options" class="btn btn-default" func="createOptionsMenu">Options</li>\n\
+                </ul>'
+            );
+            $("#main-menu-ul li").click(function(){
+                Q.locationController[$(this).attr("func")]();
+            });
+        },
+        createEntourageMenu:function(){
+            var cont = this.p.menuCont;
+            cont.empty();
+            cont.append(
+                '<ul id="entourage-menu-ul">\n\
+                    <li id="en-taskforce" class="btn btn-default" func="createTaskforceMenu">Taskforce</li>\n\
+                    <li id="en-cash-bonus" class="btn btn-default" func="createCashBonusMenu">Cash Bonus</li>\n\
+                    <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
+                    <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
+                </ul>'
+            );
+            $("#entourage-menu-ul li").click(function(){
+                Q.locationController[$(this).attr("func")]();
+            });
+            
+        },
+        createTaskforceMenu:function(){
+            
+        },
+        createCashBonusMenu:function(){
+            
+        },
+        createDistributeGearMenu:function(){
+            
+        },
+        
+        createBrionyMenu:function(){
+            
+        },
+        createActionsMenu:function(){
+            var actions = this.p.location.actions;
+            var cont = this.p.menuCont;
+            cont.empty();
+            cont.append('<ul id="actions-menu-ul"></ul>');
+            for(var i=0;i<actions.length;i++){
+                $("#actions-menu-ul").append('<li id="ac-'+actions[i]+'" class="btn btn-default" func="create'+actions[i]+'Menu">'+actions[i]+'</li>');
+            }
+            $("#actions-menu-ul").append('<li id="ac-back" class="btn btn-default" func="createMainMenu">Back</li>');
+            $("#actions-menu-ul li").click(function(){
+                Q.locationController[$(this).attr("func")]();
+            });
+        },
+        createFundraiseMenu:function(){
+            
+        },
+        createCampaignMenu:function(){
+            
+        },
+        createRecruitMenu:function(){
+            
+        },
+        createFeastMenu:function(){
+            
+        },
+        createMentorMenu:function(){
+            
+        },
+        createInfirmaryMenu:function(){
+            
+        },
+        createMarketMenu:function(){
+            
+        },
+        createHuntMenu:function(){
+            
+        },
+        
+        //Shows all characters and allows displaying their stats
+        createLogMenu:function(){
+            var chars = Q.state.get("allies");
+            var cont = this.p.menuCont;
+            cont.empty();
+            cont.append('<ul id="actions-menu-ul"></ul>');
+            for(var i=0;i<chars.length;i++){
+                $("#actions-menu-ul").append('<li id="'+chars[i].name+'" class="btn btn-default" func="createCharacterMenu">'+chars[i].name+'</li>');
+            }
+            $("#actions-menu-ul").append('<li id="ac-back" class="btn btn-default" func="removeCharacterMenu">Back</li>');
+            $("#actions-menu-ul li").click(function(){
+                $("#actions-menu-ul li").removeClass("selected-color");
+                $(this).addClass("selected-color");
+                Q.locationController[$(this).attr("func")]($(this).attr("id"));
+            });
+            $("#actions-menu-ul li").first().trigger("click");
+        },
+        createCharacterMenu:function(name){
+            if(this.p.characterMenu) this.p.characterMenu.destroy();
+            var char = Q.state.get("allies").filter(function(obj){
+                return name == obj.name;
+            })[0];
+            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:char}));
+        },
+        removeCharacterMenu:function(){
+            this.p.characterMenu.destroy();
+            this.createMainMenu();
+        },
+        createOptionsMenu:function(){
+            
+        },
+        removeMenu:function(menu){
+            $(menu).empty();
+        }
+    });
+    
     //Using CSS/Jquery, create the story dialogue with options
     Q.UI.Container.extend("StoryController",{
         init:function(p){
@@ -525,150 +668,6 @@ Quintus.UIObjects=function(Q){
                 h:300,
                 type:Q.SPRITE_NONE
             });
-        }
-    });
-    Q.UI.Container.extend("ConfirmBox",{
-        init:function(p){
-            this._super(p,{
-                x:Q.width/2,y:Q.height/2,
-                cx:0,cy:0,
-                w:300,h:200,
-                type:Q.SPRITE_NONE,
-                fill:"yellow",
-                textIndex:0,
-                confirmOptions:[],
-                z:100
-            });
-            //Q._generatePoints(this,true);
-            this.on("inserted");
-        },
-        inserted:function(){
-            var options = this.p.options;
-            var box = this;
-            //Display the list of options to choose from
-            options.forEach(function(opt,i){
-                //The text that displays to show the option
-                var confirmOption = box.insert(new Q.UI.Text({y:i*20,label:opt.text,next:opt.next}));
-                box.p.confirmOptions.push(confirmOption);
-                if(i===0){confirmOption.p.color="red";};
-                //When this option is selected
-                confirmOption.on("selected",function(path){
-                    this.stage.pause();
-                    if(opt.exitStage && Q.stages.length > 1) {
-                        // Pop off the top stage, and unpause the previous one
-                        var lastStage = Q.stages.length - 1;
-                        Q.clearStage(lastStage);
-                        Q.stages[lastStage - 1].unpause();
-                    } else {
-                        Q.stageScene("dialogue", 1, {data: box.stage.options.data, path: path});
-                    }
-                });
-            });
-            this.fit(10,10);
-        },
-        changeOptionColor:function(){
-            this.p.confirmOptions.forEach(function(opt){
-                opt.p.color="black";
-            });
-            this.p.confirmOptions[this.p.textIndex].p.color="red";
-        },
-        cycleUp:function(){
-            this.p.textIndex--;
-            if(this.p.textIndex<0){this.p.textIndex=this.p.maxIndex;};
-            this.changeOptionColor();
-        },
-        cycleDown:function(){
-            this.p.textIndex++;
-            if(this.p.textIndex>this.p.maxIndex){this.p.textIndex=0;};
-            this.changeOptionColor();
-        },
-        selectOption:function(){
-            this.p.confirmOptions[this.p.textIndex].trigger("selected",this.p.confirmOptions[this.p.textIndex].p.next);
-        },
-        step:function(){
-            if(Q.inputs['up']){
-                this.cycleUp();
-                Q.inputs['up']=false;
-            } else if(Q.inputs['down']){
-                this.cycleDown();
-                Q.inputs['down']=false;
-            } else if(Q.inputs['confirm']){
-                this.selectOption();
-                Q.inputs['confirm']=false;
-            }
-        }
-    });
-    Q.UI.Container.extend("DialogueArea",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                type:Q.SPRITE_UI,
-                label:"",
-                w:Q.width-20,
-                h:95,
-                fill:"yellow"
-            });
-            Q._generatePoints(this,true);
-            this.p.y=Q.height-this.p.h-15;
-            this.p.x+=10;
-            this.p.textWidth = this.p.w-40;
-        }
-    });
-    Q.UI.Text.extend("Dialogue",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                type:Q.SPRITE_NONE,
-                label:"NO TEXT YET. HIDE THIS OR SET TEXT.",
-                charNum:0,
-                time:0,
-                speed:Q.state.get("options").textSpeed
-            });
-        },
-        destroyNextTextTri:function(){
-            if(this.p.nextTextTri) this.p.nextTextTri.destroy();
-        },
-        createNextTri:function(){
-            this.destroyNextTextTri();
-            this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.stage.textBox.p.w/2,y:this.stage.textBox.p.y+this.stage.textBox.p.h-Q.tileH/4}));
-            
-        },
-        setNewText:function(text){
-            this.p.text = text;
-            this.p.charNum=0;
-            this.p.time=0;
-            this.p.label = this.p.text[this.p.charNum];
-            this.on("step",this,"streamCharacters");
-        },
-        streamCharacters:function(){
-            this.p.time++;
-            if(this.p.time>=this.p.speed){
-                this.p.time=0;
-                this.p.charNum++;
-                if(this.p.charNum>=this.p.text.length){
-                    this.off("step",this,"streamCharacters");
-                    if(!this.stage.textBox.p.cantCycle&&!this.stage.textBox.p.noCycle){
-                        this.createNextTri();
-                    }
-                    return;
-                }
-                this.p.label+=this.p.text[this.p.charNum];
-                //if(this.p.charNum%2===0){
-                    Q.playSound("text_stream.mp3");
-                //}
-            }
-        },
-        interact:function(){
-            var done = false;
-            if(this.p.label.length>=this.p.text.length){
-                done=true;
-            } else {
-                this.p.label=this.p.text;
-                this.off("step",this,"streamCharacters");
-            }
-            return done;
         }
     });
     Q.Sprite.extend("NextTextTri",{

@@ -1,0 +1,48 @@
+{
+    "Legionnaire":{
+        "description":"A cool legionnaire.",
+        "move":4,
+        "zoc":1
+    },
+    "Berserker":{
+        "description":"A cool rager.",
+        "move":4,
+        "zoc":1
+    },
+    "Vanguard":{
+        "description":"A cool vanguard.",
+        "move":4,
+        "zoc":2
+    },
+    "Archer":{
+        "description":"A cool archer.",
+        "move":4,
+        "zoc":0
+    },
+    "Skirmisher":{
+        "description":"A cool skirmisher.",
+        "move":4,
+        "zoc":1
+    },
+    "Assassin":{
+        "description":"A cool assassin.",
+        "move":5,
+        "zoc":0
+    },
+    "Elementalist":{
+        "description":"A cool elementalist.",
+        "move":3,
+        "zoc":1
+    },
+    "Illusionist":{
+        "description":"A cool illusionist.",
+        "move":3,
+        "zoc":0
+    },
+    
+    "Healer":{
+        "description":"A cool healer.",
+        "move":3,
+        "zoc":0
+    }
+}

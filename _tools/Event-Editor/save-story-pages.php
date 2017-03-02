@@ -7,6 +7,12 @@ $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'
 
 $file['vrs'] = json_decode($_POST['vrs']);
 $file['pages'] = json_decode($_POST['pages']);
+//Decode spaces and single quotes
+for($i=0;$i<count($file['pages']);$i++){
+    $page = $file['pages'][$i];
+    $page->name = urldecode($page->name);
+    $page->text = urldecode($page->text);
+}
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 
 ?>
