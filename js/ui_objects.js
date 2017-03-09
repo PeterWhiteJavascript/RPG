@@ -183,6 +183,7 @@ Quintus.UIObjects=function(Q){
         },
         insertPage:function(num){
             var page = this.p.pages[num];
+            console.log(num,this.p.pages)
             //Do the onload conditions/effects
             for(var i=0;i<page.onload.length;i++){
                 var on = page.onload[i];
@@ -190,6 +191,7 @@ Quintus.UIObjects=function(Q){
                     this.executeEffects(on.effects);
                 };
             }
+            
             //Make the background correct
             this.p.bgImage.p.asset = page.bg;
             
@@ -219,6 +221,7 @@ Quintus.UIObjects=function(Q){
             $(this.p.textContent).empty();
         },
         getPageNum:function(pageName){
+            pageName = pageName.replace("%20"," ");
             for(var i=0;i<this.p.pages.length;i++){
                 if(this.p.pages[i].name===pageName){
                     return i;
