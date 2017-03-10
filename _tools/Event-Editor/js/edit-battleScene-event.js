@@ -110,19 +110,21 @@ Q.Sprite.extend("CharacterSprite",{
         this.p.selectionBox.p.y = this.p.y;
         $("#locX").val(this.p.loc[0]);
         $("#locY").val(this.p.loc[1]);
+        if(this.p.save){
+            this.p.save.loc[0]=this.p.loc[0];
+            this.p.save.loc[1]=this.p.loc[1];
+        }
     },
     checkMove:function(){
         if(Q.inputs['left']){
             if(this.p.loc[0]>0){
                 this.p.loc[0]--;
-                this.p.save.loc[0]--;
                 this.trigger("move");
             }
             Q.inputs['left'] = false;
         } else if(Q.inputs['right']){
             if(this.p.loc[0]<Q.stage(0).mapWidth){
                 this.p.loc[0]++;
-                this.p.save.loc[0]++;
                 this.trigger("move");
             }
             Q.inputs['right'] = false;
@@ -130,14 +132,12 @@ Q.Sprite.extend("CharacterSprite",{
         if(Q.inputs['up']){
             if(this.p.loc[1]>0){
                 this.p.loc[1]--;
-                this.p.save.loc[1]--;
                 this.trigger("move");
             }
             Q.inputs['up'] = false;
         } else if(Q.inputs['down']){
             if(this.p.loc[1]<Q.stage(0).mapHeight){
                 this.p.loc[1]++;
-                this.p.save.loc[1]++;
                 this.trigger("move");
             }
             Q.inputs['down'] = false;
@@ -312,8 +312,8 @@ var appendCreateCharacterOptions = function(char){
     var cont = $("#character-options");
     
     $(cont).append('<li>Name<input id="name" class="new-character" value=""></li>');
-    $(cont).append('<li>LocationX<input type="number" id="locX" class="new-character" value=0></li>');
-    $(cont).append('<li>LocationY<input type="number" id="locY" class="new-character" value=0></li>');
+    $(cont).append('<li>LocationX<input type="number" id="locX" class="new-character-nosave" value=0></li>');
+    $(cont).append('<li>LocationY<input type="number" id="locY" class="new-character-nosave" value=0></li>');
     $("#locX").on("change",function(){
         if(!selectedCharacter){ 
             var loc = [$(this).val(),$("#locY").val()];
@@ -325,8 +325,8 @@ var appendCreateCharacterOptions = function(char){
         var ch = characters.filter(function(c){
             return c.storyId==selectedCharacter.p.storyId;
         })[0];
-        ch.locX = selectedCharacter.p.loc[0];
-        ch.locY = selectedCharacter.p.loc[1];
+       // ch.locX = selectedCharacter.p.loc[0];
+       // ch.locY = selectedCharacter.p.loc[1];
     });
     $("#locY").on("change",function(){
         if(!selectedCharacter){ 
@@ -338,10 +338,10 @@ var appendCreateCharacterOptions = function(char){
         var ch = characters.filter(function(c){
             return c.storyId==selectedCharacter.p.storyId;
         })[0];
-        ch.locX = selectedCharacter.p.loc[0];
-        ch.locY = selectedCharacter.p.loc[1];
+      //  ch.locX = selectedCharacter.p.loc[0];
+        //ch.locY = selectedCharacter.p.loc[1];
     });
-    $(cont).append('<li>Level<input type="number" min="0" id="level" class="new-character" value=0></li>');
+    $(cont).append('<li>Level<input type="number" min="1" id="level" class="new-character" value=1></li>');
     $(cont).append('<li>Nationality<select id="nationality" class="new-character"></select></li>');
     $(cont).append('<li>Character Class<select id="charClass" class="new-character"></select></li>');
     $(cont).append('<li>Gender<select id="gender" class="new-character"></select></li>');
@@ -494,6 +494,7 @@ var saveCharacter = function(){
         $(charData).each(function(i,d){
             var val = $(d).val();
             var id =$(d).attr("id");
+            if(id==="locX"||id==="locY") return;
             if(val===""||!val){
                 obj[id] =  "";
             } else {

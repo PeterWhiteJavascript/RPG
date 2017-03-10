@@ -137,7 +137,7 @@ $(function(){
             var choices = JSON.parse($(page).attr("choices"));
             for(var i=0;i<choices.length;i++){
                 var ch = choices[i];
-                this.addChoice(ch.displayText,ch.desc,ch.page,ch.disabled,ch.groups);
+                this.addChoice(ch.displayText.replace("%20"," "),ch.desc.replace("%20"," "),ch.page.replace("%20"," "),ch.disabled,ch.groups);
             }
             //Set all of the initial values of the selects
             $("select[initial-value]").each(function(){
@@ -201,12 +201,12 @@ $(function(){
             switch(cond[0]){
                 case "checkVar":
                     if(!props){props = {};
-                        props.scope = "event";
-                        var vars = this.getVars();
-                        props.vr = vars[0].name;
-                        props.vl = vars[0].val;
+                        var varProps = this.getVars();
+                        props.scope = varProps.scope;
+                        props.vr = varProps.vars[0].name;
+                        props.vl = varProps.vars[0].val;
                     }
-                    var scope = 'Select a scope<select class="cond-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions("scope")+'</select><br>';
+                    var scope = 'Select a scope<select class="cond-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
                     var vr = 'Select a variable<select class="cond-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
                     var vl = 'Check if var is:<br><input class="cond-prop vl" value="'+props.vl+'">';
                     content = scope+vr+vl;
@@ -225,11 +225,12 @@ $(function(){
                 case "setVar":
                     if(!props){props = {};
                         props.scope = "event";
-                        var vars = this.getVars();
-                        props.vr = vars[0].name;
-                        props.vl = vars[0].val;
+                        var varProps = this.getVars();
+                        props.scope = varProps.scope;
+                        props.vr = varProps.vars[0].name;
+                        props.vl = varProps.vars[0].val;
                     }
-                    var scope = 'Select a scope<select class="effect-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions("scope")+'</select><br>';
+                    var scope = 'Select a scope<select class="effect-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
                     var vr = 'Select a variable<select class="effect-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
                     var vl = 'Set the variable to:<br><input class="effect-prop vl" value="'+props.vl+'">';
                     content = scope+vr+vl;
@@ -336,11 +337,21 @@ $(function(){
         
         //Gets the vars from the list
         getVars:function(){
+            var scope = "event";
             var vars = [];
+            //Get the current event's vars
             $(this.p.varsCont).children(".vr").each(function(idx,itm){
                 vars.push({name:$(itm).children(".var-button").children(".var-name").val(),val:$(itm).children(".var-button").children(".var-value").val()});
             });
-            return vars;
+            if(!vars.length){
+                scope = "scene";
+                vars = this.p.sceneVars;
+                if(!vars.length){
+                    scope = "global";
+                    vars = this.p.globalVars;
+                }
+            }
+            return {scope:scope,vars:vars};
         },
         
         //Return options for selects

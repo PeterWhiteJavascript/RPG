@@ -608,7 +608,9 @@ var setUpFuncs = {
         function(val){
             $("#back-to-func-selection").before("<div class='editor-item'><span>Movement Speed </span><input type='number' step='0.01' min='0.01' id='move-speed' class='script-func' value='0.30'></div>");
             if(val!==undefined){
+                console.log(val[1])
                 $("#move-speed").val(parseFloat(val[1]).toFixed(2));
+                $("#move-speed").attr("dataType","float");
                 $("#move-speed").on("change",function(){
                     saveFuncScriptItem();
                 });
@@ -748,8 +750,10 @@ var getFuncProps = function(){
     $(".script-func").each(function(i,itm){
         var value = $(this).attr("val");
         if(!value) value = $(this).val();
-        if($(this).attr("dataType")==="integer") value=parseInt(value);
-        if($(this).attr("dataType")==="array") value=JSON.parse(value);
+        var dataType = $(this).attr("dataType");
+        if(dataType==="float") value=parseFloat(value);
+        else if(dataType==="integer") value=parseInt(value);
+        else if(dataType==="array") value=JSON.parse(value);
         props.push(value);
     });
     return props;
@@ -917,7 +921,6 @@ var createSaveForm = function(form){
     var script = $("#script-menu").children("li");
     $(script).each(function(i,itm){
         var type = $(itm).children(".script-item").attr("class").split(" ")[1];
-        
         if(type==="text"){
             scriptData.push({
                 text:JSON.parse($(itm).attr("text")),

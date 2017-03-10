@@ -14,7 +14,7 @@
             "func": "changeMoveSpeed",
             "props": [
                 2,
-                "0.01"
+                0.02
             ]
         },
         {
@@ -110,8 +110,8 @@
         {
             "func": "changeEvent",
             "props": [
-                "Story-Scene",
-                "The-player-starts-his-journey!"
+                "Big-Battle-Scene",
+                "Fun-Test"
             ]
         }
     ],
@@ -203,6 +203,26 @@
                 22
             ],
             "storyId": 6
+        },
+        {
+            "name": "ret",
+            "locX": "0",
+            "locY": "0",
+            "level": 0,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                20,
+                5
+            ],
+            "storyId": 7
         }
     ],
     "music": "",
