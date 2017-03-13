@@ -1,12 +1,5 @@
 {
-    "vrs": [
-        {
-            "name": "sdf",
-            "val": "54"
-        },
-        {
-            "name": "awdawd",
-            "val": "s"
-        }
-    ]
+    "vrs": {
+        "Gloobal": 100
+    }
 }

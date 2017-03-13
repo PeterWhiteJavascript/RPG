@@ -31,8 +31,8 @@ if(isset($_POST['scene'])){
             <div id="content">
                 <ul id="vars" class="menu middle-left">
                     <?php
-                        foreach($vrs as $vr){
-                            echo '<li class="var-li">Name<div class="name">'.$vr['name'].'</div>Value<input class="val" value="'.$vr['val'].'"></li>';
+                        foreach($vrs as $key => $value){
+                            echo '<li class="var-li">Name<div class="name">'.$key.'</div>Value<input class="val" value="'.$value.'"></li>';
                         }
                     ?>
                 </ul>

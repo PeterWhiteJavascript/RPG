@@ -1,0 +1,10 @@
+{
+    "name": "VarTest",
+    "desc": " adf",
+    "eventOrder": [],
+    "vrs": {
+        "asd": "1",
+        "Asd": "22",
+        "AWF": "44"
+    }
+}

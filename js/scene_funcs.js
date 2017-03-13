@@ -1,31 +1,37 @@
 Quintus.SceneFuncs=function(Q){
     
     Q.startScene = function(scene,event){
-        Q.load("json/story/events/"+scene+"/"+event+".json",function(){
-            var data = Q.assets["json/story/events/"+scene+"/"+event+".json"];
-            //Do different code for different scene types
-            switch(data.kind){
-                case "story":
-                    Q.clearStages();
-                    Q.stageScene("story",1,{data:data});
-                    break;
-                case "battleScene":
-                    Q.loadTMX(data.map, function() {
+        if(scene==="locations"){ 
+            Q.stageScene("location",{location:event});
+            console.log(Q.state.p)
+        }
+        else {
+            Q.load("json/story/events/"+scene+"/"+event+".json",function(){
+                var data = Q.assets["json/story/events/"+scene+"/"+event+".json"];
+                //Do different code for different scene types
+                switch(data.kind){
+                    case "story":
                         Q.clearStages();
-                        Q.stageScene("battleScene",0,{data:data});
-                    });
-                    
-                    break;
-                case "battle":
-                    Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
-                        Q.clearStages();
-                        Q.stageScene("battle",0,{data:data});
+                        Q.stageScene("story",1,{data:data});
+                        break;
+                    case "battleScene":
+                        Q.loadTMX(data.map, function() {
+                            Q.clearStages();
+                            Q.stageScene("battleScene",0,{data:data});
+                        });
 
-                    });
-                    
-                    break;
-            }
-        });
+                        break;
+                    case "battle":
+                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                            Q.clearStages();
+                            Q.stageScene("battle",0,{data:data});
+
+                        });
+
+                        break;
+                }
+            });
+        }
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;

@@ -31,7 +31,16 @@
         ]
     },
     "money":2000,
-    "week":0,
+    "week":1,
+        
+    "influence":{
+        "Egoist":10,
+        "Nepotist":10,
+        "Altruist":10,
+        "Pragmatic":10,
+        "Intuitive":10,
+        "Kind":10
+    },
     "relations":{
         "venoriae":[50,50],
         "dardoine":[50,50],
@@ -40,20 +49,6 @@
         "talumpatua":[50,50]
     },
     
-    "options":{
-        "musicEnabled":false,
-        "musicVolume":20,
-        "soundEnabled":true,
-        "soundVolume":100,
-        "textSpeed":3,
-        "autoScroll":true,
-        "cursorSpeed":3,
-        
-        "brightness":100,
-        "damageIndicators":true,
-        "factionHighlighting":true,
-        
-        "tooltips":true
-    }
-    
+    "startSceneName":"locations",
+    "startEventName":"metaximo1"
 }

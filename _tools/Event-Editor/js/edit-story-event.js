@@ -338,10 +338,12 @@ $(function(){
         //Gets the vars from the list
         getVars:function(){
             var scope = "event";
-            var vars = [];
+            var vars = {};
             //Get the current event's vars
             $(this.p.varsCont).children(".vr").each(function(idx,itm){
-                vars.push({name:$(itm).children(".var-button").children(".var-name").val(),val:$(itm).children(".var-button").children(".var-value").val()});
+                var val = parseInt($(itm).children(".var-button").children(".var-value").val());
+                if(!val) val = $(itm).children(".var-button").children(".var-value").val();
+                vars[$(itm).children(".var-button").children(".var-name").val()] = val;
             });
             if(!vars.length){
                 scope = "scene";

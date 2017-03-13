@@ -66,18 +66,19 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
 //The default values will be overridden by data coming from the save file.
 Q.state.set({
     options:{
-        //If true, BGM will play
-        musicEnabled:false,
-        musicVolume:100,
-        //If true, SFX will play
-        soundEnabled:true,
-        soundVolume:100,
-        //The speed at which the text cycles on screen (1,2, or 3)
-        textSpeed:1,
-        //If true, text will automatically go to the next text after the previous one completes.
-        autoScroll:false,
-        //How fast the cursor moves in battle
-        cursorSpeed:2
+        "musicEnabled":false,
+        "musicVolume":20,
+        "soundEnabled":true,
+        "soundVolume":100,
+        "textSpeed":3,
+        "autoScroll":true,
+        "cursorSpeed":3,
+        
+        "brightness":100,
+        "damageIndicators":true,
+        "factionHighlighting":true,
+        
+        "tooltips":true
     },
     //Which tunes have been loaded (so that we don't load music twice)
     loadedMusic:[],
@@ -119,34 +120,40 @@ Q.organizeEquipment=function(){
 };
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
-    //The main character's object
-    var alex = Q.state.get("characters").alex;
-    //Gender is based on what the player selected
-    alex.gender = options.gender;
-    var storyAlex = Q.charGen.generateCharacter(alex);
-    //Alex doesn't have value/method properties
-    delete(storyAlex.value);
-    delete(storyAlex.method);
-    //Alex has an influence property
-    storyAlex.influence = alex.influence;
-    //For now, alex is the only character
-    Q.state.set("allies",[storyAlex,Q.charGen.generateCharacter(Q.state.get("characters").astrea)]);
-    //Set up the new game bag
-    Q.state.set("Bag",new Q.Bag({items:{
-        consumable:[
-            ["potion",3]
-        ],
-        weapon:[],
-        shield:[],
-        body:[],
-        feet:[],
-        accessory:[],
-        key:[]
-    }}));
-    //Start a scene
-    Q.startScene(Q.state.get("startSceneName"),Q.state.get("startEventName"));
-    //Uncomment to go to location
-    //Q.stageScene("location",0,{location:"metaximo1"});
+    //Load the default starting data
+    Q.load("json/data/new-game.json",function(){
+        //The main character's object
+        var alex = Q.state.get("characters").alex;
+        //Gender is based on what the player selected
+        alex.gender = options.gender;
+        var storyAlex = Q.charGen.generateCharacter(alex);
+        //Alex doesn't have value/method properties
+        delete(storyAlex.value);
+        delete(storyAlex.method);
+        //Alex has an influence property
+        storyAlex.influence = alex.influence;
+        //For now, alex is the only character
+        Q.state.set("allies",[storyAlex]);
+        //Set up the new game bag
+        Q.state.set("Bag",new Q.Bag({items:{
+            consumable:[
+                ["potion",3]
+            ],
+            weapon:[],
+            shield:[],
+            body:[],
+            feet:[],
+            accessory:[],
+            key:[]
+        }}));
+        //Set up the save data
+        Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
+        //Start a scene
+        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
+        //Uncomment to go to location
+        //Q.stageScene("location",0,{location:"metaximo1"});
+        
+    });
 };
 //Start the game from the save data
 Q.startGame=function(save){
@@ -253,7 +260,7 @@ Q.load(files.join(','),function(){
     
     
     /* TESTING EVENT */
-    if(document.getElementById("title")){
+    if(document.getElementById("title")&&document.getElementById("title").innerHTML.length){
         var scene = document.getElementById("title").innerHTML.toLowerCase();
         var name = document.getElementById("title2").innerHTML.toLowerCase();
         Q.state.set("startSceneName",scene);

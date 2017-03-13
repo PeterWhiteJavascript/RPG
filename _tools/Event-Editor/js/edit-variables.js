@@ -5,15 +5,14 @@ $(function(){
     });
     
     $('#save-variables').click( function(e) {
-        var vars = [];
+        var vars = {};
         $(".var-li").each(function(idx,itm){
             var name;
             if($(itm).children(".name").is("input")) name = $(itm).children(".name").val();
             else name = $(itm).children(".name").text();
-            vars.push({
-                name:name,
-                val:$(itm).children(".val").val()
-            });
+            var val = parseInt($(itm).children(".val").val());
+            if(!val) val = $(itm).children(".val").val();
+            vars[name] = val;
         });
         var scene = $("#title").text();
         var form = $('<form action="save-vars.php" method="post"></form>');

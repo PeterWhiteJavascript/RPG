@@ -21,23 +21,14 @@
             "skl":10,
             "eff":10
         },
-        "skills":{
+        "techniques":{
             "Legionnaire":[0,1]
         },
         "nationality":0,
         "charClass":0,
         "exp":0,
         "primaryStat":"str",
-        "secondaryStat":"end",
-        
-        "influence":{
-            "Egoist":10,
-            "Nepotist":10,
-            "Altruist":10,
-            "Pragmatic":10,
-            "Intuitive":10,
-            "Kind":10
-        }
+        "secondaryStat":"end"
     },
     "astrea":{
         "name": "Astrea",
@@ -61,7 +52,7 @@
             "skl":18,
             "eff":12
         },
-        "skills":{
+        "techniques":{
             "Archer":[0,1]
         },
         "nationality":0,
