@@ -127,13 +127,8 @@ Q.newGame=function(options){
         //Gender is based on what the player selected
         alex.gender = options.gender;
         var storyAlex = Q.charGen.generateCharacter(alex);
-        //Alex doesn't have value/method properties
-        delete(storyAlex.value);
-        delete(storyAlex.method);
-        //Alex has an influence property
-        storyAlex.influence = alex.influence;
         //For now, alex is the only character
-        Q.state.set("allies",[storyAlex]);
+        Q.state.set("allies",[storyAlex,Q.charGen.generateCharacter({charClass:0})]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[
@@ -148,10 +143,14 @@ Q.newGame=function(options){
         }}));
         //Set up the save data
         Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
-        //Start a scene
-        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
-        //Uncomment to go to location
-        //Q.stageScene("location",0,{location:"metaximo1"});
+        
+        
+        //TESTING ONLY
+        if(Q.state.get("startSceneName")) Q.state.get("saveData").startSceneName = Q.state.get("startSceneName");
+        if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
+        
+        //Start a scene (TEST THE VARIABLES)
+        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
         
     });
 };
@@ -258,7 +257,6 @@ Q.load(files.join(','),function(){
     
     Q.charGen = new Q.CharacterGenerator();
     
-    
     /* TESTING EVENT */
     if(document.getElementById("title")&&document.getElementById("title").innerHTML.length){
         var scene = document.getElementById("title").innerHTML.toLowerCase();
@@ -272,7 +270,7 @@ Q.load(files.join(','),function(){
                 var kind = Q.state.get("testingScene").kind;
                 switch(kind){
                     case "story":
-                        Q.newGame({gender:"female",eventName:name});
+                        Q.newGame({gender:"Female",eventName:name});
                         $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
                         $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
                         $("#back-button").click(function(){

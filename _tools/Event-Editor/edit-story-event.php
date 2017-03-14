@@ -1,6 +1,7 @@
 <?php
-$scene = $_POST['scene'];
-$name = $_POST['name'];
+include("php-config.php");
+$scene = addDashes($_POST['scene']);
+$name = addDashes($_POST['name']);
 
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 $pages = $event['pages'];

@@ -7,13 +7,14 @@ $(function(){
             var pages = JSON.parse($("#pages-data").text());
             var vrs = JSON.parse($("#variables-data").text());
             //Create the vrs
-            for(var i=0;i<vrs.length;i++){
-                this.addVar(vrs[i].name,vrs[i].val);
+            var keys = Object.keys(vrs);
+            for(var i=0;i<keys.length;i++){
+                this.addVar(keys[i],vrs[keys[i]],true);
             }
             //Create the pages
             for(var i=0;i<pages.length;i++){
                 var p = pages[i];
-                this.addPage(decodeURI(p.name),p.music,p.bg,p.text,p.choices,p.onload);
+                this.addPage(p.name,p.music,p.bg,p.text,p.choices,p.onload);
             }
             //Create a page if there is not one
             if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[]);
@@ -41,8 +42,12 @@ $(function(){
                     
         },
         //Adds a var to the list
-        addVar:function(name,val){
-            $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><input class='var-name' value='"+name+"'></input><input class='var-value' value='"+(val?val:0)+"'></input></div></li>");
+        addVar:function(name,val,fromSave){
+            if(fromSave){
+                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><div class='var-name'>"+name+"</div><input class='var-value' value='"+(val?val:0)+"'></div></li>");
+            } else {
+                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><input class='var-name' value='"+name+"'><input class='var-value' value='"+(val?val:0)+"'></div></li>");
+            }
         },
         //Changes the value of a vr
         editVar:function(vr,val){
@@ -50,7 +55,7 @@ $(function(){
         },
         //Adds a page to the list
         addPage:function(name,music,bg,text,choices,onload){
-            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+decodeURI(text.replace(/'/g, "&#39;"))+"' choices="+JSON.stringify(choices)+" onload="+JSON.stringify(onload)+"><div class='page-button menu-button btn btn-default'>"+name+"</div></li>");
+            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+text.replace(/'/g, "&#39;")+"' choices='"+JSON.stringify(choices).replace(/'/g, "&#39;")+"' onload='"+JSON.stringify(onload).replace(/'/g, "&#39;")+"'><div class='page-button menu-button btn btn-default'>"+name+"</div></li>");
             this.p.uniquePages++;
         },
         //Removes a page from the list
@@ -94,14 +99,18 @@ $(function(){
                 $(group).children(".conditions").children(".condition").each(function(idx,itm){
                     var props = {};
                     $(itm).children(".cond-props").children(".cond-prop").each(function(i,o){
-                        props[$(o).attr("class").split(" ")[1]] = $(o).val();
+                        var val = parseInt($(o).val());
+                        if(isNaN(val)) val = $(o).val();
+                        props[$(o).attr("class").split(" ")[1]] = val;
                     });
                     gr.conds.push([$(itm).children(".conditions-select").val(),props]);
                 });
                 $(group).children(".effects").children(".effect").each(function(idx,itm){
                     var props = {};
                     $(itm).children(".effect-props").children(".effect-prop").each(function(i,o){
-                        props[$(o).attr("class").split(" ")[1]] = $(o).val();
+                        var val = parseInt($(o).val());
+                        if(isNaN(val)) val = $(o).val();
+                        props[$(o).attr("class").split(" ")[1]] = val;
                     });
                     gr.effects.push([$(itm).children(".effects-select").val(),props]);
                 });
@@ -203,8 +212,9 @@ $(function(){
                     if(!props){props = {};
                         var varProps = this.getVars();
                         props.scope = varProps.scope;
-                        props.vr = varProps.vars[0].name;
-                        props.vl = varProps.vars[0].val;
+                        var firstVar = Object.keys(varProps.vars)[0];
+                        props.vr = firstVar;
+                        props.vl = varProps.vars[firstVar];
                     }
                     var scope = 'Select a scope<select class="cond-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
                     var vr = 'Select a variable<select class="cond-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
@@ -227,8 +237,9 @@ $(function(){
                         props.scope = "event";
                         var varProps = this.getVars();
                         props.scope = varProps.scope;
-                        props.vr = varProps.vars[0].name;
-                        props.vl = varProps.vars[0].val;
+                        var firstVar = Object.keys(varProps.vars)[0];
+                        props.vr = firstVar;
+                        props.vl = varProps.vars[firstVar];
                     }
                     var scope = 'Select a scope<select class="effect-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
                     var vr = 'Select a variable<select class="effect-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
@@ -294,7 +305,7 @@ $(function(){
         //Sets all of the pages and vrs for saving
         setSaveData:function(form){
             //Get all of the variables
-            form.append("<input type='text' name='vrs' value="+JSON.stringify(this.getVars())+">");
+            form.append("<input type='text' name='vrs' value="+JSON.stringify(this.getVars().vars)+">");
             //Get all of the pages
             var pages = [];
             $(this.p.pagesCont).children(".page").each(function(idx,itm){
@@ -341,11 +352,13 @@ $(function(){
             var vars = {};
             //Get the current event's vars
             $(this.p.varsCont).children(".vr").each(function(idx,itm){
+                var name = $(itm).children(".var-button").children(".var-name").val();
+                if(!name) name = $(itm).children(".var-button").children(".var-name").text();
                 var val = parseInt($(itm).children(".var-button").children(".var-value").val());
-                if(!val) val = $(itm).children(".var-button").children(".var-value").val();
-                vars[$(itm).children(".var-button").children(".var-name").val()] = val;
+                if(isNaN(val)) val = $(itm).children(".var-button").children(".var-value").val();
+                vars[name] = val;
             });
-            if(!vars.length){
+            if(!Object.keys(vars).length){
                 scope = "scene";
                 vars = this.p.sceneVars;
                 if(!vars.length){
@@ -397,7 +410,7 @@ $(function(){
             var vars;
             switch(scope){
                 case "event":
-                    vars = this.getVars();
+                    vars = this.getVars().vars;
                     break;
                 case "scene":
                     vars = this.p.sceneVars;
@@ -407,8 +420,9 @@ $(function(){
                     break;
             }
             var opts = '';
-            for(var i=0;i<vars.length;i++){
-                opts+='<option value="'+vars[i].name+'">'+vars[i].name+'</option>';
+            var keys = Object.keys(vars);
+            for(var i=0;i<keys.length;i++){
+                opts+='<option value="'+keys[i]+'">'+keys[i]+'</option>';
             }
             return opts;
         },

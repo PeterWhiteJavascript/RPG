@@ -1,9 +1,8 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(scene,event){
+    Q.startScene = function(scene,event,characters){
         if(scene==="locations"){ 
             Q.stageScene("location",{location:event});
-            console.log(Q.state.p)
         }
         else {
             Q.load("json/story/events/"+scene+"/"+event+".json",function(){
@@ -12,7 +11,7 @@ Quintus.SceneFuncs=function(Q){
                 switch(data.kind){
                     case "story":
                         Q.clearStages();
-                        Q.stageScene("story",1,{data:data});
+                        Q.stageScene("story",1,{data:data,characters:characters});
                         break;
                     case "battleScene":
                         Q.loadTMX(data.map, function() {
@@ -35,10 +34,11 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
+        var characters = stage.options.characters;
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
-                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs}));
+                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters}));
             });
         });
     });
@@ -63,6 +63,7 @@ Quintus.SceneFuncs=function(Q){
     Q.GameObject.extend("CharacterGenerator",{
         init:function(){
             var data = Q.state.get("charGeneration");
+            this.personalityNames = data.personalityNames;
             this.personalities = data.personalities;
             this.traitsKeys = Object.keys(this.personalities.traits);
             this.scenes = data.scenes;
@@ -206,7 +207,6 @@ Quintus.SceneFuncs=function(Q){
             var chapter = "Chapter1-1";
             switch(prop){
                 case "name":
-                    console.log(char.natNum)
                     var numNameParts = this.getIdx(this.nameParts[char.natNum].nameParts,this.rand())+1;
                     var charName = "";
                     var main = this.nameParts[char.natNum].main;
@@ -238,12 +238,12 @@ Quintus.SceneFuncs=function(Q){
                 case "value":
                     return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
                 case "methodology":
-                    
                     return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
                 case "personality":
-                    var randPersonalityText = this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
-                    var randPersonality = this.personalities.traits[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
-                    return randPersonalityText+randPersonality;
+                    var rand = Math.floor(Math.random()*this.personalities.muchValues.length);
+                    var randPersonalityText = this.personalities.muchValues[rand];
+                    var randPersonality = this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
+                    return randPersonalityText+" "+randPersonality;
                     
             }
         },
@@ -311,13 +311,13 @@ Quintus.SceneFuncs=function(Q){
             var char = {};
             char.awards = data.awards?data.awards:this.setUpAwards();
             
-            char.nationality = data.nationality?this.nationalities[data.nationality]:this.generateProp("nationality",char);
-            char.natNum = typeof char.natNum !== 'undefined'?char.natNum:data.nationality;
+            char.nationality = Q._isNumber(data.nationality)?this.nationalities[data.nationality]:this.generateProp("nationality",char);
+            char.natNum = Q._isNumber(char.natNum)?char.natNum:data.nationality;
             
-            char.charClass = data.charClass?this.classNames[data.charClass]:this.generateProp("charClass",char);
-            char.classNum = typeof char.classNum !== 'undefined'?char.classNum:data.charClass;
+            char.charClass = Q._isNumber(data.charClass)?this.classNames[data.charClass]:this.generateProp("charClass",char);
+            char.classNum = Q._isNumber(char.classNum)?char.classNum:data.charClass;
             
-            char.skills = data.skills?getSkills(data.skills):
+            char.skills = data.skills?getSkills(data.skills):this.generateSkills(char);
             
             char.gender = data.gender?data.gender:this.generateProp("gender",char);
             char.level = data.level?data.level:this.generateProp("level",char);
@@ -326,12 +326,15 @@ Quintus.SceneFuncs=function(Q){
             
             char.equipment = data.equipment?getEquipment(data.equipment):this.randomizeEquipment(char);
             
-            char.value = data.value?data.value:50;
-            char.methodology = data.methodology?data.methodology:50;
+            char.value = data.value?data.value:this.generateProp("value",char);
+            char.methodology = data.methodology?data.methodology:this.generateProp("methodology",char);
             char.loyalty = data.loyalty?data.loyalty:50;
             char.morale = data.morale?data.morale:50;
             char.name = data.name?data.name:this.generateProp("name",char);
             char.combatStats = this.generateStats(char);
+            
+            char.personality = data.personality?data.personality:this.generateProp("personality");
+            
             return char;
         },
         setUpAwards:function(){

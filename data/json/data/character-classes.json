@@ -2,7 +2,16 @@
     "Legionnaire":{
         "description":"A cool legionnaire.",
         "move":4,
-        "zoc":1
+        
+        "modules":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}.",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}.",
+                "third":"I am {@personality}.",
+                "fourth":"I am a {@methodology} {@value}.",
+                "fifth":"I hope you'll hire me!"
+            }
+        }
     },
     "Berserker":{
         "description":"A cool rager.",

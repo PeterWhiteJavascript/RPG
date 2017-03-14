@@ -3,6 +3,7 @@ include("php-config.php");
 $name = addDashes($_POST['name']);
 $scene = addDashes($_POST['scene']);
 
+
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
 $file['vrs'] = json_decode($_POST['vrs']);
@@ -12,6 +13,21 @@ for($i=0;$i<count($file['pages']);$i++){
     $page = $file['pages'][$i];
     $page->name = urldecode($page->name);
     $page->text = urldecode($page->text);
+    //Loop through each choice on the page
+    foreach($page->choices as $choice){
+        $choice->displayText = urldecode($choice->displayText);
+        $choice->desc = urldecode($choice->desc);
+        $choice->page = urldecode($choice->page);
+        //Loop through each cond/effect on each choice
+        foreach($choice->groups as $group){
+            foreach($group->effects as $effect){
+                foreach($effect[1] as $key => $value){
+                    $effect[1]->$key = urldecode($effect[1]->$key);
+                }
+            }
+        }
+    }
+    
 }
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 

@@ -11,7 +11,7 @@ $(function(){
             if($(itm).children(".name").is("input")) name = $(itm).children(".name").val();
             else name = $(itm).children(".name").text();
             var val = parseInt($(itm).children(".val").val());
-            if(!val) val = $(itm).children(".val").val();
+            if(isNaN(val)) val = $(itm).children(".val").val();
             vars[name] = val;
         });
         var scene = $("#title").text();

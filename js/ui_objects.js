@@ -183,7 +183,6 @@ Quintus.UIObjects=function(Q){
         },
         insertPage:function(num){
             var page = this.p.pages[num];
-            console.log(num,this.p.pages)
             //Do the onload conditions/effects
             for(var i=0;i<page.onload.length;i++){
                 var on = page.onload[i];
@@ -197,8 +196,7 @@ Quintus.UIObjects=function(Q){
             
             //Play the music for the page
             Q.playMusic(page.music);
-            
-            var text = $('<div>'+page.text+'</div>');
+            var text = $('<div>'+this.processTextVars(page.text)+'</div>');
             var contentBox = this.p.textContent;
             $(contentBox).append(text);
             //Show the choices
@@ -221,7 +219,6 @@ Quintus.UIObjects=function(Q){
             $(this.p.textContent).empty();
         },
         getPageNum:function(pageName){
-            pageName = pageName.replace("%20"," ");
             for(var i=0;i<this.p.pages.length;i++){
                 if(this.p.pages[i].name===pageName){
                     return i;
@@ -233,6 +230,101 @@ Quintus.UIObjects=function(Q){
             var pageNum = this.p.pageNum = this.getPageNum(pageName);
             this.removePage();
             this.insertPage(pageNum);
+        },
+        getObjPathFromString:function(obj,i){
+            //If the i needs an index of an array
+            var arrProp = i.indexOf("[");
+            if(arrProp>=0){
+                var i2 = i.slice(0,arrProp);
+                var end = i.indexOf("]");
+                var num = i.slice(arrProp+1,end);
+                return obj[i2][num];
+            }
+            return obj[i];
+        },
+        //Finds a var
+        matchVar:function(text){
+            var t = this;
+            var replaceVar = function(text,c){
+                return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                    return processTextVarInstance(p1,c);
+                });
+            };
+            var processTextVarInstance = function(text,character){
+                var affected = text.slice(0,text.indexOf("@"));
+                var prop = text.slice(text.indexOf("@")+1,text.length);
+                var varText = "";
+                switch(affected){
+                    //Event var
+                    case "e":
+                        
+                        break;
+                    //Scene var
+                    case "s":
+                        
+                        break;
+                    //Global var
+                    case "g":
+                        prop.split('.').reduce(t.getObjPathFromString,Q.state.get("globalVars").vrs);
+                        break;
+                    //The save data (in the game state)
+                    case "save":
+                        return prop.split('.').reduce(t.getObjPathFromString,Q.state.get("saveData"));
+                    break;
+                    //Affected is not one of the above. It is a character
+                    default:
+                        var intAffected = parseInt(affected);
+                        var char;
+                        //Affecting a certain property of a character
+                        if(isNaN(intAffected)){
+                            char = character;
+                            return prop.split('.').reduce(t.getObjPathFromString, char);
+                        }
+                        char = t.p.characters[intAffected];
+                        //Character specific text
+                        if(char.officer){
+                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("characters")[affected].modules);
+                            //Run this first.
+                            var newText = replaceVar(varText,char);
+                            //If there's more, do it again.
+                            while(newText.indexOf("{")>=0){
+                                var newText = replaceVar(newText,char);    
+                            }
+                            return varText;
+                        }
+                        //CharClass specific text
+                        else {
+                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("charClasses")[char.charClass].modules);
+                            //Run this first.
+                            var newText = replaceVar(varText,char);
+                            //If there's more, do it again.
+                            while(newText.indexOf("{")>=0){
+                                var newText = replaceVar(newText,char);    
+                            }
+                            return newText;
+                        }
+                        break;
+                }
+                return varText;
+            };
+            //Find any variables and replace the string with the values
+            var replacedText = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                return processTextVarInstance(p1);
+            });
+            //If there are any vars
+            if (replacedText!==text) {
+                return replacedText;
+            }
+            return false;
+        },
+        processTextVars:function(text){
+            var newText = text;
+            //Match each of the variables one by one
+            do {
+                var textMatched = this.matchVar(newText);
+                if(textMatched) newText = textMatched;
+            } while(textMatched);
+            return newText;
         },
         checkConds:function(cond){
             var condsMet = true;
