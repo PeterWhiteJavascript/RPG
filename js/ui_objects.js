@@ -257,23 +257,22 @@ Quintus.UIObjects=function(Q){
                 switch(affected){
                     //Event var
                     case "e":
-                        
-                        break;
+                        return t.p.vrs[prop];
                     //Scene var
                     case "s":
-                        
-                        break;
+                        return Q.state.get("sceneVars")[prop];
                     //Global var
                     case "g":
-                        prop.split('.').reduce(t.getObjPathFromString,Q.state.get("globalVars").vrs);
-                        break;
+                        return Q.state.get("globalVars")[prop];
                     //The save data (in the game state)
                     case "save":
                         return prop.split('.').reduce(t.getObjPathFromString,Q.state.get("saveData"));
                     break;
                     //Affected is not one of the above. It is a character
                     default:
-                        var intAffected = parseInt(affected);
+                        var aff = affected.split(".");
+                        var intAffected = parseInt(aff[0]);
+                        var propAffected = aff[1];
                         var char;
                         //Affecting a certain property of a character
                         if(isNaN(intAffected)){
@@ -294,7 +293,17 @@ Quintus.UIObjects=function(Q){
                         }
                         //CharClass specific text
                         else {
-                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("charClasses")[char.charClass].modules);
+                            var affectedCategory;
+                            switch(propAffected){
+                                case "c":
+                                    affectedCategory = char.charClass;
+                                    break;
+                                case "p":
+                                    affectedCategory = char.personality;
+                                    break;
+                            }
+                            console.log(Q.state.get("modules"),propAffected,affectedCategory)
+                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
                             //Run this first.
                             var newText = replaceVar(varText,char);
                             //If there's more, do it again.
@@ -333,6 +342,7 @@ Quintus.UIObjects=function(Q){
                 for(var i=0;i<cond.length;i++){
                     //Run the condition's function (idx 0) with properties (idx 1)
                     condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
+                    if(!condsMet) return condsMet;
                 }
             }
             return condsMet;
@@ -357,18 +367,19 @@ Quintus.UIObjects=function(Q){
                 var vars;
                 switch(obj.scope){
                     case "event":
-                        var vars = t.p.vrs;
+                        vars = t.p.vrs;
                         break;
                     case "scene":
-                        var vars = Q.state.get("sceneVars");
+                        vars = Q.state.get("sceneVars");
                         break;
                     case "global":
-                        var vars = Q.state.get("globalVars");
+                        vars = Q.state.get("globalVars");
                         break;
                 }
-                for(var i=0;i<vars.length;i++){
-                    if(vars[i].name===obj.vr){
-                        if(vars[i].val===obj.vl){
+                var keys = Object.keys(vars);
+                for(var i=0;i<keys.length;i++){
+                    if(keys[i]===obj.vr){
+                        if(vars[keys[i]]===obj.vl){
                             return true;
                         } else {
                             return false;
@@ -380,6 +391,7 @@ Quintus.UIObjects=function(Q){
         effectFuncs:{
             setVar:function(t,obj){
                 var vars;
+                console.log(t,obj);
                 switch(obj.scope){
                     case "event":
                         var vars = t.p.vrs;
@@ -391,11 +403,7 @@ Quintus.UIObjects=function(Q){
                         var vars = Q.state.get("globalVars");
                         break;
                 }
-                for(var i=0;i<vars.length;i++){
-                    if(vars[i].name===obj.vr){
-                        vars[i].val = obj.vl;
-                    }
-                }
+                vars[obj.vr] = obj.vl;
             },
             changePage:function(t,obj){
                 t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];

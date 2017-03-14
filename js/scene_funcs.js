@@ -239,11 +239,10 @@ Quintus.SceneFuncs=function(Q){
                     return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
                 case "methodology":
                     return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
+                case "muchValue":
+                    return this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
                 case "personality":
-                    var rand = Math.floor(Math.random()*this.personalities.muchValues.length);
-                    var randPersonalityText = this.personalities.muchValues[rand];
-                    var randPersonality = this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
-                    return randPersonalityText+" "+randPersonality;
+                    return this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
                     
             }
         },
@@ -265,7 +264,7 @@ Quintus.SceneFuncs=function(Q){
                 encPenalty:100,
                 moveSpeed:0,//this.getSpeed(base),
                 move:Q.state.get("charClasses")[char.charClass].move,
-                zoc:Q.state.get("charClasses")[char.charClass].zoc
+                zoc:0//Q.state.get("charClasses")[char.charClass].zoc
             };
             stats.hp = stats.maxHp;
             stats.tp = stats.maxTp;
@@ -333,6 +332,7 @@ Quintus.SceneFuncs=function(Q){
             char.name = data.name?data.name:this.generateProp("name",char);
             char.combatStats = this.generateStats(char);
             
+            char.muchValue = data.muchValue?data.muchValue:this.generateProp("muchValue");
             char.personality = data.personality?data.personality:this.generateProp("personality");
             
             return char;

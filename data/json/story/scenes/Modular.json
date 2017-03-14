@@ -2,7 +2,9 @@
     "name": "Modular",
     "desc": "Initial code for modular scenes using character's variables.",
     "eventOrder": [
-        "Legionnaire-Test"
+        "Legionnaire-Test",
+        "Injustice!",
+        "Get-two-passwords"
     ],
     "vrs": []
 }

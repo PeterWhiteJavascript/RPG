@@ -305,7 +305,8 @@ $(function(){
         //Sets all of the pages and vrs for saving
         setSaveData:function(form){
             //Get all of the variables
-            form.append("<input type='text' name='vrs' value="+JSON.stringify(this.getVars().vars)+">");
+            var vrs = JSON.stringify(this.getVars().vars).trim().replace(/ /g, '%20');
+            form.append("<input type='text' name='vrs' value="+vrs+">");
             //Get all of the pages
             var pages = [];
             $(this.p.pagesCont).children(".page").each(function(idx,itm){

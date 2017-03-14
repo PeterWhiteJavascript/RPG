@@ -7,12 +7,27 @@ $scene = addDashes($_POST['scene']);
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
 
 $file['vrs'] = json_decode($_POST['vrs']);
+foreach($file['vrs'] as $key=>$value){
+    $file['vrs']->$key = urldecode($value);
+}
 $file['pages'] = json_decode($_POST['pages']);
 //Decode spaces and single quotes
 for($i=0;$i<count($file['pages']);$i++){
     $page = $file['pages'][$i];
     $page->name = urldecode($page->name);
     $page->text = urldecode($page->text);
+    foreach($page->onload as $group){
+        foreach($group->conds as $cond){
+            foreach($cond[1] as $key => $value){
+                $cond[1]->$key = urldecode($value);
+            }
+        }
+        foreach($group->effects as $effect){
+            foreach($effect[1] as $key => $value){
+                $effect[1]->$key = urldecode($value);
+            }
+        }
+    }
     //Loop through each choice on the page
     foreach($page->choices as $choice){
         $choice->displayText = urldecode($choice->displayText);
@@ -20,14 +35,21 @@ for($i=0;$i<count($file['pages']);$i++){
         $choice->page = urldecode($choice->page);
         //Loop through each cond/effect on each choice
         foreach($choice->groups as $group){
+            print_r($group);
+            foreach($group->conds as $cond){
+                foreach($cond[1] as $key => $value){
+                    $cond[1]->$key = urldecode($value);
+                }
+            }
             foreach($group->effects as $effect){
                 foreach($effect[1] as $key => $value){
-                    $effect[1]->$key = urldecode($effect[1]->$key);
+                    print_r($key);
+                    print_r($value);
+                    $effect[1]->$key = urldecode($value);
                 }
             }
         }
     }
-    
 }
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 

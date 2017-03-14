@@ -2,7 +2,7 @@
     "alex":{
         "name": "Alex",
         "level":1,
-        "gender":"male",
+        "gender":"Male",
         "equipment":{
             "righthand":["weapon","woodenSword"],
             "lefthand":["shield","woodenShield"],
@@ -33,18 +33,55 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true,
-        "modules":{
-            
-        }
+        "officer":true
     },
     "astrea":{
         "name": "Astrea",
         "level":1,
-        "gender":"female",
+        "gender":"Female",
+        "desc":"Astraea is a champion warrior, noble landholder in Borios (the northern province of Venoriae), and wife of Vicanti.",
         "equipment":{
-            "righthand":["weapon","woodenBow"],
-            "lefthand":false,
+            "righthand":["weapon","woodenSpear"],
+            "lefthand":["shield","ironShield"],
+            "body":["body","ironArmour"],
+            "feet":["feet","ironBoots"],
+            "accessory":false
+        },
+        "baseStats":{
+            "str":10,
+            "end":10,
+            "dex":15,
+            "wsk":15,
+            "rfl":11,
+            "ini":13,
+            "enr":15,
+            "skl":18,
+            "eff":12
+        },
+        "techniques":{
+            "Vanguard":[0,1]
+        },
+        "nationality":0,
+        "charClass":2,
+        "value":"Alruistic",
+        "methodology":"Intuitive",
+        "muchValue":"A little",
+        "personality":"Violent",
+        "exp":0,
+        "primaryStat":"str",
+        "secondaryStat":"end",
+        "loyalty":50,
+        "morale":50,
+        "officer":true
+    },
+    "Lysandra":{
+        "name": "Lysandra",
+        "level":1,
+        "gender":"Female",
+        "desc":"Lysandra is the leader of a rebel organization working against the Venorian government, as well as a competent con artist and generally anarchist ",
+        "equipment":{
+            "righthand":["weapon","woodenSling"],
+            "lefthand":["weapon","copperDagger"],
             "body":["body","shirt"],
             "feet":["feet","sandals"],
             "accessory":false
@@ -61,21 +98,40 @@
             "eff":12
         },
         "techniques":{
-            "Archer":[0,1]
+            "Illusionist":[0,1]
         },
         "nationality":0,
-        "charClass":5,
-        "value":"Nepotist",
-        "methodology":"Pragmatic",
-        "personality":["A little Violent"],
+        "charClass":6,
+        "value":"Egoistic",
+        "methodology":"Kind",
+        "muchValue":"A little",
+        "personality":"Violent",
         "exp":0,
         "primaryStat":"str",
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true,
-        "modules":{
-            
-        }
+        "officer":true
+    },
+    "Gaios":{
+
+    },
+    "Imamu":{
+
+    },
+    "Rutendo":{
+
+    },
+    "Nala":{
+
+    },
+    "Sjrna":{
+
+    },
+    "Eko":{
+
+    },
+    "Nicodermus":{
+
     }
 }

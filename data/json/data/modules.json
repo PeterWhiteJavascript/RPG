@@ -1,0 +1,221 @@
+{
+    "o":{
+        "Alex":{
+            "props":{
+                "gender":"{@gender}"
+            }
+        },
+        "Astrea":{
+            
+        },
+        "Lysandra":{
+            
+        },
+        "Gaios":{
+            
+        },
+        "Imamu":{
+            
+        },
+        "Rutendo":{
+            
+        },
+        "Nala":{
+            
+        },
+        "Sjrna":{
+            
+        },
+        "Eko":{
+            
+        },
+        "Nicodermus":{
+            
+        }
+    },
+    "c":{
+        "Legionnaire":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Berserker":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Vanguard":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Archer":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Skirmisher":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Assassin":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Elementalist":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Illusionist":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+
+        "Healer":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        },
+        "Default":{
+            "IntroduceChar":{
+                "first":"Hello, I'm {@name}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
+                "third":"I am {@personality}",
+                "fourth":"I am a {@methodology} {@value}",
+                "fifth":"I hope you'll hire me"
+            }
+        }
+    },
+    "p":{
+        "Sensitive":{
+            "punc":{
+                "a":".",
+                "b":"."
+            }
+        },
+        "Impassive":{
+            "punc":{
+                "a":".",
+                "b":"."
+            }
+        },
+        "Unmotivated":{
+            "punc":{
+                "a":".",
+                "b":"."
+            }
+        },
+        "Curious":{
+            "punc":{
+                "a":" @_@.",
+                "b":" ^_^!"
+            }
+        },
+        "Clingy":{
+            "punc":{
+                "a":"!",
+                "b":"!"
+            }
+        },
+        "Nonpartisan":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        },
+        "Charismatic":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        },
+        "Awkward":{
+            "punc":{
+                "a":"..",
+                "b":".!."
+            }
+        },
+        "Violent":{
+            "punc":{
+                "a":"!!",
+                "b":"!!!"
+            }
+        },
+        "Pacifistic":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        },
+        "Hedonistic":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        },
+        "Ascetic":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        },
+        "Extraverted":{
+            "punc":{
+                "a":"!",
+                "b":"!"
+            }
+        },
+        "Shy":{
+            "punc":{
+                "a":"..",
+                "b":"..."
+            }
+        },
+        "Default":{
+            "punc":{
+                "a":".",
+                "b":"!"
+            }
+        }
+    }
+}

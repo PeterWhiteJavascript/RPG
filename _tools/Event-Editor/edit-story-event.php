@@ -109,7 +109,7 @@ $sceneVars = json_decode(file_get_contents('../../data/json/story/scenes/'.$scen
                 <div id="onload">
                     <h2>On load:</h2>
                     <ul>
-                        <li class="onload-li">
+                        <li class="onload-li sortable">
                             <p class="editor-descriptor">Condition/Effect Groups: </p>
                             <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
 

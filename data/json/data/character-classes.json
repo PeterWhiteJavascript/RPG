@@ -1,57 +1,39 @@
 {
     "Legionnaire":{
         "description":"A cool legionnaire.",
-        "move":4,
-        
-        "modules":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}.",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}.",
-                "third":"I am {@personality}.",
-                "fourth":"I am a {@methodology} {@value}.",
-                "fifth":"I hope you'll hire me!"
-            }
-        }
+        "move":4
     },
     "Berserker":{
         "description":"A cool rager.",
-        "move":4,
-        "zoc":1
+        "move":4
     },
     "Vanguard":{
         "description":"A cool vanguard.",
-        "move":4,
-        "zoc":2
+        "move":4
     },
     "Archer":{
         "description":"A cool archer.",
-        "move":4,
-        "zoc":0
+        "move":4
     },
     "Skirmisher":{
         "description":"A cool skirmisher.",
-        "move":4,
-        "zoc":1
+        "move":4
     },
     "Assassin":{
         "description":"A cool assassin.",
-        "move":5,
-        "zoc":0
+        "move":5
     },
     "Elementalist":{
         "description":"A cool elementalist.",
-        "move":3,
-        "zoc":1
+        "move":3
     },
     "Illusionist":{
         "description":"A cool illusionist.",
-        "move":3,
-        "zoc":0
+        "move":3
     },
     
     "Healer":{
         "description":"A cool healer.",
-        "move":3,
-        "zoc":0
+        "move":3
     }
 }

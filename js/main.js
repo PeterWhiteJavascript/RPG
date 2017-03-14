@@ -219,6 +219,7 @@ var files = [
     "json/data/awards.json",
     "json/data/ui_objects.json",
     "json/data/tile_types.json",
+    "json/data/modules.json",
     
     "json/story/global-vars.json"
 ];
@@ -248,6 +249,8 @@ Q.load(files.join(','),function(){
     Q.state.set("charGeneration",Q.assets['json/data/character-generation.json']);
     //The global variables that are set in global-vars.json
     Q.state.set("globalVars",Q.assets['json/story/global-vars.json']);
+    //The modules for text replacement
+    Q.state.set("modules",Q.assets["json/data/modules.json"]);
     
     //Get the equipment in the proper format
     Q.organizeEquipment();
