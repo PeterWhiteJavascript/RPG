@@ -265,8 +265,19 @@ Quintus.UIObjects=function(Q){
                     case "g":
                         return Q.state.get("globalVars")[prop];
                     //The save data (in the game state)
-                    case "save":
+                    case "d":
                         return prop.split('.').reduce(t.getObjPathFromString,Q.state.get("saveData"));
+                    break;
+                    case "o":
+                        varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules").o);
+                        var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0]})[0];//Q.state.get("modules").o[prop.split('.')[0]];
+                        //Run this first.
+                        var newText = replaceVar(varText,char);
+                        //If there's more, do it again.
+                        while(newText.indexOf("{")>=0){
+                            newText = replaceVar(newText,char);    
+                        }
+                        return newText;
                     break;
                     //Affected is not one of the above. It is a character
                     default:
@@ -278,41 +289,27 @@ Quintus.UIObjects=function(Q){
                         if(isNaN(intAffected)){
                             char = character;
                             return prop.split('.').reduce(t.getObjPathFromString, char);
-                        }
+                        } 
+                        
                         char = t.p.characters[intAffected];
-                        //Character specific text
-                        if(char.officer){
-                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("characters")[affected].modules);
-                            //Run this first.
-                            var newText = replaceVar(varText,char);
-                            //If there's more, do it again.
-                            while(newText.indexOf("{")>=0){
-                                var newText = replaceVar(newText,char);    
-                            }
-                            return varText;
-                        }
                         //CharClass specific text
-                        else {
-                            var affectedCategory;
-                            switch(propAffected){
-                                case "c":
-                                    affectedCategory = char.charClass;
-                                    break;
-                                case "p":
-                                    affectedCategory = char.personality;
-                                    break;
-                            }
-                            console.log(Q.state.get("modules"),propAffected,affectedCategory)
-                            varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
-                            //Run this first.
-                            var newText = replaceVar(varText,char);
-                            //If there's more, do it again.
-                            while(newText.indexOf("{")>=0){
-                                var newText = replaceVar(newText,char);    
-                            }
-                            return newText;
+                        var affectedCategory;
+                        switch(propAffected){
+                            case "c":
+                                affectedCategory = char.charClass;
+                                break;
+                            case "p":
+                                affectedCategory = char.personality;
+                                break;
                         }
-                        break;
+                        varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
+                        //Run this first.
+                        var newText = replaceVar(varText,char);
+                        //If there's more, do it again.
+                        while(newText.indexOf("{")>=0){
+                            newText = replaceVar(newText,char);    
+                        }
+                        return newText;
                 }
                 return varText;
             };

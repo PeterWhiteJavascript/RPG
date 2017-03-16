@@ -208,38 +208,38 @@
     },
     "nameParts":[
         {
-            "nameParts":[2,20,50,20,8],
-            "addonMale":[25,15,25,15,20],
+            "nameParts":[74,14,10,2,0],
+            "addonMale":[12,7,13,8,12,7,13,8,20],
             "addonFemale":[25,25,20,20,10],
-            "main":["ander","ale","arde","anth","ac","cal","cil","cas","cor","car","ic","in","is","it","im","neth","nic","ny","na","nod","ode","or","on","oc","ot","thea","tan","tor","ty","te","vita","vic","val","von","ve"],
-            "Male":["der","on","an","ic"],
+            "main":["ander","ale","arde","anth","ac","bor","dan","el","cal","cil","cas","cor","car","fian","jac","ly","ic","in","is","il","im","marde","pil","ric","neth","nic","ny","na","nod","rex","sid","ube","ode","or","on","oc","ot","war","xil","zan","thea","tan","tor","ty","te","det","ef","moc","vita","vic","val","von","ve","por","san","ry"],
+            "Male":["der","on","an","ic","ian","ous","cles","en"],
             "Female":["y","a","ra","da"]
         },{
-            "nameParts":[0,50,40,8,2],
-            "addonMale":[25,25,20,20,10],
-            "addonFemale":[10,25,25,20,10],
-            "main":["as","av","ak","aud","ast","eig","eit","eir","er","el","hilde","öf","öl","öd","ös","ör","jio","jo","ji","je","ran","re","raut","reig","r","so","sa","se","si","sö","yg","yd","yt","yf","yl"],
-            "Male":["or","ed","at","ig"],
-            "Female":["ye","ae","ja","se"]
+            "nameParts":[54,34,10,2,0],
+            "addonMale":[6,6,6,6,20,20,20,6,10],
+            "addonFemale":[6,6,6,6,20,20,6,20,10],
+            "main":["as","av","ak","aud","ast","brun","cor","dof","eig","eit","eir","er","el","fig","gun","ha","öst","öf","öl","öd","ös","ikk","lif","mar","ör","jio","jo","ji","je","nor","pan","tia","ran","re","raut","reig","ry","un","ulf","ut","so","sa","se","si","sö","vol","van","vog","yg","yd","yt","yf","yl","wurst","wun","wa"],
+            "Male":["or","ed","at","ig","reid","son","sun","ög"],
+            "Female":["ye","ae","ja","se","sdotter","rid","dis","hild"]
         },{
-            "nameParts":[20,30,30,15,5],
-            "addonMale":[15,15,15,30,25],
-            "addonFemale":[15,15,15,30,25],
-            "main":["al", "ag", "ai", "ad", "af", "din", "dja", "daj", "dogh", "dji", "go", "gam", "gat", "gip", "get", "ji", "jo", "ja", "jaf", "jinn", "qu", "que", "quo", "qui", "’", "sim", "sin", "sihm", "sihj", "sihn", "zh", "zha", "zho", "zhin", "zhan"],
-            "Male":["had","hed","ihm","aht"],
-            "Female":["ba","la","get","af"]
+            "nameParts":[43,50,7,0,0],
+            "addonMale":[7,8,7,15,8,7,8,15,25],
+            "addonFemale":[7,8,7,15,8,7,8,15,25],
+            "main":["al","ag","ai","ad","af","ba","ca","eb","din","dja","daj","dogh","dji","fan","hal","han","go","gam","gat","gip","get","hag","har","khad","ji","jo","ja","jaf","jinn","kha","kil","lan","qu","que","quo","qui","lad","mu","mur","mug","sim","sin","sihm","sihj","sihn","naa","nab","nau","zhe","zha","zho","zhin","zhan","on","ob","oh"],
+            "Male":["had","hed","ihm","aht","mal","din","far","go"],
+            "Female":["ba","la","get","af","yin","min","ya","iya"]
         },{
-            "nameParts":[20,20,20,20,20],
+            "nameParts":[28,46,20,4,2],
             "addonMale":[0,0,0,0,100],
             "addonFemale":[0,0,0,0,100],
-            "main":["bo", "ba", "bao", "buk", "bua", "do", "da", "dum", "dun", "dok", "fi", "fa", "fe", "fuo", "fua", "galo", "gam", "ga", "go", "gom", "ma", "mua", "mu", "mo", "mad", "tuo", "tua", "talu", "tam", "to", "zo", "za", "zu", "zala", "zolu"],
+            "main":["bo","ba","bao","buk","bua","ca","cua","ek","do","da","dum","dun","dok","ha","ho","hu","fi","fa","fe","fuo","fua","ik","ka","lo","galo","gam","ga","go","gom","no","oa","on","ma","mua","mu","mo","mad","pa","pu","ra","tuo","tua","talu","tam","to","sa","uo","wo","zo","za","zu","zala","zolu","wa","wi","na"],
             "Male":[""],
             "Female":[""]
         },{
-            "nameParts":[0,33,44,23,0],
+            "nameParts":[43,44,10,3,0],
             "addonMale":[50,25,15,9,1],
             "addonFemale":[50,25,15,9,1],
-            "main":["dug", "dunt", "du", "dull", "duur", "fan", "fen", "fon", "fur", "fell", "het", "hec", "hel", "herd", "hup", "kuul", "krey", "key", "kaz", "krep", "ran", "ren", "rom", "rud", "ruc", "won", "wun", "woth", "wurth", "went", "yu", "yer", "yop", "yun", "yeng"],
+            "main":["dug","dunt","du","dull","duur","bux","cerd","griet","fan","fen","fon","fur","fell","justli","lung","med","het","hec","hel","herd","hup","nupi","pent","spill","kuul","krey","key","kaz","krep","trii","velai","zuu","ran","ren","rom","rud","ruc","but","cen","guni","won","wun","woth","wurth","went","jer","leagh","mall","yu","yer","yop","yun","yeng","nut","pock","stey"],
             "Male":["Pin-","Onk-","Merk-"],
             "Female":["Pincol-","Lied-","Wurk-"]
         }

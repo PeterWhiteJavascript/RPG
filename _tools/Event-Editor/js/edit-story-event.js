@@ -44,9 +44,9 @@ $(function(){
         //Adds a var to the list
         addVar:function(name,val,fromSave){
             if(fromSave){
-                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><div class='var-name'>"+name+"</div><input class='var-value' value='"+(val?val:0)+"'></div></li>");
+                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
             } else {
-                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><input class='var-name' value='"+name+"'><input class='var-value' value='"+(val?val:0)+"'></div></li>");
+                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
             }
         },
         //Changes the value of a vr
@@ -68,8 +68,12 @@ $(function(){
         },
         //Copies the currently selected page and adds it to the end
         copyPage:function(){
+            //Save the current page
+            this.savePage();
+            //Get the page
             var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
-            this.addPage(page.name+" Copy",page.music,page.bg,page.text,page.choices,page.onload);
+            //Copy the page
+            this.addPage($(page).text()+" Copy "+DC.p.uniquePages,$(page).attr("music"),$(page).attr("bg"),$(page).attr("text"),JSON.parse($(page).attr("choices")),JSON.parse($(page).attr("onload")));
         },
         savePage:function(){
             var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
@@ -305,7 +309,11 @@ $(function(){
         //Sets all of the pages and vrs for saving
         setSaveData:function(form){
             //Get all of the variables
-            var vrs = JSON.stringify(this.getVars().vars).trim().replace(/ /g, '%20');
+            var v = this.getVars();
+            var vrs = "{}";
+            if(v.scope==="event"){
+                vrs = JSON.stringify(v.vars).trim().replace(/ /g, '%20');
+            }
             form.append("<input type='text' name='vrs' value="+vrs+">");
             //Get all of the pages
             var pages = [];

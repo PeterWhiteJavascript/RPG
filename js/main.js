@@ -126,7 +126,14 @@ Q.newGame=function(options){
         var alex = Q.state.get("characters").alex;
         //Gender is based on what the player selected
         alex.gender = options.gender;
+        //Set the gendered words for Alex
+        Q.state.get("modules").o.Alex.p.g = Q.state.get("modules").o.Alex.genders[alex.gender];
+        
+        
+        
         var storyAlex = Q.charGen.generateCharacter(alex);
+        //Set the catchphrase for Alex
+        storyAlex.catchphrase = "It's a me, Mario!";
         //For now, alex is the only character
         Q.state.set("allies",[storyAlex,Q.charGen.generateCharacter({charClass:0})]);
         //Set up the new game bag
@@ -248,7 +255,7 @@ Q.load(files.join(','),function(){
     //A bunch of values for generating random characters
     Q.state.set("charGeneration",Q.assets['json/data/character-generation.json']);
     //The global variables that are set in global-vars.json
-    Q.state.set("globalVars",Q.assets['json/story/global-vars.json']);
+    Q.state.set("globalVars",Q.assets['json/story/global-vars.json'].vrs);
     //The modules for text replacement
     Q.state.set("modules",Q.assets["json/data/modules.json"]);
     
