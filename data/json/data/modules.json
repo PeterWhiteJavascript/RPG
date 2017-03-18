@@ -64,11 +64,11 @@
     "c":{
         "Legionnaire":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"I am {@personality}{m@p.punc.a}",
+                "fourth":"I am a {@methodology} {@value}{m@p.punc.a}",
+                "fifth":"I hope you'll hire me{m@p.punc.b} {m@c.IntroduceChar.first}"
             }
         },
         "Berserker":{

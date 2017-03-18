@@ -250,6 +250,26 @@ Quintus.UIObjects=function(Q){
                     return processTextVarInstance(p1,c);
                 });
             };
+            var processModule = function(prop,propAffected,char){
+                //CharClass specific text
+                var affectedCategory;
+                switch(propAffected){
+                    case "c":
+                        affectedCategory = char.charClass;
+                        break;
+                    case "p":
+                        affectedCategory = char.personality;
+                        break;
+                }
+                var varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
+                //Run this first.
+                var newText = replaceVar(varText,char);
+                //If there's more, do it again.
+                while(newText.indexOf("{")>=0){
+                    newText = replaceVar(newText,char);    
+                }
+                return newText;
+            };
             var processTextVarInstance = function(text,character){
                 var affected = text.slice(0,text.indexOf("@"));
                 var prop = text.slice(text.indexOf("@")+1,text.length);
@@ -279,37 +299,22 @@ Quintus.UIObjects=function(Q){
                         }
                         return newText;
                     break;
+                    //Modules from with modules
+                    case "m":
+                        var propAffected = prop.split('.')[0];
+                        return processModule(prop.slice(propAffected.length+1,prop.length),propAffected,character);
+                    break;
                     //Affected is not one of the above. It is a character
                     default:
-                        var aff = affected.split(".");
-                        var intAffected = parseInt(aff[0]);
-                        var propAffected = aff[1];
+                        var intAffected = parseInt(affected);
                         var char;
                         //Affecting a certain property of a character
                         if(isNaN(intAffected)){
                             char = character;
                             return prop.split('.').reduce(t.getObjPathFromString, char);
-                        } 
-                        
-                        char = t.p.characters[intAffected];
-                        //CharClass specific text
-                        var affectedCategory;
-                        switch(propAffected){
-                            case "c":
-                                affectedCategory = char.charClass;
-                                break;
-                            case "p":
-                                affectedCategory = char.personality;
-                                break;
                         }
-                        varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
-                        //Run this first.
-                        var newText = replaceVar(varText,char);
-                        //If there's more, do it again.
-                        while(newText.indexOf("{")>=0){
-                            newText = replaceVar(newText,char);    
-                        }
-                        return newText;
+                        var propAffected = prop.split('.')[0];
+                        return processModule(prop.slice(propAffected.length+1,prop.length),propAffected,t.p.characters[intAffected]);
                 }
                 return varText;
             };
