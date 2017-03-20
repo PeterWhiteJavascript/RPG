@@ -95,7 +95,7 @@
             "name": "Random Character",
             "music": "demo.mp3",
             "bg": "bg\/959396-river.jpg",
-            "text": "This is the random character that gets put into this scene for testing. {0.c@IntroduceChar.first}{0.p@punc.a} {0.c@IntroduceChar.second}{0.p@punc.a} {0.c@IntroduceChar.third}{0.p@punc.a} {0.c@IntroduceChar.fourth}{0.p@punc.a} {0.c@IntroduceChar.fifth}{0.p@punc.b}",
+            "text": "This is the random character that gets put into this scene for testing.{0@c.IntroduceChar.first} {0@c.IntroduceChar.second} {0@c.IntroduceChar.third} {0@c.IntroduceChar.fourth} {0@c.IntroduceChar.fifth}",
             "choices": [
                 {
                     "displayText": "Back",

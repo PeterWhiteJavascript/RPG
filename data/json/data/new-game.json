@@ -30,7 +30,7 @@
             
         ]
     },
-    "money":2000,
+    "money":200,
     "week":1,
         
     "influence":{
@@ -50,5 +50,8 @@
     },
     
     "startSceneName":"locations",
-    "startEventName":"metaximo1"
+    "startEventName":"metaximo1",
+    
+    "chapter":"Chapter1-1",
+    "applicationsRoster":[]
 }

@@ -204,7 +204,7 @@ Quintus.SceneFuncs=function(Q){
             return Math.ceil(Math.random()*100);
         },
         generateProp:function(prop,char){
-            var chapter = "Chapter1-1";
+            var chapter = Q.state.get("saveData").chapter;
             switch(prop){
                 case "name":
                     var numNameParts = this.getIdx(this.nameParts[char.natNum].nameParts,this.rand())+1;

@@ -122,6 +122,9 @@ Q.organizeEquipment=function(){
 Q.newGame=function(options){
     //Load the default starting data
     Q.load("json/data/new-game.json",function(){
+        //Set up the save data
+        Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
+        
         //The main character's object
         var alex = Q.state.get("characters").alex;
         //Gender is based on what the player selected
@@ -135,7 +138,7 @@ Q.newGame=function(options){
         //Set the catchphrase for Alex
         storyAlex.catchphrase = "It's a me, Mario!";
         //For now, alex is the only character
-        Q.state.set("allies",[storyAlex,Q.charGen.generateCharacter({charClass:0})]);
+        Q.state.set("allies",[storyAlex]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[
@@ -148,8 +151,13 @@ Q.newGame=function(options){
             accessory:[],
             key:[]
         }}));
-        //Set up the save data
-        Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
+        //Set up the applications roster
+        //For now, there will be 4 random characters in it
+        var freeSpaces = 4;
+        for(var i=0;i<freeSpaces;i++){
+            var char = Q.charGen.generateCharacter({});
+            Q.state.get("saveData").applicationsRoster.push(char);
+        };
         
         
         //TESTING ONLY

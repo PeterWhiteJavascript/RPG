@@ -37,17 +37,28 @@ Quintus.UIObjects=function(Q){
             
         },
         inserted:function(){
-            this.createCont("main-menu");
+            this.p.menuCont = this.createCont("main-menu");
+            this.p.midCont = this.createCont("mid-cont");
+            this.p.leftCont = this.createCont("left-cont");
+            $(this.p.leftCont).hide();
             this.createMainMenu();
+            this.createRecruitMenu();
+        },
+        emptyConts:function(){
+            this.p.menuCont.empty();
+            this.p.midCont.empty();
+            this.p.leftCont.empty();
+            this.p.leftCont.hide();
+            if(this.p.characterMenu) this.p.characterMenu.destroy();
         },
         createCont:function(cl){
             var cont = $('<div class='+cl+'></div>');
             $(document.body).append(cont);
-            this.p.menuCont = cont;
+            return cont;
         },
         createMainMenu:function(){
+            this.emptyConts();
             var cont = this.p.menuCont;
-            cont.empty();
             cont.append(
                 '<ul id="main-menu-ul">\n\
                     <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
@@ -62,8 +73,8 @@ Quintus.UIObjects=function(Q){
             });
         },
         createEntourageMenu:function(){
+            this.emptyConts();
             var cont = this.p.menuCont;
-            cont.empty();
             cont.append(
                 '<ul id="entourage-menu-ul">\n\
                     <li id="en-taskforce" class="btn btn-default" func="createTaskforceMenu">Taskforce</li>\n\
@@ -91,9 +102,9 @@ Quintus.UIObjects=function(Q){
             
         },
         createActionsMenu:function(){
+            this.emptyConts();
             var actions = this.p.location.actions;
             var cont = this.p.menuCont;
-            cont.empty();
             cont.append('<ul id="actions-menu-ul"></ul>');
             for(var i=0;i<actions.length;i++){
                 $("#actions-menu-ul").append('<li id="ac-'+actions[i]+'" class="btn btn-default" func="create'+actions[i]+'Menu">'+actions[i]+'</li>');
@@ -109,8 +120,49 @@ Quintus.UIObjects=function(Q){
         createCampaignMenu:function(){
             
         },
+        recruitCharacter:function(){
+            var money = Q.state.get("saveData").money;
+            if(money>=100){
+                Q.state.get("saveData").money-=100;
+                var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
+                    return a.name===$(".character.selected-color").attr("id");
+                })[0];
+                Q.state.get("allies").push(character);
+                Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
+                this.createRecruitMenu();
+            }
+        },
         createRecruitMenu:function(){
+            this.emptyConts();
+            $(this.p.leftCont).show();
+            var available = Q.state.get("saveData").applicationsRoster;
+            var cont = this.p.leftCont;
+            cont.append('<ul id="left-menu-ul"></ul>');
+            for(var i=0;i<available.length;i++){
+                $("#left-menu-ul").append('<li id="'+available[i].name+'" class="character btn btn-default" func="createCharacterMenu">'+available[i].name+'</li>');
+            }
+            var t = this;
+            $(".character").on("click",function(){
+                if(t.p.characterMenu) t.stage.remove(t.p.characterMenu);
+                $('.character').removeClass("selected-color");
+                $(this).addClass("selected-color");
+                var name = $(this).attr("id");
+                var target = Q.state.get("saveData").applicationsRoster.filter(function(a){
+                    return a.name===name;
+                })[0];
+                t.p.characterMenu = t.stage.insert(new Q.BigStatusBox({target:target}));
+            });
+            $(".character").first().trigger("click");
             
+            this.p.menuCont.append(
+                '<ul id="confirm-recruit-menu-ul">\n\
+                    <li id="co-recruit" class="btn btn-default" func="recruitCharacter">Recruit</li>\n\
+                    <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
+                </ul>'
+            );
+            $("#confirm-recruit-menu-ul li").click(function(){
+                Q.locationController[$(this).attr("func")]();
+            });
         },
         createFeastMenu:function(){
             
@@ -130,9 +182,9 @@ Quintus.UIObjects=function(Q){
         
         //Shows all characters and allows displaying their stats
         createLogMenu:function(){
+            this.emptyConts();
             var chars = Q.state.get("allies");
             var cont = this.p.menuCont;
-            cont.empty();
             cont.append('<ul id="actions-menu-ul"></ul>');
             for(var i=0;i<chars.length;i++){
                 $("#actions-menu-ul").append('<li id="'+chars[i].name+'" class="btn btn-default" func="createCharacterMenu">'+chars[i].name+'</li>');
@@ -158,9 +210,6 @@ Quintus.UIObjects=function(Q){
         },
         createOptionsMenu:function(){
             
-        },
-        removeMenu:function(menu){
-            $(menu).empty();
         }
     });
     
@@ -290,7 +339,7 @@ Quintus.UIObjects=function(Q){
                     break;
                     case "o":
                         varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules").o);
-                        var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0]})[0];//Q.state.get("modules").o[prop.split('.')[0]];
+                        var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0];})[0];
                         //Run this first.
                         var newText = replaceVar(varText,char);
                         //If there's more, do it again.
@@ -307,11 +356,9 @@ Quintus.UIObjects=function(Q){
                     //Affected is not one of the above. It is a character
                     default:
                         var intAffected = parseInt(affected);
-                        var char;
                         //Affecting a certain property of a character
                         if(isNaN(intAffected)){
-                            char = character;
-                            return prop.split('.').reduce(t.getObjPathFromString, char);
+                            return prop.split('.').reduce(t.getObjPathFromString, character);
                         }
                         var propAffected = prop.split('.')[0];
                         return processModule(prop.slice(propAffected.length+1,prop.length),propAffected,t.p.characters[intAffected]);

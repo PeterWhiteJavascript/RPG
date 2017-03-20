@@ -1,4 +1,5 @@
 Quintus.QFunctions=function(Q){
+    
     //Loads all unique assets that are used in a scene
     Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];
