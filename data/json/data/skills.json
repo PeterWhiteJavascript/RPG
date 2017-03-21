@@ -72,7 +72,20 @@
             "range":["normal",1],
             "desc":"A basic striking skill.",
             "rank":1
+        },
+        {
+            "name":"Super Whirlwind",
+            "cost":22,
+            "damageLow":20,
+            "damageHigh":20,
+            "range":["self",0],
+            "aoe":["normal",2],
+            "anim":"Whirlwind",
+            "sound":"whirlwind",
+            "desc":"A basic superwhirlwinding skill.",
+            "rank":4
         }
+        
     ],
     
     "Assassin":[
@@ -260,12 +273,90 @@
         }
     ],
     "Illusionist":[
+        {
+            "name":"Total Defense",
+            "cost":13,
+            "range":["self",0],
+            "aoe":["normal",1],
+            "affects":"ally",
+            "effect":{
+                "func":"changeStatus",
+                "props":["sturdy",1],
+                "accuracy":100
+            },
+            "desc":"A basic totaldefensing skill.",
+            "rank":1
+        },
+        {
+            "name":"Third Aid",
+            "cost":1,
+            "range":["normal",1],
+            "effect":{
+                "func":"healHp",
+                "props":[75],
+                "accuracy":100
+            },
+            "desc":"Heals 75 hp to a target.",
+            "rank":2
+        }
         
     ],
     "Elementalist":[
+        {
+            "name":"Total Defense",
+            "cost":13,
+            "range":["self",0],
+            "aoe":["normal",1],
+            "affects":"ally",
+            "effect":{
+                "func":"changeStatus",
+                "props":["sturdy",1],
+                "accuracy":100
+            },
+            "desc":"A basic totaldefensing skill.",
+            "rank":1
+        },
+        {
+            "name":"Third Aid",
+            "cost":1,
+            "range":["normal",1],
+            "effect":{
+                "func":"healHp",
+                "props":[75],
+                "accuracy":100
+            },
+            "desc":"Heals 75 hp to a target.",
+            "rank":2
+        }
         
     ],
     "Healer":[
+        {
+            "name":"Total Defense",
+            "cost":13,
+            "range":["self",0],
+            "aoe":["normal",1],
+            "affects":"ally",
+            "effect":{
+                "func":"changeStatus",
+                "props":["sturdy",1],
+                "accuracy":100
+            },
+            "desc":"A basic totaldefensing skill.",
+            "rank":1
+        },
+        {
+            "name":"Third Aid",
+            "cost":1,
+            "range":["normal",1],
+            "effect":{
+                "func":"healHp",
+                "props":[75],
+                "accuracy":100
+            },
+            "desc":"Heals 75 hp to a target.",
+            "rank":2
+        }
         
     ] 
    

@@ -126,7 +126,7 @@ Q.newGame=function(options){
         Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
         
         //The main character's object
-        var alex = Q.state.get("characters").alex;
+        var alex = Q.state.get("characters").Alex;
         //Gender is based on what the player selected
         alex.gender = options.gender;
         //Set the gendered words for Alex
@@ -165,7 +165,7 @@ Q.newGame=function(options){
         if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
         
         //Start a scene (TEST THE VARIABLES)
-        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
+        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,Q.state.get("allies"));
         
     });
 };
@@ -235,6 +235,7 @@ var files = [
     "json/data/ui_objects.json",
     "json/data/tile_types.json",
     "json/data/modules.json",
+    "json/data/story-events.json",
     
     "json/story/global-vars.json"
 ];
@@ -266,14 +267,23 @@ Q.load(files.join(','),function(){
     Q.state.set("globalVars",Q.assets['json/story/global-vars.json'].vrs);
     //The modules for text replacement
     Q.state.set("modules",Q.assets["json/data/modules.json"]);
-    
+    //All important story events that happen on a certain week
+    Q.state.set("storyEvents",Q.assets["json/data/story-events.json"].events);
     //Get the equipment in the proper format
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     
     
+    //The battle controller holds all battle specific functions
+    Q.BatCon = new Q.BattleController();
+    //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
+    Q.BattleGrid = new Q.BattleGridObject();
+    //The character generator used to create random characters and fill in properties from the save data.
     Q.charGen = new Q.CharacterGenerator();
+    //The functions that take text from the modules.json
+    Q.textModules = new Q.TextModules();
+    
     
     /* TESTING EVENT */
     if(document.getElementById("title")&&document.getElementById("title").innerHTML.length){

@@ -59,190 +59,284 @@
         },
         "Nicodermus":{
             
+        },
+        "Default":{
+            
         }
     },
     "c":{
         "Legionnaire":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}{m@p.punc.a}",
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
                 "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
-                "third":"I am {@personality}{m@p.punc.a}",
-                "fourth":"I am a {@methodology} {@value}{m@p.punc.a}",
-                "fifth":"I hope you'll hire me{m@p.punc.b} {m@c.IntroduceChar.first}"
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Berserker":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Vanguard":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Archer":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Skirmisher":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Assassin":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Elementalist":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Illusionist":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
 
         "Healer":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         },
         "Default":{
             "IntroduceChar":{
-                "first":"Hello, I'm {@name}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}",
-                "third":"I am {@personality}",
-                "fourth":"I am a {@methodology} {@value}",
-                "fifth":"I hope you'll hire me"
+                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m@p.punc.a}",
+                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m@p.punc.a}",
+                "third":"{m@p.intro.first} {m@t.intro.first} {m@v.intro.first}",
+                "fourth":"I hope you'll hire me{m@p.punc.b}"
             }
         }
     },
     "p":{
         "Sensitive":{
+            "intro":{
+                "first":"Uhm.. I'm a bit sensitive."
+            },
             "punc":{
                 "a":".",
-                "b":"."
+                "b":".",
+                "c":"?"
             }
         },
         "Impassive":{
+            "intro":{
+                "first":"Meh, I'm impassive."
+            },
             "punc":{
                 "a":".",
-                "b":"."
+                "b":".",
+                "c":"?"
             }
         },
         "Unmotivated":{
+            "intro":{
+                "first":"Ugh, do I have to do this? I'm not motivated."
+            },
             "punc":{
                 "a":".",
-                "b":"."
+                "b":".",
+                "c":"?"
             }
         },
         "Curious":{
+            "intro":{
+                "first":"Hmm, it might be interesting to tag along with you!"
+            },
             "punc":{
-                "a":" @_@.",
-                "b":" ^_^!"
+                "a":".",
+                "b":" ^_^",
+                "c":"?"
             }
         },
         "Clingy":{
+            "intro":{
+                "first":"Don't leave me!"
+            },
             "punc":{
                 "a":"!",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Nonpartisan":{
+            "intro":{
+                "first":"I'll do my own thing."
+            },
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Charismatic":{
+            "intro":{
+                "first":"Let's work together!"
+            },
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Awkward":{
+            "intro":{
+                "first":"Hmm.. I dunno..."
+            },
             "punc":{
                 "a":"..",
-                "b":"..!"
+                "b":"..!",
+                "c":"?"
             }
         },
         "Violent":{
+            "intro":{
+                "first":"YEAH!!! Let's go fight!"
+            },
             "punc":{
                 "a":"!!",
-                "b":"!!!"
+                "b":"!!!",
+                "c":"?"
             }
         },
         "Pacifistic":{
+            "intro":{
+                "first":"I'd rather not fight."
+            },
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Hedonistic":{
+            "intro":{
+                "first":"Your party seems like fun! I'm all about fun!"
+            },
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Ascetic":{
+            "intro":{
+                "first":"I must live simply."
+            },
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Extraverted":{
+            "intro":{
+                "first":"Heyo, let's go!"
+            },
             "punc":{
                 "a":"!",
-                "b":"!"
+                "b":"!",
+                "c":"?"
             }
         },
         "Shy":{
+            "intro":{
+                "first":"Uhm.. hi."
+            },
             "punc":{
                 "a":"..",
-                "b":"..."
+                "b":"...",
+                "c":"?"
             }
         },
         "Default":{
             "punc":{
                 "a":".",
-                "b":"!"
+                "b":"!",
+                "c":"?"
+            }
+        }
+    },
+    "t":{
+        "Pragmatic":{
+            "intro":{
+                "first":"The logical way I think means I'm pragmatic{m@p.punc.b}"
+            }
+        },
+        "Intuitive":{
+            "intro":{
+                "first":"I use my intuition to solve problems{m@p.punc.b}"
+            }
+        },
+        "Kind":{
+            "intro":{
+                "first":"I try to be kind to people whenever I can{m@p.punc.b}"
+            }
+        },
+        "Default":{
+            "intro":{
+                "first":"..."
+            }
+        }
+    },
+    "v":{
+        "Egoist":{
+            "intro":{
+                "first":"I'm pretty cool, right{m@p.punc.c}"
+            }
+        },
+        "Nepotist":{
+            "intro":{
+                "first":"I put my friends first{m@p.punc.b}"
+            }
+        },
+        "Altruist":{
+            "intro":{
+                "first":"I think everyone should be treated as equals{m@p.punc.b}"
+            }
+        },
+        "Default":{
+            "intro":{
+                "first":"..."
             }
         }
     }

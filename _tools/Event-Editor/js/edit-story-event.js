@@ -38,7 +38,10 @@ $(function(){
             
             uniquePages:1,
             globalVars:JSON.parse($("#global-vars").attr("value")),
-            sceneVars:JSON.parse($("#scene-vars").attr("value"))
+            sceneVars:JSON.parse($("#scene-vars").attr("value")),
+            
+            locationEvents:JSON.parse($("#location-events").attr("value")),
+            characters:JSON.parse($("#characters").attr("value"))
                     
         },
         //Adds a var to the list
@@ -279,6 +282,18 @@ $(function(){
                     var event = 'Select an event<select class="effect-prop event" initial-value="'+props.event+'">'+this.eventOptions(props.scene)+'</select>';
                     content = scene+event;
                     break;
+                case "recruitChar":
+                    var chars = Object.keys(this.p.characters).splice(1,Object.keys(this.p.characters).length);
+                    if(!props){props = {};
+                        props.name = chars[0];
+                    }
+                    var char = 'Select a character to recruit<select class="effect-prop name" initial-value="'+props.name+'">';
+                    chars.forEach(function(c){
+                        char+='<option>'+c+'</option>';
+                    });
+                    char+='</select>';
+                    content = char;
+                    break;
             }
             return content;
         },
@@ -389,7 +404,7 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent"];
+            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });
@@ -441,11 +456,18 @@ $(function(){
             for(var i=0;i<keys.length;i++){
                 opts+='<option value="'+keys[i]+'">'+keys[i]+'</option>';
             }
+            opts+='<option value="locations">locations</option>';
             return opts;
         },
         eventOptions:function(scene){
             var opts = '';
-            var events = this.p.scenes[scene];
+            var events;
+            if(scene==="locations"){
+                events = this.p.locationEvents;
+            } else {
+                events = this.p.scenes[scene];
+            }
+            
             for(var i=0;i<events.length;i++){
                 opts+='<option value="'+events[i]+'">'+events[i]+'</option>';
             }
@@ -605,6 +627,13 @@ $(function(){
             $(this).parent().children(".vr").show();
             $(this).parent().children(".vl").show();
         }
+    });
+    
+    $(document).on("change",".scene",function(){
+        $(this).parent().children(".event").empty();
+        var scene = $(this).val();
+        $(this).parent().children(".event").append(DC.eventOptions(scene));
+        
     });
 });
 

@@ -1,0 +1,112 @@
+{
+    "name": "Introduction",
+    "desc": "Alex is introduced to Astrea.",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex meets sees a woman somewhere.",
+            "choices": [
+                {
+                    "displayText": "Greet",
+                    "desc": "Alex goes over to say hi.",
+                    "page": "Greet",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Don't Greet",
+                    "desc": "Alex doesn't say hi.",
+                    "page": "Don't Greet",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Greet",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex says hi to the woman. She says her name is Astrea.",
+            "choices": [
+                {
+                    "displayText": "Ask to join party",
+                    "desc": "Alex asks Astrea to join the party.",
+                    "page": "Join Party",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Say bye",
+                    "desc": "Alex says bye to Astrea.",
+                    "page": "Say Bye",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Don't Greet",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex doesn't do anything.",
+            "choices": [],
+            "onload": []
+        },
+        {
+            "name": "Join Party",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Astrea joins the party!",
+            "choices": [
+                {
+                    "displayText": "Go to Metaximo",
+                    "desc": "Alex and Astrea go to Metaximo.",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "locations",
+                                        "event": "metaximo1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "recruitChar",
+                            {
+                                "name": "Astrea"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Say Bye",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex leaves Astrea alone.",
+            "choices": [],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

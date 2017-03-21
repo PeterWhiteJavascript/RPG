@@ -15,7 +15,7 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
 
 
 $directory = '../../data/json/story/events';
-$scenes =  array_diff(scandir($directory), array('..', '.'));
+$scenes = array_diff(scandir($directory), array('..', '.'));
 
 $eventsJSON = (object)[];
 foreach($scenes as $key => $val){
@@ -30,6 +30,13 @@ foreach($scenes as $key => $val){
 $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true)['vrs'];
 
 $sceneVars = json_decode(file_get_contents('../../data/json/story/scenes/'.$scene.'.json'), true)['vrs'];
+
+$locationEvents = array_slice(scandir('../../data/json/story/locations'), 2);
+$locEvents = [];
+foreach($locationEvents as $ev){
+    $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
+}
+$characters = json_decode(file_get_contents('../../data/json/data/characters.json'), true);
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +48,10 @@ $sceneVars = json_decode(file_get_contents('../../data/json/story/scenes/'.$scen
         <div id="global-vars" value='<?php echo json_encode($globalVars); ?>'></div>
         <div id="scene-vars" value='<?php echo json_encode($sceneVars); ?>'></div>
         <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
+        <div id="location-events" value='<?php echo json_encode($locEvents); ?>'></div>
+        <div id="characters" value='<?php echo json_encode($characters); ?>'></div>
+        
+        
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         

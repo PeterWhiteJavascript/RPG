@@ -1,5 +1,5 @@
 {
-    "alex":{
+    "Alex":{
         "name": "Alex",
         "level":1,
         "gender":"Male",
@@ -35,7 +35,7 @@
         "morale":50,
         "officer":true
     },
-    "astrea":{
+    "Astrea":{
         "name": "Astrea",
         "level":1,
         "gender":"Female",
@@ -72,7 +72,11 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true
+        "officer":true,
+        
+        "events":{
+            
+        }
     },
     "Lysandra":{
         "name": "Lysandra",

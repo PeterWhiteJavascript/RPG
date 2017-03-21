@@ -21,6 +21,39 @@ Quintus.UIObjects=function(Q){
             },desc.length*25);
         });
     });
+    Q.component("time",{
+        added:function(){
+            this.entity.on("cycleWeek",this,"cycleWeek");
+        },
+        checkWeek:function(week){
+            //Check the story events first as they are the most important.
+            //Story events (important ones)
+            var storyEvents = Q.state.get("storyEvents");
+            if(storyEvents[week]){
+                return storyEvents[week];
+            }
+            console.log(storyEvents,week)
+            //If there was no story event this week, check all allies to see if any of them should do a scene.
+           /* var allies = Q.state.get("allies");
+            var potentialEvents = [];
+            //Get a list of all events that could be played
+            allies.forEach(function(ally){potentialEvents.concat(ally.p.queuedEvents);});
+            
+            
+            
+            
+            
+            return event;*/
+        },
+        cycleWeek:function(){
+            Q.state.get("saveData").week++;
+            var event = this.checkWeek(Q.state.get("saveData").week);
+            if(event){
+                Q.startScene(event.scene,event.event);
+                Q.locationController.hideAll();
+            }
+        }
+    });
     //Using CSS/Jquery, create the locations controller
     //This is used when the player goes to a location and selects from different menu options.
     Q.UI.Container.extend("LocationController",{
@@ -34,6 +67,7 @@ Quintus.UIObjects=function(Q){
             this.p.x+=10;
             this.p.y+=10;
             this.on("inserted");
+            this.add("time");
             
         },
         inserted:function(){
@@ -42,7 +76,13 @@ Quintus.UIObjects=function(Q){
             this.p.leftCont = this.createCont("left-cont");
             $(this.p.leftCont).hide();
             this.createMainMenu();
-            this.createRecruitMenu();
+            //this.createRecruitMenu();
+        },
+        hideAll:function(){
+            this.emptyConts();
+            $(this.p.menuCont).hide();
+            $(this.p.leftCont).hide();
+            $(this.p.midCont).hide();
         },
         emptyConts:function(){
             this.p.menuCont.empty();
@@ -130,6 +170,38 @@ Quintus.UIObjects=function(Q){
                 Q.state.get("allies").push(character);
                 Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
                 this.createRecruitMenu();
+                this.trigger("cycleWeek");
+            }
+        },
+        showRecruitCharacterCard:function(obj,target){
+            var pro = Q.textModules.processModule;
+            obj.p.midCont.empty();
+            obj.p.midCont.append(
+                '<ul class="recruit-card mid-box">\n\
+                    <div>'+pro("IntroduceChar.first","c",target)+'</div>\n\
+                    <div>'+pro("IntroduceChar.second","c",target)+'</div>\n\
+                    <div>'+pro("IntroduceChar.third","c",target)+'</div>\n\
+                    <div>'+pro("IntroduceChar.fourth","c",target)+'</div>\n\
+                    <div class="char-skills"><b>Skills</b></div>\n\
+                    <div class="char-equipment"><b>Equipment</b></div>\n\
+                </ul>'
+            );
+            var skillKeys = Object.keys(target.skills);
+            for(var i=0;i<skillKeys.length;i++){
+                $(obj.p.midCont).children(".recruit-card").children(".char-skills").append('<div><i>'+skillKeys[i]+'</i></div>');
+                for(var j=0;j<target.skills[skillKeys[i]].length;j++){
+                    if(target.skills[skillKeys[i]][j]){
+                        $(obj.p.midCont).children(".recruit-card").children(".char-skills").append('<div>'+target.skills[skillKeys[i]][j].name+'</div>');
+                    }
+                }
+            }
+            var equipmentKeys = Object.keys(target.equipment);
+            for(var i=0;i<equipmentKeys.length;i++){
+                if(target.equipment[equipmentKeys[i]].name){
+                    $(obj.p.midCont).children(".recruit-card").children(".char-equipment").append('<div>'+equipmentKeys[i]+': '+target.equipment[equipmentKeys[i]].name+'</div>');
+                } else {
+                    $(obj.p.midCont).children(".recruit-card").children(".char-equipment").append('<div>'+equipmentKeys[i]+': none</div>');
+                }
             }
         },
         createRecruitMenu:function(){
@@ -143,14 +215,13 @@ Quintus.UIObjects=function(Q){
             }
             var t = this;
             $(".character").on("click",function(){
-                if(t.p.characterMenu) t.stage.remove(t.p.characterMenu);
                 $('.character').removeClass("selected-color");
                 $(this).addClass("selected-color");
                 var name = $(this).attr("id");
                 var target = Q.state.get("saveData").applicationsRoster.filter(function(a){
                     return a.name===name;
                 })[0];
-                t.p.characterMenu = t.stage.insert(new Q.BigStatusBox({target:target}));
+                t.showRecruitCharacterCard(t,target);
             });
             $(".character").first().trigger("click");
             
@@ -164,8 +235,71 @@ Quintus.UIObjects=function(Q){
                 Q.locationController[$(this).attr("func")]();
             });
         },
-        createFeastMenu:function(){
+        throwFeast:function(){
+            var amount = parseInt($(".money.selected-color").attr("value"));
+            if(Q.state.get("saveData").money>=amount){
+                Q.state.get("saveData").money-=amount;
+                var boost = 0;
+                switch(amount){
+                    case 100:
+                        boost = 5;
+                        break;
+                    case 500:
+                        boost = 10;
+                        break;
+                    case 1500:
+                        boost = 15;
+                        break;
+                }
+                
+                Q.state.get("allies").forEach(function(ally){
+                    ally.morale+=boost;
+                });
+                this.trigger("cycleWeek");
+            }
+            this.createMainMenu();
             
+        },
+        createFeastMenu:function(){
+            this.emptyConts();
+            this.p.leftCont.show();
+            this.p.leftCont.append(
+                '<ul>\n\
+                    <li class="money btn btn-default" value="100">$100</li>\n\
+                    <li class="money btn btn-default" value="500">$500</li>\n\
+                    <li class="money btn btn-default" value="1500">$1500</li>\n\
+                </ul>'
+            );
+            $(".money").on("click",function(){
+                $('.money').removeClass("selected-color");
+                $(this).addClass("selected-color");
+                switch($(".money.selected-color").attr("value")){
+                    case "100":
+                        $(".mid-box").text("Increase morale of entire entourage by 5.");
+                        break;
+                    case "500":
+                        $(".mid-box").text("Increase morale of entire entourage by 10.");
+                        break;
+                    case "1500":
+                        $(".mid-box").text("Increase morale of entire entourage by 15.");
+                        break;
+                }
+                
+            });
+            this.p.midCont.append(
+                '<div class="mid-box"></div>'
+            );
+            $(".money").first().trigger("click");
+            
+            this.p.menuCont.append(
+                '<ul id="feast-menu">\n\
+                    <li id="co-feast" class="btn btn-default" func="throwFeast">Throw Feast</li>\n\
+                    <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
+                </ul>'
+            );
+            $("#feast-menu li").click(function(){
+                Q.locationController[$(this).attr("func")]();
+            });
         },
         createMentorMenu:function(){
             
@@ -213,6 +347,120 @@ Quintus.UIObjects=function(Q){
         }
     });
     
+    Q.GameObject.extend("TextModules",{
+        getObjPathFromString:function(obj,i){
+            //If the i needs an index of an array
+            var arrProp = i.indexOf("[");
+            if(arrProp>=0){
+                var i2 = i.slice(0,arrProp);
+                var end = i.indexOf("]");
+                var num = i.slice(arrProp+1,end);
+                return obj[i2][num];
+            }
+            return obj[i];
+        },
+        processModule:function(prop,propAffected,char){
+            var affectedCategory;
+            switch(propAffected){
+                case "c":
+                    affectedCategory = char.charClass;
+                    break;
+                case "p":
+                    affectedCategory = char.personality;
+                    break;
+                case "t":
+                    affectedCategory = char.methodology;
+                    break;
+                case "v":
+                    affectedCategory = char.value;
+                    break;
+            }
+            //If the module doesn't exist, use the default
+            if(!Q.state.get("modules")[propAffected][affectedCategory]){
+                affectedCategory = "Default";
+            }
+            var varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
+            var newText = Q.textModules.replaceVar(varText,char);
+            //If there's more, do it again.
+            while(newText.indexOf("{")>=0){
+                newText = Q.textModules.replaceVar(newText,char);    
+            }
+            return newText;
+        },
+        replaceVar:function(text,c){
+            return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                return Q.textModules.processTextVarInstance(p1,c);
+            });
+        },
+        processTextVarInstance:function(text,character){
+            var affected = text.slice(0,text.indexOf("@"));
+            var prop = text.slice(text.indexOf("@")+1,text.length);
+            var varText = "";
+            switch(affected){
+                //Event var
+                case "e":
+                    return Q.storyController.p.vrs[prop];
+                //Scene var
+                case "s":
+                    return Q.state.get("sceneVars")[prop];
+                //Global var
+                case "g":
+                    return Q.state.get("globalVars")[prop];
+                //The save data (in the game state)
+                case "d":
+                    return prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("saveData"));
+                break;
+                case "o":
+                    varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o);
+                    var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0];})[0];
+                    //Run this first.
+                    var newText = replaceVar(varText,char);
+                    //If there's more, do it again.
+                    while(newText.indexOf("{")>=0){
+                        newText = replaceVar(newText,char);    
+                    }
+                    return newText;
+                break;
+                //Modules from with modules
+                case "m":
+                    var propAffected = prop.split('.')[0];
+                    return Q.textModules.processModule(prop.slice(propAffected.length+1,prop.length),propAffected,character);
+                break;
+                //Affected is not one of the above. It is a character
+                default:
+                    var intAffected = parseInt(affected);
+                    //Affecting a certain property of a character
+                    if(isNaN(intAffected)){
+                        return prop.split('.').reduce(Q.textModules.getObjPathFromString, character);
+                    }
+                    var propAffected = prop.split('.')[0];
+                    return Q.textModules.processModule(prop.slice(propAffected.length+1,prop.length),propAffected,Q.storyController.p.characters[intAffected]);
+            }
+            return varText;
+        },
+        //Finds a var
+        matchVar:function(text){
+            //Find any variables and replace the string with the values
+            var replacedText = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                return Q.textModules.processTextVarInstance(p1);
+            });
+            //If there are any vars
+            if (replacedText!==text) {
+                return replacedText;
+            }
+            return false;
+        },
+        processTextVars:function(text){
+            var newText = text;
+            //Match each of the variables one by one
+            do {
+                var textMatched = Q.textModules.matchVar(newText);
+                if(textMatched) newText = textMatched;
+            } while(textMatched);
+            return newText;
+        },
+    }); 
+    
     //Using CSS/Jquery, create the story dialogue with options
     Q.UI.Container.extend("StoryController",{
         init:function(p){
@@ -224,7 +472,6 @@ Quintus.UIObjects=function(Q){
             });
             this.p.x+=10;
             this.p.y+=10;
-            this.on("inserted");
             this.p.container = $('<div id="text-container"></div>');
             this.p.textContent = $('<div id="text-content"></div>');
             $(this.p.container).append(this.p.textContent);
@@ -245,7 +492,7 @@ Quintus.UIObjects=function(Q){
             
             //Play the music for the page
             Q.playMusic(page.music);
-            var text = $('<div>'+this.processTextVars(page.text)+'</div>');
+            var text = $('<div>'+Q.textModules.processTextVars(page.text)+'</div>');
             var contentBox = this.p.textContent;
             $(contentBox).append(text);
             //Show the choices
@@ -280,110 +527,6 @@ Quintus.UIObjects=function(Q){
             this.removePage();
             this.insertPage(pageNum);
         },
-        getObjPathFromString:function(obj,i){
-            //If the i needs an index of an array
-            var arrProp = i.indexOf("[");
-            if(arrProp>=0){
-                var i2 = i.slice(0,arrProp);
-                var end = i.indexOf("]");
-                var num = i.slice(arrProp+1,end);
-                return obj[i2][num];
-            }
-            return obj[i];
-        },
-        //Finds a var
-        matchVar:function(text){
-            var t = this;
-            var replaceVar = function(text,c){
-                return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
-                    return processTextVarInstance(p1,c);
-                });
-            };
-            var processModule = function(prop,propAffected,char){
-                //CharClass specific text
-                var affectedCategory;
-                switch(propAffected){
-                    case "c":
-                        affectedCategory = char.charClass;
-                        break;
-                    case "p":
-                        affectedCategory = char.personality;
-                        break;
-                }
-                var varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
-                //Run this first.
-                var newText = replaceVar(varText,char);
-                //If there's more, do it again.
-                while(newText.indexOf("{")>=0){
-                    newText = replaceVar(newText,char);    
-                }
-                return newText;
-            };
-            var processTextVarInstance = function(text,character){
-                var affected = text.slice(0,text.indexOf("@"));
-                var prop = text.slice(text.indexOf("@")+1,text.length);
-                var varText = "";
-                switch(affected){
-                    //Event var
-                    case "e":
-                        return t.p.vrs[prop];
-                    //Scene var
-                    case "s":
-                        return Q.state.get("sceneVars")[prop];
-                    //Global var
-                    case "g":
-                        return Q.state.get("globalVars")[prop];
-                    //The save data (in the game state)
-                    case "d":
-                        return prop.split('.').reduce(t.getObjPathFromString,Q.state.get("saveData"));
-                    break;
-                    case "o":
-                        varText = prop.split('.').reduce(t.getObjPathFromString,Q.state.get("modules").o);
-                        var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0];})[0];
-                        //Run this first.
-                        var newText = replaceVar(varText,char);
-                        //If there's more, do it again.
-                        while(newText.indexOf("{")>=0){
-                            newText = replaceVar(newText,char);    
-                        }
-                        return newText;
-                    break;
-                    //Modules from with modules
-                    case "m":
-                        var propAffected = prop.split('.')[0];
-                        return processModule(prop.slice(propAffected.length+1,prop.length),propAffected,character);
-                    break;
-                    //Affected is not one of the above. It is a character
-                    default:
-                        var intAffected = parseInt(affected);
-                        //Affecting a certain property of a character
-                        if(isNaN(intAffected)){
-                            return prop.split('.').reduce(t.getObjPathFromString, character);
-                        }
-                        var propAffected = prop.split('.')[0];
-                        return processModule(prop.slice(propAffected.length+1,prop.length),propAffected,t.p.characters[intAffected]);
-                }
-                return varText;
-            };
-            //Find any variables and replace the string with the values
-            var replacedText = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
-                return processTextVarInstance(p1);
-            });
-            //If there are any vars
-            if (replacedText!==text) {
-                return replacedText;
-            }
-            return false;
-        },
-        processTextVars:function(text){
-            var newText = text;
-            //Match each of the variables one by one
-            do {
-                var textMatched = this.matchVar(newText);
-                if(textMatched) newText = textMatched;
-            } while(textMatched);
-            return newText;
-        },
         checkConds:function(cond){
             var condsMet = true;
             if(cond){
@@ -402,9 +545,6 @@ Quintus.UIObjects=function(Q){
                 //Run the effects's function (idx 0) with properties (idx 1)
                 this["effectFuncs"][effects[i][0]](this,effects[i][1]);
             }
-        },
-        inserted:function(){
-            this.insertPage(this.p.pageNum);
         },
         getChoice:function(page,choice){
             return page.choices.filter(function(ch){
@@ -440,16 +580,15 @@ Quintus.UIObjects=function(Q){
         effectFuncs:{
             setVar:function(t,obj){
                 var vars;
-                console.log(t,obj);
                 switch(obj.scope){
                     case "event":
-                        var vars = t.p.vrs;
+                        vars = t.p.vrs;
                         break;
                     case "scene":
-                        var vars = Q.state.get("sceneVars");
+                        vars = Q.state.get("sceneVars");
                         break;
                     case "global":
-                        var vars = Q.state.get("globalVars");
+                        vars = Q.state.get("globalVars");
                         break;
                 }
                 vars[obj.vr] = obj.vl;
@@ -464,6 +603,11 @@ Quintus.UIObjects=function(Q){
             changeEvent:function(t,obj){
                 Q.startScene(obj.scene,obj.event);
                 $("#text-container").remove();
+            },
+            recruitChar:function(t,obj){
+                var data = Q.state.get("characters")[obj.name];
+                var char = Q.charGen.generateCharacter(data);
+                Q.state.get("allies").push(char);
             }
         }
     });
@@ -662,7 +806,7 @@ Quintus.UIObjects=function(Q){
             return true;
         },
         //Modifies the dialogue box from a set of options
-        modDialogueBox:function(display){console.log(display)
+        modDialogueBox:function(display){
             if(display==="hide"){
                 $(this.p.container).css("display","none");
             } else if(display==="show"){

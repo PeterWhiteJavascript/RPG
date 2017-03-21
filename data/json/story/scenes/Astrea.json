@@ -1,0 +1,8 @@
+{
+    "name": "Astrea",
+    "desc": "Any Astrea specific events.",
+    "eventOrder": [
+        "Introduction"
+    ],
+    "vrs": []
+}

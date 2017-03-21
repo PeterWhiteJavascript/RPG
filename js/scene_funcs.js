@@ -2,7 +2,7 @@ Quintus.SceneFuncs=function(Q){
     
     Q.startScene = function(scene,event,characters){
         if(scene==="locations"){ 
-            Q.stageScene("location",{location:event});
+            Q.stageScene("location",1,{location:event});
         }
         else {
             Q.load("json/story/events/"+scene+"/"+event+".json",function(){
@@ -39,6 +39,7 @@ Quintus.SceneFuncs=function(Q){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
                 Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters}));
+                Q.storyController.insertPage(0);
             });
         });
     });
@@ -366,13 +367,13 @@ Quintus.SceneFuncs=function(Q){
         stage.lists.TileLayer[1].p.z = 1;
         stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
         stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-        //The battle controller holds all battle specific functions
-        Q.BatCon = new Q.BattleController({stage:stage});
         stage.add("viewport");
         stage.viewport.scale = 2;
         //The invisible sprite that the viewport follows
         stage.viewSprite = stage.insert(new Q.ViewSprite());
         Q.viewFollow(stage.viewSprite,stage);
+        //Set the batcon's stage
+        Q.BatCon.stage = stage;
 
         var allyData = Q.state.get("allies");
         var charData = data.characters;
@@ -432,10 +433,12 @@ Quintus.SceneFuncs=function(Q){
             stage.lists.TileLayer[1].p.z = -1;
             stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
             stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-            //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
-            Q.BattleGrid = new Q.BattleGridObject({stage:stage});
-            //The battle controller holds all battle specific functions
-            Q.BatCon = new Q.BattleController({stage:stage});
+            //Set the battlegrid's stage
+            Q.BattleGrid.stage = stage;
+            //Reset the battle grid for this battle
+            Q.BattleGrid.reset();
+            //Set the batcon's stage
+            Q.BatCon.stage = stage;
             stage.add("viewport");
             stage.viewport.scale = 2;
             

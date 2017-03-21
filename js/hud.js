@@ -915,7 +915,6 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            console.log(this.p)
             var target = this.p.target;
             var top = [target.name,"Lv. "+target.level,target.charClass];
             for(var i=0;i<top.length;i++){

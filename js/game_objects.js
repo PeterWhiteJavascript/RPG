@@ -256,13 +256,16 @@ Quintus.GameObjects=function(Q){
     //The grid that keeps track of all interactable objects in the battle.
     //Any time an object moves, this will be updated
     Q.GameObject.extend("BattleGridObject",{
-        init:function(p){
-            this.stage = p.stage;
+        reset:function(){
+            //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
+            this.stage.on("inserted",this,function(itm){
+                this.addObjectToBattle(itm);
+            });
             this.grid = [];
             this.allyZocGrid = [];
             this.enemyZocGrid = [];
-            var tilesX = p.stage.mapWidth;
-            var tilesY = p.stage.mapHeight;
+            var tilesX = this.stage.mapWidth;
+            var tilesY = this.stage.mapHeight;
             for(var i=0;i<tilesY;i++){
                 this.grid[i]=[];
                 this.allyZocGrid[i]=[];
@@ -273,10 +276,6 @@ Quintus.GameObjects=function(Q){
                     this.enemyZocGrid[i][j]=false;
                 }
             }
-            //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
-            Q.stage(0).on("inserted",this,function(itm){
-                this.addObjectToBattle(itm);
-            });
         },
         //Returns the correct grid
         getGrid:function(obj){
@@ -510,8 +509,7 @@ Quintus.GameObjects=function(Q){
 
     //The battle controller holds all battle specific code.
     Q.GameObject.extend("BattleController",{
-        init:function(p){
-            this.stage = p.stage;
+        init:function(){
             //Any characters that have their hp reduced to 0 or under get removed all at once (they get destroyed when they're killed, but only removed here after)
             this.markedForRemoval = [];
             this.add("attackFuncs,skillFuncs");
