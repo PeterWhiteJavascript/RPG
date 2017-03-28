@@ -8,7 +8,7 @@
             "name": "Page 1",
             "music": "battle.mp3",
             "bg": "bg\/959396-river.jpg",
-            "text": "{o@Alex.p.name} arrives at a river. {o@Alex.p.g.A} drinks some water, which rejuvenates {o@Alex.p.g.b}. {o@Alex.p.catchphrase}",
+            "text": "{Alex@name} arrives at a river. {o.Alex.g@A} drinks some water, which rejuvenates {o.Alex.g@b}. {Alex@catchphrase}",
             "choices": [],
             "onload": []
         }

@@ -125,20 +125,27 @@ Q.newGame=function(options){
         //Set up the save data
         Q.state.set("saveData",Q.assets["json/data/new-game.json"]);
         
+        Q.state.set("potentialEvents",[]);
+        
         //The main character's object
         var alex = Q.state.get("characters").Alex;
         //Gender is based on what the player selected
         alex.gender = options.gender;
-        //Set the gendered words for Alex
-        Q.state.get("modules").o.Alex.p.g = Q.state.get("modules").o.Alex.genders[alex.gender];
-        
-        
         
         var storyAlex = Q.charGen.generateCharacter(alex);
         //Set the catchphrase for Alex
         storyAlex.catchphrase = "It's a me, Mario!";
+        storyAlex.events = {};
+        storyAlex.completedEvents = {};
         //For now, alex is the only character
-        Q.state.set("allies",[storyAlex]);
+        var astrea = Q.charGen.generateCharacter(Q.state.get("characters").Astrea);
+        astrea.events = Q.state.get("characters").Astrea.events;
+        astrea.completedEvents = {};
+        
+        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female"});
+        legion.events = Q.state.get("charClasses").Legionnaire.events;
+        legion.completedEvents = {};
+        Q.state.set("allies",[storyAlex,legion/*,astrea*/]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[
@@ -158,14 +165,12 @@ Q.newGame=function(options){
             var char = Q.charGen.generateCharacter({});
             Q.state.get("saveData").applicationsRoster.push(char);
         };
-        
-        
         //TESTING ONLY
         if(Q.state.get("startSceneName")) Q.state.get("saveData").startSceneName = Q.state.get("startSceneName");
         if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
         
-        //Start a scene (TEST THE VARIABLES)
-        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,Q.state.get("allies"));
+        //Start a scene
+        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
         
     });
 };
@@ -317,7 +322,7 @@ Q.load(files.join(','),function(){
                         });
                         break;
                     case "battleScene":
-                        Q.newGame({gender:"female",eventName:name});
+                        Q.newGame({gender:"Female",eventName:name});
                         $(document.body).append('<div id="back-button" class="btn btn-default">TO SCRIPT</div>');
                         $(document.body).append('<div id="back-button2" class="btn btn-default">TO CHARACTERS</div>');  
                         $(document.body).append('<div id="back-button3" class="btn btn-default">TO SHOW EVENTS</div>');  
@@ -350,7 +355,7 @@ Q.load(files.join(','),function(){
     /* END TESTING EVENT */
     else {
     //For now, just start a new game when we load in. -> main.js
-        Q.newGame({gender:"female"});
+        Q.newGame({gender:"Female"});
     }
     //Start the game from the JSON save data
     //Q.startGame(Q.assets['json/save/sample_save_data.json']);

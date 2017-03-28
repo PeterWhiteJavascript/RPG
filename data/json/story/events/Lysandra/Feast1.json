@@ -1,0 +1,38 @@
+{
+    "name": "Feast1",
+    "desc": "",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Lysandra thanks you for the feast :)))))))))))",
+            "choices": [
+                {
+                    "displayText": "Go back",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "locations",
+                                        "event": "metaximo1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

@@ -32,24 +32,27 @@ Quintus.UIObjects=function(Q){
             if(storyEvents[week]){
                 return storyEvents[week];
             }
-            console.log(storyEvents,week)
-            //If there was no story event this week, check all allies to see if any of them should do a scene.
-           /* var allies = Q.state.get("allies");
-            var potentialEvents = [];
-            //Get a list of all events that could be played
-            allies.forEach(function(ally){potentialEvents.concat(ally.p.queuedEvents);});
+            //Get the list of all events that could be played
+            var potentialEvents = Q.state.get("potentialEvents");
             
-            
-            
-            
-            
-            return event;*/
+            //[char,event,prop]
+            var data = potentialEvents[Math.floor(Math.random()*potentialEvents.length)];
+            if(data){
+                var scene = data[0].officer?data[0].name:data[0].charClass;
+                var event = data[1];
+                Q.markEventCompleted(data[0],data[2]);
+                var idx = potentialEvents.indexOf(data);
+                potentialEvents.splice(idx,1);
+                return {scene:scene,event:event,char:data[0]};
+            }
+            return false;
         },
         cycleWeek:function(){
             Q.state.get("saveData").week++;
             var event = this.checkWeek(Q.state.get("saveData").week);
             if(event){
-                Q.startScene(event.scene,event.event);
+                //The third prop might include more than one character for some events
+                Q.startScene(event.scene,event.event,[event.char]);
                 Q.locationController.hideAll();
             }
         }
@@ -167,6 +170,9 @@ Quintus.UIObjects=function(Q){
                 var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
                     return a.name===$(".character.selected-color").attr("id");
                 })[0];
+                var known = Q.state.get("characters")[character.name];
+                character.events = known?known:Q.state.get("charClasses")[character.charClass].events;
+                character.completedEvents = {};
                 Q.state.get("allies").push(character);
                 Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
                 this.createRecruitMenu();
@@ -178,10 +184,10 @@ Quintus.UIObjects=function(Q){
             obj.p.midCont.empty();
             obj.p.midCont.append(
                 '<ul class="recruit-card mid-box">\n\
-                    <div>'+pro("IntroduceChar.first","c",target)+'</div>\n\
-                    <div>'+pro("IntroduceChar.second","c",target)+'</div>\n\
-                    <div>'+pro("IntroduceChar.third","c",target)+'</div>\n\
-                    <div>'+pro("IntroduceChar.fourth","c",target)+'</div>\n\
+                    <div>'+pro(target,"c","IntroduceChar.first")+'</div>\n\
+                    <div>'+pro(target,"c","IntroduceChar.second")+'</div>\n\
+                    <div>'+pro(target,"c","IntroduceChar.third")+'</div>\n\
+                    <div>'+pro(target,"c","IntroduceChar.fourth")+'</div>\n\
                     <div class="char-skills"><b>Skills</b></div>\n\
                     <div class="char-equipment"><b>Equipment</b></div>\n\
                 </ul>'
@@ -251,9 +257,10 @@ Quintus.UIObjects=function(Q){
                         boost = 15;
                         break;
                 }
-                
                 Q.state.get("allies").forEach(function(ally){
                     ally.morale+=boost;
+                    ally.awards.feasted++;
+                    if(ally.events.feasted) Q.addCharEvent(ally,"feasted");
                 });
                 this.trigger("cycleWeek");
             }
@@ -357,9 +364,10 @@ Quintus.UIObjects=function(Q){
                 var num = i.slice(arrProp+1,end);
                 return obj[i2][num];
             }
+            console.log(obj,i)
             return obj[i];
         },
-        processModule:function(prop,propAffected,char){
+        processModule:function(char,propAffected,prop){
             var affectedCategory;
             switch(propAffected){
                 case "c":
@@ -374,12 +382,21 @@ Quintus.UIObjects=function(Q){
                 case "v":
                     affectedCategory = char.value;
                     break;
+                case "g":
+                    affectedCategory = char.gender;
+                    break;
             }
-            //If the module doesn't exist, use the default
-            if(!Q.state.get("modules")[propAffected][affectedCategory]){
-                affectedCategory = "Default";
+            var varText;
+            console.log(affectedCategory,propAffected)
+            if(prop&&affectedCategory){
+                //If the module doesn't exist, use the default
+                if(!Q.state.get("modules")[propAffected][affectedCategory]){
+                    affectedCategory = "Default";
+                }
+                varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
+            } else {
+                varText = propAffected.split('.').reduce(Q.textModules.getObjPathFromString,char);
             }
-            var varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
             var newText = Q.textModules.replaceVar(varText,char);
             //If there's more, do it again.
             while(newText.indexOf("{")>=0){
@@ -394,9 +411,10 @@ Quintus.UIObjects=function(Q){
         },
         processTextVarInstance:function(text,character){
             var affected = text.slice(0,text.indexOf("@"));
+            var aff = affected.split('.');
             var prop = text.slice(text.indexOf("@")+1,text.length);
             var varText = "";
-            switch(affected){
+            switch(aff[0]){
                 //Event var
                 case "e":
                     return Q.storyController.p.vrs[prop];
@@ -411,30 +429,73 @@ Quintus.UIObjects=function(Q){
                     return prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("saveData"));
                 break;
                 case "o":
-                    varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o);
-                    var char = Q.state.get("allies").filter(function(char){return char.name===prop.split('.')[0];})[0];
-                    //Run this first.
-                    var newText = replaceVar(varText,char);
-                    //If there's more, do it again.
-                    while(newText.indexOf("{")>=0){
-                        newText = replaceVar(newText,char);    
+                    //If it is a module
+                    if(aff[1]){
+                        var intAffected = parseInt(aff[1]);
+                        //We're affecting a passed in character
+                        if(intAffected>=0){
+                            return Q.textModules.processModule(Q.storyController.p.characters[intAffected],affected,prop);
+                        } 
+                        //We're affecting a specific officer's modules
+                        else {
+                            var newText;
+                            //If there's a third property
+                            if(aff[2]){
+                                switch(aff[2]){
+                                    case "g":
+                                        var gender = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0].gender
+                                        newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
+                                        break;
+                                }
+                            } else {
+                                newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
+                            }
+                            //If there's more, do it again.
+                            while(newText.indexOf("{")>=0){
+                                newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
+                            }
+                            return newText;
+                        }
+                    }  
+                    //If it is a char property
+                    else {
+                        var propAffected = prop.split('.')[0];
+                        return Q.textModules.processModule(Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0],propAffected,prop);
                     }
-                    return newText;
                 break;
-                //Modules from with modules
+                //Modules from within modules
                 case "m":
-                    var propAffected = prop.split('.')[0];
-                    return Q.textModules.processModule(prop.slice(propAffected.length+1,prop.length),propAffected,character);
-                break;
+                    var propAffected = aff[1];
+                    return Q.textModules.processModule(character,propAffected,prop);
+                break;        
                 //Affected is not one of the above. It is a character
                 default:
-                    var intAffected = parseInt(affected);
-                    //Affecting a certain property of a character
-                    if(isNaN(intAffected)){
-                        return prop.split('.').reduce(Q.textModules.getObjPathFromString, character);
+                    var intAffected = parseInt(aff[0]);
+                    var newText;
+                    //Rand character that is passed in
+                    if(intAffected>=0){
+                        var char = Q.storyController.p.characters[intAffected];
+                        //If there's more than one part to the obj
+                        if(aff[1]){
+                            var propAffected = aff[1];
+                            return Q.textModules.processModule(char,propAffected,prop);
+                        } else {
+                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,char);
+                        }
+                    } 
+                    //Name of officer
+                    else {
+                        //If the character is passed in (like: {@name})
+                        if(character){
+                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,character);
+                        } 
+                        //If the name is passed in (like: {Alex@name})
+                        else {
+                            console.log(prop)
+                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("allies").filter(function(char){return char.name===aff[0];})[0]);
+                        }
                     }
-                    var propAffected = prop.split('.')[0];
-                    return Q.textModules.processModule(prop.slice(propAffected.length+1,prop.length),propAffected,Q.storyController.p.characters[intAffected]);
+                    return newText;
             }
             return varText;
         },
@@ -458,7 +519,7 @@ Quintus.UIObjects=function(Q){
                 if(textMatched) newText = textMatched;
             } while(textMatched);
             return newText;
-        },
+        }
     }); 
     
     //Using CSS/Jquery, create the story dialogue with options
@@ -492,7 +553,7 @@ Quintus.UIObjects=function(Q){
             
             //Play the music for the page
             Q.playMusic(page.music);
-            var text = $('<div>'+Q.textModules.processTextVars(page.text)+'</div>');
+            var text = $('<pre>'+Q.textModules.processTextVars(page.text)+'</pre>');
             var contentBox = this.p.textContent;
             $(contentBox).append(text);
             //Show the choices
@@ -505,7 +566,7 @@ Quintus.UIObjects=function(Q){
         insertChoiceDesc:function(desc){
             this.removePage();
             var contentBox = this.p.textContent;
-            $(contentBox).append('<div>'+desc+'</div>');
+            $(contentBox).append('<pre>'+desc+'</pre>');
             
         },
         removeChoices:function(){
@@ -607,6 +668,8 @@ Quintus.UIObjects=function(Q){
             recruitChar:function(t,obj){
                 var data = Q.state.get("characters")[obj.name];
                 var char = Q.charGen.generateCharacter(data);
+                char.events = data.events;
+                char.completedEvents = {};
                 Q.state.get("allies").push(char);
             }
         }

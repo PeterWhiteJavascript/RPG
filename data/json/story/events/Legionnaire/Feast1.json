@@ -1,0 +1,40 @@
+{
+    "name": "Feast1",
+    "desc": "The legionnaire has a feast for the first time with Alex",
+    "kind": "story",
+    "vrs": {
+        "Eating": "Om nom, this is good!"
+    },
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{1@name} says it's good! {1.g@A} is impressed!\n\nUsing Alex's gender:\n{o.Alex.g@a} \n{Alex@catchphrase}",
+            "choices": [
+                {
+                    "displayText": "Go back",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "locations",
+                                        "event": "metaximo1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

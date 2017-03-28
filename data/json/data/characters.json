@@ -33,7 +33,8 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true
+        "officer":true,
+        "events":{}
     },
     "Astrea":{
         "name": "Astrea",
@@ -75,7 +76,11 @@
         "officer":true,
         
         "events":{
-            
+            "feasted":[
+                {
+                    "1":"Feast1"
+                }
+            ]
         }
     },
     "Lysandra":{
@@ -115,7 +120,14 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true
+        "officer":true,
+        "events":{
+            "feasted":[
+                {
+                    "1":"Feast1"
+                }
+            ]
+        }
     },
     "Gaios":{
 

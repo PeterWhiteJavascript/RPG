@@ -240,10 +240,30 @@ h2{
     left:50%;
     transform:translate(-50%,0);
 }
+.fixed{
+    position:fixed !important;
+}
 .left{
     position:absolute;
     left:2%;
     overflow-y:auto;
+}
+.left-top{
+    position:absolute;
+    left:2%;
+    overflow-y:auto;
+}
+.left-mid{
+    position:absolute;
+    left:2%;
+    overflow-y:auto;
+    top:75%;
+}
+.left-bottom{
+    position:absolute;
+    left:2%;
+    overflow-y:auto;
+    top:135%;
 }
 .middle-left{
     position:absolute;

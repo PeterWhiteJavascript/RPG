@@ -1,5 +1,23 @@
 Quintus.QFunctions=function(Q){
     
+    Q.markEventCompleted = function(char,prop){
+        var event = char.events[prop].filter(function(e){
+            return e[char.awards[prop]];
+        })[0];
+        var idx = char.events[prop].indexOf(event);
+        var itm = char.events[prop].splice(idx,1);
+        if(!char.completedEvents[prop]) char.completedEvents[prop] = [];
+        char.completedEvents[prop].push(itm);
+    };
+    
+    //Adds a character event if it exists
+    Q.addCharEvent = function(char,prop){
+        var event = char.events[prop].filter(function(e){
+            return e[char.awards.feasted];
+        })[0];
+        if(event) Q.state.get("potentialEvents").push([char,event[char.awards.feasted],prop]);
+    };
+    
     //Loads all unique assets that are used in a scene
     Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];

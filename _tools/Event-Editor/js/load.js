@@ -1,6 +1,3 @@
-//This will be filled with php for already made scenes
-var scenes = [];
-
 //Store the scene that has been clicked on
 var selectedScene;
 
@@ -39,17 +36,9 @@ $(function(){
         $(this).children(":first").addClass('active');
         //Remove description that is there
         $("#load-desc div").remove();
-        //Show the description for the scene
-        var idx = $(".scene-button").index(selectedScene);
-        var desc = scenes[idx].desc;
-        $("#load-desc").append('<div class="desc-text">'+desc+'</div>');
+        $("#load-desc").append('<div class="desc-text">'+$(selectedScene).parent().attr("desc")+'</div>');
     });
-    
-    //Fill the scenes array
-    var sc = $("#load-scene").children();
-    for(var i=0;i<sc.length;i++){
-        scenes.push({name:$(sc[i]).attr("name"),desc:$(sc[i]).attr("desc")});
-    }
+   
     //Default to top item being selected
     $(".scene-button").first().trigger("click");
     

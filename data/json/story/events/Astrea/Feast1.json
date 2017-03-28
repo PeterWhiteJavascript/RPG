@@ -1,0 +1,38 @@
+{
+    "name": "Feast1",
+    "desc": "After feasting with Astrea for the first time.",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Astrea thanks you for the feast.",
+            "choices": [
+                {
+                    "displayText": "Go back",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "locations",
+                                        "event": "metaximo1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

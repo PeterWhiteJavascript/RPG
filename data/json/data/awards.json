@@ -34,5 +34,17 @@
     "timesRested":{
         "name":"Times Rested",
         "desc":"The number of times this character has rested at an inn."
+    },
+    "feasted":{
+        "name":"Times Feasted",
+        "desc":"The number of times this character has enjoyed a feast."
+    },
+    "mentored":{
+        "name":"Times Mentored",
+        "desc":"The number of times this character has been mentored by Alex."
+    },
+    "timesHunted":{
+        "name":"Times Hunted",
+        "desc":"The number of times this character has been out hunting."
     }
 }

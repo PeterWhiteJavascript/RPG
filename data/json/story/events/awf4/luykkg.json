@@ -1,0 +1,19 @@
+{
+    "name": "luykkg",
+    "desc": "fgn",
+    "kind": "story",
+    "vrs": {
+        "eventProp": "AHSIDLASHDILASD"
+    },
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{e@eventProp}. There is {d@money} money in the bank! {o.Alex@demo.first} {Alex@baseStats.str} {0@baseStats.str} {0.p@intro.first} {0.c@IntroduceChar.first} {1@name}",
+            "choices": [],
+            "onload": []
+        }
+    ],
+    "onload": []
+}
