@@ -5,8 +5,8 @@
     "vrs": [],
     "scene": [
         {
-            "name":"init",
-            "items":[
+            "name": "init",
+            "items": [
                 {
                     "func": "setView",
                     "props": [
@@ -28,8 +28,8 @@
             ]
         },
         {
-            "name":"daze",
-            "items":[
+            "name": "daze",
+            "items": [
                 {
                     "func": "setView",
                     "props": [

@@ -145,7 +145,7 @@ Q.newGame=function(options){
         var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female"});
         legion.events = Q.state.get("charClasses").Legionnaire.events;
         legion.completedEvents = {};
-        Q.state.set("allies",[storyAlex,legion/*,astrea*/]);
+        Q.state.set("allies",[storyAlex/*,legion/*,astrea*/]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[

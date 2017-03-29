@@ -2,7 +2,9 @@
     "name": "Battle-Scene",
     "desc": "",
     "eventOrder": [
-        "df"
+        "df",
+        "Battdsf",
+        "vb"
     ],
     "vrs": []
 }

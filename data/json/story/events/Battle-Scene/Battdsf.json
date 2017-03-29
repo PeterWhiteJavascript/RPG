@@ -1,0 +1,29 @@
+{
+    "name": "Battdsf",
+    "desc": "sd",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [],
+    "characters": [
+        {
+            "name": "sdfsdf",
+            "level": 1,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                17,
+                8
+            ],
+            "storyId": 1
+        }
+    ],
+    "music": "",
+    "map": "battle_balance1.tmx"
+}

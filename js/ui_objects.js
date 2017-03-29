@@ -172,6 +172,7 @@ Quintus.UIObjects=function(Q){
                 })[0];
                 var known = Q.state.get("characters")[character.name];
                 character.events = known?known:Q.state.get("charClasses")[character.charClass].events;
+                if(!character.events) character.events = {};
                 character.completedEvents = {};
                 Q.state.get("allies").push(character);
                 Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
@@ -364,7 +365,6 @@ Quintus.UIObjects=function(Q){
                 var num = i.slice(arrProp+1,end);
                 return obj[i2][num];
             }
-            console.log(obj,i)
             return obj[i];
         },
         processModule:function(char,propAffected,prop){
@@ -387,7 +387,6 @@ Quintus.UIObjects=function(Q){
                     break;
             }
             var varText;
-            console.log(affectedCategory,propAffected)
             if(prop&&affectedCategory){
                 //If the module doesn't exist, use the default
                 if(!Q.state.get("modules")[propAffected][affectedCategory]){
@@ -491,7 +490,6 @@ Quintus.UIObjects=function(Q){
                         } 
                         //If the name is passed in (like: {Alex@name})
                         else {
-                            console.log(prop)
                             newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("allies").filter(function(char){return char.name===aff[0];})[0]);
                         }
                     }
@@ -668,8 +666,9 @@ Quintus.UIObjects=function(Q){
             recruitChar:function(t,obj){
                 var data = Q.state.get("characters")[obj.name];
                 var char = Q.charGen.generateCharacter(data);
-                char.events = data.events;
+                char.events = data.events?data.events:{};
                 char.completedEvents = {};
+                char.officer = data.officer;
                 Q.state.get("allies").push(char);
             }
         }
