@@ -1,0 +1,130 @@
+{
+    "name": "df",
+    "desc": "sdg",
+    "kind": "battleScene",
+    "vrs": [],
+    "scene": [
+        {
+            "name":"init",
+            "items":[
+                {
+                    "func": "setView",
+                    "props": [
+                        3
+                    ]
+                },
+                {
+                    "text": [
+                        "hi"
+                    ],
+                    "asset": [
+                        "story\/empty.png",
+                        "story\/empty.png"
+                    ],
+                    "pos": "Left",
+                    "autoCycle": 0,
+                    "noCycle": "No"
+                }
+            ]
+        },
+        {
+            "name":"daze",
+            "items":[
+                {
+                    "func": "setView",
+                    "props": [
+                        3
+                    ]
+                },
+                {
+                    "text": [
+                        "hi"
+                    ],
+                    "asset": [
+                        "story\/empty.png",
+                        "story\/empty.png"
+                    ],
+                    "pos": "Left",
+                    "autoCycle": 0,
+                    "noCycle": "No"
+                }
+            ]
+        }
+    ],
+    "characters": [
+        {
+            "name": "",
+            "level": 1,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                14,
+                8
+            ],
+            "storyId": 1
+        },
+        {
+            "name": "",
+            "level": 1,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                18,
+                8
+            ],
+            "storyId": 2
+        },
+        {
+            "name": "",
+            "level": 1,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                16,
+                7
+            ],
+            "storyId": 3
+        },
+        {
+            "name": "",
+            "level": 1,
+            "nationality": "",
+            "charClass": "",
+            "gender": "",
+            "value": "",
+            "methodology": "",
+            "personality": "",
+            "team": "",
+            "dir": "up",
+            "hidden": "show",
+            "loc": [
+                8,
+                5
+            ],
+            "storyId": 4
+        }
+    ],
+    "music": "",
+    "map": "battle_balance1.tmx"
+}

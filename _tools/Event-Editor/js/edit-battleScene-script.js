@@ -19,6 +19,7 @@ Q.tileH = 32;
 Q.SPRITE_CHARACTER  = 8;
 
 var selectedCharacter;
+var selectedGroup;
 var allowSpriteSelecting;
 var selected;
 var selectedFunc;
@@ -73,6 +74,8 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
                 var c = Q.stage(0).insert(new Q.CharacterSprite({x:char.loc[0]*Q.tileW+Q.tileW/2,y:char.loc[1]*Q.tileH+Q.tileH/2,sheet:cl,frame:1,loc:char.loc,storyId:char.storyId}));
                 if(char.hidden==="hide") c.p.opacity = 0.5;
             });
+            
+            $(".minimize").trigger("click");
         });
     });
 });
@@ -190,6 +193,7 @@ var removeOptions = function(){
     cont.empty();
 };
 var appendMainOptions = function(){
+    $(cont).append('<li><a id="create-group"><div class="menu-button btn btn-default">Create Group</div></a></li>');
     $(cont).append('<li><a id="create-script-item"><div class="menu-button btn btn-default">Create Script Item</div></a></li>');
     $(cont).append('<li><a id="test-scene"><div class="menu-button btn btn-default">Test Scene</div></a></li>');
     $(cont).append('<li><a id="save-scene"><div class="menu-button btn btn-default">Save Scene</div></a></li>');
@@ -751,7 +755,7 @@ var getFuncProps = function(){
         var value = $(this).attr("val");
         if(!value) value = $(this).val();
         var dataType = $(this).attr("dataType");
-        if(dataType==="float") value=parseFloat(value);
+        if(dataType==="float") value = parseFloat(value);
         else if(dataType==="integer") value=parseInt(value);
         else if(dataType==="array") value=JSON.parse(value);
         props.push(value);
@@ -762,7 +766,7 @@ $(document).on("click","#add-func-to-script",function(e){
     allowSpriteSelecting = false;
     deselectSprite();
     var funcName = $(this).attr("value");
-    var scCont = $("#script-menu");
+    var scCont = selectedGroup;
     $(scCont).append("<li func='"+funcName+"' props='"+JSON.stringify(getFuncProps())+"'><div class='text-or-func'>Func</div><a class='script-item func btn btn-default'>"+funcName+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
     $("#back-to-func-selection").trigger("click");
 });
@@ -862,7 +866,7 @@ $(document).on("click","#add-to-script",function(e){
     var pos = $("#script-pos").text();
     var autoCycle = $("#script-autoCycle").val();
     var noCycle = $("#script-noCycle").text();
-    var scCont = $("#script-menu");
+    var scCont = selectedGroup;
     var displayText = textArr[0].slice(0,19);
     $(scCont).append("<li text="+JSON.stringify(textArr)+" asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
 });
@@ -871,23 +875,24 @@ var saveFuncScriptItem = function(){
     $(selectedFunc).parent().attr("props",JSON.stringify(getFuncProps()));
 };
 var saveScriptText = function(){
-    var idx = $(".script-item").index($(".selected-fill"));
     if(!$(".script-text").length) return;
     var textArr = [];
     $(".script-text").each(function(i,t){
         textArr.push($(t).val());
     });
+    if(textArr[0].length===0) textArr = ["no text"]
     var asset1 = $("#script-asset1").val();
     var asset2 = $("#script-asset2").val();
     var pos = $("#script-pos").text();
     var autoCycle = $("#script-autoCycle").val();
     var noCycle = $("#script-noCycle").text();
     var displayText = textArr[0].slice(0,19);
-    $(".selected-fill").parent().remove();
-    $("#script-menu > li:nth-child("+idx+")").after("<li text="+JSON.stringify(textArr)+" asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default selected-fill'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(selected).parent().after("<li text='"+JSON.stringify(textArr)+"' asset='"+JSON.stringify([asset1,asset2])+"' pos='"+pos+"' autoCycle='"+autoCycle+"' noCycle='"+noCycle+"'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default selected-fill'>"+displayText+"</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>");
+    $(selected).parent().remove();
     
 };
 $(document).on("click",".script-item",function(e){
+    if(this==selected) return;
     selectedFunc = false;
     if(selected){
         if($(selected).attr("class").split(" ")[1]==="text"){
@@ -911,6 +916,22 @@ $(document).on("click",".script-item",function(e){
     }
 });
 
+var groupCounter = 0;
+$(document).on("click","#create-group",function(e){
+    $("#script-menu").append("<ul class='sortable'><li><input class='nameable' value='"+groupCounter+"'></input></li></ul>");
+    
+    $( ".sortable" ).sortable({
+        axis: "y"
+    });
+    $(".nameable").on("focusout",function(){
+        var name = $(this).val();
+        $("#script-menu").children("ul").last().children("li").append("<div class='minimize'>"+name+"</div>");
+        //$("#script-menu").children("ul").last().children("li").last().remove();
+        $(this).remove();
+        $(this).parent().eq()
+    });
+    groupCounter++;
+});
 $(document).on("click","#create-script-item",function(e){
     removeOptions();
     appendScriptItemOptions();
@@ -997,6 +1018,16 @@ $(document).on("click","#back-to-script-items",function(e){
     removeOptions();
     appendScriptItemOptions();
 });
+
+$(document).on("click",".minimize",function(){
+    $(".minimize").parent().parent().children("li:not(:first-child)").css("display","none");
+    $(this).parent().parent().children("li:not(:first-child)").css("display","block");
+    removeOptions();
+    appendMainOptions();
+    selectedGroup = $(this).parent().parent();
+    $(selectedGroup).children().eq(1).children(".script-item").trigger("click");
+});
+
 
 Q.getSpriteAt = function(loc){
     return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);

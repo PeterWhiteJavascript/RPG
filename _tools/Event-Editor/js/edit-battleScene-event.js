@@ -319,29 +319,27 @@ var appendCreateCharacterOptions = function(char){
             var loc = [$(this).val(),$("#locY").val()];
             objFuncs["placeCharacter"](loc[0],loc[1]);
         }
-        selectedCharacter.p.loc = [$(this).val(),selectedCharacter.p.loc[1]];
+        selectedCharacter.p.loc = [parseInt($(this).val()),selectedCharacter.p.loc[1]];
         selectedCharacter.trigger("move");
         
         var ch = characters.filter(function(c){
             return c.storyId==selectedCharacter.p.storyId;
         })[0];
-       // ch.locX = selectedCharacter.p.loc[0];
-       // ch.locY = selectedCharacter.p.loc[1];
+        ch.loc = [selectedCharacter.p.loc[0],selectedCharacter.p.loc[1]];
     });
     $("#locY").on("change",function(){
         if(!selectedCharacter){ 
             var loc = [$("#locX").val(),$(this).val()];
             objFuncs["placeCharacter"](loc[0],loc[1]);
         }
-        selectedCharacter.p.loc = [selectedCharacter.p.loc[0],$(this).val()];
+        selectedCharacter.p.loc = [selectedCharacter.p.loc[0],parseInt($(this).val())];
         selectedCharacter.trigger("move");
         var ch = characters.filter(function(c){
             return c.storyId==selectedCharacter.p.storyId;
         })[0];
-      //  ch.locX = selectedCharacter.p.loc[0];
-        //ch.locY = selectedCharacter.p.loc[1];
+        ch.loc = [selectedCharacter.p.loc[0],selectedCharacter.p.loc[1]];
     });
-    $(cont).append('<li>Level<input type="number" min="1" id="level" class="new-character" value=1></li>');
+    $(cont).append('<li>Level<input type="number" min=1 id="level" class="new-character" value=1></li>');
     $(cont).append('<li>Nationality<select id="nationality" class="new-character"></select></li>');
     $(cont).append('<li>Character Class<select id="charClass" class="new-character"></select></li>');
     $(cont).append('<li>Gender<select id="gender" class="new-character"></select></li>');

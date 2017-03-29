@@ -2,6 +2,16 @@
 var selectedScene;
 
 $(function(){
+    $(".minimize").click(function(e){
+        if($(this).attr("minimized")==="yes"){
+            $(this).attr("minimized","no");
+            $(this).parent().parent().children("li:not(:first-child)").css("display","block");
+        } else {
+            $(this).attr("minimized","yes");
+            $(this).parent().parent().children("li:not(:first-child)").css("display","none");
+        }
+    });
+    $(".minimize").trigger("click");
     //START OPTS BUTTONS
     $('#open-scene').click(function(e){
         var scene = $(selectedScene).parent().attr("name");

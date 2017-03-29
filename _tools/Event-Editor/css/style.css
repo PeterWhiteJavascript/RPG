@@ -122,12 +122,42 @@ h2{
 #editor-content{
     
 }
+.minimize{
+    cursor:pointer;
+    font-size:24px;
+}
 .menu{
     overflow-y:auto;
     font-size: 34px;
     background-color: #f5f5f5;
     width: 25%;
     height: 60%;
+    text-align: center;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+    padding: 10px;
+}
+.cont-menu{
+    overflow-y:auto;
+    font-size: 34px;
+    background-color: #f5f5f5;
+    width: 25%;
+    height: auto;
+    text-align: center;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    border-radius: 5px;
+    padding: 10px;
+}
+.collapse-menu{
+    overflow-y:auto;
+    font-size: 34px;
+    background-color: #f5f5f5;
     text-align: center;
     border-width: initial;
     border-style: solid;
@@ -247,23 +277,6 @@ h2{
     position:absolute;
     left:2%;
     overflow-y:auto;
-}
-.left-top{
-    position:absolute;
-    left:2%;
-    overflow-y:auto;
-}
-.left-mid{
-    position:absolute;
-    left:2%;
-    overflow-y:auto;
-    top:75%;
-}
-.left-bottom{
-    position:absolute;
-    left:2%;
-    overflow-y:auto;
-    top:135%;
 }
 .middle-left{
     position:absolute;
