@@ -1,26 +1,4 @@
 {
-    "g":{
-        "Male":{
-            "a":"he",
-            "A":"He",
-            "b":"him",
-            "B":"Him",
-            "c":"his",
-            "C":"His",
-            "d":"himself",
-            "D":"Himself"
-        },
-        "Female":{
-            "a":"she",
-            "A":"She",
-            "b":"her",
-            "B":"Her",
-            "c":"hers",
-            "C":"Hers",
-            "d":"herself",
-            "D":"Herself"
-        }
-    },
     "o":{
         "Alex":{
             "demo":{
@@ -338,5 +316,124 @@
                 "first":"..."
             }
         }
+    },
+
+    "punc":{
+        "a":[
+            {
+                "text":"."
+            },
+            {
+                "text":"!",
+                "checks":{
+                    "p":[["Violent",1]]
+                }
+            },
+            {
+                "text":"...",
+                "checks":{
+                    "p":[["Awkward",1]]
+                }
+            }
+        ],
+        "b":[
+            {
+                "text":"!"
+            },
+            {
+                "text":"!!",
+                "checks":{
+                    "p":[["Violent",1]]
+                }
+            },
+            {
+                "text":".",
+                "checks":{
+                    "p":[["Unmotivated",1]]
+                }
+            }
+        ],
+        "c":[
+            {
+                "text":"?"
+            },
+            {
+                "text":"?!",
+                "checks":{
+                    "p":[["Curious",1]]
+                }
+            }
+        ]
+    },
+    
+    "g":{
+        "Male":{
+            "a":"he",
+            "A":"He",
+            "b":"him",
+            "B":"Him",
+            "c":"his",
+            "C":"His",
+            "d":"himself",
+            "D":"Himself"
+        },
+        "Female":{
+            "a":"she",
+            "A":"She",
+            "b":"her",
+            "B":"Her",
+            "c":"hers",
+            "C":"Hers",
+            "d":"herself",
+            "D":"Herself"
+        }
+    },
+    "Act-1-1":{
+        "intro":{
+            "greeting":[
+                {
+                    "text":"Hello."
+                },
+                {
+                    "text":"How's it going?",
+                    "checks":{
+                        "p":[["Impassive",2],["Unmotivated",2]],
+                        "c":[["Legionnaire",1]],
+                        "v":[["Egoist",1]],
+                        "t":[["Pragmatic",1]],
+                        "n":[["Venorian",1]],
+                        "loyalty":[">50",5],
+                        "morale":["<10",10],
+                        "gender":["m",10]
+                    }
+                },
+                {
+                    "text":"Yo!",
+                    "checks":{
+                        "p":[["Violent",2]],
+                        "c":[["Berserker",1],["Legionnaire",-10]],
+                        "v":[],
+                        "t":[],
+                        "n":[],
+                        "loyalty":[">50",5],
+                        "morale":[">50",10]
+                    }
+                },
+                {
+                    "text":"Hiya",
+                    "checks":{
+                        "p":[["Violent",2]],
+                        "c":[["Berserker",1]],
+                        "v":[],
+                        "t":[],
+                        "n":[],
+                        "loyalty":[">50",5],
+                        "morale":["<10",10]
+                    }
+                }
+            ]
+        }
     }
 }
+
+
