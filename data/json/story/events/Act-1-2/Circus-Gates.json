@@ -1,0 +1,239 @@
+{
+    "name": "Circus Gates",
+    "desc": "",
+    "kind": "story",
+    "vrs": {
+        "weapon": "0",
+        "weapontext": "You have no weapon."
+    },
+    "pages": [
+        {
+            "name": "Intro",
+            "music": "fgh.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "As you walk up to the neon lit casino gate, you notice a couple approaching in shorts and t-shirts (I think?).\n\n{s@pl}\n{g@Gloobal}\n{d@money}\n{d@relations.venoriae[0]}\n{o.Alex@new.say}\n{Alex@baseStats.end}\n{o.Alex.g@a}\n",
+            "choices": [
+                {
+                    "displayText": "Wave hello",
+                    "desc": "",
+                    "page": "Wave hello",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Pick up Spear",
+                    "desc": "",
+                    "page": "Wave hello",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "weapon",
+                                        "vl": "spear"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "global",
+                                "vr": "Gloobal",
+                                "vl": "0"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Wave hello",
+            "music": "fgh.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "They pull out some guns and yell\n\n\"PUT YOUR HANDS UP\"",
+            "choices": [
+                {
+                    "displayText": "Put your hands up",
+                    "desc": "",
+                    "page": "Put hands up",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Grab a sword",
+                    "desc": "",
+                    "page": "Attack",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "weapon",
+                                        "vl": "sword"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Grab a gun",
+                    "desc": "",
+                    "page": "Attack",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "weapon",
+                                        "vl": "gun"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Throw Spear",
+                    "desc": "",
+                    "page": "Attack",
+                    "disabled": "Disabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapon",
+                                "vl": "spear"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "enableChoice",
+                            {
+                                "choice": "Throw Spear"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Put hands up",
+            "music": "fgh.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "You put your hands up and say \"I surrender because I don't want bullets in my body man\"\n\nAnd they shoot you anyway.",
+            "choices": [
+                {
+                    "displayText": "Restart",
+                    "desc": "",
+                    "page": "Intro",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Attack",
+            "music": "fgh.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "{e@weapontext}",
+            "choices": [],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapon",
+                                "vl": "sword"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapontext",
+                                "vl": "The sword you picked up was too short."
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapon",
+                                "vl": "gun"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapontext",
+                                "vl": "You have a gun!"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "weapon",
+                                "vl": "spear"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "changeEvent",
+                            {
+                                "scene": "Act-1-2",
+                                "event": "Speared"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        }
+    ],
+    "onload": []
+}

@@ -5,7 +5,8 @@
         
         "events":{
             "feasted":[
-                {"1":"Feast1"}
+                {"1":"Feast1"},
+                {"2":"Feast2"}
             ]
         }
     },

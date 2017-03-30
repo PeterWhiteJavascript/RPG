@@ -21,9 +21,14 @@
             "skl":10,
             "eff":10
         },
-        "techniques":{
-            "Legionnaire":[0,1]
-        },
+        "techniques":[
+            "stab",
+            "slice",
+            "",
+            "",
+            "",
+            ""
+        ],
         "nationality":0,
         "charClass":0,
         "value":"-",
@@ -31,10 +36,9 @@
         "exp":0,
         "primaryStat":"str",
         "secondaryStat":"end",
-        "loyalty":50,
-        "morale":50,
-        "officer":true,
-        "events":{}
+        "loyalty":"-",
+        "morale":"-",
+        "officer":true
     },
     "Astrea":{
         "name": "Astrea",

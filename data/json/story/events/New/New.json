@@ -1,0 +1,112 @@
+{
+    "name": "New",
+    "desc": "e",
+    "kind": "story",
+    "vrs": [
+        {
+            "name": "vvvvv",
+            "val": "2"
+        }
+    ],
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Is page 1",
+            "choices": [
+                {
+                    "displayText": "Choice%201",
+                    "desc": "Hello",
+                    "page": "Page%202",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Choice%202",
+                    "desc": "Chose%202",
+                    "page": "Page%203",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Page 2",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "AHSDLKJASHDKLASJDHASLKDJHASKLDJAHSDkjlASHD",
+            "choices": [
+                {
+                    "displayText": "Page%201",
+                    "desc": "Chose%201",
+                    "page": "Page%201",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Page%203",
+                    "desc": "Hi",
+                    "page": "Page%201",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Choice%204",
+                    "desc": "Secret",
+                    "page": "Page%201",
+                    "disabled": "Disabled",
+                    "groups": []
+                }
+            ],
+            "onload": []
+        },
+        {
+            "name": "Page 3",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Page 3",
+            "choices": [
+                {
+                    "displayText": "{age%201",
+                    "desc": "df",
+                    "page": "Page%201",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Page%202",
+                    "desc": "sdfsdf",
+                    "page": "Page%201",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "event",
+                                "vr": "vvvvv",
+                                "vl": "1"
+                            }
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Page 4",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "",
+            "choices": [],
+            "onload": []
+        }
+    ],
+    "onload": []
+}

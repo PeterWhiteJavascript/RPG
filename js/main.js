@@ -6,6 +6,8 @@ var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']})
         .touch().controls(true)
         .enableSound();
 
+Q.input.drawButtons = function(){};
+
 //Constants
 //Since this is a top-down game, there's no gravity
 Q.gravityY=0;

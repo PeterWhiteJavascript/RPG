@@ -2,7 +2,8 @@
     "name": "Legionnaire",
     "desc": "",
     "eventOrder": [
-        "Feast1"
+        "Feast1",
+        "Feast2"
     ],
     "vrs": []
 }

@@ -27,6 +27,9 @@
                 "first":"Hello, I'm {@name}",
                 "second":"My str is {@baseStats.str}",
                 "third":"Do you know?"
+            },
+            "new":{
+                "say":"Hi, I'm {@name}!"
             }
         },
         "Astrea":{

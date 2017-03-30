@@ -1,0 +1,48 @@
+{
+    "intro":[
+        {
+            "text":"Hello.",
+            "checks":{
+                
+            }
+        },
+        {
+            "text":"How's it going?",
+            "checks":{
+                "p":[["Impassive",2],["Unmotivated",2]],
+                "c":[["Legionnaire",1]],
+                "v":[],
+                "t":[],
+                "n":[],
+                "loyalty":[">50",5],
+                "morale":["<10",10],
+                "gender":["m",10]
+            }
+        },
+        {
+            "text":"Yo!",
+            "checks":{
+                "p":[["Violent",2]],
+                "c":[["Berserker",1],["Legionnaire",-10]],
+                "v":[],
+                "t":[],
+                "n":[],
+                "loyalty":[">50",5],
+                "morale":[">50",10]
+            }
+        },
+        {
+            "text":"Hiya",
+            "checks":{
+                "p":[["Violent",2]],
+                "c":[["Berserker",1]],
+                "v":[],
+                "t":[],
+                "n":[],
+                "loyalty":[">50",5],
+                "morale":["<10",10]
+            }
+        }
+        
+    ]
+}
