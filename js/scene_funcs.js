@@ -243,7 +243,7 @@ Quintus.SceneFuncs=function(Q){
                 case "muchValue":
                     return this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
                 case "personality":
-                    return this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
+                    return [this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];
                     
             }
         },

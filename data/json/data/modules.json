@@ -41,283 +41,30 @@
             
         }
     },
-    "c":{
-        "Legionnaire":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Berserker":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Vanguard":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Archer":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Skirmisher":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Assassin":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Elementalist":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
-        "Illusionist":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
-        },
 
-        "Healer":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
+    
+    "g":{
+        "Male":{
+            "a":"he",
+            "A":"He",
+            "b":"him",
+            "B":"Him",
+            "c":"his",
+            "C":"His",
+            "d":"himself",
+            "D":"Himself"
         },
-        "Default":{
-            "IntroduceChar":{
-                "first":"Hello, I'm {@name}, a level {@level} {@charClass}{m.p@punc.a}",
-                "second":"I have a strength of {@baseStats.str} and an endurance of {@baseStats.end}{m.p@punc.a}",
-                "third":"{m.p@intro.first} {m.t@intro.first} {m.v@intro.first}",
-                "fourth":"I hope you'll hire me{m.p@punc.b}"
-            }
+        "Female":{
+            "a":"she",
+            "A":"She",
+            "b":"her",
+            "B":"Her",
+            "c":"hers",
+            "C":"Hers",
+            "d":"herself",
+            "D":"Herself"
         }
     },
-    "p":{
-        "Sensitive":{
-            "intro":{
-                "first":"Uhm.. I'm a bit sensitive."
-            },
-            "punc":{
-                "a":".",
-                "b":".",
-                "c":"?"
-            }
-        },
-        "Impassive":{
-            "intro":{
-                "first":"Meh, I'm impassive."
-            },
-            "punc":{
-                "a":".",
-                "b":".",
-                "c":"?"
-            }
-        },
-        "Unmotivated":{
-            "intro":{
-                "first":"Ugh, do I have to do this? I'm not motivated."
-            },
-            "punc":{
-                "a":".",
-                "b":".",
-                "c":"?"
-            }
-        },
-        "Curious":{
-            "intro":{
-                "first":"Hmm, it might be interesting to tag along with you!"
-            },
-            "punc":{
-                "a":".",
-                "b":" ^_^",
-                "c":"?"
-            }
-        },
-        "Clingy":{
-            "intro":{
-                "first":"Don't leave me!"
-            },
-            "punc":{
-                "a":"!",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Nonpartisan":{
-            "intro":{
-                "first":"I'll do my own thing."
-            },
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Charismatic":{
-            "intro":{
-                "first":"Let's work together!"
-            },
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Awkward":{
-            "intro":{
-                "first":"Hmm.. I dunno..."
-            },
-            "punc":{
-                "a":"..",
-                "b":"..!",
-                "c":"?"
-            }
-        },
-        "Violent":{
-            "intro":{
-                "first":"YEAH!!! Let's go fight!"
-            },
-            "punc":{
-                "a":"!!",
-                "b":"!!!",
-                "c":"?"
-            }
-        },
-        "Pacifistic":{
-            "intro":{
-                "first":"I'd rather not fight."
-            },
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Hedonistic":{
-            "intro":{
-                "first":"Your party seems like fun! I'm all about fun!"
-            },
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Ascetic":{
-            "intro":{
-                "first":"I must live simply."
-            },
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Extraverted":{
-            "intro":{
-                "first":"Heyo, let's go!"
-            },
-            "punc":{
-                "a":"!",
-                "b":"!",
-                "c":"?"
-            }
-        },
-        "Shy":{
-            "intro":{
-                "first":"Uhm.. hi."
-            },
-            "punc":{
-                "a":"..",
-                "b":"...",
-                "c":"?"
-            }
-        },
-        "Default":{
-            "punc":{
-                "a":".",
-                "b":"!",
-                "c":"?"
-            }
-        }
-    },
-    "t":{
-        "Pragmatic":{
-            "intro":{
-                "first":"The logical way I think means I'm pragmatic{m.p@punc.b}"
-            }
-        },
-        "Intuitive":{
-            "intro":{
-                "first":"I use my intuition to solve problems{m.p@punc.b}"
-            }
-        },
-        "Kind":{
-            "intro":{
-                "first":"I try to be kind to people whenever I can{m.p@punc.b}"
-            }
-        },
-        "Default":{
-            "intro":{
-                "first":"..."
-            }
-        }
-    },
-    "v":{
-        "Egoist":{
-            "intro":{
-                "first":"I'm pretty cool, right{m.p@punc.c}"
-            }
-        },
-        "Nepotist":{
-            "intro":{
-                "first":"I put my friends first{m.p@punc.b}"
-            }
-        },
-        "Altruist":{
-            "intro":{
-                "first":"I think everyone should be treated as equals{m.p@punc.b}"
-            }
-        },
-        "Default":{
-            "intro":{
-                "first":"..."
-            }
-        }
-    },
-
     "punc":{
         "a":[
             {
@@ -365,28 +112,31 @@
             }
         ]
     },
-    
-    "g":{
-        "Male":{
-            "a":"he",
-            "A":"He",
-            "b":"him",
-            "B":"Him",
-            "c":"his",
-            "C":"His",
-            "d":"himself",
-            "D":"Himself"
-        },
-        "Female":{
-            "a":"she",
-            "A":"She",
-            "b":"her",
-            "B":"Her",
-            "c":"hers",
-            "C":"Hers",
-            "d":"herself",
-            "D":"Herself"
-        }
+    "Feast1":{
+        "intro":[
+            {
+                "text":"Thanks for the feast!"
+            },
+            {
+                "text":"The feast was DELICIOUS!",
+                "checks":{
+                    "p":[["Extraverted",1]],
+                    "c":[["Legionnaire",1]],
+                    "v":[["Egoist",1]],
+                    "t":[["Pragmatic",1]],
+                    "n":[["Venorian",1]],
+                    "l":[[">49",115]],
+                    "m":[["<10",10]],
+                    "g":[["Male",10]]
+                }
+            },
+            {
+                "text":"I don't really like these types of extravagant events.",
+                "checks":{
+                    "p":[["Ascetic",10]]
+                }
+            }
+        ]
     },
     "Act-1-1":{
         "intro":{
@@ -402,9 +152,9 @@
                         "v":[["Egoist",1]],
                         "t":[["Pragmatic",1]],
                         "n":[["Venorian",1]],
-                        "loyalty":[">50",5],
-                        "morale":["<10",10],
-                        "gender":["m",10]
+                        "l":[[">50",5]],
+                        "m":[["<10",10]],
+                        "g":[["m",10]]
                     }
                 },
                 {
@@ -412,11 +162,8 @@
                     "checks":{
                         "p":[["Violent",2]],
                         "c":[["Berserker",1],["Legionnaire",-10]],
-                        "v":[],
-                        "t":[],
-                        "n":[],
-                        "loyalty":[">50",5],
-                        "morale":[">50",10]
+                        "l":[[">=50",500]],
+                        "m":[[">50",10]]
                     }
                 },
                 {
@@ -424,11 +171,8 @@
                     "checks":{
                         "p":[["Violent",2]],
                         "c":[["Berserker",1]],
-                        "v":[],
-                        "t":[],
-                        "n":[],
-                        "loyalty":[">50",5],
-                        "morale":["<10",10]
+                        "l":[[">50",5]],
+                        "m":[["<10",10]]
                     }
                 }
             ]

@@ -403,6 +403,105 @@ Quintus.UIObjects=function(Q){
             }
             return newText;
         },
+        //Returns the text
+        addTextPoints:function(char,texts){
+            //Default is 0;
+            var idx = 0;
+            //The previous max points
+            var maxValue = 0;
+            //Skip first as it is default
+            for(var i=1;i<texts.length;i++){
+                var value = 0;
+                var checks = texts[i].checks;
+                var keys = Object.keys(checks);
+                keys.forEach(function(key){
+                    switch(key){
+                        //Personality
+                        case "p":
+                            var personality = char.personality;
+                            //Loop through this character's personalities
+                            personality.forEach(function(per){
+                                var found = checks[key].find(function(elm){return elm[0]===per;});
+                                if(found){
+                                    value+=found[1];
+                                }
+                            });
+                            break;
+                        //Character Class
+                        case "c":
+                            var found = checks[key].find(function(elm){return elm[0]===char.charClass;});
+                            if(found){
+                                value+=found[1];
+                            }
+                            break;
+                        //Value
+                        case "v":
+                            var found = checks[key].find(function(elm){return elm[0]===char.value;});
+                            if(found){
+                                value+=found[1];
+                            }
+                            break;
+                        //Methodology
+                        case "t":
+                            var found = checks[key].find(function(elm){return elm[0]===char.methodology;});
+                            if(found){
+                                value+=found[1];
+                            }
+                            break;
+                        //Nationality
+                        case "n":
+                            var found = checks[key].find(function(elm){return elm[0]===char.nationality;});
+                            if(found){
+                                value+=found[1];
+                            }
+                            break;
+                        //Loyalty
+                        case "l":
+                            var loyalty = char.loyalty;
+                            checks[key].forEach(function(elm){
+                                if(eval(loyalty+elm[0])){
+                                    value+=elm[1];
+                                }
+                            });
+                            break;
+                        //Morale
+                        case "m":
+                            var morale = char.morale;
+                            checks[key].forEach(function(elm){
+                                if(eval(morale+elm)){
+                                    value+=elm[1];
+                                }
+                            });
+                            break;
+                        //Gender
+                        case "g":
+                            var found = checks[key].find(function(elm){return elm[0]===char.gender;});
+                            if(found){
+                                value+=found[1];
+                            }
+                            break
+                    }
+                });
+                if(value>maxValue){
+                    idx = i;
+                    maxValue = value;
+                }
+            }
+            return texts[idx].text;
+        },
+        getModularText:function(char,prop){
+            var aff = prop.split('.');
+            //Getting a module
+            if(aff[0]==="m"){
+                aff.shift();
+                var texts = aff.reduce(Q.textModules.getObjPathFromString,Q.state.get("modules"));
+                return Q.textModules.addTextPoints(char,texts);
+            } 
+            //Accessing the character's properties directly
+            else {
+                return prop.split('.').reduce(Q.textModules.getObjPathFromString,char);
+            }
+        },
         replaceVar:function(text,c){
             return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
                 return Q.textModules.processTextVarInstance(p1,c);
@@ -479,7 +578,7 @@ Quintus.UIObjects=function(Q){
                             var propAffected = aff[1];
                             return Q.textModules.processModule(char,propAffected,prop);
                         } else {
-                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,char);
+                            newText = Q.textModules.getModularText(char,prop);
                         }
                     } 
                     //Name of officer
