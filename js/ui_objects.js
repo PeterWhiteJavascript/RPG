@@ -457,21 +457,17 @@ Quintus.UIObjects=function(Q){
                             break;
                         //Loyalty
                         case "l":
-                            var loyalty = char.loyalty;
-                            checks[key].forEach(function(elm){
-                                if(eval(loyalty+elm[0])){
-                                    value+=elm[1];
-                                }
-                            });
+                            var found = checks[key].find(function(elm){return elm[0]===Q.getLoyaltyString(char.loyalty);});
+                            if(found){
+                                value+=found[1];
+                            }
                             break;
                         //Morale
                         case "m":
-                            var morale = char.morale;
-                            checks[key].forEach(function(elm){
-                                if(eval(morale+elm)){
-                                    value+=elm[1];
-                                }
-                            });
+                            var found = checks[key].find(function(elm){return elm[0]===Q.getMoraleString(char.morale);});
+                            if(found){
+                                value+=found[1];
+                            }
                             break;
                         //Gender
                         case "g":
@@ -494,7 +490,7 @@ Quintus.UIObjects=function(Q){
             //Getting a module
             if(aff[0]==="m"){
                 aff.shift();
-                var texts = aff.reduce(Q.textModules.getObjPathFromString,Q.state.get("modules"));
+                var texts = Q.storyController.p.pages[Q.storyController.p.pageNum].modules[aff[0]];//aff.reduce(Q.textModules.getObjPathFromString,Q.state.get("modules"));
                 return Q.textModules.addTextPoints(char,texts);
             } 
             //Accessing the character's properties directly
@@ -541,12 +537,13 @@ Quintus.UIObjects=function(Q){
                             if(aff[2]){
                                 switch(aff[2]){
                                     case "g":
-                                        var gender = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0].gender
+                                        var gender = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0].gender;
                                         newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
                                         break;
                                 }
                             } else {
-                                newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
+                                var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
+                                newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
                             }
                             //If there's more, do it again.
                             while(newText.indexOf("{")>=0){

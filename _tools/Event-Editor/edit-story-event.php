@@ -37,6 +37,8 @@ foreach($locationEvents as $ev){
     $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
 }
 $characters = json_decode(file_get_contents('../../data/json/data/characters.json'), true);
+
+$charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
 ?>
 
 <!DOCTYPE html>
@@ -50,6 +52,7 @@ $characters = json_decode(file_get_contents('../../data/json/data/characters.jso
         <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
         <div id="location-events" value='<?php echo json_encode($locEvents); ?>'></div>
         <div id="characters" value='<?php echo json_encode($characters); ?>'></div>
+        <div id="char-gen" value='<?php echo json_encode($charGen); ?>'></div>
         
         
         <div id="editor-title"><h2><?php echo $name; ?></h2></div>
@@ -70,6 +73,7 @@ $characters = json_decode(file_get_contents('../../data/json/data/characters.jso
                     <br>
                     <!--<li><a id="add-new-onload"><div class="menu-button btn btn-default">Add Onload</div></a></li>-->
                     <li><a id="add-new-choice"><div class="menu-button btn btn-default">Add Choice</div></a></li>
+                    <li><a id="add-new-module"><div class="menu-button btn btn-default">Add Module</div></a></li>
                     <br>
                     <li><a id="save-event"><div class="menu-button btn btn-default">Save Event</div></a></li>
                     <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
@@ -121,7 +125,6 @@ $characters = json_decode(file_get_contents('../../data/json/data/characters.jso
                     <h2>On load:</h2>
                     <ul>
                         <li class="onload-li sortable">
-                            <p class="editor-descriptor">Condition/Effect Groups: </p>
                             <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
 
                         </li>
@@ -129,6 +132,12 @@ $characters = json_decode(file_get_contents('../../data/json/data/characters.jso
                 </div>
                 <div id="choices">
                     <h2>Choices:</h2>
+                    <ul class="sortable">
+                        
+                    </ul>
+                </div>
+                <div id="modules">
+                    <h2>Modules:</h2>
                     <ul class="sortable">
                         
                     </ul>

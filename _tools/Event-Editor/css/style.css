@@ -478,3 +478,20 @@ li{
 .var-li{
     border:dashed;
 }
+
+.module-li{
+    list-style:none;
+}
+
+.text-module{
+    border:4px;
+    border-style:ridge;
+}
+.module-check{
+    border:4px;
+    border-style:ridge;
+}
+.module-cond{
+    border:4px;
+    border-style:ridge;
+}

@@ -14,10 +14,10 @@ $(function(){
             //Create the pages
             for(var i=0;i<pages.length;i++){
                 var p = pages[i];
-                this.addPage(p.name,p.music,p.bg,p.text,p.choices,p.onload);
+                this.addPage(p.name,p.music,p.bg,p.text,p.choices,p.onload,p.modules);
             }
             //Create a page if there is not one
-            if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[]);
+            if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[],{});
             this.selectPage(0);
         },
         //Store properties here that track the current page, choice, etc...
@@ -27,6 +27,7 @@ $(function(){
             
             varsCont:$("#editor-variables").children("ul").first(),
             pagesCont:$("#editor-pages").children("ul").first(),
+            modulesCont:$("#modules").children("ul").first(),
             musicSelect:$("#music-select").children("select").first(),
             musicPreview:$("#music-preview"),
             
@@ -35,6 +36,7 @@ $(function(){
             descText:$("#text-select").children("textarea").first(),
             onloadCont:$("#onload").children("ul").first(),
             choicesCont:$("#choices").children("ul").first(),
+            
             
             uniquePages:1,
             globalVars:JSON.parse($("#global-vars").attr("value")),
@@ -57,8 +59,8 @@ $(function(){
             this.vars[vr] = val;
         },
         //Adds a page to the list
-        addPage:function(name,music,bg,text,choices,onload){
-            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+text.replace(/'/g, "&#39;")+"' choices='"+JSON.stringify(choices).replace(/'/g, "&#39;")+"' onload='"+JSON.stringify(onload).replace(/'/g, "&#39;")+"'><div class='page-button menu-button btn btn-default'>"+name+"</div></li>");
+        addPage:function(name,music,bg,text,choices,onload,modules){
+            $(this.p.pagesCont).append("<li class='page' music='"+(music)+"' bg='"+(bg)+"' text='"+text.replace(/'/g, "&#39;")+"' choices='"+JSON.stringify(choices).replace(/'/g, "&#39;")+"' onload='"+JSON.stringify(onload).replace(/'/g, "&#39;")+"' modules='"+JSON.stringify(modules).replace(/'/g, "&#39;")+"'><div class='page-button menu-button btn btn-default'>"+name+"</div></li>");
             this.p.uniquePages++;
         },
         //Removes a page from the list
@@ -76,7 +78,7 @@ $(function(){
             //Get the page
             var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
             //Copy the page
-            this.addPage($(page).text()+" Copy "+DC.p.uniquePages,$(page).attr("music"),$(page).attr("bg"),$(page).attr("text"),JSON.parse($(page).attr("choices")),JSON.parse($(page).attr("onload")));
+            this.addPage($(page).text()+" Copy "+DC.p.uniquePages,$(page).attr("music"),$(page).attr("bg"),$(page).attr("text"),JSON.parse($(page).attr("choices")),JSON.parse($(page).attr("onload")),JSON.parse($(page).attr("modules")));
         },
         savePage:function(){
             var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
@@ -95,6 +97,192 @@ $(function(){
             });
             page.attr("choices",JSON.stringify(choices));
             page.attr("onload",JSON.stringify(this.getSaveChoices($(".onload-li"))));
+            page.attr("modules",JSON.stringify(this.getSaveModules($(".module-li"))));
+        },
+        addModule:function(module,name){
+            $(this.p.modulesCont).append('\n\
+                <li class="module-li">\n\
+                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <div>Handle<input placeholder="New Module Name" class="module-name" value='+name+'></div>\n\
+                    <div>Default Display Text<textarea placeholder="Display Text" class="module-display-text">'+decodeURIComponent(module[0].text)+'</textarea></div>\n\
+                    <a class="module-add-new-text"><div class="btn btn-default">Add New Text</div></a>\n\
+                </li>\n\
+            ');
+            for(var j=1;j<module.length;j++){
+                this.moduleAddNewText($(this.p.modulesCont).children(".module-li").last(),decodeURIComponent(module[j].text),module[j].checks);
+            }
+        },
+        moduleAddNewText:function(cont,text,checks){
+            $(cont).append('\n\
+                <div class="text-module">\n\
+                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <div>Text:<input placeholder="Modular Text" class="module-modular-text" value="'+text+'"></div>\n\
+                    <div>Checks:<a class="module-add-new-check"><div class="btn btn-default">Add New Check</div></a></div>\n\
+                </div>\n\
+            ');
+            //$(cont).children(".text-module").children("div").children(".module-add-new-check").last().trigger("click");
+            var keys = Object.keys(checks);
+            for(var k=0;k<keys.length;k++){
+                DC.moduleAddNewCheck($(cont).children(".text-module").children("div").children(".module-add-new-check").parent(),checks[keys[k]],keys[k]);
+            }
+        },
+        moduleAddNewCheck:function(cont,check,name){
+            var p = "";
+            switch(name){
+                case "p":
+                    p = "Personality";
+                    break;
+                case "c":
+                    p = "Character Class";
+                    break;
+                case "v":
+                    p = "Value";
+                    break;
+                case "t":
+                    p = "Methodology";
+                    break;
+                case "n":
+                    p = "Nationality";
+                    break;
+                case "l":
+                    p = "Loyalty";
+                    break;
+                case "m":
+                    p = "Morale";
+                    break;
+                case "g":
+                    p = "Gender";
+                    break;
+            }
+            $(cont).append('\n\
+                <div class="module-check">\n\
+                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <div>Type:<select class="check-types" initial-value="'+p+'"><option>Personality</option><option>Character Class</option><option>Value</option><option>Methodology</option><option>Nationality</option><option>Loyalty</option><option>Morale</option><option>Gender</option></select></div>\n\
+                    <div class="module-conds">Conds:<a class="module-add-new-cond"><div class="btn btn-default">Add New Cond</div></a></div>\n\
+                </div>\n\
+            ');
+            $(cont).children(".module-check").last().children("div").children(".check-types").each(function(){
+                var val = $(this).attr("initial-value");
+                $(this).children('option[value="' + val + '"]').prop('selected', true);
+                $(this).val(val);
+            });
+            //$(cont).children(".module-check").children("div").children(".module-add-new-cond").last().trigger("click");
+            for(var l=0;l<check.length;l++){
+                this.moduleAddNewCond($(cont).children(".module-check").last().children(".module-conds"),p,check[l][0],check[l][1]);
+            }
+        },
+        moduleChangeType:function(cont){
+            $(cont).parent().children(".module-conds").remove();
+            $(cont).parent().append('<div class="module-conds">Conds:<a class="module-add-new-cond"><div class="btn btn-default">Add New Cond</div></a></div>');
+            DC.moduleAddNewCond($(cont).parent().children(".module-conds"));
+        },
+        moduleRemoveConds:function(cont){
+            cont.remove();
+        },
+        moduleAddNewCond:function(cont,p,type,val){
+            var condType = p?p:$(cont).parent().children("div").children(".check-types").val();
+            var options;
+            switch(condType){
+                case "Personality":
+                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Character Class":
+                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Value":
+                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Methodology":
+                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Nationality":
+                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Loyalty":
+                    ["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"].forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Morale":
+                    ["Quit","Unhappy","Content","Inspired","Ecstatic"].forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+                case "Gender":
+                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(per){
+                        options+='<option>'+per+'</option>';
+                    });
+                    break;
+            }
+            var value = val?val:1;
+            $(cont).append('\n\
+                <div class="module-cond">\n\
+                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <select class="module-cond-select" initial-value="'+type+'">'+options+'</select>\n\
+                    <input type="number" value='+value+' class="module-cond-value">\n\
+                </div>\n\
+            ');
+            $(cont).children(".module-cond").last().children(".module-cond-select").each(function(){
+                var val = $(this).attr("initial-value");
+                $(this).children('option[value="' + val + '"]').prop('selected', true);
+                $(this).val(val);
+            });
+        },
+        convertModuleType:function(t){
+            switch(t){
+                case "Personality":
+                    return "p";
+                case "Character Class":
+                    return "c";
+                case "Value":
+                    return "v";
+                case "Methodology":
+                    return "t";
+                case "Nationality":
+                    return "n";
+                case "Loyalty":
+                    return "l";
+                case "Morale":
+                    return "m";
+                case "Gender":
+                    return "g";
+            }
+        },
+        getSaveModules:function(cont){
+            if(cont.length){
+                var obj = {};
+                $(cont).each(function(idx,itm){
+                    var name = $(itm).children("div").children(".module-name").val();
+                    obj[name] = [{text:$(itm).children("div").children(".module-display-text").val().replace(/ /g, '%20')}];
+                    $(itm).children(".text-module").each(function(i,mod){
+                        obj[name].push({
+                            text:$(mod).children("div").children(".module-modular-text").val().replace(/ /g, '%20'),
+                            checks:{}
+                        });
+                        $(mod).children("div").children(".module-check").each(function(j,che){
+                            var checkType = $(che).children("div").children(".check-types").val();
+                            checkType = DC.convertModuleType(checkType);
+                            obj[name][obj[name].length-1].checks[checkType] = [];
+                            $(che).children(".module-conds").children(".module-cond").each(function(k,con){
+                                obj[name][obj[name].length-1].checks[checkType].push([$(con).children(".module-cond-select").val(),parseInt($(con).children(".module-cond-value").val())]);
+                            });
+                        });
+                    });
+                });
+                return obj;
+            } else {
+                return {};
+            }
         },
         //Gets all of the filled out data from the choices li or onload li
         getSaveChoices:function(cont){
@@ -135,6 +323,9 @@ $(function(){
             //Remove onload and choices
             $(this.p.onloadCont).children(".onload-li").children(".cond-group").remove();
             $(this.p.choicesCont).empty();
+            //Remove modules
+            $(this.p.modulesCont).empty();
+            
             
             //Display the page with all values filled out with this page's props
             this.displayPage();
@@ -155,6 +346,13 @@ $(function(){
                 var ch = choices[i];
                 this.addChoice(ch.displayText.replace("%20"," "),ch.desc.replace("%20"," "),ch.page.replace("%20"," "),ch.disabled,ch.groups);
             }
+            var modules = JSON.parse($(page).attr("modules"));
+            var keys = Object.keys(modules);
+            for(var i=0;i<keys.length;i++){
+                var mo = modules[keys[i]];
+                this.addModule(mo,keys[i]);
+            }
+            
             //Set all of the initial values of the selects
             $("select[initial-value]").each(function(){
                 var val = $(this).attr("initial-value");
@@ -339,7 +537,8 @@ $(function(){
                     bg:$(itm).attr("bg"),
                     text:$(itm).attr("text"),
                     choices:JSON.parse($(itm).attr("choices")),
-                    onload:JSON.parse($(itm).attr("onload"))
+                    onload:JSON.parse($(itm).attr("onload")),
+                    modules:JSON.parse($(itm).attr("modules"))
                 });
             });
             var json = JSON.stringify(pages).trim().replace(/ /g, '%20');
@@ -545,7 +744,7 @@ $(function(){
     });
     $("#add-new-page").click(function(){
         DC.savePage();
-        DC.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[]);
+        DC.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[],{});
         DC.selectPage($(DC.p.pagesCont).children(".page").length-1);
     });
     
@@ -560,6 +759,9 @@ $(function(){
     $("#add-new-choice").click(function(){
         var page = $(DC.p.pagesCont).children(".page:eq("+DC.p.selectedPage+")");
         DC.addChoice("","",page.name,"Enabled",[]);
+    });
+    $("#add-new-module").click(function(){
+        DC.addModule([{text:""}],"");
     });
     $("#save-event").click(function(){
         //Save the current page
@@ -633,7 +835,24 @@ $(function(){
         $(this).parent().children(".event").empty();
         var scene = $(this).val();
         $(this).parent().children(".event").append(DC.eventOptions(scene));
-        
+    });
+    
+    //Creates a new text inside a module
+    $(document).on("click",".module-add-new-text",function(e){
+        DC.moduleAddNewText($(this).parent(),"",{});
+    });
+    //Adds a new check inside the text module
+    $(document).on("click",".module-add-new-check",function(e){
+        DC.moduleAddNewCheck($(this).parent(),{});
+    });
+    //Adds a new cond inside the check
+    $(document).on("click",".module-add-new-cond",function(e){
+        DC.moduleAddNewCond($(this).parent());
+    });
+    
+    //Change the type of the check
+    $(document).on("change",".check-types",function(e){
+        DC.moduleChangeType($(this).parent());
     });
 });
 

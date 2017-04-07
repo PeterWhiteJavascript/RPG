@@ -10,7 +10,7 @@
             "name": "Page 1",
             "music": "battle.mp3",
             "bg": "bg\/959396-river.jpg",
-            "text": "{0@m.Act-1-1.intro.greeting}\n{0@m.Feast1.intro}\n\n\n\nUsing Alex's gender:\n{o.Alex.g@a} \n{Alex@catchphrase}\n{o.Alex@new.say}",
+            "text": "{0@m.Act-1-1.intro.greeting}\n{0@m.Feast1.intro}\n\n\nUsing Alex's gender:\n{o.Alex.g@a} \n{Alex@catchphrase}\n{o.Alex@new.say}",
             "choices": [
                 {
                     "displayText": "Go back",

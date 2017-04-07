@@ -35,7 +35,6 @@ for($i=0;$i<count($file['pages']);$i++){
         $choice->page = urldecode($choice->page);
         //Loop through each cond/effect on each choice
         foreach($choice->groups as $group){
-            print_r($group);
             foreach($group->conds as $cond){
                 foreach($cond[1] as $key => $value){
                     $cond[1]->$key = urldecode($value);
@@ -43,11 +42,14 @@ for($i=0;$i<count($file['pages']);$i++){
             }
             foreach($group->effects as $effect){
                 foreach($effect[1] as $key => $value){
-                    print_r($key);
-                    print_r($value);
                     $effect[1]->$key = urldecode($value);
                 }
             }
+        }
+    }
+    foreach($page->modules as $module){
+        foreach($module as $key => $value){
+            $module[$key]->text = urldecode($value->text);
         }
     }
 }

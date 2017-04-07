@@ -1,0 +1,117 @@
+{
+    "name": "adgasdg",
+    "desc": "d",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Hello! {0@m.intro}\n{o.Astrea@m.intro}",
+            "choices": [
+                {
+                    "displayText": "sdf",
+                    "desc": "",
+                    "page": "Page 2",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {
+                "intro": [
+                    {
+                        "text": "Thanks for the feast!"
+                    },
+                    {
+                        "text": "The feast was DELICIOUS!",
+                        "checks": {
+                            "p": [],
+                            "c": [
+                                [
+                                    "Legionnaire",
+                                    1
+                                ]
+                            ],
+                            "v": [
+                                [
+                                    "Egoist",
+                                    1
+                                ]
+                            ],
+                            "t": [
+                                [
+                                    "Pragmatic",
+                                    1
+                                ]
+                            ],
+                            "n": [
+                                [
+                                    "Venorian",
+                                    1
+                                ]
+                            ],
+                            "l": [
+                                [
+                                    "Traitorous",
+                                    115
+                                ]
+                            ],
+                            "m": [
+                                [
+                                    "Quit",
+                                    10
+                                ]
+                            ],
+                            "g": [
+                                [
+                                    "Male",
+                                    10
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "text": "I don't really like these types of extravagant events.",
+                        "checks": {
+                            "p": [
+                                [
+                                    "Ascetic",
+                                    10
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Page 2",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{0@m.d}",
+            "choices": [],
+            "onload": [],
+            "modules": {
+                "d": [
+                    {
+                        "text": "If I'm a violent person, change the display."
+                    },
+                    {
+                        "text": "AHEOIWHEOAIWEHAOWIEHAIWOEHAWKL:ENALWD",
+                        "checks": {
+                            "p": [
+                                [
+                                    "Violent",
+                                    100
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "onload": []
+}

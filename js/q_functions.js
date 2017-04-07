@@ -1,5 +1,20 @@
 Quintus.QFunctions=function(Q){
     
+    Q.getLoyaltyString = function(loyalty){
+        if(loyalty<1) return "Traitorous";
+        if(loyalty<31) return "Disloyal";
+        if(loyalty<71) return "Average";
+        if(loyalty<91) return "Loyal";
+        if(loyalty<99) return "Admiring";
+        return "Idolizing";
+    };
+    Q.getMoraleString = function(morale){
+        if(morale<1) return "Quit";
+        if(morale<31) return "Unhappy";
+        if(morale<71) return "Content";
+        if(morale<91) return "Inspired";
+        return "Ecstatic";
+    };
     Q.markEventCompleted = function(char,prop){
         var event = char.events[prop].filter(function(e){
             return e[char.awards[prop]];

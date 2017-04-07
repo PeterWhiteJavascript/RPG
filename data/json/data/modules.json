@@ -41,7 +41,6 @@
             
         }
     },
-
     
     "g":{
         "Male":{
@@ -63,119 +62,6 @@
             "C":"Hers",
             "d":"herself",
             "D":"Herself"
-        }
-    },
-    "punc":{
-        "a":[
-            {
-                "text":"."
-            },
-            {
-                "text":"!",
-                "checks":{
-                    "p":[["Violent",1]]
-                }
-            },
-            {
-                "text":"...",
-                "checks":{
-                    "p":[["Awkward",1]]
-                }
-            }
-        ],
-        "b":[
-            {
-                "text":"!"
-            },
-            {
-                "text":"!!",
-                "checks":{
-                    "p":[["Violent",1]]
-                }
-            },
-            {
-                "text":".",
-                "checks":{
-                    "p":[["Unmotivated",1]]
-                }
-            }
-        ],
-        "c":[
-            {
-                "text":"?"
-            },
-            {
-                "text":"?!",
-                "checks":{
-                    "p":[["Curious",1]]
-                }
-            }
-        ]
-    },
-    "Feast1":{
-        "intro":[
-            {
-                "text":"Thanks for the feast!"
-            },
-            {
-                "text":"The feast was DELICIOUS!",
-                "checks":{
-                    "p":[["Extraverted",1]],
-                    "c":[["Legionnaire",1]],
-                    "v":[["Egoist",1]],
-                    "t":[["Pragmatic",1]],
-                    "n":[["Venorian",1]],
-                    "l":[[">49",115]],
-                    "m":[["<10",10]],
-                    "g":[["Male",10]]
-                }
-            },
-            {
-                "text":"I don't really like these types of extravagant events.",
-                "checks":{
-                    "p":[["Ascetic",10]]
-                }
-            }
-        ]
-    },
-    "Act-1-1":{
-        "intro":{
-            "greeting":[
-                {
-                    "text":"Hello."
-                },
-                {
-                    "text":"How's it going?",
-                    "checks":{
-                        "p":[["Impassive",2],["Unmotivated",2]],
-                        "c":[["Legionnaire",1]],
-                        "v":[["Egoist",1]],
-                        "t":[["Pragmatic",1]],
-                        "n":[["Venorian",1]],
-                        "l":[[">50",5]],
-                        "m":[["<10",10]],
-                        "g":[["m",10]]
-                    }
-                },
-                {
-                    "text":"Yo!",
-                    "checks":{
-                        "p":[["Violent",2]],
-                        "c":[["Berserker",1],["Legionnaire",-10]],
-                        "l":[[">=50",500]],
-                        "m":[[">50",10]]
-                    }
-                },
-                {
-                    "text":"Hiya",
-                    "checks":{
-                        "p":[["Violent",2]],
-                        "c":[["Berserker",1]],
-                        "l":[[">50",5]],
-                        "m":[["<10",10]]
-                    }
-                }
-            ]
         }
     }
 }
