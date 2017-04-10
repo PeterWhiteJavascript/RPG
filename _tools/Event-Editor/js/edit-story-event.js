@@ -34,7 +34,7 @@ $(function(){
             bgSelect:$("#bg-select").children("select").first(),
             bgPreview:("#bg-preview"),
             descText:$("#text-select").children("textarea").first(),
-            onloadCont:$("#onload").children("ul").first(),
+            onloadCont:$("#onload"),
             choicesCont:$("#choices").children("ul").first(),
             
             
@@ -49,9 +49,9 @@ $(function(){
         //Adds a var to the list
         addVar:function(name,val,fromSave){
             if(fromSave){
-                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
             } else {
-                $(this.p.varsCont).append("<li class='vr'><a class='remove-choice'><div class='btn btn-default'>x</div></a><div class='var-button menu-button'><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
             }
         },
         //Changes the value of a vr
@@ -88,24 +88,29 @@ $(function(){
             var choices = [];
             $(".choice-li").each(function(index,item){
                 choices.push({
-                    displayText:$(item).children("div").children(".display-text").val(),
-                    desc:$(item).children("div").children(".desc-text").val(),
-                    page:$(item).children("div").children(".pages-to").val(),
-                    disabled:$(item).children("div").children(".disable").text(),
+                    displayText:$(item).children(".display-text").val(),
+                    desc:$(item).children(".desc-text").val(),
+                    page:$(item).children(".pages-to").val(),
+                    disabled:$(item).children(".disable").text(),
                     groups:DC.getSaveChoices(item)
                 });
             });
             page.attr("choices",JSON.stringify(choices));
-            page.attr("onload",JSON.stringify(this.getSaveChoices($(".onload-li"))));
+            page.attr("onload",JSON.stringify(this.getSaveChoices($("#onload"))));
             page.attr("modules",JSON.stringify(this.getSaveModules($(".module-li"))));
         },
         addModule:function(module,name){
             $(this.p.modulesCont).append('\n\
                 <li class="module-li">\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
-                    <div>Handle<input placeholder="New Module Name" class="module-name" value='+name+'></div>\n\
-                    <div>Default Display Text<textarea placeholder="Display Text" class="module-display-text">'+decodeURIComponent(module[0].text)+'</textarea></div>\n\
-                    <a class="module-add-new-text"><div class="btn btn-default">Add New Text</div></a>\n\
+                    <div class="choice-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <p class="editor-descriptor thirty-height light-blue-gradient">Handle</p>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
+                    <input placeholder="New Module Name" class="module-name full-line" value='+name+'>\n\
+                    <p class="editor-descriptor light-gradient">Default Display Text</p>\n\
+                    <textarea placeholder="Display Text" class="module-display-text">'+decodeURIComponent(module[0].text)+'</textarea>\n\
+                    <div class="btn btn-default module-add-new-text">Add New Text</div>\n\
                 </li>\n\
             ');
             for(var j=1;j<module.length;j++){
@@ -115,19 +120,27 @@ $(function(){
         moduleAddNewText:function(cont,text,checks){
             $(cont).append('\n\
                 <div class="text-module">\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
-                    <div>Text:<input placeholder="Modular Text" class="module-modular-text" value="'+text+'"></div>\n\
-                    <div>Checks:<a class="module-add-new-check"><div class="btn btn-default">Add New Check</div></a></div>\n\
+                    <div class="choice-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <p class="editor-descriptor thirty-height light-gradient">Text</p>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
+                    <textarea placeholder="Modular Text" class="module-modular-text">'+text+'</textarea>\n\
+                    <div class="half-top">\n\
+                        <p class="editor-descriptor-half light-gradient">Checks</p>\n\
+                        <div class="btn btn-group module-add-new-check fifty-width">Add New Check</div>\n\
+                    </div>\n\
+                    <div class="module-checks"></div>\n\
                 </div>\n\
             ');
             //$(cont).children(".text-module").children("div").children(".module-add-new-check").last().trigger("click");
             var keys = Object.keys(checks);
             for(var k=0;k<keys.length;k++){
-                DC.moduleAddNewCheck($(cont).children(".text-module").children("div").children(".module-add-new-check").parent(),checks[keys[k]],keys[k]);
+                DC.moduleAddNewCheck($(cont).children(".text-module").children(".module-checks"),checks[keys[k]],keys[k]);
             }
         },
         moduleAddNewCheck:function(cont,check,name){
-            var p = "";
+            var p = "Personality";
             switch(name){
                 case "p":
                     p = "Personality";
@@ -156,70 +169,88 @@ $(function(){
             }
             $(cont).append('\n\
                 <div class="module-check">\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
-                    <div>Type:<select class="check-types" initial-value="'+p+'"><option>Personality</option><option>Character Class</option><option>Value</option><option>Methodology</option><option>Nationality</option><option>Loyalty</option><option>Morale</option><option>Gender</option></select></div>\n\
-                    <div class="module-conds">Conds:<a class="module-add-new-cond"><div class="btn btn-default">Add New Cond</div></a></div>\n\
+                    <div class="choice-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <p class="editor-descriptor thirty-height light-gradient">Type</p>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
+                    <select class="check-types inline-select" initial-value="'+p+'"><option>Personality</option><option>Character Class</option><option>Value</option><option>Methodology</option><option>Nationality</option><option>Loyalty</option><option>Morale</option><option>Gender</option></select>\n\
+                    <div class="module-conds">\n\
+                        <div class="half-top">\n\
+                            <p class="editor-descriptor-half light-gradient">Conds</p>\n\
+                            <div class="btn btn-group module-add-new-cond fifty-width">Add New Cond</div>\n\
+                        </div>\n\
+                    </div>\n\
                 </div>\n\
             ');
-            $(cont).children(".module-check").last().children("div").children(".check-types").each(function(){
+            $(cont).children(".module-check").last().children(".check-types").trigger("change");
+            $(cont).children(".module-check").last().children(".check-types").each(function(){
                 var val = $(this).attr("initial-value");
                 $(this).children('option[value="' + val + '"]').prop('selected', true);
                 $(this).val(val);
             });
-            //$(cont).children(".module-check").children("div").children(".module-add-new-cond").last().trigger("click");
             for(var l=0;l<check.length;l++){
                 this.moduleAddNewCond($(cont).children(".module-check").last().children(".module-conds"),p,check[l][0],check[l][1]);
             }
         },
         moduleChangeType:function(cont){
-            $(cont).parent().children(".module-conds").remove();
-            $(cont).parent().append('<div class="module-conds">Conds:<a class="module-add-new-cond"><div class="btn btn-default">Add New Cond</div></a></div>');
-            DC.moduleAddNewCond($(cont).parent().children(".module-conds"));
+            
+            $(cont).children(".module-conds").remove();
+            $(cont).append('<div class="module-conds"><div class="half-top"><p class="editor-descriptor-half light-gradient">Conds</p><div class="btn btn-group module-add-new-cond fifty-width">Add New Cond</div></div></div>');
+            DC.moduleAddNewCond($(cont).children(".module-conds"));
         },
         moduleRemoveConds:function(cont){
             cont.remove();
         },
         moduleAddNewCond:function(cont,p,type,val){
-            var condType = p?p:$(cont).parent().children("div").children(".check-types").val();
+            var condType = p?p:$(cont).parent().children(".check-types").val();
             var options;
             switch(condType){
                 case "Personality":
-                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Character Class":
-                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Value":
-                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Methodology":
-                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Nationality":
-                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Loyalty":
-                    ["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"].forEach(function(per){
+                    ["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"].forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Morale":
-                    ["Quit","Unhappy","Content","Inspired","Ecstatic"].forEach(function(per){
+                    ["Quit","Unhappy","Content","Inspired","Ecstatic"].forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
                 case "Gender":
-                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(per){
+                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(per,i){
+                        if(!type&&i===0) type = per;
                         options+='<option>'+per+'</option>';
                     });
                     break;
@@ -227,9 +258,9 @@ $(function(){
             var value = val?val:1;
             $(cont).append('\n\
                 <div class="module-cond">\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
                     <select class="module-cond-select" initial-value="'+type+'">'+options+'</select>\n\
                     <input type="number" value='+value+' class="module-cond-value">\n\
+                    <div class="btn btn-group center thirty-height remove-choice">x</div>\n\
                 </div>\n\
             ');
             $(cont).children(".module-cond").last().children(".module-cond-select").each(function(){
@@ -262,18 +293,20 @@ $(function(){
             if(cont.length){
                 var obj = {};
                 $(cont).each(function(idx,itm){
-                    var name = $(itm).children("div").children(".module-name").val();
-                    obj[name] = [{text:$(itm).children("div").children(".module-display-text").val().replace(/ /g, '%20')}];
+                    var name = $(itm).children(".module-name").val();
+                    obj[name] = [{text:$(itm).children(".module-display-text").val().replace(/ /g, '%20')}];
                     $(itm).children(".text-module").each(function(i,mod){
                         obj[name].push({
-                            text:$(mod).children("div").children(".module-modular-text").val().replace(/ /g, '%20'),
+                            text:$(mod).children(".module-modular-text").val().replace(/ /g, '%20'),
                             checks:{}
                         });
-                        $(mod).children("div").children(".module-check").each(function(j,che){
-                            var checkType = $(che).children("div").children(".check-types").val();
+                        $(mod).children(".module-checks").children(".module-check").each(function(j,che){
+                            var checkType = $(che).children(".check-types").val();
                             checkType = DC.convertModuleType(checkType);
                             obj[name][obj[name].length-1].checks[checkType] = [];
+                            console.log(che)
                             $(che).children(".module-conds").children(".module-cond").each(function(k,con){
+                                console.log(con)
                                 obj[name][obj[name].length-1].checks[checkType].push([$(con).children(".module-cond-select").val(),parseInt($(con).children(".module-cond-value").val())]);
                             });
                         });
@@ -321,11 +354,10 @@ $(function(){
             //Add the red border to the page
             $(this.p.pagesCont).children(".page:eq("+num+")").children(".page-button").addClass("selected-color");
             //Remove onload and choices
-            $(this.p.onloadCont).children(".onload-li").children(".cond-group").remove();
+            $(this.p.onloadCont).children(".cond-group").remove();
             $(this.p.choicesCont).empty();
             //Remove modules
             $(this.p.modulesCont).empty();
-            
             
             //Display the page with all values filled out with this page's props
             this.displayPage();
@@ -333,13 +365,14 @@ $(function(){
         //Using the page data, fill the edit page menu
         displayPage:function(){
             var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
+            console.log(page)
             $(this.p.musicSelect).val($(page).attr("music"));
             $(this.p.bgSelect).val($(page).attr("bg"));
             $(this.p.descText).val($(page).attr("text"));
             //Show all of the onload groups
             var onload = JSON.parse($(page).attr("onload"));
             for(var i=0;i<onload.length;i++){
-               this.addOnloadGroup($(this.p.onloadCont).children(".onload-li").last(),onload[i]); 
+               this.addOnloadGroup($(this.p.onloadCont),onload[i]); 
             }
             var choices = JSON.parse($(page).attr("choices"));
             for(var i=0;i<choices.length;i++){
@@ -367,13 +400,19 @@ $(function(){
         addChoice:function(text,desc,page,disabled,groups){
             $(this.p.choicesCont).append(
                 '<li class="choice-li">\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
-                    <div><p class="editor-descriptor">Display Text: </p><input class="display-text" value="'+text+'"></div>\n\
-                    <div><p class="editor-descriptor">Enabled: </p><div class="btn btn-default disable">'+disabled+'</div></div>\n\
-                    <div><p class="editor-descriptor">On selected text displayed: </p><textarea class="desc-text">'+desc+'</textarea></div>\n\
-                    <div><p class="editor-descriptor">To Page: </p><select class="pages-to" initial-value="'+page+'">'+this.pageOptions()+'</select></div>\n\
-                    <p class="editor-descriptor">Condition/Effect Groups: </p>\n\
-                    <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>\n\
+                    <div class="choice-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <p class="editor-descriptor thirty-height light-blue-gradient">Display Text</p>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
+                    <input class="display-text full-line" value="'+text+'">\n\
+                    <p class="editor-descriptor light-gradient">Feedback</p>\n\
+                    <textarea class="desc-text">'+desc+'</textarea>\n\
+                    <p class="editor-descriptor-half enable light-gradient">Enable</p>\n\
+                    <div class="btn btn-quarter fifty-width disable">'+disabled+'</div>\n\
+                    <p class="editor-descriptor-half to-page light-gradient">To Page</p>\n\
+                    <select class="pages-to fifty-width" initial-value="'+page+'">'+this.pageOptions()+'</select>\n\
+                    <div class="btn btn-default add-new-group">Add Group</div>\n\
                 </li>'
             );
             for(var j=0;j<groups.length;j++){
@@ -384,14 +423,23 @@ $(function(){
         addChoiceGroup:function(to,group){
             $(to).append('\n\
                 <div class="cond-group">\n\
-                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>\n\
-                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <div class="cond-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <div class="btn btn-group add-new-condition">Add Condition</div>\n\
+                        <div class="btn btn-group add-new-effect">Add Effect</div>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
                     <div class="conditions">\n\
-                        <p class="editor-descriptor">Conditions: </p>\n\
+                        <div class="cond-group-top">\n\
+                            <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                            <p class="editor-descriptor-title medium-gradient">Conditions</p>\n\
+                        </div>\n\
                     </div>\n\
                     <div class="effects">\n\
-                        <p class="editor-descriptor">Effects: </p>\n\
+                        <div class="cond-group-top">\n\
+                            <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                            <p class="editor-descriptor-title medium-gradient">Effects</p>\n\
+                        </div>\n\
                     </div>\n\
                 </div>\n\
             ');
@@ -406,7 +454,7 @@ $(function(){
         },
         //Display the select that allows the user to select a condition
         getCondChoices:function(cond){
-            return '<div class="condition"><a class="remove-choice"><div class="btn btn-default">x</div></a>Select a condition<select class="conditions-select" initial-value="'+cond+'">'+this.conditionsOptions()+'</select><br><br><div class="cond-props"></div></div>';
+            return '<div class="condition"><p class="editor-descriptor-half light-gradient">Condition</p><select class="conditions-select inline-select" initial-value="'+cond+'">'+this.conditionsOptions()+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="cond-props"></div></div>';
         },
         //Creates a choice condition
         getCond:function(cond){
@@ -421,16 +469,16 @@ $(function(){
                         props.vr = firstVar;
                         props.vl = varProps.vars[firstVar];
                     }
-                    var scope = 'Select a scope<select class="cond-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
-                    var vr = 'Select a variable<select class="cond-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
-                    var vl = 'Check if var is:<br><input class="cond-prop vl" value="'+props.vl+'">';
+                    var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="cond-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
+                    var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
+                    var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
                     content = scope+vr+vl;
                     break;
             }
             return content;
         },
         getEffectChoices:function(effect){
-            return '<div class="effect"><a class="remove-choice"><div class="btn btn-default">x</div></a>Select an effect<select class="effects-select" initial-value="'+effect+'">'+this.effectsOptions()+'</select><br><br><div class="effect-props"></div></div>';
+            return '<div class="effect"><p class="editor-descriptor-half light-gradient">Effect</p><select class="effects-select inline-select" initial-value="'+effect+'">'+this.effectsOptions()+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="effect-props"></div></div>';
         },
         //Creates an effect
         getEffect:function(effect){
@@ -446,9 +494,9 @@ $(function(){
                         props.vr = firstVar;
                         props.vl = varProps.vars[firstVar];
                     }
-                    var scope = 'Select a scope<select class="effect-prop scope" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select><br>';
-                    var vr = 'Select a variable<select class="effect-prop vr" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select><br>';
-                    var vl = 'Set the variable to:<br><input class="effect-prop vl" value="'+props.vl+'">';
+                    var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="effect-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
+                    var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="effect-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
+                    var vl = '<p class="editor-descriptor light-gradient">Set Variable To</p><input class="effect-prop vl full-line" value="'+props.vl+'">';
                     content = scope+vr+vl;
                     break;
                 case "changePage":
@@ -457,8 +505,8 @@ $(function(){
                         props.page = $(page).text();
                         props.desc = "";
                     }
-                    var page = 'Select a page<select class="effect-prop page" initial-value="'+props.page+'">'+this.pageOptions()+'</select><br>';
-                    var desc = 'Description<textarea class="effect-prop desc">'+props.desc+'</textarea>';
+                    var page = '<p class="editor-descriptor-half light-gradient">Select a Page</p><select class="effect-prop page inline-select" initial-value="'+props.page+'">'+this.pageOptions()+'</select>';
+                    var desc = '<p class="editor-descriptor light-gradient">Feedback</p><textarea class="effect-prop desc">'+props.desc+'</textarea>';
                     content = page+desc;
                     break;
                 case "enableChoice":
@@ -468,7 +516,7 @@ $(function(){
                         if(choice) props.choice = choice.displayText;
                         
                     }
-                    var choice = 'Enable a choice on this page<select class="effect-prop choice" initial-value="'+props.choice+'">'+this.choiceOptions()+'</select>'; 
+                    var choice = '<p class="editor-descriptor-half light-gradient">Enable Choice</p><select class="effect-prop choice inline-select" initial-value="'+props.choice+'">'+this.choiceOptions()+'</select>'; 
                     content = choice;
                     break;
                 case "changeEvent":
@@ -476,8 +524,8 @@ $(function(){
                         props.scene = Object.keys(this.p.scenes)[0];
                         props.event = this.p.scenes[props.scene][0];
                     }
-                    var scene = 'Select a scene<select class="effect-prop scene" initial-value="'+props.scene+'">'+this.sceneOptions()+'</select><br>'; 
-                    var event = 'Select an event<select class="effect-prop event" initial-value="'+props.event+'">'+this.eventOptions(props.scene)+'</select>';
+                    var scene = '<p class="editor-descriptor-half light-gradient">Select a Scene</p><select class="effect-prop scene inline-select" initial-value="'+props.scene+'">'+this.sceneOptions()+'</select>'; 
+                    var event = '<p class="editor-descriptor-half light-gradient">Select an Event</p><select class="effect-prop event inline-select" initial-value="'+props.event+'">'+this.eventOptions(props.scene)+'</select>';
                     content = scene+event;
                     break;
                 case "recruitChar":
@@ -485,7 +533,7 @@ $(function(){
                     if(!props){props = {};
                         props.name = chars[0];
                     }
-                    var char = 'Select a character to recruit<select class="effect-prop name" initial-value="'+props.name+'">';
+                    var char = '<p class="editor-descriptor-half light-gradient">Recruit</p><select class="effect-prop name inline-select" initial-value="'+props.name+'">';
                     chars.forEach(function(c){
                         char+='<option>'+c+'</option>';
                     });
@@ -499,24 +547,27 @@ $(function(){
         addOnloadGroup:function(to,group){
             $(to).append('\n\
                 <div class="cond-group">\n\
-                    <a class="add-new-condition"><div class="btn btn-default">Add Condition</div></a>\n\
-                    <a class="add-new-effect"><div class="btn btn-default">Add Effect</div></a>\n\
-                    <a class="remove-choice"><div class="btn btn-default">x</div></a>\n\
+                    <div class="cond-group-top">\n\
+                        <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
+                        <div class="btn btn-group add-new-condition">Add Condition</div>\n\
+                        <div class="btn btn-group add-new-effect">Add Effect</div>\n\
+                        <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
+                    </div>\n\
                     <div class="conditions">\n\
-                        <p class="editor-descriptor">Conditions: </p>\n\
+                        <p class="editor-descriptor-title medium-gradient">Conditions</p>\n\
                     </div>\n\
                     <div class="effects">\n\
-                        <p class="editor-descriptor">Effects: </p>\n\
+                        <p class="editor-descriptor-title medium-gradient">Effects</p>\n\
                     </div>\n\
                 </div>\n\
             ');
             for(var k=0;k<group.conds.length;k++){
-                $(this.p.onloadCont).children(".onload-li").last().children(".cond-group").last().children(".conditions").last().append(this.getCondChoices(group.conds[k][0]));
-                $(this.p.onloadCont).children(".onload-li").last().children(".cond-group").last().children(".conditions").last().children(".condition").last().children(".cond-props").last().append(this.getCond(group.conds[k]));
+                $(this.p.onloadCont).children(".cond-group").last().children(".conditions").last().append(this.getCondChoices(group.conds[k][0]));
+                $(this.p.onloadCont).children(".cond-group").last().children(".conditions").last().children(".condition").last().children(".cond-props").last().append(this.getCond(group.conds[k]));
             }
             for(var k=0;k<group.effects.length;k++){
-                $(this.p.onloadCont).children(".onload-li").last().children(".cond-group").last().children(".effects").last().append(this.getEffectChoices(group.effects[k][0]));
-                $(this.p.onloadCont).children(".onload-li").last().children(".cond-group").last().children(".effects").children(".effect").last().children(".effect-props").last().append(this.getEffect(group.effects[k]));
+                $(this.p.onloadCont).children(".cond-group").last().children(".effects").last().append(this.getEffectChoices(group.effects[k][0]));
+                $(this.p.onloadCont).children(".cond-group").last().children(".effects").children(".effect").last().children(".effect-props").last().append(this.getEffect(group.effects[k]));
             }
         },
         //Sets all of the pages and vrs for saving
@@ -758,6 +809,7 @@ $(function(){
     
     $("#add-new-choice").click(function(){
         var page = $(DC.p.pagesCont).children(".page:eq("+DC.p.selectedPage+")");
+        console.log(page)
         DC.addChoice("","",page.name,"Enabled",[]);
     });
     $("#add-new-module").click(function(){
@@ -796,26 +848,38 @@ $(function(){
     });
     //End editor-content buttons
     
+    $(document).on("click","#add-new-onload-group",function(){
+        DC.addOnloadGroup($(this).parent(),{conds:[],effects:[]});
+    });
     $(document).on("click",".add-new-group",function(){
-        var cl = $(this).parent().attr("class");
-        if(cl==="choice-li"){
-            DC.addChoiceGroup($(this).parent(),{conds:[],effects:[]});
-        } else {
-            DC.addOnloadGroup($(this).parent(),{conds:[],effects:[]});
-        }
+        DC.addChoiceGroup($(this).parent(),{conds:[],effects:[]});
     });
     $(document).on("click",".add-new-condition",function(){
-        $(this).parent().children(".conditions").append(DC.getCondChoices());
-        $(this).parent().children(".conditions").last().children(".condition").last().children(".conditions-select").trigger("change");
+        $(this).parent().parent().children(".conditions").append(DC.getCondChoices());
+        $(this).parent().parent().children(".conditions").last().children(".condition").last().children(".conditions-select").trigger("change");
     });
     $(document).on("click",".add-new-effect",function(){
-        $(this).parent().children(".effects").append(DC.getEffectChoices());
-        $(this).parent().children(".effects").last().children(".effect").last().children(".effects-select").last().trigger("change");
+        $(this).parent().parent().children(".effects").append(DC.getEffectChoices());
+        $(this).parent().parent().children(".effects").last().children(".effect").last().children(".effects-select").last().trigger("change");
     });
     
     //Removes the parent element
     $(document).on("click",".remove-choice",function(e){
         $(this).parent().remove();
+    });
+    $(document).on("click",".remove-choice-deep",function(e){
+        $(this).parent().parent().remove();
+    });
+    
+    $(document).on("click",".minimize-choice",function(e){
+        var text = $(this).text();
+        if(text==="-"){
+            $(this).parent().siblings().hide();
+            $(this).text("+");
+        } else {
+            $(this).parent().siblings().show();
+            $(this).text("-");
+        }
     });
     
     //Conditions selects on change
@@ -843,11 +907,11 @@ $(function(){
     });
     //Adds a new check inside the text module
     $(document).on("click",".module-add-new-check",function(e){
-        DC.moduleAddNewCheck($(this).parent(),{});
+        DC.moduleAddNewCheck($(this).parent().parent().children(".module-checks"),{});
     });
     //Adds a new cond inside the check
     $(document).on("click",".module-add-new-cond",function(e){
-        DC.moduleAddNewCond($(this).parent());
+        DC.moduleAddNewCond($(this).parent().parent());
     });
     
     //Change the type of the check

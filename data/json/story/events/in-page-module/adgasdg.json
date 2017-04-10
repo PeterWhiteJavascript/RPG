@@ -2,7 +2,9 @@
     "name": "adgasdg",
     "desc": "d",
     "kind": "story",
-    "vrs": {},
+    "vrs": {
+        "VVVVVVVVA": "0"
+    },
     "pages": [
         {
             "name": "Page 1",
@@ -13,12 +15,49 @@
                 {
                     "displayText": "sdf",
                     "desc": "",
-                    "page": "Page 2",
+                    "page": "asw",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "",
+                    "desc": "",
+                    "page": "Page 1",
                     "disabled": "Enabled",
                     "groups": []
                 }
             ],
-            "onload": [],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "Gloobal",
+                                "vl": "100"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "event",
+                                "vr": "Gloobal",
+                                "vl": "100"
+                            }
+                        ]
+                    ]
+                }
+            ],
             "modules": {
                 "intro": [
                     {
@@ -27,67 +66,40 @@
                     {
                         "text": "The feast was DELICIOUS!",
                         "checks": {
-                            "p": [],
                             "c": [
                                 [
                                     "Legionnaire",
                                     1
-                                ]
-                            ],
-                            "v": [
+                                ],
                                 [
-                                    "Egoist",
+                                    "Legionnaire",
                                     1
-                                ]
-                            ],
-                            "t": [
+                                ],
                                 [
-                                    "Pragmatic",
+                                    "Legionnaire",
                                     1
-                                ]
-                            ],
-                            "n": [
+                                ],
                                 [
-                                    "Venorian",
+                                    "Legionnaire",
                                     1
-                                ]
-                            ],
-                            "l": [
+                                ],
                                 [
-                                    "Traitorous",
-                                    115
-                                ]
-                            ],
-                            "m": [
-                                [
-                                    "Quit",
-                                    10
-                                ]
-                            ],
-                            "g": [
-                                [
-                                    "Male",
-                                    10
+                                    "Legionnaire",
+                                    22
                                 ]
                             ]
                         }
-                    },
+                    }
+                ],
+                "_empty_": [
                     {
-                        "text": "I don't really like these types of extravagant events.",
-                        "checks": {
-                            "p": [
-                                [
-                                    "Ascetic",
-                                    10
-                                ]
-                            ]
-                        }
+                        "text": ""
                     }
                 ]
             }
         },
         {
-            "name": "Page 2",
+            "name": "asw",
             "music": "demo.mp3",
             "bg": "bg\/959396-river.jpg",
             "text": "{0@m.d}",
@@ -102,6 +114,26 @@
                         "text": "AHEOIWHEOAIWEHAOWIEHAIWOEHAWKL:ENALWD",
                         "checks": {
                             "p": [
+                                [
+                                    "Sensitive",
+                                    1
+                                ],
+                                [
+                                    "Sensitive",
+                                    1
+                                ],
+                                [
+                                    "Sensitive",
+                                    1
+                                ],
+                                [
+                                    "Sensitive",
+                                    1
+                                ],
+                                [
+                                    "Sensitive",
+                                    1
+                                ],
                                 [
                                     "Violent",
                                     100

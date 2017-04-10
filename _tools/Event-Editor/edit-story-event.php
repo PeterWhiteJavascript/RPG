@@ -55,92 +55,89 @@ $charGen = json_decode(file_get_contents('../../data/json/data/character-generat
         <div id="char-gen" value='<?php echo json_encode($charGen); ?>'></div>
         
         
-        <div id="editor-title"><h2><?php echo $name; ?></h2></div>
+        <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         
         <div id="pages-data" hidden><?php echo json_encode($pages); ?></div>
         <div id="variables-data" hidden><?php echo json_encode($variables); ?></div>
         
         <div id="editor-content">
-            <div class="editor-left-menu">
-                <!--This is the options menu for the editor-->
+            <div id="top-bar">
                 <ul>
-                    <li><a id="add-new-variable"><div class="menu-button btn btn-default">Add New Variable</div></a></li>
-                    <br>
-                    <li><a id="add-new-page"><div class="menu-button btn btn-default">Add New Page</div></a></li>
-                    <li><a id="remove-page"><div class="menu-button btn btn-default">Remove Page</div></a></li>
-                    <li><a id="copy-page"><div class="menu-button btn btn-default">Copy Page</div></a></li>
-                    <br>
-                    <!--<li><a id="add-new-onload"><div class="menu-button btn btn-default">Add Onload</div></a></li>-->
-                    <li><a id="add-new-choice"><div class="menu-button btn btn-default">Add Choice</div></a></li>
-                    <li><a id="add-new-module"><div class="menu-button btn btn-default">Add Module</div></a></li>
-                    <br>
-                    <li><a id="save-event"><div class="menu-button btn btn-default">Save Event</div></a></li>
-                    <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
-                    <br>
-                    <li><a id="back"><div class="menu-button btn btn-default">Go Back</div></a></li>
+                    <li class="top-bar-btn"><div id="add-new-page" class="menu-button btn btn-default">Add New Page</div></li>
+                    <li class="top-bar-btn"><div id="add-new-variable" class="menu-button btn btn-default">Add New Variable</div></li>
+                    <li class="top-bar-btn"><div id="copy-page" class="menu-button btn btn-default">Copy Page</div></li>
+                    <li class="top-bar-btn"><div id="remove-page" class="menu-button btn btn-default">Remove Page</div></li>
+                    <li class="top-bar-btn"><div id="save-event" class="menu-button btn btn-default">Save Event</div></li>
+                    <li class="top-bar-btn"><div id="test-event" class="menu-button btn btn-default">Test Event</div></li>
+                    <li class="top-bar-btn"><div id="back" class="menu-button btn btn-default">Go Back</div></li>
                 </ul>
             </div>
-            <div class="editor-left-menu" id="editor-variables">
-                <ul>
-                    
-                </ul>
-            </div>
-            <div class="editor-left-menu" id="editor-pages">
-                <ul class="sortable">
-                    
-                </ul>
-            </div>
-            <div id="editor-page-options">
-                <div id="music-select">
-                    <p class="editor-descriptor">Music:</p>
-                    <select>
-                        <?php
-                        forEach($music as $song){
-                            echo '<option value='.$song.'>'.$song.'</option>';
-                        }
-                        ?>
-                    </select>
-                </div>
-                <audio controls id="music-preview">
-                    <source type="audio/mp3" src="">Sorry, your browser does not support HTML5 audio.
-                </audio>
-                <img id="bg-preview">
-                <div id="bg-select">
-                    <p class="editor-descriptor">BG:</p>
-                    <select>
-                        <?php 
-                        forEach($bgs as $bg){
-                            echo '<option value=bg/'.$bg.'>bg/'.$bg.'</option>';
-                        }
-                        ?>
-                    </select>
-                </div>
-                <br>
-                <div id="text-select">
-                    <p class="editor-descriptor">Text: </p>
-                    <textarea class="desc-text"></textarea>
-                </div>
-                <div id="onload">
-                    <h2>On load:</h2>
+            
+            <div class="editor-left-menu" id="page-vars">
+                <div class="centered-title">PAGES</div>
+                <div id="editor-pages">
                     <ul>
-                        <li class="onload-li sortable">
-                            <a class="add-new-group"><div class="btn btn-default">Add Group</div></a>
 
-                        </li>
                     </ul>
                 </div>
-                <div id="choices">
-                    <h2>Choices:</h2>
-                    <ul class="sortable">
-                        
+                <div class="centered-title">VARS</div>
+                <div id="editor-variables">
+                    <ul>
+
                     </ul>
                 </div>
-                <div id="modules">
-                    <h2>Modules:</h2>
-                    <ul class="sortable">
-                        
-                    </ul>
+            </div>
+            <div id="editor-main-content">
+                <div id="editor-page-options">
+                    <div id="text-select">
+                        <p class="editor-descriptor dark-gradient">Text</p>
+                        <textarea class="desc-text"></textarea>
+                    </div>
+                    <div id="music-select">
+                        <p class="editor-descriptor dark-gradient">Music</p>
+                        <select>
+                            <?php
+                            forEach($music as $song){
+                                echo '<option value='.$song.'>'.$song.'</option>';
+                            }
+                            ?>
+                        </select>
+                        <audio controls id="music-preview">
+                            <source type="audio/mp3" src="">Sorry, your browser does not support HTML5 audio.
+                        </audio>
+                    </div>
+                    <div id="bg-select">
+                        <p class="editor-descriptor dark-gradient">Background</p>
+                        <select>
+                            <?php 
+                            forEach($bgs as $bg){
+                                echo '<option value=bg/'.$bg.'>bg/'.$bg.'</option>';
+                            }
+                            ?>
+                        </select>
+                        <img id="bg-preview">
+                    </div>
+                </div>
+                <div id="bottom-page-options">
+                    <div id="onload">
+                        <p class="editor-descriptor-big dark-gradient">On Load</p>
+                        <div class="btn btn-default" id="add-new-onload-group">Add Group</div>
+                    </div>
+                    <div id="choices">
+                        <p class="editor-descriptor-big dark-gradient">Choices</p>
+                        <div class="btn btn-default" id="add-new-choice">Add Choice</div>
+                        <ul class="sortable">
+                            
+                        </ul>
+                    </div>
+                    <div id="modules">
+                        <p class="editor-descriptor-big dark-gradient">Modules</p>
+                        <div class="btn btn-default" id="add-new-module">Add Module</div>
+                        <ul class="sortable">
+
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
