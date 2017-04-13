@@ -2,7 +2,7 @@ Quintus.UIObjects=function(Q){
     $(function(){
         //When clicking a choice
         $('body').on('click', '.choice-div', function() {
-            Q.storyController.p.choice = Q.storyController.p.pages[Q.storyController.p.pageNum].choices[$(".choice-div").index(this)];
+            Q.storyController.p.choice = Q.storyController.getChoice(Q.storyController.p.pages[Q.storyController.p.pageNum],$(this).text());
             //Check if something happens before doing the default change page
             //Will be true if all conditions are met
             //Loop through each group
@@ -387,8 +387,28 @@ Quintus.UIObjects=function(Q){
                             varValue = Q.state.get("globalVars")[checks[j][1]];
                             break;
                     }
-                    if(eval(varValue+checks[j][2]+checks[j][3])) success = true;
-                    else success = false;
+                    switch(checks[j][2]){
+                        case "==":
+                            if(varValue==checks[j][3]) success = true;
+                            else success = false;
+                            break;
+                        case ">":
+                            if(varValue>checks[j][3]) success = true;
+                            else success = false;
+                            break;
+                        case "<":
+                            if(varValue<checks[j][3]) success = true;
+                            else success = false;
+                            break;
+                        case ">=":
+                            if(varValue>=checks[j][3]) success = true;
+                            else success = false;
+                            break;
+                        case "<=":
+                            if(varValue<=checks[j][3]) success = true;
+                            else success = false;
+                            break
+                    }
                 }
                 if(success){
                     text = module[i].text;
@@ -668,6 +688,13 @@ Quintus.UIObjects=function(Q){
         insertPage:function(num){
             var page = this.p.pages[num];
             
+            //Do the onload conditions/effects
+            for(var i=0;i<page.onload.length;i++){
+                var on = page.onload[i];
+                if(this.checkConds(on.conds)){
+                    this.executeEffects(on.effects);
+                };
+            }
             //Make the background correct
             this.p.bgImage.p.asset = page.bg;
             
@@ -682,13 +709,6 @@ Quintus.UIObjects=function(Q){
                     $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
                 }
             });
-            //Do the onload conditions/effects
-            for(var i=0;i<page.onload.length;i++){
-                var on = page.onload[i];
-                if(this.checkConds(on.conds)){
-                    this.executeEffects(on.effects);
-                };
-            }
         },
         insertChoiceDesc:function(desc){
             this.removePage();
@@ -785,8 +805,8 @@ Quintus.UIObjects=function(Q){
                 t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];
             },
             enableChoice:function(t,obj){
-                //Find the page choice and enable it.
-                t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = "Enabled";
+                //Find the page choice and enable or disable it.
+                t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = obj.toggle;
             },
             changeEvent:function(t,obj){
                 Q.startScene(obj.scene,obj.event);

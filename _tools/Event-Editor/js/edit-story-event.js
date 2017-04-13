@@ -235,7 +235,7 @@ $(function(){
             }
         },
         moduleVarAddNewCheck:function(cont,check){
-            var s = check?check[0]:"event";
+            var s = check.length?check[0]:"event";
             $(cont).append('\n\
                 <div class="module-check">\n\
                     <div class="choice-group-top">\n\
@@ -436,6 +436,8 @@ $(function(){
                     $(itm).children(".effect-props").children(".effect-prop").each(function(i,o){
                         var val = parseInt($(o).val());
                         if(isNaN(val)) val = $(o).val();
+                        if(!val) val = $(o).text();
+                        if(!val) val = 0;
                         props[$(o).attr("class").split(" ")[1]] = val;
                     });
                     gr.effects.push([$(itm).children(".effects-select").val(),props]);
@@ -616,9 +618,9 @@ $(function(){
                         var page = $(this.p.pagesCont).children(".page:eq("+this.p.selectedPage+")");
                         var choice = JSON.parse($(page).attr("choices"))[0];
                         if(choice) props.choice = choice.displayText;
-                        
+                        props.toggle = "Enabled";
                     }
-                    var choice = '<p class="editor-descriptor-half light-gradient">Enable Choice</p><select class="effect-prop choice inline-select" initial-value="'+props.choice+'">'+this.choiceOptions()+'</select>'; 
+                    var choice = '<p class="editor-descriptor-half light-gradient">Toggle Choice</p><div class="effect-prop toggle btn btn-quarter fifty-width disable">'+props.toggle+'</div><select class="effect-prop choice inline-select full-line" initial-value="'+props.choice+'">'+this.choiceOptions()+'</select>'; 
                     content = choice;
                     break;
                 case "changeEvent":

@@ -338,6 +338,9 @@ audio{
 .remove-choice-deep{
     float:right;
 }
+#choices ul{
+    margin-top:36px;
+}
 #choices ul li{
     margin-top:10px;
     border:2px solid black;
@@ -595,7 +598,7 @@ li{
 }
 
 .module-li{
-    margin-top:10px;
+    margin-bottom:10px;
     list-style:none;
     border-radius:2px;
 }

@@ -1,0 +1,163 @@
+{
+    "name": "Full Test",
+    "desc": "Testing all of the features",
+    "kind": "story",
+    "vrs": {
+        "hasSpear": "no"
+    },
+    "pages": [
+        {
+            "name": "Arrive at Gate",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{@pickedUpSpear}",
+            "choices": [
+                {
+                    "displayText": "Talk to the gatekeeper.",
+                    "desc": "Alex talks to the gatekeeper.",
+                    "page": "Arrive at Gate",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Pick up spear that is lying against the gate.",
+                    "desc": "Alex picks up the spear.",
+                    "page": "Arrive at Gate",
+                    "disabled": "Disabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "hasSpear",
+                                        "vl": "yes"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Drop Spear",
+                    "desc": "Alex drops the spear.",
+                    "page": "Arrive at Gate",
+                    "disabled": "Disabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "hasSpear",
+                                        "vl": "dropped"
+                                    }
+                                ],
+                                [
+                                    "enableChoice",
+                                    {
+                                        "toggle": "Disabled",
+                                        "choice": "Drop Spear"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "hasSpear",
+                                "vl": "yes"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Disabled",
+                                "choice": "Pick up spear that is lying against the gate."
+                            }
+                        ],
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Enabled",
+                                "choice": "Drop Spear"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "hasSpear",
+                                "vl": "no"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Disabled",
+                                "choice": "Drop Spear"
+                            }
+                        ],
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Enabled",
+                                "choice": "Pick up spear that is lying against the gate."
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {
+                "pickedUpSpear": [
+                    {
+                        "text": "Alex arrives at a gate.\n\nAlex sees the gatekeeper that seems to be guarding the gate. \n\n{o.Alex.g@A} also notices a spear on the ground."
+                    },
+                    {
+                        "text": "The guard yells at Alex to drop the spear.",
+                        "checks": [
+                            [
+                                "event",
+                                "hasSpear",
+                                "==",
+                                "yes"
+                            ]
+                        ]
+                    },
+                    {
+                        "text": "The spear that Alex had is on the ground now.",
+                        "checks": [
+                            [
+                                "event",
+                                "hasSpear",
+                                "==",
+                                "dropped"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "onload": []
+}
