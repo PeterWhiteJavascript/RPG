@@ -819,6 +819,34 @@ Quintus.UIObjects=function(Q){
                 char.completedEvents = {};
                 char.officer = data.officer;
                 Q.state.get("allies").push(char);
+            },
+            changeStat:function(t,obj){
+                obj.val = parseInt(obj.val);
+                switch(obj.stat){
+                    case "Pragmatic":
+                    case "Kind":
+                    case "Intuitive":
+                    case "Egoist":
+                    case "Altruist":
+                    case "Nepotist":
+                        var influence = Q.state.get("saveData").influence;
+                        influence[obj.stat]+=obj.val;
+                        break;
+                    case "Money":
+                        Q.state.get("saveData").money+=obj.val;
+                        break;
+                    case "Morale":
+                        Q.changeMorale(obj.val);
+                        break;
+                    default:
+                        var props = obj.stat.split("-");
+                        if(props[0]==="Reputation"){
+                            Q.state.get("saveData").relations[props[1]][0]+=obj.val;
+                        } else if(props[1]==="Stability"){
+                            Q.state.get("saveData").relations[props[1]][1]+=obj.val;
+                        }
+                        break;
+                }
             }
         }
     });

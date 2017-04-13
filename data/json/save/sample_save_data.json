@@ -55,32 +55,6 @@
             "method":50,
             "charClass":"archer",
             "exp":80
-        },
-        {
-            "name": "Peter",
-            "level":1,
-            "gender":"male",
-            "equipment":{
-                "righthand":["weapon","woodenSpear"],
-                "lefthand":false,
-                "body":["body","shirt"],
-                "feet":["feet","sandals"],
-                "accessory":false
-            },
-            "stats":{
-                "str":10,
-                "end":10,
-                "dex":8,
-                "wsk":12,
-                "rfl":12
-            },
-            "skills":{
-                "spear":["puncture","push"]
-            },
-            "value":50,
-            "method":50,
-            "charClass":"barbarian",
-            "exp":90
         }
     ],
     "inventory":{

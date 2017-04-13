@@ -30,6 +30,7 @@ Q.maxEquipmentRank = 2;
 //Automatically run when the label is changed and the text is inside a container
 //label is the new incoming label
 //maxWidth is either the textWidth property of the container that the text is in, or it is the container's w
+//I might delete this if we only use css for this display.
 Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
     var ctx = Q.ctx;
     var split = label.split(' ');

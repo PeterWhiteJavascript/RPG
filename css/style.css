@@ -11,6 +11,9 @@ body {
     vertical-align: middle;
     overflow:hidden;
 }
+pre{
+    white-space:pre-wrap;
+}
 #text-container{
     font-size:22px;
     top:10%;

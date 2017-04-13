@@ -36,8 +36,8 @@
         "exp":0,
         "primaryStat":"str",
         "secondaryStat":"end",
-        "loyalty":"-",
-        "morale":"-",
+        "loyalty":0,
+        "morale":0,
         "officer":true
     },
     "Astrea":{

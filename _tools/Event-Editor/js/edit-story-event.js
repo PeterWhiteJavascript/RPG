@@ -644,6 +644,20 @@ $(function(){
                     char+='</select>';
                     content = char;
                     break;
+                case "changeStat":
+                    var stats = ["Morale","Pragmatic","Kind","Intuitive","Egoist","Altruist","Nepotist","Money","Reputation-Venoriae","Reputation-Dardoine","Reputation-Aljudramil","Reputation-Talumpatua","Reputation-Nomad","Stability-Venoriae","Stability-Dardoine","Stability-Aljudramil","Stability-Talumpatua","Stability-Nomad"];
+                    if(!props){props = {};
+                        props.stat = stats[0];
+                        props.val = 0;
+                    }
+                    content = '<p class="editor-descriptor-half light-gradient">Stat</p><select class="effect-prop stat inline-select" initial-value="'+props.stat+'">';
+                    stats.forEach(function(s){
+                        if(s===props.stat) content+='<option selected>'+s+'</option>';
+                        else content+='<option>'+s+'</option>';
+                    });
+                    content +='</select>';
+                    content +='<input type="number" value='+props.val+' class="effect-prop val full-line">';
+                    break;
             }
             return content;
         },
@@ -759,7 +773,7 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar"];
+            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });

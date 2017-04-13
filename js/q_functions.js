@@ -1,5 +1,11 @@
 Quintus.QFunctions=function(Q){
     
+    Q.changeMorale = function(morale){
+        Q.state.get("allies").forEach(function(ally){
+            ally.morale+=morale;
+        });
+    };
+    
     Q.getLoyaltyString = function(loyalty){
         if(loyalty<1) return "Traitorous";
         if(loyalty<31) return "Disloyal";
@@ -49,15 +55,15 @@ Quintus.QFunctions=function(Q){
     };
     //Value scale of 1-100
     Q.getCharacterValue=function(value){
-        if(value<=33) return "egoistic";
-        if(value>=66) return "altruistic";
-        return "loyal";
+        if(value<=33) return "Egoist";
+        if(value>=66) return "Altruist";
+        return "Nepotist";
     };
     //Method scale of 1-100
     Q.getCharacterMethod=function(value){
-        if(value<=33) return "compassionate";
-        if(value>=66) return "logical";
-        return "intuitive";
+        if(value<=33) return "Intuitive";
+        if(value>=66) return "Kind";
+        return "Pragmatic";
     };
     
     Q.getPathData=function(data,path){
