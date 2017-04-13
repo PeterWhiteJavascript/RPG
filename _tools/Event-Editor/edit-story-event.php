@@ -133,7 +133,8 @@ $charGen = json_decode(file_get_contents('../../data/json/data/character-generat
                     </div>
                     <div id="modules">
                         <p class="editor-descriptor-big dark-gradient">Modules</p>
-                        <div class="btn btn-default" id="add-new-module">Add Module</div>
+                        <div class="btn btn-default" id="add-new-module-var">Add Variable Module</div>
+                        <div class="btn btn-default" id="add-new-module">Add Character Module</div>
                         <ul class="sortable">
 
                         </ul>

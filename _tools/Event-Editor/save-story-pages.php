@@ -52,6 +52,17 @@ for($i=0;$i<count($file['pages']);$i++){
             $module[$key]->text = urldecode($value->text);
         }
     }
+    foreach($page->modulesVars as $moduleVar){
+        foreach($moduleVar as $key => $value){
+            $moduleVar[$key]->text = urldecode($value->text);
+            if(isset($moduleVar[$key]->checks)){
+                foreach($moduleVar[$key]->checks as $key3=>$value3){
+                    $moduleVar[$key]->checks[$key3][2] = urldecode($value3[2]);
+                }
+            }
+            
+        }
+    }
 }
 file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
 

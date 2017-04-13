@@ -367,6 +367,35 @@ Quintus.UIObjects=function(Q){
             }
             return obj[i];
         },
+        processVarModule:function(prop){
+            var module = Q.storyController.p.pages[Q.storyController.p.pageNum].modulesVars[prop];
+            var text = module[0].text;
+            for(var i=1;i<module.length;i++){
+                //Evaluate all of the checks
+                var checks = module[i].checks;
+                var success = true;
+                for(var j=0;j<checks.length;j++){
+                    var varValue;
+                    switch(checks[j][0]){
+                        case "event":
+                            varValue = Q.storyController.p.vrs[checks[j][1]];
+                            break;
+                        case "scene":
+                            varValue = Q.state.get("sceneVars")[checks[j][1]];
+                            break;
+                        case "global":
+                            varValue = Q.state.get("globalVars")[checks[j][1]];
+                            break;
+                    }
+                    if(eval(varValue+checks[j][2]+checks[j][3])) success = true;
+                    else success = false;
+                }
+                if(success){
+                    text = module[i].text;
+                }
+            }
+            return text;
+        },
         processModule:function(char,propAffected,prop){
             var affectedCategory;
             switch(propAffected){
@@ -562,7 +591,11 @@ Quintus.UIObjects=function(Q){
                 case "m":
                     var propAffected = aff[1];
                     return Q.textModules.processModule(character,propAffected,prop);
-                break;        
+                break;
+                //Variable modules don't have any passed in object
+                case "":
+                    return Q.textModules.processVarModule(prop);
+                break;
                 //Affected is not one of the above. It is a character
                 default:
                     var intAffected = parseInt(aff[0]);
@@ -634,13 +667,6 @@ Quintus.UIObjects=function(Q){
         },
         insertPage:function(num){
             var page = this.p.pages[num];
-            //Do the onload conditions/effects
-            for(var i=0;i<page.onload.length;i++){
-                var on = page.onload[i];
-                if(this.checkConds(on.conds)){
-                    this.executeEffects(on.effects);
-                };
-            }
             
             //Make the background correct
             this.p.bgImage.p.asset = page.bg;
@@ -656,6 +682,13 @@ Quintus.UIObjects=function(Q){
                     $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
                 }
             });
+            //Do the onload conditions/effects
+            for(var i=0;i<page.onload.length;i++){
+                var on = page.onload[i];
+                if(this.checkConds(on.conds)){
+                    this.executeEffects(on.effects);
+                };
+            }
         },
         insertChoiceDesc:function(desc){
             this.removePage();

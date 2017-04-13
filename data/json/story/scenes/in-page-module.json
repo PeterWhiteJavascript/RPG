@@ -2,7 +2,8 @@
     "name": "in-page-module",
     "desc": "",
     "eventOrder": [
-        "adgasdg"
+        "adgasdg",
+        "newtest"
     ],
     "vrs": []
 }

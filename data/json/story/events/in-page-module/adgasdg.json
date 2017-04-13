@@ -2,12 +2,10 @@
     "name": "adgasdg",
     "desc": "d",
     "kind": "story",
-    "vrs": {
-        "VVVVVVVVA": "0"
-    },
+    "vrs": {},
     "pages": [
         {
-            "name": "Page 1",
+            "name": "fghfgh",
             "music": "battle.mp3",
             "bg": "bg\/959396-river.jpg",
             "text": "Hello! {0@m.intro}\n{o.Astrea@m.intro}",
@@ -18,47 +16,33 @@
                     "page": "asw",
                     "disabled": "Enabled",
                     "groups": []
-                },
-                {
-                    "displayText": "",
-                    "desc": "",
-                    "page": "Page 1",
-                    "disabled": "Enabled",
-                    "groups": []
-                },
-                {
-                    "displayText": "",
-                    "desc": "",
-                    "page": "Page 1",
-                    "disabled": "Enabled",
-                    "groups": []
                 }
             ],
             "onload": [
                 {
-                    "conds": [
-                        [
-                            "checkVar",
-                            {
-                                "scope": "event",
-                                "vr": "Gloobal",
-                                "vl": "100"
-                            }
-                        ]
-                    ],
-                    "effects": [
-                        [
-                            "setVar",
-                            {
-                                "scope": "event",
-                                "vr": "Gloobal",
-                                "vl": "100"
-                            }
-                        ]
-                    ]
+                    "conds": [],
+                    "effects": []
                 }
             ],
             "modules": {
+                "variable":[
+                    {
+                        "text":"Default"
+                    },
+                    {
+                        "text":"Changed",
+                        "checks":{
+                            "v":[
+                                [
+                                    "Event",
+                                    "blueKey",
+                                    ">=",
+                                    1
+                                ]
+                            ]
+                        }
+                    }
+                ],
                 "intro": [
                     {
                         "text": "Thanks for the feast!"
@@ -69,31 +53,33 @@
                             "c": [
                                 [
                                     "Legionnaire",
-                                    1
-                                ],
-                                [
-                                    "Legionnaire",
-                                    1
-                                ],
-                                [
-                                    "Legionnaire",
-                                    1
-                                ],
-                                [
-                                    "Legionnaire",
-                                    1
-                                ],
-                                [
-                                    "Legionnaire",
                                     22
+                                ],
+                                [
+                                    "Legionnaire",
+                                    1
+                                ],
+                                [
+                                    "Vanguard",
+                                    1
+                                ],
+                                [
+                                    "Legionnaire",
+                                    1
                                 ]
                             ]
                         }
-                    }
-                ],
-                "_empty_": [
+                    },
                     {
-                        "text": ""
+                        "text": "fgh g",
+                        "checks": {
+                            "p": [
+                                [
+                                    "Ascetic",
+                                    1
+                                ]
+                            ]
+                        }
                     }
                 ]
             }
@@ -106,42 +92,7 @@
             "choices": [],
             "onload": [],
             "modules": {
-                "d": [
-                    {
-                        "text": "If I'm a violent person, change the display."
-                    },
-                    {
-                        "text": "AHEOIWHEOAIWEHAOWIEHAIWOEHAWKL:ENALWD",
-                        "checks": {
-                            "p": [
-                                [
-                                    "Sensitive",
-                                    1
-                                ],
-                                [
-                                    "Sensitive",
-                                    1
-                                ],
-                                [
-                                    "Sensitive",
-                                    1
-                                ],
-                                [
-                                    "Sensitive",
-                                    1
-                                ],
-                                [
-                                    "Sensitive",
-                                    1
-                                ],
-                                [
-                                    "Violent",
-                                    100
-                                ]
-                            ]
-                        }
-                    }
-                ]
+                
             }
         }
     ],

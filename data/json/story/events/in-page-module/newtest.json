@@ -1,0 +1,138 @@
+{
+    "name": "newtest",
+    "desc": "asdfasfawf",
+    "kind": "story",
+    "vrs": {
+        "blueKey": "0"
+    },
+    "pages": [
+        {
+            "name": "Landing",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex arrives at three chests.\n{@hasKey}",
+            "choices": [
+                {
+                    "displayText": "Left Chest",
+                    "desc": "Alex selects the left chest.",
+                    "page": "Left Chest",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Middle Chest",
+                    "desc": "Alex selects the middle chest.",
+                    "page": "Middle Chest",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Right Chest",
+                    "desc": "Alex selects the right chest.",
+                    "page": "Right Chest",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {
+                "hasKey": [
+                    {
+                        "text": "Alex looks at the left chest since it looks like it contains a blue key!"
+                    },
+                    {
+                        "text": "Alex looks at the left chest and is happy that {o.Alex.g@a} took it.",
+                        "checks": [
+                            [
+                                "event",
+                                "blueKey",
+                                ">=",
+                                1
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Left Chest",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{@contents}",
+            "choices": [
+                {
+                    "displayText": "Go Back",
+                    "desc": "Alex backed up a bit.",
+                    "page": "Landing",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "blueKey",
+                                "vl": "0"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "event",
+                                "vr": "blueKey",
+                                "vl": "1"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {
+                "contents": [
+                    {
+                        "text": "Alex picked up the blue key from the chest."
+                    },
+                    {
+                        "text": "Alex already obtained the blue key!",
+                        "checks": [
+                            [
+                                "event",
+                                "blueKey",
+                                ">=",
+                                1
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Middle Chest",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "",
+            "choices": [],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Right Chest",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "",
+            "choices": [],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        }
+    ],
+    "onload": []
+}

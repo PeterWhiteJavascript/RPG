@@ -597,6 +597,7 @@ li{
 .module-li{
     margin-top:10px;
     list-style:none;
+    border-radius:2px;
 }
 
 .text-module{
@@ -647,15 +648,11 @@ li{
 }
 
 #editor-page-options{
-    position:absolute;
-    height:150px;
-    border-top:thick double;
-    border-bottom:thick double;
     padding:10px;
     width:90%;
 }
 #bottom-page-options{
-    position:absolute;
+    float:left;
     height:100%;
     padding:10px;
     width:90%;
@@ -676,9 +673,16 @@ li{
     width:100%;
     margin: 0 auto;
     border-radius: 0px 0px 2px 2px; 
+    float:left;
+}
+#add-new-module-var{
+    width:50%;
+    margin: 0 auto;
+    border-radius: 0px 0px 2px 2px; 
+    float:left;
 }
 #add-new-module{
-    width:100%;
+    width:50%;
     margin: 0 auto;
     border-radius: 0px 0px 2px 2px; 
 }
@@ -770,6 +774,15 @@ li{
     width:100%;
     border-radius:0;
 }
+.module-var-add-new-text{
+    width:100%;
+    border-radius:0;
+}
+.module-var-scope{
+    width:85%;
+    border-radius:0;
+    float:left;
+}
 .module-add-new-check{
     width:100%;
     border-radius:0;
@@ -783,6 +796,7 @@ li{
 .module-checks{
     border:solid;
     border-radius:2px;
+    border-top:none;
     padding:5px;
 }
 .module-check{
@@ -816,4 +830,15 @@ li{
     height:30px;
     float:right;
     padding:5px;
+}
+.var-props .name{
+    width:50%;
+    float:left;
+}
+.var-props .operator{
+    width:50%;
+    float:left;
+}
+.var-props .value{
+    width:100%;
 }
