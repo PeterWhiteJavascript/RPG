@@ -3,7 +3,7 @@
 $directory = '../../data/json/story/scenes';
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 
-$charClasses = ["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"];
+$defaultScenes = ["Feast1","Feast2","Feast3","Mentored1","Mentored2","Mentored3","Hunted1","Hunted2","Hunted3","EnemiesDefeated50","EnemiesDefeated100","EnemiesDefeated200","Assisted100","Assisted250","Assisted500","BattlesParticipated5","BattlesParticipated10","BattlesParticipated20","DamageDealt1000","DamageDealt5000","DamageDealt10000","DamageTaken500","DamageTaken2500","DamageTaken5000","SelfHealed500","SelfHealed2500","SelfHealed5000","TargetHealed1000","TargetHealed5000","TargetHealed10000","TimesWounded5","TimesWounded10","TimesWounded20","TimesRested5","TimesRested10","TimesRested20"];
 $officers = ["Astrea","Lysandra","Gaios","Imamu","Rutendo","Nala","Sjrna","Eko","Nicodermus"];
 $acts = ["Act-1-1","Act-1-2","Act-1-3","Act-1-4","Act-2-1","Act-2-2","Act-2-3","Act-2-4","Act-3-1","Act-3-2","Act-3-3","Act-3-4","Act-4-1"];
 $crc = [];
@@ -13,7 +13,7 @@ $act = [];
 
 foreach($scanned_directory as $file) {
     $data = json_decode(file_get_contents($directory.'/'.$file), true);
-    if(in_array($data['name'],$charClasses)){
+    if(in_array($data['name'],$defaultScenes)){
         $crc[] = $data;
     } else if(in_array($data['name'],$officers)){
         $off[] = $data;
@@ -36,7 +36,7 @@ foreach($scanned_directory as $file) {
             <div id="content">
                 <div class="left cont-menu">
                     <ul class="load-char-classes collapse-menu">
-                        <li><div class="minimize">Character Class Scenes</div></li>
+                        <li><div class="minimize">Default Scenes</div></li>
                         <?php
                             foreach($crc as $data){
                                 echo '<li name="'.$data['name'].'" desc="'.$data['desc'].'"><a class="scene-button"><div class="menu-button btn btn-default">'.$data['name'].'</div></a></li>';

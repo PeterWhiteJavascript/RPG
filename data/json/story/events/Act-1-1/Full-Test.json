@@ -308,7 +308,7 @@
                     ]
                 }
             ],
-            "modules": [],
+            "modules": {},
             "modulesVars": {
                 "holdingSpear": [
                     {

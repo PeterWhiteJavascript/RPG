@@ -6,6 +6,14 @@ Quintus.QFunctions=function(Q){
         });
     };
     
+    Q.getRelationsString = function(value){
+        if(value<1) return "Lowest";
+        if(value<31) return "Low";
+        if(value<71) return "Average";
+        if(value<91) return "High";
+        return "Superb";
+    };
+    
     Q.getLoyaltyString = function(loyalty){
         if(loyalty<1) return "Traitorous";
         if(loyalty<31) return "Disloyal";
@@ -21,22 +29,8 @@ Quintus.QFunctions=function(Q){
         if(morale<91) return "Inspired";
         return "Ecstatic";
     };
-    Q.markEventCompleted = function(char,prop){
-        var event = char.events[prop].filter(function(e){
-            return e[char.awards[prop]];
-        })[0];
-        var idx = char.events[prop].indexOf(event);
-        var itm = char.events[prop].splice(idx,1);
-        if(!char.completedEvents[prop]) char.completedEvents[prop] = [];
-        char.completedEvents[prop].push(itm);
-    };
-    
-    //Adds a character event if it exists
-    Q.addCharEvent = function(char,prop){
-        var event = char.events[prop].filter(function(e){
-            return e[char.awards.feasted];
-        })[0];
-        if(event) Q.state.get("potentialEvents").push([char,event[char.awards.feasted],prop]);
+    Q.markEventCompleted = function(char,scene){
+        char.events[scene] = false;
     };
     
     //Loads all unique assets that are used in a scene

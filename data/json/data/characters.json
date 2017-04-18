@@ -77,15 +77,7 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true,
-        
-        "events":{
-            "feasted":[
-                {
-                    "1":"Feast1"
-                }
-            ]
-        }
+        "officer":true
     },
     "Lysandra":{
         "name": "Lysandra",
@@ -124,17 +116,10 @@
         "secondaryStat":"end",
         "loyalty":50,
         "morale":50,
-        "officer":true,
-        "events":{
-            "feasted":[
-                {
-                    "1":"Feast1"
-                }
-            ]
-        }
+        "officer":true
     },
     "Gaios":{
-
+        
     },
     "Imamu":{
 

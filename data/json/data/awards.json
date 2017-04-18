@@ -27,9 +27,9 @@
         "name":"Target Healed",
         "desc":"The total number of healing given out."
     },
-    "timesDied":{
-        "name":"Times Died",
-        "desc":"The total number of times this character has died."
+    "timesWounded":{
+        "name":"Times Wounded",
+        "desc":"The total number of times this character's hp has gone to 0."
     },
     "timesRested":{
         "name":"Times Rested",
@@ -38,6 +38,10 @@
     "feasted":{
         "name":"Times Feasted",
         "desc":"The number of times this character has enjoyed a feast."
+    },
+    "guestOfHonour":{
+        "name":"Guest of Honour",
+        "desc":"The number of times this character has been invited to a feast as the guest of honour."
     },
     "mentored":{
         "name":"Times Mentored",

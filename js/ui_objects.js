@@ -34,13 +34,12 @@ Quintus.UIObjects=function(Q){
             }
             //Get the list of all events that could be played
             var potentialEvents = Q.state.get("potentialEvents");
-            
-            //[char,event,prop]
+            //[char,scene,event]
             var data = potentialEvents[Math.floor(Math.random()*potentialEvents.length)];
             if(data){
-                var scene = data[0].officer?data[0].name:data[0].charClass;
-                var event = data[1];
-                Q.markEventCompleted(data[0],data[2]);
+                var scene = data[1];
+                var event = data[2];
+                Q.markEventCompleted(data[0],data[1]);
                 var idx = potentialEvents.indexOf(data);
                 potentialEvents.splice(idx,1);
                 return {scene:scene,event:event,char:data[0]};
@@ -242,8 +241,7 @@ Quintus.UIObjects=function(Q){
                 Q.locationController[$(this).attr("func")]();
             });
         },
-        throwFeast:function(){
-            var amount = parseInt($(".money.selected-color").attr("value"));
+        throwFeast:function(amount,guestOfHonour){
             if(Q.state.get("saveData").money>=amount){
                 Q.state.get("saveData").money-=amount;
                 var boost = 0;
@@ -261,8 +259,10 @@ Quintus.UIObjects=function(Q){
                 Q.state.get("allies").forEach(function(ally){
                     ally.morale+=boost;
                     ally.awards.feasted++;
-                    if(ally.events.feasted) Q.addCharEvent(ally,"feasted");
                 });
+                guestOfHonour.awards.guestOfHonour++;
+                var event = guestOfHonour.checkEvents("feasted");
+                if(event) Q.state.get("potentialEvents").push(event);
                 this.trigger("cycleWeek");
             }
             this.createMainMenu();
@@ -301,12 +301,41 @@ Quintus.UIObjects=function(Q){
             
             this.p.menuCont.append(
                 '<ul id="feast-menu">\n\
-                    <li id="co-feast" class="btn btn-default" func="throwFeast">Throw Feast</li>\n\
+                    <li id="co-feast" class="btn btn-default" func="confirmAmount">Confirm Amount</li>\n\
                     <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
                 </ul>'
             );
             $("#feast-menu li").click(function(){
-                Q.locationController[$(this).attr("func")]();
+                Q.locationController[$(this).attr("func")](parseInt($(".money.selected-color").attr("value")));
+            });
+        },
+        confirmAmount:function(money){
+            this.emptyConts();
+            this.p.leftCont.show();
+            var allies = Q.state.get("allies");
+            this.p.leftCont.append('<ul></ul>');
+            for(var i=1;i<allies.length;i++){
+                $(this.p.leftCont).children('ul').first().append('\n\
+                    <li class="char btn btn-default" value="'+i+'">'+allies[i].name+'</li>\n\
+                ');
+            }
+            $(".char").on("click",function(){
+                $('.char').removeClass("selected-color");
+                $(this).addClass("selected-color");
+                $(".mid-box").text("Select "+allies[$(this).attr("value")].name+" as the Guest of Honour?");
+            });
+            this.p.midCont.append(
+                '<div class="mid-box"></div>'
+            );
+            $(".char").first().trigger("click");
+            this.p.menuCont.append(
+                '<ul id="confirm-feast-amount-menu">\n\
+                    <li id="co-feast" class="btn btn-default" func="throwFeast">Throw Feast</li>\n\
+                    <li id="co-back" class="btn btn-default" func="createFeastMenu">Back</li>\n\
+                </ul>'
+            );
+            $("#confirm-feast-amount-menu li").click(function(){
+                Q.locationController[$(this).attr("func")](money,allies[$(".char.selected-color").attr("value")]);
             });
         },
         createMentorMenu:function(){

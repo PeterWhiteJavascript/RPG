@@ -1,0 +1,8 @@
+{
+    "name": "Feast1",
+    "desc": "If the character is the guest of honour and this is their first feast.",
+    "eventOrder": [
+        "start"
+    ],
+    "vrs": []
+}

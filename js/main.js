@@ -138,16 +138,12 @@ Q.newGame=function(options){
         var storyAlex = Q.charGen.generateCharacter(alex);
         //Set the catchphrase for Alex
         storyAlex.catchphrase = "It's a me, Mario!";
-        storyAlex.events = {};
-        storyAlex.completedEvents = {};
         //For now, alex is the only character
         var astrea = Q.charGen.generateCharacter(Q.state.get("characters").Astrea);
-        astrea.events = Q.state.get("characters").Astrea.events;
-        astrea.completedEvents = {};
         
-        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",personality:["Violent"]});
-        legion.events = Q.state.get("charClasses").Legionnaire.events;
-        legion.completedEvents = {};
+        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",personality:["Violent"],nationality:4,loyalty:90});
+        console.log(legion)
+        legion.checkEvents("custom");
         Q.state.set("allies",[storyAlex,legion,astrea]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{

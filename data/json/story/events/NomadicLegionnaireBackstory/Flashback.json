@@ -1,0 +1,19 @@
+{
+    "name": "Flashback",
+    "desc": "See a flashback",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "This is a cool flashback from the {0@nationality} {0@charClass}.",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "onload": []
+}

@@ -280,6 +280,88 @@ Quintus.SceneFuncs=function(Q){
         getTp:function(level,dex){
             return Math.floor(Math.ceil(level/10)*(dex+dex))+1;
         },
+        generateEvents:function(char){
+            var per = char.personality;
+            var val = char.value;
+            var met = char.method;
+            var gen = char.gender;
+            var cha = char.charClass;
+            var nat = char.nationality;
+            //Events that are always added
+            var events = {
+                "Feast1":true,
+                "Feast2":true,
+                "Feast3":true,
+                "Mentored1":true,
+                "Mentored2":true,
+                "Mentored3":true,
+                "Hunted1":true,
+                "Hunted2":true,
+                "Hunted3":true,
+                "EnemiesDefeated50":true,
+                "EnemiesDefeated100":true,
+                "EnemiesDefeated200":true,
+                "Assisted100":true,
+                "Assisted250":true,
+                "Assisted500":true,
+                "BattlesParticipated5":true,
+                "BattlesParticipated10":true,
+                "BattlesParticipated20":true,
+                "DamageDealt1000":true,
+                "DamageDealt5000":true,
+                "DamageDealt10000":true,
+                "DamageTaken500":true,
+                "DamageTaken2500":true,
+                "DamageTaken5000":true,
+                "SelfHealed500":true,
+                "SelfHealed2500":true,
+                "SelfHealed5000":true,
+                "TargetHealed1000":true,
+                "TargetHealed5000":true,
+                "TargetHealed10000":true,
+                "TimesWounded5":true,
+                "TimesWounded10":true,
+                "TimesWounded20":true,
+                "TimesRested5":true,
+                "TimesRested10":true,
+                "TimesRested20":true
+            };
+            if(char.officer){
+                switch(char.name){
+                    case "Astrea":
+                        
+                        break;
+                    case "Lysandra":
+                        
+                        break;
+                    case "Gaios":
+                        
+                        break;
+                    case "Imamu":
+                        
+                        break;
+                    case "Rutendo":
+
+                        break;
+                    case "Nala":
+
+                        break;
+                    case "Sjrna":
+                        
+                        break;
+                    case "Eko":
+                        
+                        break;
+                    case "Nicodermus":
+                        
+                        break;
+                }
+            } else {
+                //All custom events
+                if(nat==="Nomadic"&&cha==="Legionnaire") events["NomadicLegionnaireBackstory"] = true;
+            }
+            return events;
+        },
         //Generates a character by filling in the blanks for data that is not set
         generateCharacter:function(data){
             function getEquipment(equipmentData){
@@ -309,6 +391,8 @@ Quintus.SceneFuncs=function(Q){
                 return sk; 
             }
             var char = {};
+            
+            char.officer = data.officer;
             char.awards = data.awards?data.awards:this.setUpAwards();
             
             char.nationality = Q._isNumber(data.nationality)?this.nationalities[data.nationality]:this.generateProp("nationality",char);
@@ -335,6 +419,176 @@ Quintus.SceneFuncs=function(Q){
             
             char.muchValue = data.muchValue?data.muchValue:this.generateProp("muchValue");
             char.personality = data.personality?data.personality:this.generateProp("personality");
+            //All random characters will have events based on their charClass, personality, value, methodology, nationality, and gender
+            char.events = this.generateEvents(char);
+            
+            char.completedEvents = {};
+            
+            //Checks if this character should trigger an event
+            char.checkEvents = function(prop){
+                //Step 1: Check if any conditions are met to do an event
+                //Step 2: Make sure the event hasn't been completed yet
+                //Step 3: Add the event to the potentialEvents in Q.state
+                var scene = "";
+                //start is default event.
+                var event = "start";
+                //Only do events based on what property has changed (So we don't get unrelated events triggering).
+                switch(prop){
+                    case "feasted":
+                        //The character has never been to a feast and is the guest of honour.
+                        if(this.awards.feasted===1&&this.awards.guestOfHonour===1){
+                            scene = this.findEvent("Feast1");
+                        } 
+                        //The character has been to a feast before and is now the guest of honour.
+                        else if(this.awards.feasted>2&this.awards.guestOfHonour===1){    
+                            scene = this.findEvent("Feast2");
+                        }
+                        //If the character has been the guest of honour 5 times
+                        else if(this.awards.guestOfHonour>=5){
+                            scene = this.findEvent("Feast3");
+                        }
+                        break;
+                    case "enemiesDefeated":
+                        //Enemies defeated is at least 200
+                        if(this.awards.enemiesDefeated>=200){
+                            scene = this.findEvent("EnemiesDefeated200");
+                        }
+                        //Enemies defeated is at least 100
+                        else if(this.awards.enemiesDefeated>=100){
+                            scene = this.findEvent("EnemiesDefeated100");
+                        } 
+                        //Enemies defeated is at least 50
+                        else if(this.awards.enemiesDefeated>=50){
+                            scene = this.findEvent("EnemiesDefeated50");
+                        }
+                        break;
+                    case "assisted":
+                        //Assisted is at least 500
+                        if(this.awards.assisted>=500){
+                            scene = this.findEvent("Assisted500");
+                        }
+                        //Assisted is at least 250
+                        else if(this.awards.assisted>=250){
+                            scene = this.findEvent("Assisted250");
+                        } 
+                        //Assisted is at least 100
+                        else if(this.awards.assisted>=100){
+                            scene = this.findEvent("Assisted100");
+                        }
+                        break;
+                    case "battlesParticipated":
+                        if(this.awards.battlesParticipated>=20){
+                            scene = this.findEvent("BattlesParticipated20");
+                        }
+                        else if(this.awards.battlesParticipated>=10){
+                            scene = this.findEvent("BattlesParticipated10");
+                        } 
+                        else if(this.awards.battlesParticipated>=5){
+                            scene = this.findEvent("BattlesParticipated5");
+                        }
+                        break;
+                    case "damageDealt":
+                        if(this.awards.damageDealt>=500){
+                            scene = this.findEvent("DamageDealt500");
+                        }
+                        else if(this.awards.damageDealt>=2500){
+                            scene = this.findEvent("DamageDealt2500");
+                        } 
+                        else if(this.awards.damageDealt>=5000){
+                            scene = this.findEvent("DamageDealt5000");
+                        }
+                        break;
+                    case "damageTaken":
+                        if(this.awards.damageTaken>=1000){
+                            scene = this.findEvent("DamageDealt1000");
+                        }
+                        else if(this.awards.damageDealt>=5000){
+                            scene = this.findEvent("DamageDealt5000");
+                        } 
+                        else if(this.awards.damageDealt>=10000){
+                            scene = this.findEvent("DamageDealt10000");
+                        }
+                        break;
+                    case "selfHealed":
+                        if(this.awards.selfHealed>=500){
+                            scene = this.findEvent("SelfHealed500");
+                        }
+                        else if(this.awards.damageDealt>=2500){
+                            scene = this.findEvent("SelfHealed2500");
+                        } 
+                        else if(this.awards.damageDealt>=5000){
+                            scene = this.findEvent("SelfHealed5000");
+                        }
+                        break;
+                    case "targetHealed":
+                        if(this.awards.targetHealed>=1000){
+                            scene = this.findEvent("TargetHealed1000");
+                        }
+                        else if(this.awards.targetHealed>=5000){
+                            scene = this.findEvent("TargetHealed5000");
+                        } 
+                        else if(this.awards.targetHealed>=10000){
+                            scene = this.findEvent("TargetHealed10000");
+                        }
+                        break;
+                    case "wounded":
+                        if(this.awards.timesWounded>=5){
+                            scene = this.findEvent("Wounded5");
+                        }
+                        else if(this.awards.timesWounded>=10){
+                            scene = this.findEvent("Wounded10");
+                        } 
+                        else if(this.awards.timesWounded>=20){
+                            scene = this.findEvent("Wounded20");
+                        }
+                        break;
+                    case "rested":
+                        if(this.awards.timesRested>=5){
+                            scene = this.findEvent("Rested5");
+                        }
+                        else if(this.awards.timesRested>=10){
+                            scene = this.findEvent("Rested10");
+                        } 
+                        else if(this.awards.timesRested>=20){
+                            scene = this.findEvent("Rested20");
+                        }
+                        break;
+                    //Each time the character is mentored, they get a scene
+                    case "mentored":
+                        if(this.awards.mentored>=1){
+                            scene = this.findEvent("Mentored1");
+                        }
+                        else if(this.awards.mentored>=2){
+                            scene = this.findEvent("Mentored2");
+                        } 
+                        else if(this.awards.mentored>=3){
+                            scene = this.findEvent("Mentored3");
+                        }
+                        break;
+                    case "hunted":
+                        if(this.awards.timesHunted>=1){
+                            scene = this.findEvent("Hunted1");
+                        }
+                        else if(this.awards.timesHunted>=2){
+                            scene = this.findEvent("Hunted2");
+                        } 
+                        else if(this.awards.timesHunted>=3){
+                            scene = this.findEvent("Hunted3");
+                        }
+                        break;
+                    //Any custom events that require unique conditions
+                    case "custom":
+                        //Nomadic Legionnaire's backstory is triggered when the reputation with Venoriae is low and loyalty of the character is high.
+                        if(Q.state.get("saveData").relations.Venoriae[0]<=30&&this.loyalty>=70){
+                            scene = this.findEvent("NomadicLegionnaireBackstory");
+                        }
+                        break;
+                }
+                if(scene) Q.state.get("potentialEvents").push([char,scene,event]);
+            };
+            char.findEvent = function(name){
+                if(char.events[name]) return name;
+            };
             
             return char;
         },

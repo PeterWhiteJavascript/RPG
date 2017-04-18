@@ -42,7 +42,7 @@
         "Kind":10
     },
     "relations":{
-        "Venoriae":[40,50],
+        "Venoriae":[10,50],
         "Dardoine":[50,50],
         "Aljudramil":[50,50],
         "Nomads":[50,50],

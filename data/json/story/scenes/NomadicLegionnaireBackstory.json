@@ -1,0 +1,9 @@
+{
+    "name": "NomadicLegionnaireBackstory",
+    "desc": "If a character is a legionnaire and nomadic, do this.",
+    "eventOrder": [
+        "Flashback",
+        "start"
+    ],
+    "vrs": []
+}

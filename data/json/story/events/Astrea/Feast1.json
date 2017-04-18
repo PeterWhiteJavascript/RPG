@@ -31,8 +31,9 @@
                     ]
                 }
             ],
-            "onload": []
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
         }
-    ],
-    "onload": []
+    ]
 }
