@@ -15,7 +15,8 @@ $(function(){
     //START OPTS BUTTONS
     $('#open-scene').click(function(e){
         var scene = $(selectedScene).parent().attr("name");
-        var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"></form>');
+        var type = $(selectedScene).parent().attr("type");
+        var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
         $("body").append(form);
         form.submit();
     });
@@ -25,7 +26,8 @@ $(function(){
     $('#edit-scene').click( function(e) {
         var desc = $(selectedScene).parent().attr("desc");
         var scene = $(selectedScene).parent().attr("name");
-        var form = $('<form action="edit-scene.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="desc" value="'+desc+'"></form>');
+        var type = $(selectedScene).parent().attr("type");
+        var form = $('<form action="edit-scene.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="desc" value="'+desc+'"><input type="text" name="type" value="'+type+'"></form>');
         $("body").append(form);
         form.submit();
     });

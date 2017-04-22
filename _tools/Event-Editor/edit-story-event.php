@@ -1,9 +1,9 @@
 <?php
 include("php-config.php");
 $scene = addDashes($_POST['scene']);
+$type = $_POST['type'];
 $name = addDashes($_POST['name']);
-
-$event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
+$event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 $pages = $event['pages'];
 $variables = $event['vrs'];
 
@@ -29,7 +29,13 @@ foreach($scenes as $key => $val){
 }
 $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true)['vrs'];
 
-$sceneVars = json_decode(file_get_contents('../../data/json/story/scenes/'.$scene.'.json'), true)['vrs'];
+$group = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true)[$type];
+$sceneVars;
+for($i=0;$i<count($group);$i++){
+    if($group[$i]['name']===$scene){
+        $sceneVars = $group[$i]['vrs'];
+    }
+}
 
 $locationEvents = array_slice(scandir('../../data/json/story/locations'), 2);
 $locEvents = [];
@@ -57,6 +63,7 @@ $charGen = json_decode(file_get_contents('../../data/json/data/character-generat
         
         <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
+        <div id="scene-type" hidden><h2><?php echo $type; ?></h2></div>
         
         <div id="pages-data" hidden><?php echo json_encode($pages); ?></div>
         <div id="variables-data" hidden><?php echo json_encode($variables); ?></div>

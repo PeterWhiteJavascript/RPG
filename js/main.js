@@ -141,9 +141,8 @@ Q.newGame=function(options){
         //For now, alex is the only character
         var astrea = Q.charGen.generateCharacter(Q.state.get("characters").Astrea);
         
-        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",personality:["Violent"],nationality:4,loyalty:90});
+        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",personality:["Ascetic"],nationality:4,loyalty:90});
         console.log(legion)
-        legion.checkEvents("custom");
         Q.state.set("allies",[storyAlex,legion,astrea]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
@@ -167,9 +166,10 @@ Q.newGame=function(options){
         //TESTING ONLY
         if(Q.state.get("startSceneName")) Q.state.get("saveData").startSceneName = Q.state.get("startSceneName");
         if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
+        if(Q.state.get("startSceneType")) Q.state.get("saveData").startSceneType = Q.state.get("startSceneType");
         
         //Start a scene
-        Q.startScene(Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
+        Q.startScene(Q.state.get("startSceneType"),Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
         
     });
 };
@@ -187,7 +187,7 @@ Q.startGame=function(save){
     //Set up the Bag.
     Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     
-    Q.startScene(Q.state.get("startSceneName"),Q.state.get("startEventName"));
+    Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 var files = [
     //IMAGES SPRITES
@@ -240,6 +240,7 @@ var files = [
     "json/data/tile_types.json",
     "json/data/modules.json",
     "json/data/story-events.json",
+    "json/data/scenes-list.json",
     
     "json/story/global-vars.json"
 ];
@@ -273,6 +274,9 @@ Q.load(files.join(','),function(){
     Q.state.set("modules",Q.assets["json/data/modules.json"]);
     //All important story events that happen on a certain week
     Q.state.set("storyEvents",Q.assets["json/data/story-events.json"].events);
+    //The list of events
+    Q.state.set("scenesList",Q.assets["json/data/scenes-list.json"]);
+    
     //Get the equipment in the proper format
     Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
@@ -291,64 +295,75 @@ Q.load(files.join(','),function(){
     
     /* TESTING EVENT */
     if(document.getElementById("title")&&document.getElementById("title").innerHTML.length){
-        var scene = document.getElementById("title").innerHTML.toLowerCase();
-        var name = document.getElementById("title2").innerHTML.toLowerCase();
+        var scene = document.getElementById("title").innerHTML;
+        var name = document.getElementById("title2").innerHTML;
+        var type = document.getElementById("title3").innerHTML;
         Q.state.set("startSceneName",scene);
         Q.state.set("startEventName",name);
-        Q.load("json/story/scenes/"+scene+".json",function(){
-            Q.state.set("sceneVars",Q.assets["json/story/scenes/"+scene+".json"].vrs);
-            Q.load("json/story/events/"+scene+"/"+name+".json",function(){
-                Q.state.set("testingScene",Q.assets["json/story/events/"+scene+"/"+name+".json"]);
-                var kind = Q.state.get("testingScene").kind;
-                switch(kind){
-                    case "story":
-                        Q.newGame({gender:"Female",eventName:name});
-                        $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
-                        $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
-                        $("#back-button").click(function(){
-                            var scene = $("#title").text();
-                            var name = $("#title2").text();
-                            var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-                            $("body").append(form);
-                            form.submit();
-                        });
-                        $("#back-button2").click(function(){
-                            var scene = $("#title").text();
-                            var name = $("#title2").text();
-                            var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-                            $("body").append(form);
-                            form.submit();
-                        });
-                        break;
-                    case "battleScene":
-                        Q.newGame({gender:"Female",eventName:name});
-                        $(document.body).append('<div id="back-button" class="btn btn-default">TO SCRIPT</div>');
-                        $(document.body).append('<div id="back-button2" class="btn btn-default">TO CHARACTERS</div>');  
-                        $(document.body).append('<div id="back-button3" class="btn btn-default">TO SHOW EVENTS</div>');  
-                        $("#back-button").click(function(){
-                            var scene = $("#title").text();
-                            var name = $("#title2").text();
-                            var form = $('<form action="_tools/Event-Editor/edit-battleScene-script.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-                            $("body").append(form);
-                            form.submit();
-                        });
-                        $("#back-button2").click(function(){
-                            var scene = $("#title").text();
-                            var name = $("#title2").text();
-                            var form = $('<form action="_tools/Event-Editor/edit-battleScene-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-                            $("body").append(form);
-                            form.submit();
-                        });
-                        $("#back-button3").click(function(){
-                            var scene = $("#title").text();
-                            var name = $("#title2").text();
-                            var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"></form>');
-                            $("body").append(form);
-                            form.submit();
-                        });
-                        break;
-                }
-            });
+        Q.state.set("startSceneType",type);
+        Q.state.set(
+            "sceneVars",
+            Q.state.get("scenesList")[type].filter(function(sc){
+                return sc.name===scene;
+            })[0].vrs
+        );
+        Q.load("json/story/events/"+type+"/"+scene+"/"+name+".json",function(){
+            Q.state.set("testingScene",Q.assets["json/story/events/"+type+"/"+scene+"/"+name+".json"]);
+            var kind = Q.state.get("testingScene").kind;
+            switch(kind){
+                case "story":
+                    Q.newGame({gender:"Female",eventName:name});
+                    $(document.body).append('<div id="back-button" class="btn btn-default">TO EDITOR</div>');
+                    $(document.body).append('<div id="back-button2" class="btn btn-default">TO EVENTS</div>');
+                    $("#back-button").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    $("#back-button2").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    break;
+                case "battleScene":
+                    Q.newGame({gender:"Female",eventName:name});
+                    $(document.body).append('<div id="back-button" class="btn btn-default">TO SCRIPT</div>');
+                    $(document.body).append('<div id="back-button2" class="btn btn-default">TO CHARACTERS</div>');  
+                    $(document.body).append('<div id="back-button3" class="btn btn-default">TO SHOW EVENTS</div>');  
+                    $("#back-button").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-script.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    $("#back-button2").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    $("#back-button3").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    break;
+            }
+            
         });
     } 
     /* END TESTING EVENT */

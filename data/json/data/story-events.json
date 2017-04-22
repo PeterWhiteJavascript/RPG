@@ -2,7 +2,7 @@
     "events":{
         "5":{
             "scene":"Act-1-1",
-            "event":"First-Act"
+            "event":"Event-1"
         }
     }
 }

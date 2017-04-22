@@ -1,0 +1,115 @@
+{
+    "Officer": [
+        {
+            "name": "Astrea",
+            "desc": "Any Astrea specific events.",
+            "eventOrder": [
+                "Feast1"
+            ],
+            "vrs": []
+        },
+        {
+            "name": "Lysandra",
+            "desc": "Any Lysandra Events\r\n",
+            "eventOrder": [
+                "Feast1"
+            ],
+            "vrs": []
+        },
+        {
+            "name": "Gaios",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Imamu",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Rutendo",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Nala",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Sjrna",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Eko",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        },
+        {
+            "name": "Nicodermus",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        }
+    ],
+    "Character": [
+        {
+            "name": "Feasts",
+            "desc": "Any time an event is triggered because a feast has occurred.",
+            "eventOrder": [
+                "Feast1",
+                "HedonisticFeast"
+            ],
+            "vrs": []
+        },
+        {
+            "name": "Enemies Defeated",
+            "desc": "",
+            "eventOrder": [],
+            "vrs": []
+        }
+    ],
+    "Story": [
+        {
+            "name": "Act-1-1",
+            "desc": "Test for act 1-1",
+            "eventOrder": [
+                "Full-Test",
+                "Event-1"
+            ],
+            "vrs": []
+        },
+        {
+            "name": "Act-1-2",
+            "desc": "Alex enters the awesome circus",
+            "eventOrder": [
+                "Circus-Gates",
+                "Speared"
+            ],
+            "vrs": {
+                "pl": 23434
+            }
+        }
+    ],
+    "Other": [
+        {
+            "name": "NomadicLegionnaireBackstory",
+            "desc": "If a character is a legionnaire and nomadic, do this.",
+            "eventOrder": [
+                "Flashback",
+                "start"
+            ],
+            "vrs": {
+                "erg": 4,
+                "4sdf": "w"
+            }
+        }
+    ]
+}

@@ -715,6 +715,7 @@ $(function(){
             form.append("<input type='text' name='pages' value="+json+">");
             form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
             form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+            form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
             return form;
         },
         //The user is asked if they would like to go back without saving.
@@ -963,6 +964,7 @@ $(function(){
             var form = $('<form action="show-events.php" method="post"></form>');
             form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
             form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+            form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
             $("body").append(form);
             form.submit();
         }

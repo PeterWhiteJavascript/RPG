@@ -1,9 +1,16 @@
 <?php
 include("php-config.php");
+$type = $_POST['type'];
 $scene = addDashes($_POST["scene"]);
-//Get the event order
-$order = json_decode(file_get_contents('../../data/json/story/scenes/'.$scene.'.json'), true)['eventOrder'];
-$directory = '../../data/json/story/events/'.$scene;
+//Get the scene
+$group = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true)[$type];
+$order;
+for($i=0;$i<count($group);$i++){
+    if($group[$i]['name']===$scene){
+        $order = $group[$i]['eventOrder'];
+    }
+}
+$directory = '../../data/json/story/events/'.$type.'/'.$scene;
 $scanned_directory = array_diff(scandir($directory), array('..', '.'));
 
 $sorted = [];
@@ -25,6 +32,7 @@ forEach($order as $name){
     <body>
         <div id="wrapper">
             <div id="title"><h1><?php echo $scene; ?></h1></div>
+            <div id="type"><h1><?php echo $type; ?></h1></div>
             <div id="content">
                 <ul id="show-events" class="menu left">
                     <li><h2>Events</h2></li>
@@ -40,9 +48,9 @@ forEach($order as $name){
                     <li><a id="new-event"><div class="menu-button btn btn-default">New Event</div></a></li>
                     <li><a id="edit-event"><div class="menu-button btn btn-default">Edit Event</div></a></li>
                     <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
-                    <li><a id="copy-event"><div class="menu-button btn btn-default">Copy Event</div></a></li>
+                    <!--<li><a id="copy-event"><div class="menu-button btn btn-default">Copy Event</div></a></li>
                     <li><a id="order-events"><div class="menu-button btn btn-default">Order Events</div></a></li>
-                    <li><a id="change-scene"><div class="menu-button btn btn-default">Change Event's Scene</div></a></li>
+                    <li><a id="change-scene"><div class="menu-button btn btn-default">Change Event's Scene</div></a></li>-->
                     <li><a id="delete-event"><div class="menu-button btn btn-default">Delete Event</div></a></li>
                     <br>
                     <li><a id="edit-vars"><div class="menu-button btn btn-default">Edit Scene Variables</div></a></li>

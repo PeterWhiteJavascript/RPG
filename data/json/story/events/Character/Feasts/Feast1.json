@@ -1,0 +1,57 @@
+{
+    "name": "Feast1",
+    "desc": "If it's the character's first feast and he is the guest of honour.",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Hiya! My name is {0@name} and I'm the guest of honour. {0@m.ascetic}",
+            "choices": [
+                {
+                    "displayText": "Go Back",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "scene": "locations",
+                                        "event": "metaximo1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {
+                "ascetic": [
+                    {
+                        "text": "Feasts are great!"
+                    },
+                    {
+                        "text": "I'm not too fond of feasts...",
+                        "checks": {
+                            "p": [
+                                [
+                                    "Ascetic",
+                                    1
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            },
+            "modulesVars": {}
+        }
+    ],
+    "onload": []
+}

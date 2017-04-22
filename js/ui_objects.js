@@ -169,10 +169,6 @@ Quintus.UIObjects=function(Q){
                 var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
                     return a.name===$(".character.selected-color").attr("id");
                 })[0];
-                var known = Q.state.get("characters")[character.name];
-                character.events = known?known:Q.state.get("charClasses")[character.charClass].events;
-                if(!character.events) character.events = {};
-                character.completedEvents = {};
                 Q.state.get("allies").push(character);
                 Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
                 this.createRecruitMenu();
@@ -184,10 +180,6 @@ Quintus.UIObjects=function(Q){
             obj.p.midCont.empty();
             obj.p.midCont.append(
                 '<ul class="recruit-card mid-box">\n\
-                    <div>'+pro(target,"c","IntroduceChar.first")+'</div>\n\
-                    <div>'+pro(target,"c","IntroduceChar.second")+'</div>\n\
-                    <div>'+pro(target,"c","IntroduceChar.third")+'</div>\n\
-                    <div>'+pro(target,"c","IntroduceChar.fourth")+'</div>\n\
                     <div class="char-skills"><b>Skills</b></div>\n\
                     <div class="char-equipment"><b>Equipment</b></div>\n\
                 </ul>'

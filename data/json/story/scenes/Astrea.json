@@ -1,8 +1,0 @@
-{
-    "name": "Astrea",
-    "desc": "Any Astrea specific events.",
-    "eventOrder": [
-        "Feast1"
-    ],
-    "vrs": []
-}

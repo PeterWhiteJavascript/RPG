@@ -4,6 +4,7 @@ $name;
 $scene;
 if(isset($_POST['name'])){$name = $_POST['name'];}
 if(isset($_POST['name'])){$scene = $_POST['scene'];}
+if(isset($_POST['name'])){$type = $_POST['type'];}
 
 ?>
 
@@ -36,6 +37,7 @@ if(isset($_POST['name'])){$scene = $_POST['scene'];}
         ?>
             <div id="title" hidden><?php echo $scene; ?></div>
             <div id="title2" hidden><?php echo $name; ?></div>
+            <div id="title3" hidden><?php echo $type; ?></div>
         <?php
         }
         ?>

@@ -18,6 +18,8 @@
                         Description<br>
                         <textarea type="text" name="desc" placeholder="Description"></textarea>
                         <br>
+                        Select a scene type
+                        <select type="text" name="type"><option selected>Character</option><option>Officer</option><option>Story</option><option>Other</option></select>
                         <input type="submit" value="Create Scene">
                     </form>
                 </div>

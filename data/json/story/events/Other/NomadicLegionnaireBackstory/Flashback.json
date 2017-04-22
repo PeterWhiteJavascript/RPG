@@ -11,8 +11,8 @@
             "text": "This is a cool flashback from the {0@nationality} {0@charClass}.",
             "choices": [],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
         }
     ],
     "onload": []
