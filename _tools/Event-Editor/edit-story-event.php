@@ -42,7 +42,7 @@ $locEvents = [];
 foreach($locationEvents as $ev){
     $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
 }
-$characters = json_decode(file_get_contents('../../data/json/data/characters.json'), true);
+$characters = json_decode(file_get_contents('../../data/json/data/officers.json'), true);
 
 $charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
 ?>

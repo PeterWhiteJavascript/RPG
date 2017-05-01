@@ -280,80 +280,6 @@ Quintus.SceneFuncs=function(Q){
         getTp:function(level,dex){
             return Math.floor(Math.ceil(level/10)*(dex+dex))+1;
         },
-        generateEvents:function(char){
-            var per = char.personality;
-            var val = char.value;
-            var met = char.method;
-            var gen = char.gender;
-            var cha = char.charClass;
-            var nat = char.nationality;
-            //Events that are always added
-            var events = {
-                "EnemiesDefeated50":true,
-                "EnemiesDefeated100":true,
-                "EnemiesDefeated200":true,
-                "Assisted100":true,
-                "Assisted250":true,
-                "Assisted500":true,
-                "BattlesParticipated5":true,
-                "BattlesParticipated10":true,
-                "BattlesParticipated20":true,
-                "DamageDealt1000":true,
-                "DamageDealt5000":true,
-                "DamageDealt10000":true,
-                "DamageTaken500":true,
-                "DamageTaken2500":true,
-                "DamageTaken5000":true,
-                "SelfHealed500":true,
-                "SelfHealed2500":true,
-                "SelfHealed5000":true,
-                "TargetHealed1000":true,
-                "TargetHealed5000":true,
-                "TargetHealed10000":true,
-                "TimesWounded5":true,
-                "TimesWounded10":true,
-                "TimesWounded20":true,
-                "TimesRested5":true,
-                "TimesRested10":true,
-                "TimesRested20":true
-            };
-            if(char.officer){
-                switch(char.name){
-                    case "Astrea":
-                        
-                        break;
-                    case "Lysandra":
-                        
-                        break;
-                    case "Gaios":
-                        
-                        break;
-                    case "Imamu":
-                        
-                        break;
-                    case "Rutendo":
-
-                        break;
-                    case "Nala":
-
-                        break;
-                    case "Sjrna":
-                        
-                        break;
-                    case "Eko":
-                        
-                        break;
-                    case "Nicodermus":
-                        
-                        break;
-                }
-            } else {
-                //All custom events
-                if(nat==="Nomadic"&&cha==="Legionnaire") events["NomadicLegionnaireBackstory"] = true;
-                if(char.hasPersonality("Hedonistic")) events["HedonisticFeast"] = true;
-            }
-            return events;
-        },
         //Generates a character by filling in the blanks for data that is not set
         generateCharacter:function(data){
             function getEquipment(equipmentData){
@@ -413,7 +339,7 @@ Quintus.SceneFuncs=function(Q){
             char.personality = data.personality?data.personality:this.generateProp("personality");
             
             //Clone the scenesList. When an event is shown from this character, remove it.
-            char.events =  JSON.parse(JSON.stringify(Q.state.get("scenesList")));
+            char.events =  JSON.parse(JSON.stringify(Q.state.get("scenesList").Character));
             
             //Checks if this character should trigger an event
             char.checkEvents = function(prop){
@@ -488,98 +414,98 @@ Quintus.SceneFuncs=function(Q){
                     case "damageDealt":
                         scene = "DamageDealt";
                         if(this.awards.damageDealt>=500){
-                            event = this.findEvent(scene,"DamageDealt500");
+                            event = this.findEvent(scene,"DamageDealt5000");
                         }
                         else if(this.awards.damageDealt>=2500){
                             event = this.findEvent(scene,"DamageDealt2500");
                         } 
-                        else if(this.awards.damageDealt>=5000){
-                            event = this.findEvent(scene,"DamageDealt5000");
+                        else if(this.awards.damageDealt>=500){
+                            event = this.findEvent(scene,"DamageDealt500");
                         }
                         break;
                     case "damageTaken":
                         scene = "DamageTaken";
-                        if(this.awards.damageTaken>=1000){
-                            event = this.findEvent(scene,"DamageDealt1000");
+                        if(this.awards.damageTaken>=10000){
+                            event = this.findEvent(scene,"DamageTaken10000");
                         }
-                        else if(this.awards.damageDealt>=5000){
-                            event = this.findEvent(scene,"DamageDealt5000");
+                        else if(this.awards.damageTaken>=5000){
+                            event = this.findEvent(scene,"DamageTaken5000");
                         } 
-                        else if(this.awards.damageDealt>=10000){
-                            event = this.findEvent(scene,"DamageDealt10000");
+                        else if(this.awards.damageTaken>=1000){
+                            event = this.findEvent(scene,"DamageTaken1000");
                         }
                         break;
                     case "selfHealed":
                         scene = "SelfHealed";
-                        if(this.awards.selfHealed>=500){
-                            event = this.findEvent(scene,"SelfHealed500");
+                        if(this.awards.selfHealed>=5000){
+                            event = this.findEvent(scene,"SelfHealed5000");
                         }
                         else if(this.awards.damageDealt>=2500){
                             event = this.findEvent(scene,"SelfHealed2500");
                         } 
-                        else if(this.awards.damageDealt>=5000){
-                            event = this.findEvent(scene,"SelfHealed5000");
+                        else if(this.awards.damageDealt>=500){
+                            event = this.findEvent(scene,"SelfHealed500");
                         }
                         break;
                     case "targetHealed":
                         scene = "TargetHealed";
-                        if(this.awards.targetHealed>=1000){
-                            event = this.findEvent(scene,"TargetHealed1000");
+                        if(this.awards.targetHealed>=10000){
+                            event = this.findEvent(scene,"TargetHealed10000");
                         }
                         else if(this.awards.targetHealed>=5000){
                             event = this.findEvent(scene,"TargetHealed5000");
                         } 
-                        else if(this.awards.targetHealed>=10000){
-                            event = this.findEvent(scene,"TargetHealed10000");
+                        else if(this.awards.targetHealed>=1000){
+                            event = this.findEvent(scene,"TargetHealed1000");
                         }
                         break;
                     case "wounded":
                         scene = "Wounded";
-                        if(this.awards.timesWounded>=5){
-                            event = this.findEvent(scene,"Wounded5");
+                        if(this.awards.timesWounded>=20){
+                            event = this.findEvent(scene,"Wounded20");
                         }
                         else if(this.awards.timesWounded>=10){
                             event = this.findEvent(scene,"Wounded10");
                         } 
-                        else if(this.awards.timesWounded>=20){
-                            event = this.findEvent(scene,"Wounded20");
+                        else if(this.awards.timesWounded>=5){
+                            event = this.findEvent(scene,"Wounded5");
                         }
                         break;
                     case "rested":
                         scene = "Rested";
-                        if(this.awards.timesRested>=5){
-                            event = this.findEvent(scene,"Rested5");
+                        if(this.awards.timesRested>=20){
+                            event = this.findEvent(scene,"Rested20");
                         }
                         else if(this.awards.timesRested>=10){
                             event = this.findEvent(scene,"Rested10");
                         } 
-                        else if(this.awards.timesRested>=20){
-                            event = this.findEvent(scene,"Rested20");
+                        else if(this.awards.timesRested>=5){
+                            event = this.findEvent(scene,"Rested5");
                         }
                         break;
                     //Each time the character is mentored, they get a scene
                     case "mentored":
                         scene = "Mentored";
-                        if(this.awards.mentored>=1){
-                            event = this.findEvent(scene,"Mentored1");
+                        if(this.awards.mentored>=3){
+                            event = this.findEvent(scene,"Mentored3");
                         }
                         else if(this.awards.mentored>=2){
                             event = this.findEvent(scene,"Mentored2");
                         } 
-                        else if(this.awards.mentored>=3){
-                            event = this.findEvent(scene,"Mentored3");
+                        else if(this.awards.mentored>=1){
+                            event = this.findEvent(scene,"Mentored1");
                         }
                         break;
                     case "hunted":
                         scene = "Hunted";
-                        if(this.awards.timesHunted>=1){
-                            event = this.findEvent(scene,"Hunted1");
+                        if(this.awards.timesHunted>=3){
+                            event = this.findEvent(scene,"Hunted3");
                         }
                         else if(this.awards.timesHunted>=2){
                             event = this.findEvent(scene,"Hunted2");
                         } 
-                        else if(this.awards.timesHunted>=3){
-                            event = this.findEvent(scene,"Hunted3");
+                        else if(this.awards.timesHunted>=1){
+                            event = this.findEvent(scene,"Hunted1");
                         }
                         break;
                     //Any custom events that require unique conditions
@@ -593,11 +519,13 @@ Quintus.SceneFuncs=function(Q){
                 }
                 if(scene.length&&event.length) Q.state.get("potentialEvents").push([char,scene,event]);
             };
+            //Search to see if the character has triggered this event already.
             char.findEvent = function(scene,event){
                 return this.events[scene].filter(function(ev){
                     return ev===event;
                 })[0];
             };
+            //Check through the character's personality array to see if they have a certain personality.
             char.hasPersonality = function(per){
                 var hasPersonality = false;
                 this.personality.forEach(function(p){

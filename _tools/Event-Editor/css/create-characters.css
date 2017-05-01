@@ -1,0 +1,161 @@
+ input{
+    height:30px;
+}
+
+.menu-box{
+    top:40px;
+    position:absolute;
+    height:calc(100% - 40px);
+}
+#group-menu{
+    width:20%;
+    border-right:thick double;
+}
+#char-box-left{
+    left:20%;
+    width:40%;
+    padding:10px;
+    padding-right:5px;
+}
+#char-box-right{
+    left:60%;
+    width:40%;
+    padding:10px;
+    padding-left:5px;
+}
+.char-title{
+    height:40px;
+    border-bottom:thick double;
+    text-align:center;
+    font-family:"Georgia";
+    line-height:1.5em;
+    font-size:22px;
+}
+.char-group-top{
+    width:100%;
+    height:60px;
+    border-left:1px solid black;
+    border-top:1px solid black;
+}
+
+.char-group{
+    padding:10px;
+    margin-bottom:5px;
+    border-bottom:thick double;
+}
+.group-name{
+    font-family:"Georgia";
+    font-size:20px;
+    width:75%;
+    float:left;
+    text-align:center;
+}
+.group-name p{
+    margin-top:5px;
+}
+.add-char-button{
+    font-family:"Calibri";
+}
+.char-name{
+    font-family:"Calibri";
+    width:75%;
+    float:left;
+}
+
+.char-buttons{
+    width:100%;
+    border:1px solid black;
+    height:100%;
+    padding:5px;
+}
+
+.char-button{
+    width:95%;
+    margin-left:2.5%;
+    height:30px;
+}
+
+.twenty-five-width{
+    width:25%;
+}
+.third-width{
+    width:33.3333%;
+}
+.one-sixth-width{
+    width:16.6666% !important;
+}
+
+.prop-cont{
+    height:auto;
+    min-height:30px;
+}
+
+.stats-cont{
+    width:100%;
+    height:auto;
+    margin-bottom:10px;
+}
+.stat-name{
+    float:left;
+    text-align:center;
+    height:30px;
+    width:50%;
+    background: linear-gradient(to bottom right, grey, white);
+}
+.stat-name p{
+    margin-top:7px;
+}
+
+.left-float{
+    float:left;
+}
+.char-stat-title{
+    height:40px;
+    font-size:24px;
+    text-align:center;
+    font-family:"Georgia";
+}
+.char-stat-title p{
+    line-height:1.5em;
+    height:100%;
+}
+
+.techniques-cont{
+    margin-bottom:10px;
+}
+
+.base-stats-cont{
+    margin-bottom:10px;
+}
+.base-stats-options{
+    height:90px;
+}
+.base-stats{
+    list-style-type:none;
+    width:100%;
+    height:90px;
+    margin-bottom:10px;
+}
+.base-stats li{
+    float:left;
+}
+.base-stats li input{
+    width:50%;
+}
+.full-stats{
+    list-style-type:none;
+    width:100%;
+    height:90px;
+    margin-bottom:10px;
+}
+.full-stats li{
+    float:left;
+    border:1px solid black;
+}
+.full-stat{
+    text-align:center;
+    float:left;
+    font-size:22px;
+    line-height:1.5em;
+    background-color:#DDD;
+}

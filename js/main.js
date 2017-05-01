@@ -232,7 +232,7 @@ var files = [
     "json/data/items.json",
     "json/data/locations.json",
     "json/data/character-classes.json",
-    "json/data/characters.json",
+    "json/data/officers.json",
     "json/data/skills.json",
     "json/data/status.json",
     "json/data/awards.json",
@@ -257,7 +257,7 @@ Q.load(files.join(','),function(){
     //All base settings for character classes
     Q.state.set("charClasses",Q.assets['json/data/character-classes.json']);
     //The story characters that you can recruit (including alex)
-    Q.state.set("characters",Q.assets['json/data/characters.json']);
+    Q.state.set("characters",Q.assets['json/data/officers.json']);
     //The list of skills and their effects
     Q.state.set("skills",Q.assets['json/data/skills.json']);
     //The list of awards and descriptions

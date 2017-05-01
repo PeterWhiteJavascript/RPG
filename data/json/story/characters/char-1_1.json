@@ -1,0 +1,44 @@
+{
+    "group1":[
+        {
+            "name": "Test1",
+            "level":1,
+            "gender":"Male",
+            "equipment":{
+                "righthand":"Wooden Sword",
+                "lefthand":"Wooden Shield",
+                "body":"Shirt",
+                "feet":"Sandals",
+                "accessory":false
+            },
+            "baseStats":{
+                "str":15,
+                "end":15,
+                "dex":5,
+                "wsk":5,
+                "rfl":10,
+                "ini":10,
+                "enr":10,
+                "skl":10,
+                "eff":10
+            },
+            "techniques":[
+                "stab",
+                "slice",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "nationality":2,
+            "charClass":1,
+            "value":90,
+            "methodology":25,
+            "primaryStat":"str",
+            "secondaryStat":"end",
+            "personality":[{"name":"Violent","prop":"Very"},{"name":"Ascetic","prop":""}],
+            "loyalty":33,
+            "morale":42
+        }
+    ]
+}

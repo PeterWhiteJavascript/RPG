@@ -1,6 +1,6 @@
 {
-    "name": "start",
-    "desc": "The start event",
+    "name": "NomadicLegionnaireBackstory",
+    "desc": "When a character is a Nomadic Legionnaire and the reputation with Venoriae is low.",
     "kind": "story",
     "vrs": {},
     "pages": [
@@ -8,12 +8,11 @@
             "name": "Page 1",
             "music": "battle.mp3",
             "bg": "bg\/959396-river.jpg",
-            "text": "Cool Backstory.",
+            "text": "HI",
             "choices": [],
             "onload": [],
             "modules": {},
             "modulesVars": {}
         }
-    ],
-    "onload": []
+    ]
 }
