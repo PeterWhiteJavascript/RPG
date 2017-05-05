@@ -10,6 +10,8 @@ if(isset($_GET['file-name'])){
 $file = file_get_contents('../../data/json/story/characters/'.$filename);
 
 $charGen = file_get_contents('../../data/json/data/character-generation.json');
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -87,8 +89,8 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                         <input class="char-prop morale fifty-width" type="number" min=1 value=50>
                     </div>
                 </div>
-                <!--
-                <div class="char-stat-title medium-gradient"><p>Equipment</p></div>
+                
+                <div class="char-stat-title medium-gradient"><p>Equipment (TO DO)</p></div>
                 <div class="equipment-cont">
                     <div class="equipment-options">
                         <div class="default-equipment-button btn btn-quarter twenty-five-width"><p>Default</p></div>
@@ -98,29 +100,29 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Right Hand</p></div>
-                        <select class="char-prop right-hand fifty-width"><option>Random</option><option>Wooden Sword</option><option>Wooden Shield</option></select>
+                        <select class="char-prop right-hand fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Left Hand</p></div>
-                        <select class="char-prop left-hand fifty-width"><option>Random</option><option>Wooden Sword</option><option selected>Wooden Shield</option></select>
+                        <select class="char-prop left-hand fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Body</p></div>
-                        <select class="char-prop body fifty-width"><option>Random</option><option>Shirt</option><option>Long Sleeve Shirt</option></select>
+                        <select class="char-prop body fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Feet</p></div>
-                        <select class="char-prop feet fifty-width"><option>Random</option><option>Sandals</option></select>
+                        <select class="char-prop feet fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Accessory</p></div>
-                        <select class="char-prop accessory fifty-width"><option>Random</option><option>Earmuffs</option><option>Ruby Ring</option></select>
+                        <select class="char-prop accessory fifty-width"></select>
                     </div>
                 </div>
-                -->
+                
             </div>
             <div id="char-box-right" class="menu-box">
-                <!--
+                
                 <div class="char-stat-title medium-gradient"><p>Techniques</p></div>
                 <div class="techniques-cont">
                     <div class="technique-options">
@@ -130,27 +132,27 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 1</p></div>
-                        <select class="char-prop tech-1 fifty-width"><option>Random</option><option>Tech</option></select>
+                        <select class="char-prop tech-1 fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 2</p></div>
-                        <select class="char-prop tech-2 fifty-width"><option>Random</option></select>
+                        <select class="char-prop tech-2 fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 3</p></div>
-                        <select class="char-prop tech-3 fifty-width"><option>Random</option></select>
+                        <select class="char-prop tech-3 fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 4</p></div>
-                        <select class="char-prop tech-4 fifty-width"><option>Random</option></select>
+                        <select class="char-prop tech-4 fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 5</p></div>
-                        <select class="char-prop tech-5 fifty-width"><option>Random</option></select>
+                        <select class="char-prop tech-5 fifty-width"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 6</p></div>
-                        <select class="char-prop tech-6 fifty-width"><option>Random</option></select>
+                        <select class="char-prop tech-6 fifty-width"></select>
                     </div>
                 </div>
                 <div class="char-stat-title medium-gradient"><p>Base Stats</p></div>
@@ -273,7 +275,7 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                     </ul>
                 </div>
             </div>
-            -->
+            
         </div>
         <script src="js/create-characters.js"></script>
     </body>

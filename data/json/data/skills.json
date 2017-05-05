@@ -1,363 +1,315 @@
 {
     "Legionnaire":[
         {
-            "name":"Poke",
-            "cost":4,
-            "damageLow":5,
-            "damageHigh":10,
-            "range":["normal",1],
-            "desc":"A basic dagger skill.",
-            "rank":1
+            "name":"Push",
+            "desc":"Target character is pushed backwards one space.",
+            "types":["Physical","Knockback"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":20,
+            "damage":""
         },
-        {
-            "name":"Throw",
-            "cost":8,
-            "damageLow":3,
-            "damageHigh":10,
-            "range":["normal",3],
-            "desc":"A basic throwing skill.",
-            "rank":2
-        }
+        {},
+        {},
+        {},
+        {},
+        {}
     ],
     "Berserker":[
         {
-            "name":"Stab",
-            "cost":4,
-            "damageLow":6,
-            "damageHigh":9,
-            "range":["normal",1],
-            "desc":"A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill. A basic stabbing skill.",
-            "rank":1
+            "name":"Rage",
+            "desc":"The user attacks all units around them in a rage.",
+            "types":["Physical"],
+            "range":[0,"self"],
+            "aoe":[2,"normal"],
+            "cost":20,
+            "damage":""
         },
         {
-            "name":"Slash",
-            "cost":6,
-            "damageLow":8,
-            "damageHigh":10,
-            "range":["normal",1],
-            "desc":"A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.A basic slashing skill as adas.",
-            "rank":2
+            
         },
         {
-            "name":"Whirlwind",
-            "cost":12,
-            "damageLow":5,
-            "damageHigh":10,
-            "range":["self",0],
-            "aoe":["normal",1,"excludeCenter"],
-            "anim":"Whirlwind",
-            "sound":"whirlwind",
-            "desc":"A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A ",
-            "rank":3
+            "name":"Charge Through",
+            "desc":"The user charges through the target. If there is no free space behind the target, this just does damage. Charge Through does 20-30+skl damage and does double if the target is hit from behind.",
+            "types":["Physical"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":50,
+            "damage":[10,20,"skl"]
         },
         {
-            "name":"Super Whirlwind",
-            "cost":22,
-            "damageLow":20,
-            "damageHigh":20,
-            "range":["self",0],
-            "aoe":["normal",2],
-            "anim":"Whirlwind",
-            "sound":"whirlwind",
-            "desc":"A basic superwhirlwinding skill.",
-            "rank":4
+            
+        },
+        {
+            
+        },
+        {
+            
         }
     ],
     "Vanguard":[
         {
-            "name":"Strike",
-            "cost":10,
-            "damageLow":10,
-            "damageHigh":15,
-            "range":["normal",1],
-            "desc":"A basic striking skill.",
-            "rank":1
+            "name":"Pull",
+            "desc":"Target character is pulled towards the user. Both characters move back one space.",
+            "types":["Physical","Knockback"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":20,
+            "damage":""
         },
-        {
-            "name":"Super Whirlwind",
-            "cost":22,
-            "damageLow":20,
-            "damageHigh":20,
-            "range":["self",0],
-            "aoe":["normal",2],
-            "anim":"Whirlwind",
-            "sound":"whirlwind",
-            "desc":"A basic superwhirlwinding skill.",
-            "rank":4
-        }
+        {},
+        {},
+        {},
+        {},
+        {}
         
     ],
-    
     "Assassin":[
         {
-            "name":"Puncture",
-            "cost":4,
-            "damageLow":5,
-            "damageHigh":10,
-            "range":["normal",2],
-            "desc":"A basic puncturing skill.",
-            "rank":1
+            
         },
         {
-            "name":"Pierce",
-            "cost":6,
-            "range":["straight",2],
-            "aoe":["straight",2],
-            "damageLow":3,
-            "damageHigh":8,
-            "diminishFarDamage":0.1,
-            "dfAnimTime":100,
-            "anim":"Piercing",
-            "desc":"A basic piercing skill. This attack hits all units in its path.",
-            "rank":2
+            "name":"Caltrops",
+            "desc":"Places caltrops in area of effect which slows movement. Entering the caltrops ends a character’s movement and deals 1-10 damage, and leaving the caltrops ends a character’s movement. Movement within the mud is at a maximum of 2 Spaces per round.",
+            "types":["Field"],
+            "range":[8,"normal"],
+            "aoe":[2,"normal"],
+            "cost":100,
+            "damage":""
         },
-        {
-            "name":"Push",
-            "cost":10,
-            "damageLow":2,
-            "damageHigh":4,
-            "range":["normal",1],
-            "effect":{
-                "func":"push",
-                "props":[1],
-                "accuracy":100
-            },
-            "desc":"A basic pushing skill. This attack pushes the target one space.",
-            "rank":2
-        }
+        {},
+        {},
+        {},
+        {}
+        
     ],
     "Skirmisher":[
-        {
-            "name":"Shoot",
-            "cost":4,
-            "damageLow":3,
-            "damageHigh":6,
-            "range":["normal",5],
-            "desc":"A basic shooting skill.",
-            "rank":1
-        },
-        {
-            "name":"Blind",
-            "cost":8,
-            "range":["normal",3],
-            "effect":{
-                "func":"changeStatus",
-                "props":["blind",[1,3]],
-                "accuracy":75
-            },
-            "desc":"A basic blinding skill.",
-            "rank":2
-        },
-        {
-            "name":"Poison",
-            "cost":8,
-            "range":["normal",3],
-            "effect":{
-                "func":"changeStatus",
-                "props":["poisoned",[1,3]],
-                "accuracy":100
-            },
-            "desc":"A basic poisoning skill.",
-            "rank":2
-        },
-        {
-            "name":"Hold Back",
-            "cost":2,
-            "range":["normal",6],
-            "damageLow":2,
-            "damageHigh":2,
-            "holdBack":true,
-            "desc":"Hold back to keep the target at at least 1 hp.",
-            "rank":3
-        },
         
-        {
-            "name":"Crosshair",
-            "cost":15,
-            "damageLow":5,
-            "damageHigh":10,
-            "range":["normal",6],
-            "aoe":["normal",1],
-            "desc":"A basic crosshair skill.",
-            "rank":4
-        },
-        {
-            "name":"Sonic Boom!",
-            "cost":20,
-            "damageLow":999,
-            "damageHigh":999,
-            "range":["normal",6],
-            "aoe":["corners",1],
-            "anim":"SonicBoom",
-            "sound":"explosion",
-            "desc":"A basic sonicbooming skill.",
-            "rank":5
-        }
     ],
     "Archer":[
         {
-            "name":"Defend",
-            "cost":3,
-            "range":["self",0],
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic defending skill.",
-            "rank":1
+            "name":"Long Shot",
+            "desc":"Character attacks as usual with their ranged weapon, but gains +1 range for every 10 Skill they have (minimum 1).",
+            "types":["Physical"],
+            "range":["longshot","special"],
+            "aoe":[1,"normal"],
+            "cost":50,
+            "damage":"normal"
         },
         {
-            "name":"First Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[20],
-                "accuracy":100
-            },
-            "desc":"Heals 20 hp to a target.",
-            "rank":1
+            "name":"Armour Piercing Shot",
+            "desc":"Character attacks as usual with their ranged weapon, but enemy’s Damage Reduction from armour is reduced by attacker’s Skill.",
+            "types":["Physical"],
+            "range":[0,"bow"],
+            "aoe":[2,"normal"],
+            "cost":50,
+            "damage":"normal"
         },
         {
-            "name":"Protect",
-            "cost":8,
-            "range":["self",0],
-            "aoe":["normal",1,"excludeCenter"],
-            "affects":"ally",
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic protecting skill.",
-            "rank":2
+            "name":"Rapid Shot",
+            "desc":"Character attacks as usual with their ranged weapon, but their Attack Speed is increased by +30.",
+            "types":["Physical"],
+            "range":[0,"bow"],
+            "aoe":[1,"normal"],
+            "cost":50,
+            "damage":"normal"
         },
         {
-            "name":"Second Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[40],
-                "accuracy":100
-            },
-            "desc":"Heals 40 hp to a target.",
-            "rank":2
+            "name":"Shower",
+            "desc":"The user showers a ground location with arrows, dealing damage to all characters within 1 tile of the target.",
+            "types":["Physical"],
+            "range":[0,"bow"],
+            "aoe":[2,"normal"],
+            "cost":100,
+            "damage":"normal"
         },
         {
-            "name":"Total Defense",
-            "cost":13,
-            "range":["self",0],
-            "aoe":["normal",1],
-            "affects":"ally",
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic totaldefensing skill.",
-            "rank":3
+            "name":"Fire Shot",
+            "desc":"The user shoots fire arrows which set the target ground ablaze. The chance of setting the tile on fire is based on the tile type.",
+            "types":["Physical","Elemental"],
+            "range":[0,"bow"],
+            "aoe":[1,"normal"],
+            "cost":100,
+            "damage":"normal"
         },
         {
-            "name":"Third Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[75],
-                "accuracy":100
-            },
-            "desc":"Heals 75 hp to a target.",
-            "rank":3
+            "name":"Tri Shot",
+            "desc":"The user chooses three targets and shoots them all in rapid succession.",
+            "types":["Physical"],
+            "range":[0,"bow"],
+            "aoe":[1,"normal"],
+            "cost":200,
+            "damage":"normal"
+            
         }
     ],
     "Illusionist":[
         {
-            "name":"Total Defense",
-            "cost":13,
-            "range":["self",0],
-            "aoe":["normal",1],
-            "affects":"ally",
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic totaldefensing skill.",
-            "rank":1
+            "name":"Slow",
+            "desc":"Target character(s) suffers a penalty to their Initiative and Reflexes equal to the caster’s Skill. Lasts for one round.",
+            "types":["Magical","Debuff"],
+            "range":[3,"normal"],
+            "aoe":["skl/20","normal"],
+            "cost":35,
+            "damage":""
         },
         {
-            "name":"Third Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[75],
-                "accuracy":100
-            },
-            "desc":"Heals 75 hp to a target.",
-            "rank":2
+            "name":"Stun",
+            "desc":"Target character is Stunned (Must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or lose that turn (once Skill roll has succeeded, character is no longer Stunned).)",
+            "types":["Mental","Debuff"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":200,
+            "damage":""
+        },
+        {
+            "name":"Hypnotic Mirage",
+            "desc":"All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be drawn to the “Mirage” (the space on which the spell was cast). A character drawn to the “Mirage” will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
+            "types":["Mental","Debuff"],
+            "range":[5,"normal"],
+            "aoe":[4,"normal"],
+            "cost":200,
+            "damage":""
+        },
+        {
+            "name":"Blind",
+            "desc":"Character is Blinded. (Target character’s Attack Accuracy and Defensive Ability are reduced by half for three turns.)",
+            "types":["Magical","Debuff"],
+            "range":[3,"normal"],
+            "aoe":[1,"normal"],
+            "cost":300,
+            "damage":""
+        },
+        {
+            "name":"Temporary Insanity",
+            "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or remain Insane. While Insane, a character will select a random target, friend, foe, or even self, and select a random action to do (using a Technique provided they have the TP, giving an item, attacking, etc.)",
+            "types":["Mental","Debuff"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":300,
+            "damage":""
+        },
+        {
+            "name":"Antithesis",
+            "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or lose TP equal to the cost of the spell (300). If the target didn’t have at least 300 TP, they lose 1 HP for every full 10 TP they had under 300.",
+            "types":["Mental","Debuff"],
+            "range":[2,"normal"],
+            "aoe":[1,"normal"],
+            "cost":300,
+            "damage":""
         }
         
     ],
     "Elementalist":[
         {
-            "name":"Total Defense",
-            "cost":13,
-            "range":["self",0],
-            "aoe":["normal",1],
-            "affects":"ally",
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic totaldefensing skill.",
-            "rank":1
+            "name":"Stone",
+            "desc":"Deals 10-20 + Skill damage to target, (if ranged attacks can somehow be dodged or blocked, this attack can be dodged or blocked)",
+            "types":["Magical","Elemental"],
+            "range":[4,"normal"],
+            "aoe":[1,"normal"],
+            "cost":25,
+            "damage":[10,20,"skl"]
         },
         {
-            "name":"Third Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[75],
-                "accuracy":100
-            },
-            "desc":"Heals 75 hp to a target.",
-            "rank":2
+            "name":"Flamethrower",
+            "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in first space of area of effect gains no Damage Reduction from armour against this damage. Damage halved for back spaces if first space is occupied.",
+            "types":["Magical","Elemental"],
+            "range":[1,"normal"],
+            "aoe":[3,"T"],
+            "cost":100,
+            "damage":[50,80,"skl"]
+        },
+        {
+            "name":"Fireball",
+            "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in central space of area of effect gains no Damage Reduction from armour against this damage.",
+            "types":["Magical","Elemental"],
+            "range":[5,"normal"],
+            "aoe":[2,"normal"],
+            "cost":150,
+            "damage":[50,80,"skl"]
+        },
+        {
+            "name":"Frost Ray",
+            "desc":"Deals 10-50 + Skill damage to all characters within spell’s area of effect, plus  target characters must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be Frozen. Characters who are not Frozen are instead Cold. All spaces touched by the attack are made Icy. Icy Spaces cost 2 Spaces of movement to cross, and any character Pushed on them will continue moving until they reach a non Icy Space or collide with an object, however if they collide with another character, that character will be Pushed along too.",
+            "types":["Magical","Elemental"],
+            "range":[1,"normal"],
+            "aoe":["skl/10","normal"],
+            "cost":150,
+            "damage":[10,50,"skl"]
+        },
+        {
+            "name":"Choke",
+            "desc":"Target character takes 100-200 + Skill damage. Target gains no Damage Reduction from armour against this damage.",
+            "types":["Mental"],
+            "range":[3,"normal"],
+            "aoe":[1,"normal"],
+            "cost":500,
+            "damage":[100,200,"skl"]
+        },
+        {
+            "name":"Lightning Storm",
+            "desc":"Three different random spaces in the spell’s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
+            "types":["Magical","Elemental"],
+            "range":[6,"normal"],
+            "aoe":[3,"corners"],
+            "cost":500,
+            "damage":[150,200,"skl"]
         }
-        
     ],
     "Healer":[
         {
-            "name":"Total Defense",
-            "cost":13,
-            "range":["self",0],
-            "aoe":["normal",1],
-            "affects":"ally",
-            "effect":{
-                "func":"changeStatus",
-                "props":["sturdy",1],
-                "accuracy":100
-            },
-            "desc":"A basic totaldefensing skill.",
-            "rank":1
+            "name":"Stability Field",
+            "desc":"All characters, friend or foe, within this spell’s effects are considered 'stable'. Lasts for 3 rounds.",
+            "types":["Magical","Field"],
+            "range":["skl/5","normal"],
+            "aoe":[5,"normal"],
+            "cost":50,
+            "damage":""
         },
         {
-            "name":"Third Aid",
-            "cost":1,
-            "range":["normal",1],
-            "effect":{
-                "func":"healHp",
-                "props":[75],
-                "accuracy":100
-            },
-            "desc":"Heals 75 hp to a target.",
-            "rank":2
+            "name":"Heal",
+            "desc":"All characters, friend or foe, within this spell’s effects immediately regain a random number of HP from Skill to Skill x 2",
+            "types":["Magical","Aiding"],
+            "range":["skl/20","normal"],
+            "aoe":["skl/30","normal"],
+            "cost":100,
+            "damage":""
+        },
+        {
+            "name":"Cure",
+            "desc":"Removes all debuff effects from all characters within spell’s effects.",
+            "types":["Magical","Aiding"],
+            "range":["skl/25","normal"],
+            "aoe":["skl/35","normal"],
+            "cost":100,
+            "damage":""
+        },
+        {
+            "name":"Bless",
+            "desc":"Targeted character’s random % results cannot roll higher than 100 - ½ the Skill of the caster. Target’s critical chance is also improved by Skill/5. Lasts for 3 rounds.",
+            "types":["Magical","Buff"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":200,
+            "damage":""
+        },
+        {
+            "name":"Energize",
+            "desc":"Target character gains TP equal to 50+ the caster’s Skill.",
+            "types":["Magical","Aiding"],
+            "range":["skl/20","normal"],
+            "aoe":[1,"normal"],
+            "cost":125,
+            "damage":""
+        },
+        {
+            "name":"Endow",
+            "desc":"Targeted character is Energized, Blessed, Cured, and Healed.",
+            "types":["Magical","Aiding","Buff"],
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":525,
+            "damage":""
         }
-        
-    ] 
-   
+    ]
 }
