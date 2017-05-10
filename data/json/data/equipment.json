@@ -1,23 +1,28 @@
 {
-    "Hands":{
+    "Shields":{
         "Shield":{
             "materials":["Hide","Hard Leather","Brass","Bronze","Wicker","Wood"],
             "weight":10,
             "block":25,
-            "cost":1.5
+            "cost":1.5,
+            "hands":1
         },
         "Small Shield":{
             "materials":["Hide","Hard Leather","Brass","Bronze","Iron","Steel","Wicker","Wood"],
             "weight":7,
             "block":15,
-            "cost":1
+            "cost":1,
+            "hands":1
         },
         "Body Shield":{
             "materials":["Hide","Wicker","Wood"],
             "weight":15,
             "block":40,
-            "cost":2
-        },
+            "cost":2,
+            "hands":1
+        }
+    },
+    "Weapons":{
         "Short Sword":{
             "materials":["Brass","Bronze","Iron","Steel"],
             "weight":2,
@@ -175,7 +180,7 @@
             "hands":1
         }
     },
-    "Body":{
+    "Armour":{
         "Capelet":{
             "materials":["Wool","Hide","Fur","Silk"],
             "weight":5,
@@ -225,19 +230,24 @@
             "cost":10
         }
     },
-    "Feet":{
+    "Footwear":{
         "Shoes":{
             "materials":["Soft Leather","Iron","Wood"],
             "weight":2,
-            "move":1
+            "move":1,
+            "cost":5
         }
     },
     "Accessories":{
         "Ruby Ring":{
-            "immunity":"blind"
+            "materials":["None"],
+            "weight":0.5,
+            "effect":"Immune to blind.",
+            "cost":20
         }
     },
     "Materials":{
+        "None":[0,1,1],
         "Wool":[0.5,0.5,5],
         "Hide":[0.75,0.6,7],
         "Fur":[1,0.6,6],
@@ -252,5 +262,14 @@
         "Wood":[1,0.9,250],
         "Flint":[0.5,0.5,2],
         "Silk":[0.25,0.6,300]
+    },
+    "Quality":{
+        "Shoddy":[0.75,0.5],
+        "Average":[1,1],
+        "Quality":[1.2,2],
+        "Excellent":[1.4,3],
+        "Phenomenal":[1.6,4],
+        "Masterwork":[1.8,5],
+        "Magic":[2,10]
     }
 }

@@ -1,0 +1,23 @@
+table{
+    width:100%;
+}
+table td 
+{
+    font-family:"Courier";
+    text-align:center; 
+    vertical-align:middle;
+}
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: pointer;
+}
+table.sortable tbody tr:nth-child(2n) td {
+  background: #ffcccc;
+}
+table.sortable tbody tr:nth-child(2n+1) td {
+  background: #ccffff;
+}
+table.sortable tbody tr:hover { background: yellow !important; }

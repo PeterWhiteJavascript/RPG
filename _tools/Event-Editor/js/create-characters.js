@@ -9,7 +9,7 @@ $(function(){
             };
             for(var i=0;i<keys.length;i++){
                 for(var j=0;j<6;j++){
-                    sortedTechs.rank[j].push(techs[keys[i]][j])
+                    sortedTechs.rank[j].push(techs[keys[i]][j]);
                 }
             }
             
