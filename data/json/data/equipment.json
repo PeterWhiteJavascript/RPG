@@ -1,232 +1,256 @@
 {
-    "weapon":{
-        "ironNail":{
-            "name":"Iron Nail",
-            "desc":"I guess this counts as a dagger.",
-            "rank":1,
-            "equipmentType":"dagger",
-            "damageLow":5,
-            "damageHigh":10,
-            "speed":10,
-            "reach":1,
-            "range":1,
-            "wield":10
+    "Hands":{
+        "Shield":{
+            "materials":["Hide","Hard Leather","Brass","Bronze","Wicker","Wood"],
+            "weight":10,
+            "block":25,
+            "cost":1.5
         },
-        "ironDagger":{
-            "name":"Iron Dagger",
-            "desc":"A very common iron dagger.",
-            "rank":1,
-            "equipmentType":"dagger",
-            "damageLow":12,
-            "damageHigh":16,
-            "speed":10,
-            "reach":3,
-            "range":1,
-            "wield":6
+        "Small Shield":{
+            "materials":["Hide","Hard Leather","Brass","Bronze","Iron","Steel","Wicker","Wood"],
+            "weight":7,
+            "block":15,
+            "cost":1
         },
-        
-        "woodenSword":{
-            "name":"Wooden Sword",
-            "desc":"A wooden sword",
-            "rank":1,
-            "equipmentType":"sword",
-            "damageLow":15,
-            "damageHigh":20,
-            "speed":10,
-            "reach":3,
-            "range":1,
-            "wield":5
+        "Body Shield":{
+            "materials":["Hide","Wicker","Wood"],
+            "weight":15,
+            "block":40,
+            "cost":2
         },
-        "wetNoodle":{
-            "name":"Wet Noodle",
-            "desc":"A wet noodle",
-            "rank":1,
-            "equipmentType":"sword",
-            "damageLow":10,
-            "damageHigh":50,
-            "speed":20,
-            "reach":10,
-            "range":2,
-            "wield":10
-        },
-        "banana":{
-            "name":"Banana",
-            "desc":"A red banana",
-            "rank":1,
-            "equipmentType":"sword",
-            "damageLow":10,
-            "damageHigh":20,
-            "speed":50,
-            "reach":1,
-            "range":1,
-            "wield":2
-        },
-        "bronzeSword":{
-            "name":"Bronze Sword",
-            "desc":"A pretty nice bronze sword",
-            "rank":2,
-            "equipmentType":"sword",
-            "damageLow":20,
-            "damageHigh":35,
-            "speed":10,
-            "reach":3,
-            "range":1,
-            "wield":8
-        },
-        
-        "stoneAxe":{
-            "name":"Stone Axe",
-            "desc":"A stone axe straight from the stone age!",
-            "rank":1,
-            "equipmentType":"axe",
-            "damageLow":15,
-            "damageHigh":30,
-            "speed":5,
+        "Short Sword":{
+            "materials":["Brass","Bronze","Iron","Steel"],
+            "weight":2,
+            "wield":40,
+            "mindmg":6,
+            "maxdmg":70,
             "reach":2,
-            "wield":18,
-            "range":1,
-            "twoHanded":true
-        },
-        "greatAxe":{
-            "name":"Great Axe",
-            "desc":"A large axe",
-            "rank":2,
-            "equipmentType":"axe",
-            "damageLow":30,
-            "damageHigh":60,
-            "speed":10,
-            "reach":2,
-            "wield":15,
-            "range":1,
-            "twoHanded":true
-        },
-        
-        "woodenSpear":{
-            "name":"Wooden Spear",
-            "desc":"A wooden spear",
-            "rank":1,
-            "equipmentType":"spear",
-            "damageLow":12,
-            "damageHigh":24,
-            "speed":10,
-            "reach":10,
-            "range":2,
-            "wield":5
-        },
-        "ironSpear":{
-            "name":"Iron Spear",
-            "desc":"An iron spear",
-            "rank":2,
-            "equipmentType":"spear",
-            "damageLow":16,
-            "damageHigh":28,
-            "speed":15,
-            "reach":10,
-            "range":2,
-            "wield":6
-        },
-        
-        "woodenBow":{
-            "name":"Wooden Bow",
-            "desc":"A standard bow and arrow set",
-            "rank":1,
-            "equipmentType":"bow",
-            "damageLow":10,
-            "damageHigh":15,
             "speed":20,
-            "reach":1,
+            "range":1,
+            "cost":1,
+            "hands":1
+        },
+        "Sword":{
+            "materials":["Iron","Steel"],
+            "weight":2,
+            "wield":50,
+            "mindmg":11,
+            "maxdmg":75,
+            "reach":3,
+            "speed":10,
+            "range":1,
+            "cost":1.25,
+            "hands":1
+        },
+        "Spear":{
+            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
+            "weight":4,
+            "wield":30,
+            "mindmg":11,
+            "maxdmg":75,
+            "reach":7,
+            "speed":10,
+            "range":2,
+            "cost":0.75,
+            "hands":1
+        },
+        "Pike":{
+            "materials":["Brass","Bronze","Iron","Steel"],
+            "weight":5,
             "wield":5,
-            "range":5,
-            "twoHanded":true
+            "mindmg":6,
+            "maxdmg":70,
+            "reach":11,
+            "speed":10,
+            "range":3,
+            "cost":1,
+            "hands":2
         },
-        "ironBow":{
-            "name":"Iron Bow",
-            "desc":"A really good bow and arrow set",
-            "rank":2,
-            "equipmentType":"bow",
-            "damageLow":12,
-            "damageHigh":24,
-            "speed":25,
+        "Ax":{
+            "materials":["Brass","Bronze","Iron","Steel","Flint"],
+            "weight":4,
+            "wield":35,
+            "mindmg":31,
+            "maxdmg":80,
+            "reach":2,
+            "speed":5,
+            "range":1,
+            "cost":0.5,
+            "hands":1
+        },
+        "Great Ax":{
+            "materials":["Iron","Steel"],
+            "weight":5,
+            "wield":10,
+            "mindmg":41,
+            "maxdmg":100,
+            "reach":3,
+            "speed":0,
+            "range":1,
+            "cost":0.75,
+            "hands":2
+        },
+        "Mace":{
+            "materials":["Brass","Bronze","Iron","Steel"],
+            "weight":5,
+            "wield":35,
+            "mindmg":51,
+            "maxdmg":60,
+            "reach":2,
+            "speed":3,
+            "range":1,
+            "cost":0.75,
+            "hands":1
+        },
+        "Dagger":{
+            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
+            "weight":1,
+            "wield":25,
+            "mindmg":1,
+            "maxdmg":40,
             "reach":1,
-            "wield":8,
-            "range":6,
-            "twoHanded":true
+            "speed":30,
+            "range":1,
+            "cost":0.75,
+            "hands":1
+        },
+        "Sling":{
+            "materials":["Soft Leather"],
+            "weight":1,
+            "wield":0,
+            "mindmg":1,
+            "maxdmg":20,
+            "reach":0,
+            "speed":0,
+            "range":4,
+            "cost":0.25,
+            "hands":1
+        },
+        "Javelin":{
+            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
+            "weight":3,
+            "wield":10,
+            "mindmg":1,
+            "maxdmg":50,
+            "reach":4,
+            "speed":20,
+            "range":5,
+            "cost":1.5,
+            "hands":1
+        },
+        "Bow":{
+            "materials":["Bone","Wood"],
+            "weight":2,
+            "wield":15,
+            "mindmg":1,
+            "maxdmg":35,
+            "reach":0,
+            "speed":10,
+            "range":7,
+            "cost":6,
+            "hands":2
+        },
+        "Glaive":{
+            "materials":["Brass","Bronze","Iron","Steel"],
+            "weight":6,
+            "wield":15,
+            "mindmg":31,
+            "maxdmg":90,
+            "reach":6,
+            "speed":1,
+            "range":2,
+            "cost":2,
+            "hands":2
+        },
+        "Knife":{
+            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
+            "weight":1,
+            "wield":10,
+            "mindmg":1,
+            "maxdmg":35,
+            "reach":0,
+            "speed":40,
+            "range":1,
+            "cost":0.25,
+            "hands":1
         }
     },
-    "shield":{
-        "potLid":{
-            "name":"Pot Lid",
-            "desc":"The lid of a pot",
-            "rank":1,
-            "equipmentType":"shield",
-            "defense":1
+    "Body":{
+        "Capelet":{
+            "materials":["Wool","Hide","Fur","Silk"],
+            "weight":5,
+            "damageReduction":10,
+            "cost":1
         },
-        "woodenShield":{
-            "name":"Wooden Shield",
-            "desc":"A wooden shield",
-            "rank":2,
-            "equipmentType":"shield",
-            "defense":3
+        "Vest":{
+            "materials":["Wool","Hide","Fur","Soft Leather","Silk"],
+            "weight":5,
+            "damageReduction":15,
+            "cost":2
+        },
+        "Shirt":{
+            "materials":["Wool","Hide","Fur","Soft Leather","Silk"],
+            "weight":8,
+            "damageReduction":20,
+            "cost":2.5
+        },
+        "Breastplate":{
+            "materials":["Hard Leather","Brass","Bronze","Iron","Steel"],
+            "weight":10,
+            "damageReduction":30,
+            "cost":3
+        },
+        "Cuirass":{
+            "materials":["Hard Leather","Brass","Bronze","Iron","Steel"],
+            "weight":15,
+            "damageReduction":30,
+            "cost":4
+        },
+        "Maille":{
+            "materials":["Brass","Bronze","Iron","Steel"],
+            "weight":20,
+            "damageReduction":40,
+            "cost":8
+        },
+        "Lamellar":{
+            "materials":["Hard Leather","Brass","Bronze","Iron","Steel","Bone","Wood"],
+            "weight":20,
+            "damageReduction":50,
+            "cost":9
+        },
+        "Outfit":{
+            "materials":["Wool","Hide","Fur","Soft Leather","Hard Leather","Brass","Bronze","Iron","Steel","Silk"],
+            "weight":30,
+            "damageReduction":60,
+            "cost":10
         }
-        
     },
-    "body":{
-        "shirt":{
-            "name":"Shirt",
-            "desc":"A regular 'ol shirt",
-            "rank":1,
-            "defense":1
-        },
-        "longSleeveShirt":{
-            "name":"Long Sleeve Shirt",
-            "desc":"A shirt with long sleeves.",
-            "rank":1,
-            "defense":2
-        },
-        "leatherArmour":{
-            "name":"Leather Armour",
-            "desc":"Some pretty good armour!",
-            "rank":2,
-            "defense":3
-        }
-    },
-    "feet":{
-        "sandals":{
-            "name":"Sandals",
-            "desc":"Casual footwear",
-            "rank":1,
-            "defense":1
-        },
-        "leatherShoes":{
-            "name":"Leather Shoes",
-            "desc":"Duarable footwear",
-            "rank":2,
-            "defense":2
-        },
-        "movementShoes":{
-            "name":"Movement Shoes",
-            "desc":"Shoes that allow you to go a bit further.",
-            "rank":2,
-            "defense":0,
+    "Feet":{
+        "Shoes":{
+            "materials":["Soft Leather","Iron","Wood"],
+            "weight":2,
             "move":1
         }
     },
-    "accessory":{
-        "rubyRing":{
-            "name":"Ruby Ring",
-            "desc":"Probably does something",
-            "rank":1
-        },
-        "earmuffs":{
-            "name":"Earmuffs",
-            "desc":"Keeps your ears warm",
-            "rank":2
-        },
-        "movementCharm":{
-            "name":"Movement Charm",
-            "desc":"Makes you move further!",
-            "rank":2,
-            "move":1
+    "Accessories":{
+        "Ruby Ring":{
+            "immunity":"blind"
         }
+    },
+    "Materials":{
+        "Wool":[0.5,0.5,5],
+        "Hide":[0.75,0.6,7],
+        "Fur":[1,0.6,6],
+        "Soft Leather":[0.75,0.7,15],
+        "Hard Leather":[1,0.8,50],
+        "Brass":[2,0.9,150],
+        "Bronze":[1.5,1,400],
+        "Iron":[1.5,1.25,2000],
+        "Steel":[1.25,1.5,15000],
+        "Wicker":[0.25,0.7,15],
+        "Bone":[0.25,0.7,5],
+        "Wood":[1,0.9,250],
+        "Flint":[0.5,0.5,2],
+        "Silk":[0.25,0.6,300]
     }
 }

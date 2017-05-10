@@ -11,7 +11,7 @@ $file = file_get_contents('../../data/json/story/characters/'.$filename);
 
 $charGen = file_get_contents('../../data/json/data/character-generation.json');
 
-
+$techniques = file_get_contents('../../data/json/data/skills.json');
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,6 +24,7 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
     <body>
         <div id="file-info" hidden><?php echo $file?></div>
         <div id="char-gen" hidden><?php echo $charGen?></div>
+        <div id="technique-info" hidden><?php echo $techniques?></div>
         <div id="editor-content">
             <div id="top-bar">
                 <ul>
@@ -43,13 +44,20 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                 <div class="char-stat-title medium-gradient"><p>Char Stats</p></div>
                 <div class="stats-cont">
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Name</p></div>
-                        <div class="rand-name-button btn btn-quarter fifty-width"><p>Rand Name</p></div>
-                        <input class="char-prop name full-line" value="">
+                        <div class="stat-name"><p>Handle</p></div>
+                        <input class="char-prop handle fifty-width" value="" placeholder="Input a handle.">
                     </div>
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Level</p></div>
-                        <input class="char-prop level fifty-width" type="number" min=1 value=1>
+                        <div class="stat-name"><p>Name</p></div>
+                        <input class="char-prop name fifty-width" value="" placeholder="Leave blank for random name.">
+                    </div>
+                    <div class="prop-cont">
+                        <div class="stat-name"><p>Level Min</p></div>
+                        <input class="char-prop levelmin fifty-width" type="number" min=1 value=1>
+                    </div>
+                    <div class="prop-cont">
+                        <div class="stat-name"><p>Level Max</p></div>
+                        <input class="char-prop levelmax fifty-width" type="number" min=1 value=1>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Gender</p></div>
@@ -63,40 +71,15 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                         <div class="stat-name"><p>Char Class</p></div>
                         <select class="char-prop charClass fifty-width"></select>
                     </div>
-                    <div class="prop-cont">
-                        <div class="stat-name"><p>Value</p></div>
-                        <select class="char-prop value fifty-width"></select>
-                    </div>
-                    <div class="prop-cont">
-                        <div class="stat-name"><p>Methodology</p></div>
-                        <select class="char-prop methodology fifty-width"></select>
-                    </div>
-                    <div class="prop-cont">
-                        <div class="stat-name"><p>Personality</p></div>
-                        <div class="add-personality btn btn-quarter fifty-width">+Personality</div>
-                        <div class="char-prop personality full-line">
-                            <select class="per-prop fifty-width left-float"></select>
-                            <select class="per-name fifty-width left-float"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="prop-cont">
-                        <div class="stat-name"><p>Loyalty</p></div>
-                        <input class="char-prop loyalty fifty-width" type="number" min=1 value=50>
-                    </div>
-                    <div class="prop-cont">
-                        <div class="stat-name"><p>Morale</p></div>
-                        <input class="char-prop morale fifty-width" type="number" min=1 value=50>
-                    </div>
                 </div>
                 
                 <div class="char-stat-title medium-gradient"><p>Equipment (TO DO)</p></div>
                 <div class="equipment-cont">
                     <div class="equipment-options">
-                        <div class="default-equipment-button btn btn-quarter twenty-five-width"><p>Default</p></div>
-                        <div class="rand-equipment-button btn btn-quarter twenty-five-width"><p>Rand</p></div>
-                        <div class="full-rand-equipment-button btn btn-quarter twenty-five-width"><p>Full Rand</p></div>
-                        <div class="smart-rand-equipment-button btn btn-quarter twenty-five-width"><p>Smart Rand</p></div>
+                        <div id="default-equipment-button" class="btn btn-quarter twenty-five-width"><p>Default</p></div>
+                        <div id="rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Rand</p></div>
+                        <div id="full-rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Full Rand</p></div>
+                        <div id="smart-rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Smart Rand</p></div>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Right Hand</p></div>
@@ -126,9 +109,8 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                 <div class="char-stat-title medium-gradient"><p>Techniques</p></div>
                 <div class="techniques-cont">
                     <div class="technique-options">
-                        <div class="default-equipment-button btn btn-quarter fifty-width"><p>Default</p></div>
-                        <div class="full-rand-equipment-button btn btn-quarter twenty-five-width"><p>Full Rand</p></div>
-                        <div class="smart-rand-equipment-button btn btn-quarter twenty-five-width"><p>Smart Rand</p></div>
+                        <div id="default-technique-button" class="btn btn-quarter fifty-width"><p>Default</p></div>
+                        <div id="rand-technique-button" class="btn btn-quarter fifty-width"><p>Random</p></div>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Rank 1</p></div>
@@ -158,15 +140,22 @@ $charGen = file_get_contents('../../data/json/data/character-generation.json');
                 <div class="char-stat-title medium-gradient"><p>Base Stats</p></div>
                 <div class="base-stats-cont">
                     <div class="base-stats-options">
-                        <div class="low-rand-base-stats-button btn btn-quarter third-width"><p>Low Rand</p></div>
-                        <div class="medium-rand-base-stats-button btn btn-quarter third-width"><p>Medium Rand</p></div>
-                        <div class="high-rand-base-stats-button btn btn-quarter third-width"><p>High Rand</p></div>
-                        <div class="low-special-rand-base-stats-button btn btn-quarter third-width"><p>Low Special</p></div>
-                        <div class="medium-special-rand-base-stats-button btn btn-quarter third-width"><p>Medium Special</p></div>
-                        <div class="high-special-rand-base-stats-button btn btn-quarter third-width"><p>High Special</p></div>
-                        <div class="low-smart-rand-base-stats-button btn btn-quarter third-width"><p>Low Smart</p></div>
-                        <div class="medium-smart-rand-base-stats-button btn btn-quarter third-width"><p>Medium Smart</p></div>
-                        <div class="high-smart-rand-base-stats-button btn btn-quarter third-width"><p>High Smart</p></div>
+                        <div id="use-rand" class="btn btn-quarter twenty-five-width">
+                            <p>Using Random</p>
+                        </div>
+                        <div id="randomize-base-stats" class="btn btn-quarter twenty-five-width">
+                            <p>Randomize</p>
+                        </div>
+                        <select id="rand-base-stats" class="twenty-five-width">
+                            <option>Rand</option>
+                            <option>Specialized</option>
+                        </select>
+                        <select id="value-rand-base-stats" class="twenty-five-width">
+                            <option>Low</option>
+                            <option>Medium</option>
+                            <option>High</option>
+                            <option>Maxed</option>
+                        </select>
                     </div>
                     
                     <ul class="base-stats">

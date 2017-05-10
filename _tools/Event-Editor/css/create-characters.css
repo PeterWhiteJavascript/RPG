@@ -56,7 +56,7 @@
 .add-char-button{
     font-family:"Calibri";
 }
-.char-name{
+.char-handle{
     font-family:"Calibri";
     width:75%;
     float:left;
@@ -77,6 +77,8 @@
 
 .twenty-five-width{
     width:25%;
+    height:30px;
+    float:left;
 }
 .third-width{
     width:33.3333%;
@@ -125,10 +127,7 @@
 }
 
 .base-stats-cont{
-    margin-bottom:10px;
-}
-.base-stats-options{
-    height:90px;
+    margin-bottom:50px;
 }
 .base-stats{
     list-style-type:none;
