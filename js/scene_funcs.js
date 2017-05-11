@@ -35,6 +35,7 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("story",function(stage){
         var data = stage.options.data;
         var characters = stage.options.characters;
+        console.log(data)
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
@@ -154,7 +155,7 @@ Quintus.SceneFuncs=function(Q){
                 lv+=Math.floor(Math.random()*3)-1;
                 if(lv===0) lv=1;
                 if(lv>Q.maxEquipmentRank) lv = Q.maxEquipmentRank;
-                var eq = equipmentData[type+"Sorted"][lv-1][Math.floor(Math.random()*(equipmentData[type+"Sorted"][lv-1].length))];
+                var eq = equipmentData.Weapons.Javelin//equipmentData[type+"Sorted"][lv-1][Math.floor(Math.random()*(equipmentData[type+"Sorted"][lv-1].length))];
                 return eq;
             }
             var rh = rand(types[Math.floor(Math.random()*2)]);
@@ -326,7 +327,7 @@ Quintus.SceneFuncs=function(Q){
             char.exp = data.exp?data.exp:0;
             char.baseStats = data.baseStats?data.baseStats:this.getStats(char.level,char.classNum);
             
-            char.equipment = data.equipment?getEquipment(data.equipment):this.randomizeEquipment(char);
+            char.equipment = {}//data.equipment?getEquipment(data.equipment):this.randomizeEquipment(char);
             
             char.value = data.value?data.value:this.generateProp("value",char);
             char.methodology = data.methodology?data.methodology:this.generateProp("methodology",char);

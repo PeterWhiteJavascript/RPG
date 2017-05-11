@@ -99,7 +99,7 @@ Q.organizeEquipment=function(){
     eq.bodySorted = [];
     eq.feetSorted = [];
     eq.accessorySorted = [];
-    
+    return
     var types = ["weapon","shield","body","feet","accessory"];
     //Loop through each type
     for(var i=0;i<types.length;i++){
@@ -142,7 +142,7 @@ Q.newGame=function(options){
         var astrea = Q.charGen.generateCharacter(Q.state.get("characters").Astrea);
         
         var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",personality:["Ascetic"],nationality:4,loyalty:90});
-        console.log(legion)
+        //console.log(legion)
         Q.state.set("allies",[storyAlex,legion,astrea]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
