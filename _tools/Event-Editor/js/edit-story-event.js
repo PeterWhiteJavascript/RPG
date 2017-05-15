@@ -281,7 +281,6 @@ $(function(){
                     .remove()
                     .end()
                     .append(DC.getCharCondOptions($(cont).children(".propType").val()).options);
-                    
             
         },
         moduleChangeType:function(cont){
@@ -340,6 +339,12 @@ $(function(){
                     break;
                 case "Gender":
                     JSON.parse($("#char-gen").attr("value")).genders.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
+                    });
+                    break;
+                case "Stat":
+                    ["accuracy","attackSpeed","criticalChance","defense","encPenalty","encThreshold","hp","maxAtk","maxHp","maxTp","minAtk","move","moveSpeed","painTolerance","range","totalWeight","tp","zoc"].forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
@@ -600,9 +605,15 @@ $(function(){
                         props.prop = "Sensitive";
                     }
                     var chars = '<p class="editor-descriptor-half light-gradient">Character</p><select class="cond-prop char inline-select" initial-value="'+props.char+'">'+this.charOptions()+'</select>';
-                    var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value='+props.propType+'><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option></select>';
+                    var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value='+props.propType+'><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option><option>Stat</option></select>';
                     var charProps = '<p class="editor-descriptor-half light-gradient">Prop</p><select class="cond-prop prop inline-select" initial-value="'+props.prop+'">'+this.getCharCondOptions(props.propType,props.prop).options+'</select>';
                     content = chars+charTypes+charProps;
+                    if(props.propType==="Stat"){
+                        var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" value="'+props.operator+'"><option>==</option><option><</option><option>></option><option><=</option><option>>=</option></select>';
+                        var val = '<p class="editor-descriptor light-gradient unique-stat-fields">Value</p><input class="cond-prop value thirty-height unique-stat-fields" type="number" value="'+props.value+'">';
+                        content+=operator;
+                        content+=val;
+                    }
                     break;
             }
             return content;
@@ -1080,6 +1091,14 @@ $(function(){
     //Change the props
     $(document).on("change",".check-char-types",function(e){
         DC.changeCharTypeOptions($(this).parent());
+        $(this).parent().children(".unique-stat-fields").remove();
+        if($(this).parent().children(".propType").val()==="Stat"){
+            //Add another field
+            $(this).parent().append('\n\
+            <p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields"><option>==</option><option><</option><option>></option><option><=</option><option>>=</option></select>\n\
+            <p class="editor-descriptor light-gradient unique-stat-fields">Value</p><input class="cond-prop value thirty-height unique-stat-fields" type="number">\n\
+            ');
+        }
     });
     
     //Change the type of the check

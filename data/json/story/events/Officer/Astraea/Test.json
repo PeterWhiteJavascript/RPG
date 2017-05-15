@@ -11,7 +11,7 @@
             "text": "rewrrytui",
             "choices": [
                 {
-                    "displayText": "adwad",
+                    "displayText": "adwad;l",
                     "desc": "fwfwfw",
                     "page": "awdwfwf",
                     "disabled": "Enabled",
@@ -22,8 +22,10 @@
                                     "checkChar",
                                     {
                                         "char": "Current",
-                                        "propType": "Gender",
-                                        "prop": "Female"
+                                        "propType": "Stat",
+                                        "prop": "hp",
+                                        "operator": "<",
+                                        "value": "1000"
                                     }
                                 ]
                             ],
@@ -42,7 +44,17 @@
             ],
             "onload": [],
             "modules": {},
-            "modulesVars": {}
+            "modulesVars": {
+                "[l[": [
+                    {
+                        "text": ""
+                    },
+                    {
+                        "text": "",
+                        "checks": []
+                    }
+                ]
+            }
         },
         {
             "name": "awdawd",

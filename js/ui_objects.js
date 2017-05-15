@@ -820,6 +820,27 @@ Quintus.UIObjects=function(Q){
                     case "Gender":
                         value = char.gender;//Q.state.get("charGeneration").genders[char.gender];
                         break;
+                    //Special case where we're checking a number with different operators
+                    case "Stat":
+                        var stat = char.combatStats[obj.prop];
+                        switch(obj.operator){
+                            case "==":
+                                if(stat==obj.value) return true;
+                                break;
+                            case ">":
+                                if(stat>obj.value) return true;
+                                break;
+                            case "<":
+                                if(stat<obj.value) return true;
+                                break;
+                            case ">=":
+                                if(stat>=obj.value) return true;
+                                break;
+                            case "<=":
+                                if(stat<=obj.value) return true;
+                                break;
+                        }
+                        break;
                 }
                 //Once a value is found, check it against the passed in prop. Personality is check within the switch as there are multiple personality traits sometimes.
                 if(value===obj.prop){
