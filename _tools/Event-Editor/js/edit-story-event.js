@@ -275,6 +275,15 @@ $(function(){
                 <input class="value" initial-value="0">\n\
             ');
         },
+        changeCharTypeOptions:function(cont){
+            $(cont).children(".prop")
+                    .find("option")
+                    .remove()
+                    .end()
+                    .append(DC.getCharCondOptions($(cont).children(".propType").val()).options);
+                    
+            
+        },
         moduleChangeType:function(cont){
             
             $(cont).children(".module-conds").remove();
@@ -284,59 +293,65 @@ $(function(){
         moduleRemoveConds:function(cont){
             cont.remove();
         },
-        moduleAddNewCond:function(cont,p,type,val){
-            var condType = p?p:$(cont).parent().children(".check-types").val();
-            var options;
+        getCharCondOptions:function(condType,type){
+            var options = '';
             switch(condType){
                 case "Personality":
-                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Character Class":
-                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Value":
-                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Methodology":
-                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Nationality":
-                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Loyalty":
-                    ["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"].forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    ["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"].forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Morale":
-                    ["Quit","Unhappy","Content","Inspired","Ecstatic"].forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    ["Quit","Unhappy","Content","Inspired","Ecstatic"].forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Gender":
-                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(per,i){
-                        if(!type&&i===0) type = per;
-                        options+='<option>'+per+'</option>';
+                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(prop,i){
+                        if(!type&&i===0) type = prop;
+                        options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
             }
+            return {options:options,type:type};
+        },
+        moduleAddNewCond:function(cont,p,type,val){
+            var condType = p?p:$(cont).parent().children(".check-types").val();
+            var obj = this.getCharCondOptions(condType,type);
+            var options = obj.options;
+            type = obj.type;
             var value = val?val:1;
             $(cont).append('\n\
                 <div class="module-cond">\n\
@@ -579,7 +594,15 @@ $(function(){
                     content = scope+vr+vl;
                     break;
                 case "checkChar":
-                    
+                    if(!props){props = {};
+                        props.char = "Current";
+                        props.propType = "Personality";
+                        props.prop = "Sensitive";
+                    }
+                    var chars = '<p class="editor-descriptor-half light-gradient">Character</p><select class="cond-prop char inline-select" initial-value="'+props.char+'">'+this.charOptions()+'</select>';
+                    var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value='+props.propType+'><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option></select>';
+                    var charProps = '<p class="editor-descriptor-half light-gradient">Prop</p><select class="cond-prop prop inline-select" initial-value="'+props.prop+'">'+this.getCharCondOptions(props.propType,props.prop).options+'</select>';
+                    content = chars+charTypes+charProps;
                     break;
             }
             return content;
@@ -769,7 +792,7 @@ $(function(){
         //Return options for selects
         conditionsOptions:function(){
             var opts = '';
-            var conds = ["checkVar"];
+            var conds = ["checkChar","checkVar"];
             conds.forEach(function(c){
                 opts+='<option value="'+c+'">'+c+'</option>';
             });
@@ -780,6 +803,14 @@ $(function(){
             var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
+            });
+            return opts;
+        },
+        charOptions:function(){
+            var keys = Object.keys(this.p.characters);
+            var opts = '<option value="Current">Current</option>';
+            keys.forEach(function(key){
+                opts+='<option value="'+key+'">'+key+'</option>';
             });
             return opts;
         },
@@ -1044,6 +1075,11 @@ $(function(){
     //Adds a new cond inside the check
     $(document).on("click",".module-add-new-cond",function(e){
         DC.moduleAddNewCond($(this).parent().parent());
+    });
+    
+    //Change the props
+    $(document).on("change",".check-char-types",function(e){
+        DC.changeCharTypeOptions($(this).parent());
     });
     
     //Change the type of the check

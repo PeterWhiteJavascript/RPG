@@ -781,6 +781,53 @@ Quintus.UIObjects=function(Q){
             })[0];
         },
         condFuncs:{
+            checkChar:function(t,obj){
+                var char;
+                //First, get the character that we're checking
+                if(obj.char==="Current"){
+                    char = t.p.characters[0];
+                } else {
+                    char = Q.state.get("characters")[obj.char];
+                }
+                var value;
+                switch(obj.propType){
+                    case "Personality":
+                        //Loop through the character's personalities
+                        for(var i=0;i<char.personality.length;i++){
+                            var p = char.personality[i][1];
+                            if(p===obj.prop) return true;
+                        }
+                        return false;
+                        break;
+                    case "Character Class":
+                        value = char.charClass;//Q.state.get("charGeneration").classNames[char.charClass];
+                        break;
+                    case "Value":
+                        value = char.value;//Q.state.get("charGeneration").values[char.value];
+                        break;
+                    case "Methodology":
+                        value = char.methodology;//Q.state.get("charGeneration").methodologies[char.methodologies];
+                        break;
+                    case "Nationality":
+                        value = char.nationality;//Q.state.get("charGeneration").nationalities[char.nationalities];
+                        break;
+                    case "Loyalty":
+                        value = Q.getLoyaltyString(char.loyalty);
+                        break;
+                    case "Morale":
+                        value = Q.getMoraleString(char.morale);
+                        break;
+                    case "Gender":
+                        value = char.gender;//Q.state.get("charGeneration").genders[char.gender];
+                        break;
+                }
+                //Once a value is found, check it against the passed in prop. Personality is check within the switch as there are multiple personality traits sometimes.
+                if(value===obj.prop){
+                    return true;
+                } else {
+                    return false;
+                }
+            },
             checkVar:function(t,obj){
                 var vars;
                 switch(obj.scope){

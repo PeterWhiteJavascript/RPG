@@ -35,7 +35,6 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("story",function(stage){
         var data = stage.options.data;
         var characters = stage.options.characters;
-        console.log(data)
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
@@ -241,10 +240,8 @@ Quintus.SceneFuncs=function(Q){
                     return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
                 case "methodology":
                     return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
-                case "muchValue":
-                    return this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)];
                 case "personality":
-                    return [this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];
+                    return [this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];
                     
             }
         },
@@ -336,8 +333,8 @@ Quintus.SceneFuncs=function(Q){
             char.name = data.name?data.name:this.generateProp("name",char);
             char.combatStats = this.generateStats(char);
             
-            char.muchValue = data.muchValue?data.muchValue:this.generateProp("muchValue");
-            char.personality = data.personality?data.personality:this.generateProp("personality");
+            //For now, there is only one personality generated
+            char.personality = data.personality?data.personality:[this.generateProp("personality")];
             
             //Clone the scenesList. When an event is shown from this character, remove it.
             char.events =  JSON.parse(JSON.stringify(Q.state.get("scenesList").Character));

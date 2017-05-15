@@ -1,9 +1,11 @@
 {
     "Officer": [
         {
-            "name": "Astrea",
-            "desc": "Any Astrea specific events.",
-            "eventOrder": [],
+            "name": "Astraea",
+            "desc": "Any Astraea specific events.",
+            "eventOrder": [
+                "Test"
+            ],
             "vrs": []
         },
         {
@@ -51,7 +53,7 @@
             "vrs": []
         },
         {
-            "name": "Nicodermus",
+            "name": "Nicodemus",
             "desc": "",
             "eventOrder": [],
             "vrs": []

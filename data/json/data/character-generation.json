@@ -1,16 +1,16 @@
 {
-    "nationalities":["Venorian","Dardoian","Aliudramilan","Talumpatuan","Nomadic","Random"],
-    "values":["Egoist","Nepotist","Altruist","Random"],
-    "methodologies":["Pragmatic","Intuitive","Kind","Random"],
-    "classNames":["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer","Random"],
-    "genders":["Male","Female","Random"],
+    "nationalities":["Venorian","Dardoian","Aliudramilan","Talumpatuan","Nomadic"],
+    "values":["Egoist","Nepotist","Altruist"],
+    "methodologies":["Pragmatic","Intuitive","Kind"],
+    "classNames":["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"],
+    "genders":["Male","Female"],
     "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
     "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
     "primaryStats":["wsk","str","end","dex","rfl","ini","enr","skl","eff"],
     "secondaryStats":["str","end","wsk","ini","dex","rfl","eff","enr","skl"],
     "order":["primary","secondary","primary","random","auto"],
     "autoChance":["primary","primary","secondary","random"],
-    "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy","Random"],
+    "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
         "Venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},
@@ -37,8 +37,7 @@
             "Somewhat",
             "",
             "Very",
-            "Extremely",
-            "Random"
+            "Extremely"
         ],
         "traits":[[
                 {"desc":"Changes in Morale 10% larger"},
