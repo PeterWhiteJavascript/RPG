@@ -412,7 +412,7 @@ $(function(){
                 });
                 return obj;
             } else {
-                return {};
+                return {modules:{},modulesVars:{}};
             }
         },
         //Gets all of the filled out data from the choices li or onload li
@@ -506,7 +506,7 @@ $(function(){
                 '<li class="choice-li">\n\
                     <div class="choice-group-top">\n\
                         <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
-                        <p class="editor-descriptor thirty-height light-blue-gradient">Display Text</p>\n\
+                        <p class="display-text-descriptor editor-descriptor thirty-height light-blue-gradient">Display Text</p>\n\
                         <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
                     </div>\n\
                     <input class="display-text full-line" value="'+text+'">\n\
@@ -577,6 +577,9 @@ $(function(){
                     var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
                     var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
                     content = scope+vr+vl;
+                    break;
+                case "checkChar":
+                    
                     break;
             }
             return content;
@@ -1050,5 +1053,17 @@ $(function(){
     $(document).on("change",".module-var-scope",function(e){
         DC.moduleVarChangeScope($(this).parent().parent());
     });
+    
+    //Change the module title
+    $(document).on("change",".module-name",function(e){
+        $(this).parent().children(".choice-group-top").children(".editor-descriptor").text($(this).val());
+    });
+    
+    $(document).on("change",".display-text",function(e){
+        $(this).parent().children(".choice-group-top").children(".editor-descriptor").text($(this).val());
+    });
+    
+    $(".module-name").trigger("change");
+    $(".display-text").trigger("change");
 });
 

@@ -3,16 +3,14 @@
         {
             "name": "Astrea",
             "desc": "Any Astrea specific events.",
-            "eventOrder": [
-                "Feast1"
-            ],
+            "eventOrder": [],
             "vrs": []
         },
         {
             "name": "Lysandra",
             "desc": "Any Lysandra Events\r\n",
             "eventOrder": [
-                "Feast1"
+                "dr"
             ],
             "vrs": []
         },

@@ -1,0 +1,26 @@
+{
+    "name": "dr",
+    "desc": "",
+    "kind": "story",
+    "vrs": {},
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "",
+            "choices": [
+                {
+                    "displayText": "fgyjfgj",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ]
+}
