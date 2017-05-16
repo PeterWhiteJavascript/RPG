@@ -1,19 +1,59 @@
 {
     "Legionnaire":[
         {
-            "name":"Push",
-            "desc":"Target character is pushed backwards one space.",
-            "types":["Physical","Knockback"],
+            "name":"Forced March",
+            "types":["Support"],
+            "desc":"Target allies increase their Move by 1/10 of user’s Skill for 2 Rounds.",
             "range":[1,"normal"],
             "aoe":[1,"normal"],
-            "cost":20,
+            "cost":25,
             "damage":""
         },
-        {},
-        {},
-        {},
-        {},
-        {}
+        {
+            "name":"Fortify",
+            "types":["Support"],
+            "desc":"Target allies increase their Defensive Ability by the user’s Skill for 2 Rounds.",
+            "range":[1,"normal"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "damage":""
+        },
+        {
+            "name":"Embolden",
+            "types":["Support"],
+            "desc":"Target allies increase their Skill by the user’s Skill for 2 Rounds.",
+            "range":[1,"normal"],
+            "aoe":[2,"line"],
+            "cost":25,
+            "damage":""
+        },
+        {
+            "name":"Fervour",
+            "types":["Support"],
+            "desc":"Target allies increase their Strength by the user’s Skill for 2 Rounds.",
+            "range":[1,"normal"],
+            "aoe":[2,"line"],
+            "cost":25,
+            "damage":""
+        },
+        {
+            "name":"Direct",
+            "types":["Support"],
+            "desc":"Target allies increase their Efficiency by half of the user’s Skill for 2 Rounds.",
+            "range":[1,"normal"],
+            "aoe":[2,"line"],
+            "cost":25,
+            "damage":""
+        },
+        {
+            "name":"Phalanx",
+            "types":["Support"],
+            "desc":"Target allies increase their DR by half of the user’s Skill for 2 Rounds and also gain +100 to their Physical Resistance for 2 Rounds.",
+            "range":[1,"normal"],
+            "aoe":[1,"2x3box"],
+            "cost":25,
+            "damage":""
+        }
     ],
     "Berserker":[
         {
@@ -41,28 +81,33 @@
             
         },
         {
-            
-        },
-        {
-            
-        }
-    ],
-    "Vanguard":[
-        {
             "name":"Pull",
-            "desc":"Target character is pulled towards the user. Both characters move back one space.",
+            "desc":"Target character and attacking character both move one space backwards, relative to the attacking character, provided that there is a free space to move into.",
             "types":["Physical","Knockback"],
             "range":[1,"normal"],
             "aoe":[1,"normal"],
             "cost":20,
             "damage":""
         },
+        {
+            
+        }
+    ],
+    "Vanguard":[
         {},
         {},
         {},
         {},
-        {}
-        
+        {},
+        {
+            "name":"Whirlwind Strike",
+            "desc":"The character attacks all units adjacent to them, friend or foe. The damage is equal to half of their regular damage, plus Skill.",
+            "types":["Physical"],
+            "range":[0,"self"],
+            "aoe":[2,"normal"],
+            "cost":80,
+            "damage":""
+        }
     ],
     "Assassin":[
         {

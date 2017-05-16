@@ -12,6 +12,8 @@ $file = file_get_contents('../../data/json/story/characters/'.$filename);
 $charGen = file_get_contents('../../data/json/data/character-generation.json');
 
 $techniques = file_get_contents('../../data/json/data/skills.json');
+
+$equipment = file_get_contents('../../data/json/data/equipment.json');
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,6 +27,7 @@ $techniques = file_get_contents('../../data/json/data/skills.json');
         <div id="file-info" hidden><?php echo $file?></div>
         <div id="char-gen" hidden><?php echo $charGen?></div>
         <div id="technique-info" hidden><?php echo $techniques?></div>
+        <div id="equipment" hidden><?php echo $equipment?></div>
         <div id="editor-content">
             <div id="top-bar">
                 <ul>
@@ -73,29 +76,36 @@ $techniques = file_get_contents('../../data/json/data/skills.json');
                     </div>
                 </div>
                 
-                <div class="char-stat-title medium-gradient"><p>Equipment (TO DO)</p></div>
+                <div class="char-stat-title medium-gradient"><p>Equipment</p></div>
                 <div class="equipment-cont">
                     <div class="equipment-options">
-                        <div id="default-equipment-button" class="btn btn-quarter twenty-five-width"><p>Default</p></div>
-                        <div id="rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Rand</p></div>
-                        <div id="full-rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Full Rand</p></div>
-                        <div id="smart-rand-equipment-button" class="btn btn-quarter twenty-five-width"><p>Smart Rand</p></div>
+                        <div id="default-equipment-button" class="btn btn-quarter third-width"><p>Default</p></div>
+                        <div id="rand-equipment-button" class="btn btn-quarter third-width"><p>Rand</p></div>
+                        <div id="full-rand-equipment-button" class="btn btn-quarter third-width"><p>Full Rand</p></div>
                     </div>
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Right Hand</p></div>
-                        <select class="char-prop right-hand fifty-width"></select>
+                        <div class="stat-name-wide"><p>Right Hand</p></div>
+                        <select class="char-prop right-hand-quality third-width left-float"></select>
+                        <select class="char-prop right-hand-gear third-width left-float"></select>
+                        <select class="char-prop right-hand-material third-width left-float"></select>
                     </div>
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Left Hand</p></div>
-                        <select class="char-prop left-hand fifty-width"></select>
+                        <div class="stat-name-wide"><p>Left Hand</p></div>
+                        <select class="char-prop left-hand-quality third-width left-float"></select>
+                        <select class="char-prop left-hand-gear third-width left-float"></select>
+                        <select class="char-prop left-hand-material third-width left-float"></select>
                     </div>
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Body</p></div>
-                        <select class="char-prop body fifty-width"></select>
+                        <div class="stat-name-wide"><p>Armour</p></div>
+                        <select class="char-prop armour-quality third-width left-float"></select>
+                        <select class="char-prop armour-gear third-width left-float"></select>
+                        <select class="char-prop armour-material third-width left-float"></select>
                     </div>
                     <div class="prop-cont">
-                        <div class="stat-name"><p>Feet</p></div>
-                        <select class="char-prop feet fifty-width"></select>
+                        <div class="stat-name-wide"><p>Footwear</p></div>
+                        <select class="char-prop footwear-quality third-width left-float"></select>
+                        <select class="char-prop footwear-gear third-width left-float"></select>
+                        <select class="char-prop footwear-material third-width left-float"></select>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name"><p>Accessory</p></div>
@@ -147,7 +157,7 @@ $techniques = file_get_contents('../../data/json/data/skills.json');
                             <p>Randomize</p>
                         </div>
                         <select id="rand-base-stats" class="twenty-five-width">
-                            <option>Rand</option>
+                            <option>Random</option>
                             <option>Specialized</option>
                         </select>
                         <select id="value-rand-base-stats" class="twenty-five-width">
@@ -199,7 +209,7 @@ $techniques = file_get_contents('../../data/json/data/skills.json');
                         </li>
                     </ul>
                 </div>
-                
+                <!--
                 <div class="char-stat-title medium-gradient"><p>Full Stats</p></div>
                 <div class="full-stats-cont">
                     To see full stats, fill out level, char class, all equipment, and base stats.
@@ -263,6 +273,7 @@ $techniques = file_get_contents('../../data/json/data/skills.json');
                         </li>
                     </ul>
                 </div>
+                -->
             </div>
             
         </div>

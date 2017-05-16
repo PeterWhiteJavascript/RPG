@@ -75,12 +75,20 @@
     height:30px;
 }
 
+.floated-fifty-width{
+    width:50%;
+    height:30px;
+    padding:0px;
+    float:left;
+}
+
 .twenty-five-width{
     width:25%;
     height:30px;
     float:left;
 }
 .third-width{
+    height:30px;
     width:33.3333%;
 }
 .one-sixth-width{
@@ -105,6 +113,16 @@
     background: linear-gradient(to bottom right, grey, white);
 }
 .stat-name p{
+    margin-top:7px;
+}
+.stat-name-wide{
+    float:left;
+    text-align:center;
+    height:30px;
+    width:100%;
+    background: linear-gradient(to bottom right, grey, white);
+}
+.stat-name-wide p{
     margin-top:7px;
 }
 

@@ -1,0 +1,51 @@
+{
+    "Legionnaire":{
+        "Venorian":[
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]],
+            [[],[],[]]
+        ],
+        "Dardoian":[
+            
+        ],
+        "Aliudramilan":[
+            
+        ],
+        "Talumpatuan":[
+            
+        ],
+        "Nomadic":[
+            
+        ]
+    },
+    "Berserker":{
+        
+    },
+    "Vanguard":{
+        
+    },
+    "Archer":{
+        
+    },
+    "Skirmisher":{
+        
+    },
+    "Assassin":{
+        
+    },
+    "Elementalist":{
+        
+    },
+    "Illusionist":{
+        
+    },
+    "Healer":{
+        
+    }
+}
