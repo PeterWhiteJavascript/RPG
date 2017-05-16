@@ -4,10 +4,10 @@
         "level":1,
         "gender":"Male",
         "equipment":{
-            "righthand":["weapon","woodenSword"],
-            "lefthand":["shield","woodenShield"],
-            "body":["body","shirt"],
-            "feet":["feet","sandals"],
+            "righthand":["Weapons","Average","Brass","Short Sword"],
+            "lefthand":["Shields","Average","Wood","Small Shield"],
+            "body":["Armour","Average","Soft Leather","Shirt"],
+            "feet":["Footwear","Average","Wood","Shoes"],
             "accessory":false
         },
         "baseStats":{
@@ -46,10 +46,10 @@
         "gender":"Female",
         "desc":"Astraea is a champion warrior, noble landholder in Borios (the northern province of Venoriae), and wife of Vicanti.",
         "equipment":{
-            "righthand":["weapon","woodenSpear"],
-            "lefthand":["shield","ironShield"],
-            "body":["body","ironArmour"],
-            "feet":["feet","ironBoots"],
+            "righthand":["Weapons","Average","Brass","Short Sword"],
+            "lefthand":["Shields","Average","Wood","Small Shield"],
+            "body":["Armour","Average","Soft Leather","Shirt"],
+            "feet":["Footwear","Average","Wood","Shoes"],
             "accessory":false
         },
         "baseStats":{
@@ -84,10 +84,10 @@
         "gender":"Female",
         "desc":"Lysandra is the leader of a rebel organization working against the Venorian government, as well as a competent con artist and generally anarchist ",
         "equipment":{
-            "righthand":["weapon","woodenSling"],
-            "lefthand":["weapon","copperDagger"],
-            "body":["body","shirt"],
-            "feet":["feet","sandals"],
+            "righthand":["Weapons","Average","Brass","Short Sword"],
+            "lefthand":["Shields","Average","Wood","Small Shield"],
+            "body":["Armour","Average","Soft Leather","Shirt"],
+            "feet":["Footwear","Average","Wood","Shoes"],
             "accessory":false
         },
         "baseStats":{

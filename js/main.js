@@ -19,9 +19,6 @@ Q.tileH = 32;
 Q.astar = astar;
 //A necessary component of Astar
 Q.Graph = Graph;
-//The highest rank for weapons
-Q.maxEquipmentRank = 2;
-
 
 //End Constants
 
@@ -89,38 +86,6 @@ Q.state.set({
     currentMusic:""
 });
 
-//Sort the equipment by rank so it doesn't have to be done every time
-Q.organizeEquipment=function(){
-    var eq = Q.state.get("equipment");
-    //This is the highest rank that we've added in the game
-    var ranks = Q.maxEquipmentRank;
-    eq.weaponSorted = [];
-    eq.shieldSorted = [];
-    eq.bodySorted = [];
-    eq.feetSorted = [];
-    eq.accessorySorted = [];
-    return
-    var types = ["weapon","shield","body","feet","accessory"];
-    //Loop through each type
-    for(var i=0;i<types.length;i++){
-        //Create the sorted array in the equipment object
-        var srt =  eq[types[i]+"Sorted"] = [];
-        //Loop through the total ranks
-        for(var j=1;j<=ranks;j++){
-            //Create an empty array at this rank at fill it with all euqipment of this rank from this type
-            srt[j-1] = [];
-            var type = types[i];
-            //Get all of the different types of equipment
-            var keys = Object.keys(eq[type]);
-            for(var k=0;k<keys.length;k++){
-                //If the equipment's rank is equal to the current rank, put it into this array
-                if(eq[type][keys[k]].rank===j){
-                    srt[j-1].push(eq[type][keys[k]]);
-                }
-            }
-        }
-    }
-};
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
     //Load the default starting data
@@ -277,8 +242,6 @@ Q.load(files.join(','),function(){
     //The list of events
     Q.state.set("scenesList",Q.assets["json/data/scenes-list.json"]);
     
-    //Get the equipment in the proper format
-    Q.organizeEquipment();
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     

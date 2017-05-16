@@ -142,64 +142,22 @@ Quintus.SceneFuncs=function(Q){
             skills[char.charClass] = [allSkills[char.charClass][0],allSkills[char.charClass][1]];
             return skills;
         },
-        randomizeEquipment:function(char){
-            var el = 1;//p.equipmentRank;
-            var equipmentType = "sword";
-            var equipmentData = Q.state.get("equipment");
-            var types = ["weapon","shield","body","feet","accessory"];
-            
-            function rand(type){
-                //Chance of going up or down in rank
-                var lv = el;
-                lv+=Math.floor(Math.random()*3)-1;
-                if(lv===0) lv=1;
-                if(lv>Q.maxEquipmentRank) lv = Q.maxEquipmentRank;
-                var eq = equipmentData.Weapons.Javelin//equipmentData[type+"Sorted"][lv-1][Math.floor(Math.random()*(equipmentData[type+"Sorted"][lv-1].length))];
-                return eq;
-            }
-            var rh = rand(types[Math.floor(Math.random()*2)]);
-            var lh = {};
-            if(rh){
-                //Chance that there's no equipment here
-                if(Math.random()*100>9){
-                   lh = rand(types[Math.floor(Math.random()*2)]);
-                }
-            } else {
-                lh = rand(types[Math.floor(Math.random()*2)]);
-            }
-            var equipment = {
-                righthand:rh,
-                lefthand:lh,
-                body:rand(types[2]),
-                feet:rand(types[3]),
-                accessory:rand(types[4])
-            };
-            //Process the equipment
-            //If they have a set equipment type, make sure they get it
-            while(equipmentType&&equipment.righthand.equipmentType!==equipmentType&&equipment.lefthand.equipmentType!==equipmentType){
-                equipment.righthand = rand(types[0]);
-                //If the equipment is two handed, the left hand should be empty
-                if(equipment.righthand.twoHanded){
-                    equipment.lefthand = {};
-                } else {
-                    //If the righthand equipment is not two handed, find a weapon or shield for the left hand
-                    while(equipment.lefthand.twoHanded){
-                        equipment.lefthand = rand(types[Math.floor(Math.random()*2)]);
-                    }
-                }
-            }
-            //Make sure they are not holding a two handed weapon and something else
-            if(equipment.righthand.twoHanded){
-                equipment.lefthand = {};
-            }
-            if(equipment.lefthand.twoHanded){
-                equipment.righthand = {};
-            }
-            //Make sure that they are not holding two shields (unless we want that :D)
-            if(equipment.righthand.equipmentType==="shield"&&equipment.lefthand.equipmentType==="shield"){
-                equipment.righthand = rand(types[0]);
-            }
+        generateAllEquipment:function(char){
+            var equipment = {};
+            equipment.righthand = this.randomizeEquipment("Weapons");
+            equipment.lefthand = this.randomizeEquipment("Shields");
+            equipment.armour = this.randomizeEquipment("Armour");
+            equipment.footwear = this.randomizeEquipment("Footwear");
+            equipment.accessory = false;//this.randomizeEquipment("Accessory");
             return equipment;
+        },
+        //Generates a random piece of equipment by filling in the vars that are to be randomized.
+        randomizeEquipment:function(type,quality,material,gear){
+            var eq = Q.state.get("equipment")[type];
+            if(!quality) quality = Object.keys(Q.state.get("equipment").Quality)[Math.floor(Math.random()*Object.keys(Q.state.get("equipment").Quality).length)];
+            if(!gear) gear = Object.keys(eq)[Math.floor(Math.random()*Object.keys(eq).length)];
+            if(!material) material = eq[gear].materials[Math.floor(Math.random()*eq[gear].materials.length)];
+            return [type,quality,material,gear];
         },
         rand:function(){
             return Math.ceil(Math.random()*100);
@@ -323,8 +281,20 @@ Quintus.SceneFuncs=function(Q){
             char.level = data.level?data.level:this.generateProp("level",char);
             char.exp = data.exp?data.exp:0;
             char.baseStats = data.baseStats?data.baseStats:this.getStats(char.level,char.classNum);
+            //No equipment is set
+            if(!data.equipment){
+                char.equipment = this.generateAllEquipment(char);
+            } 
+            //Some equipment is set
+            else {
+                char.equipment = {};
+                char.equipment.righthand = data.equipment.righthand?data.equipment.righthand:this.randomizeEquipment("Weapon");
+                char.equipment.lefthand = false;//data.equipment.lefthand?data.equipment.lefthand:this.randomizeEquipment("Weapon");
+                char.equipment.armour = data.equipment.armour?data.equipment.armour:this.randomizeEquipment("Armour");
+                char.equipment.footwear = data.equipment.footwear?data.equipment.footwear:this.randomizeEquipment("Footwear");
+                char.equipment.accessory = false;//data.equipment.accessory?data.equipment.accessory:this.randomizeEquipment("Accessory");
+            }
             
-            char.equipment = {}//data.equipment?getEquipment(data.equipment):this.randomizeEquipment(char);
             
             char.value = data.value?data.value:this.generateProp("value",char);
             char.methodology = data.methodology?data.methodology:this.generateProp("methodology",char);

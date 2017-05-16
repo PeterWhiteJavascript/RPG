@@ -7,10 +7,10 @@
             "levelmax":3,
             "gender":"Random",
             "equipment":{
-                "righthand":"Wooden Sword",
-                "lefthand":"Wooden Shield",
-                "body":"Shirt",
-                "feet":"Sandals",
+                "righthand":["Weapons","Average","Brass","Short Sword"],
+                "lefthand":["Shields","Average","Wood","Small Shield"],
+                "body":["Armour","Average","Soft Leather","Shirt"],
+                "feet":["Footwear","Average","Wood","Shoes"],
                 "accessory":false
             },
             "baseStats":["Rand","Medium"],
