@@ -1,5 +1,12 @@
 Quintus.QFunctions=function(Q){
     
+    Q.getCharClassNum = function(c){
+        return Q.state.get("charGeneration").classNames.indexOf(c);
+    };
+    Q.getNationalityNum = function(n){
+        return Q.state.get("charGeneration").nationalities.indexOf(n);
+    };
+    
     Q.changeMorale = function(morale){
         Q.state.get("allies").forEach(function(ally){
             ally.morale+=morale;

@@ -29,8 +29,8 @@
             "",
             ""
         ],
-        "nationality":0,
-        "charClass":0,
+        "nationality":"Venorian",
+        "charClass":"Legionnaire",
         "value":"-",
         "methodology":"-",
         "exp":0,
@@ -66,8 +66,8 @@
         "techniques":{
             "Vanguard":[0,1]
         },
-        "nationality":0,
-        "charClass":2,
+        "nationality":"Venorian",
+        "charClass":"Vanguard",
         "value":"Alruistic",
         "methodology":"Intuitive",
         "personality":[["A little","Violent"]],
@@ -104,8 +104,8 @@
         "techniques":{
             "Illusionist":[0,1]
         },
-        "nationality":0,
-        "charClass":6,
+        "nationality":"Venorian",
+        "charClass":"Archer",
         "value":"Egoistic",
         "methodology":"Kind",
         "personality":[["A little","Violent"]],

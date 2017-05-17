@@ -24,6 +24,7 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
         
     </head>
     <body>
+        <div id="file-name" hidden><?php echo $filename?></div>
         <div id="file-info" hidden><?php echo $file?></div>
         <div id="char-gen" hidden><?php echo $charGen?></div>
         <div id="technique-info" hidden><?php echo $techniques?></div>
@@ -153,6 +154,7 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
                         <div id="use-rand" class="btn btn-quarter twenty-five-width">
                             <p>Using Random</p>
                         </div>
+                        <div class="spacer"></div>
                         <div id="randomize-base-stats" class="btn btn-quarter twenty-five-width">
                             <p>Randomize</p>
                         </div>

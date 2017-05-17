@@ -124,6 +124,14 @@ $(function(){
             }
             if(firstChar){
                 this.showCharacter(firstChar,firstGroup);
+                $(".right-hand-gear").trigger("change");
+                $(".left-hand-gear").trigger("change");
+                $(".armour-gear").trigger("change");
+                $(".footwear-gear").trigger("change");
+            } else {
+                $("#menu-create-group").trigger("click");
+                $("#char-box-left").hide();
+                $("#char-box-right").hide();
             }
         },
         //Takes the character from the save and makes it editor-friendly
@@ -236,17 +244,7 @@ $(function(){
             //Show all of the character stats
             $("#char-box-left").children(".stats-cont").children(".prop-cont").children(".char-prop").each(function(num,e){
                 var prop = $(e).attr("class").split(" ")[1];
-                switch(prop){
-                    case "nationality":
-                        $(e).val(DC.charGen.nationalities[char[prop]]);
-                        break;
-                    case "charClass":
-                        $(e).val(DC.charGen.classNames[char[prop]]);
-                        break;
-                    default:
-                        $(e).val(char[prop]);
-                        break;
-                }
+                $(e).val(char[prop]);
             });
             //Show all of the equipment
             $("#char-box-left").children(".equipment-cont").children(".prop-cont").children(".char-prop").each(function(num,e){
@@ -261,7 +259,7 @@ $(function(){
                 $("."+prop).val(char[prop]);
             });
             //Show all of the base stats. If it is set to randomize, generate the stats.
-            if(typeof char.baseStats[0]==="string"){
+            if(Array.isArray(char.baseStats)){
                 $("#rand-base-stats").val(char.baseStats[0]);
                 $("#value-rand-base-stats").val(char.baseStats[1]);
                 $("#randomize-base-stats").trigger("click");
@@ -271,9 +269,8 @@ $(function(){
                     $(this).val(char.baseStats[prop]);
                 });
             }
-            //Generate values for the full stats.
+            //Generate values for the full stats. (TO DO MAYBE)
             var cont = $("#char-box-right").children(".full-stats-cont");
-            
             
             
         },
@@ -281,6 +278,10 @@ $(function(){
             $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").each(function(){
                 if($(this).children(".char-handle").text()===oldName){
                     $(this).children(".char-handle").text(newName);
+                    //Copy this entry to the new name and delete the old name
+                    var group = $(this).parent().parent().children(".char-group-top").children(".group-name").text();
+                    DC.characters[group][newName] = DC.characters[group][oldName];
+                    delete DC.characters[group][oldName];
                 }
             });
             DC.selectedCharacter.handle = newName;
@@ -292,8 +293,8 @@ $(function(){
                 levelmin:1,
                 levelmax:1,
                 gender:"Male",
-                nationality:0,
-                charClass:0,
+                nationality:"Venorian",
+                charClass:"Legionnaire",
                 baseStats:["Random","Medium"],
                 "right-hand-quality":"Default",
                 "right-hand-gear":"Default",
@@ -314,7 +315,7 @@ $(function(){
                 "tech-4":"Fervour",
                 "tech-5":"Direct",
                 "tech-6":"Phalanx"
-            }
+            };
         },
         getCharacter:function(charName,group){
             return this.characters[group][charName];
@@ -328,14 +329,32 @@ $(function(){
             var cl = $(itm).attr("class");
             $(itm).replaceWith('<div class="'+cl+'"><p>'+val+'</p></div>');
         },
-        levelUp:function(char){
-            
-        },
-        levelTo:function(char){
-            var level = char.level;
-            for(var i=0;i<level;i++){
-                this.levelUp(char);
+        levelUp:function(statTo,stats,primary,secondary){
+            var statNames = DC.charGen.statNames;
+            var autoChance = DC.charGen.autoChance;
+            switch(statTo){
+                case "primary":
+                    stats[primary]+=1;
+                    break;
+                case "secondary":
+                    stats[secondary]+=1;
+                    break;
+                case "random":
+                    stats[statNames[Math.floor(Math.random()*statNames.length)]]+=1;
+                    break;
+                case "auto":
+                    stats = DC.levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary,secondary);
+                    break;
             }
+            return stats;
+        },
+        levelTo:function(stats,primary,secondary,level){
+            var order = DC.charGen.order;
+            for(var i=0;i<level;i++){
+                var num = i%order.length;
+                stats = this.levelUp(order[num],stats,primary,secondary);
+            }
+            return stats;
         },
         getEquipmentData:function(name){
             if(name==="None"||name==="Default"||name==="Random") return {};
@@ -346,6 +365,51 @@ $(function(){
             if(!data) data = eq.Footwear[name];
             if(!data) data = eq.Accessories[name];
             return data;
+        },
+        encodeChar:function(char){
+            return {
+                "handle":char.handle,
+                "name":char.name,
+                "levelmin":parseInt(char.levelmin),
+                "levelmax":parseInt(char.levelmax),
+                "gender":char.gender,
+                "equipment":{
+                    "righthand":[char["right-hand-quality"],char["right-hand-material"],char["right-hand-gear"]],
+                    "lefthand":[char["left-hand-quality"],char["left-hand-material"],char["left-hand-gear"]],
+                    "armour":[char["armour-quality"],char["armour-material"],char["armour-gear"]],
+                    "footwear":[char["footwear-quality"],char["footwear-material"],char["footwear-gear"]],
+                    "accessory":char.accessory
+                },
+                "baseStats":char.baseStats,
+                "techniques":[
+                    char["tech-1"],
+                    char["tech-2"],
+                    char["tech-3"],
+                    char["tech-4"],
+                    char["tech-5"],
+                    char["tech-6"],
+                ],
+                "nationality":char.nationality,
+                "charClass":char.charClass
+            };
+        },
+        saveFile:function(){
+            var data = this.characters;
+            var groupKeys = Object.keys(data);
+            var encoded = {};
+            for(var i=0;i<groupKeys.length;i++){
+                encoded[groupKeys[i]] = [];
+                var chars = data[groupKeys[i]];
+                var charKeys = Object.keys(chars);
+                for(var j=0;j<charKeys.length;j++){
+                    encoded[groupKeys[i]].push(this.encodeChar(chars[charKeys[j]]));
+                }
+            }
+            var form = $('<form action="save-characters.php" method="post"></form>');
+            form.append("<input type='text' name='filename' value='"+$("#file-name").text()+"'>");
+            form.append("<input type='text' name='data' value='"+JSON.stringify(encoded)+"'>");
+            $("body").append(form);
+            form.submit();
         }
     };
     
@@ -357,8 +421,11 @@ $(function(){
     $(document).on("focus",".handle",function () {
         $(this).attr("old-value",this.value);
     }).on("change",".handle",function() {
-        DC.changeName($(this).attr("old-value"),$(this).val());
-        console.log("Change the data in the this.characters as well")
+        if(confirm("Caution: If you've referenced this character somewhere in an event, it will not work properly.")){
+            DC.changeName($(this).attr("old-value"),$(this).val());
+        } else {
+            $(this).val($(this).attr("old-value"));
+        }
     });
     $(document).on("click",".char-handle",function(){
         var groupName = $(this).parent().parent().parent().children(".char-group-top").children(".group-name").val();
@@ -493,8 +560,20 @@ $(function(){
     $("#use-rand").click(function(){
         if($(this).children("p").text()==="Using Random"){
             $(this).children("p").text("Using Defined Stats");
+            $(this).parent().children("#randomize-base-stats").hide();
+            $(this).parent().children("#rand-base-stats").hide();
+            $(this).parent().children("#value-rand-base-stats").hide();
+            $(this).parent().children(".spacer").show();
+            //Change the save character
+            $("#randomize-base-stats").trigger("click");
         } else {
             $(this).children("p").text("Using Random");
+            $(this).parent().children("#randomize-base-stats").show();
+            $(this).parent().children("#rand-base-stats").show();
+            $(this).parent().children("#value-rand-base-stats").show();
+            $(this).parent().children(".spacer").hide();
+            //Change the save character
+            DC.characters[DC.selectedGroup][DC.selectedCharacter.handle].baseStats = [$("#rand-base-stats").val(),$("#value-rand-base-stats").val()];
         }
     });
     
@@ -503,80 +582,99 @@ $(function(){
         var baseAmount = $("#value-rand-base-stats").val();
         
         var char = DC.selectedCharacter;
+        var primary,secondary;
+        if(char.charClass==="Random"){
+            primary = DC.charGen.primaryStats[Math.floor(Math.random()*DC.charGen.primaryStats.length)];
+            secondary = DC.charGen.secondaryStats[Math.floor(Math.random()*DC.charGen.secondaryStats.length)];
+        } else {
+            var idx = DC.charGen.classNames.indexOf(char.charClass);
+            primary = DC.charGen.primaryStats[idx];
+            secondary = DC.charGen.secondaryStats[idx];
+        }
         
-        var primary = DC.charGen.primaryStats[char.charClass];
-        var secondary = DC.charGen.secondaryStats[char.charClass];
-        var stats = [];
+        var statNames = DC.charGen.statNames;
+        var stats = {};
         var numStats = 9;
         switch(baseType){
             case "Random":
                 switch(baseAmount){
                     case "Low":
                         for(var i=0;i<numStats;i++){
-                            stats.push(Math.floor(Math.random()*5)+10);
+                            stats[statNames[i]]=Math.floor(Math.random()*5)+10;
                         }
                         break;
                     case "Medium":
                         for(var i=0;i<numStats;i++){
-                            stats.push(Math.floor(Math.random()*5)+12);
+                            stats[statNames[i]]=Math.floor(Math.random()*5)+12;
                         }
                         break;
                     case "High":
                         for(var i=0;i<numStats;i++){
-                            stats.push(Math.floor(Math.random()*5)+15);
+                            stats[statNames[i]]=Math.floor(Math.random()*5)+15;
                         }
                         break;
                     case "Maxed":
                         for(var i=0;i<numStats;i++){
-                            stats.push(20);
+                            stats[statNames[i]]=20;
                         }
                         break;
                 }
                 break;
             case "Specialized":
+                switch(baseAmount){
                     case "Low":
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
-                                stats.push(16);
+                                stats[statNames[i]]=16;
                             } else if(secondary===DC.charGen.statNames[i]){
-                                stats.push(15);
+                                stats[statNames[i]]=15;
                             } else {
-                                stats.push(Math.floor(Math.random()*5)+10);
+                                stats[statNames[i]]=Math.floor(Math.random()*5)+10;
                             }
                         }
                         break;
                     case "Medium":
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
-                                stats.push(18);
+                                stats[statNames[i]]=18;
                             } else if(secondary===DC.charGen.statNames[i]){
-                                stats.push(17);
+                                stats[statNames[i]]=17;
                             } else {
-                                stats.push(Math.floor(Math.random()*5)+12);
+                                stats[statNames[i]]=Math.floor(Math.random()*5)+12;
                             }
                         }
                         break;
                     case "High":
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
-                                stats.push(20);
+                                stats[statNames[i]]=20;
                             } else if(secondary===DC.charGen.statNames[i]){
-                                stats.push(20);
+                                stats[statNames[i]]=20;
                             } else {
-                                stats.push(Math.floor(Math.random()*5)+15);
+                                stats[statNames[i]]=Math.floor(Math.random()*5)+15;
                             }
                         }
                         break;
                     case "Maxed":
                         for(var i=0;i<numStats;i++){
-                            stats.push(20);
+                            stats[statNames[i]]=20;
                         }
                         break;
                 break;
+            }
         }
+        //Level up to the mean of levelmin and levelmax (estimate high)
+        var mean = Math.ceil((parseInt($(".levelmin").val())+parseInt($(".levelmax").val()))/2);
+        stats = DC.levelTo(stats,primary,secondary,mean);
+        
+        var keys = Object.keys(stats);
         $(this).parent().parent().children(".base-stats").children("li").children(".char-prop").each(function(i){
-            $(this).val(stats[i]);
+            $(this).val(stats[keys[i]]);
         });
+        if($("#use-rand").children("p").text()!=="Using Random"){
+            char.baseStats = stats;
+        }
+        
     });
     
     
@@ -585,9 +683,8 @@ $(function(){
         $("#group-menu").append('\n\
             <div class="char-group">\n\
                 <div class="char-group-top light-blue-gradient">\n\
-                    <input class="group-name" value="" placeholder="Group Name">\n\
+                    <input class="group-name" value="" placeholder="Enter Group Name">\n\
                     <div class="btn btn-group center var-remove remove-choice-deep">x</div>\n\
-                    <div class="add-char-button btn btn-quarter half-top">Add Character</div>\n\
                 </div>\n\
                 <div class="char-buttons">\n\
                 </div>\n\
@@ -603,13 +700,20 @@ $(function(){
             </div>\n\
         ');
         var group = $(this).parent().parent().children(".char-group-top").children(".group-name").children("p").text();
+        //If the group name is still an input
+        if(!group) group = $(this).parent().parent().children(".char-group-top").children(".group-name").val();
         DC.characters[group][name] = DC.createNewCharacter(name);
         numNewChars++;
+        $("#char-box-left").show();
+        $("#char-box-right").show();
+        //Show this character
+        DC.showCharacter(DC.characters[group][name],group);
     });
-    $(document).on("keydown",".group-name",function(e){
-        if(e.keyCode == 13){
-            DC.lockInName(this);
-        }
+    //When a group name is entered, create the add character button and solidify the name. Also add an entry for saving at this point
+    $(document).on("change",".group-name",function(e){
+        $(this).parent().append('<div class="add-char-button btn btn-quarter half-top">Add Character</div>');
+        DC.characters[$(this).val()] = {};
+        DC.lockInName(this);
     });
     
     $(document).on("click",".remove-choice",function(e){
@@ -636,7 +740,6 @@ $(function(){
         if(!data){
             data = DC.equipmentData.Shields[gear];
         }
-        console.log(gear,data)
         data.materials.forEach(function(obj){
             DC.addOption($(".right-hand-material"),obj);
         });
@@ -699,10 +802,27 @@ $(function(){
         });
     });
     
+    //Re-generate base stats when the level is changed.
+    $(document).on("focusout",".levelmin",function(){
+        //Make sure the level min is not greater than the levelmax
+        if(parseInt($(this).val())>parseInt($(".levelmax").val())) $(this).val(parseInt($(".levelmax").val()));
+        
+        //If we're using the random stats, generate them
+        if($("#use-rand").children("p").text()==="Using Random"){
+            $("#randomize-base-stats").trigger("click");
+        }
+    });
+    $(document).on("focusout",".levelmax",function(){
+        //If we're using the random stats, generate them
+        if($("#use-rand").children("p").text()==="Using Random"){
+            $("#randomize-base-stats").trigger("click");
+        }
+    });
+    
+    $("#menu-save-file").click(function(){
+        DC.saveFile();
+    });
+    
     DC.init();
     
-    $(".right-hand-gear").trigger("change");
-    $(".left-hand-gear").trigger("change");
-    $(".armour-gear").trigger("change");
-    $(".footwear-gear").trigger("change");
 });

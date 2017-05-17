@@ -269,11 +269,11 @@ Quintus.SceneFuncs=function(Q){
             char.officer = data.officer;
             char.awards = data.awards?data.awards:this.setUpAwards();
             
-            char.nationality = Q._isNumber(data.nationality)?this.nationalities[data.nationality]:this.generateProp("nationality",char);
-            char.natNum = Q._isNumber(char.natNum)?char.natNum:data.nationality;
+            char.nationality = data.nationality?this.nationalities[data.nationality]:this.generateProp("nationality",char);
+            char.natNum = Q.getNationalityNum(char.nationality);
             
-            char.charClass = Q._isNumber(data.charClass)?this.classNames[data.charClass]:this.generateProp("charClass",char);
-            char.classNum = Q._isNumber(char.classNum)?char.classNum:data.charClass;
+            char.charClass = data.charClass?this.classNames[data.charClass]:this.generateProp("charClass",char);
+            char.classNum = Q.getCharClassNum(char.charClass);
             
             char.skills = data.skills?getSkills(data.skills):this.generateSkills(char);
             

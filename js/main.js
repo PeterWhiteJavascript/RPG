@@ -106,7 +106,7 @@ Q.newGame=function(options){
         //For now, alex is the only character
         var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea);
         
-        var legion = Q.charGen.generateCharacter({charClass:0,gender:"Female",nationality:4,loyalty:90,personality:[["A little","Violent"]]});
+        var legion = Q.charGen.generateCharacter({charClass:"Legionnaire",gender:"Female",nationality:"Nomadic",loyalty:90,personality:[["A little","Violent"]]});
         //console.log(legion)
         Q.state.set("allies",[storyAlex,legion,astraea]);
         //Set up the new game bag

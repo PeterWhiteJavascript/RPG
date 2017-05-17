@@ -176,3 +176,8 @@
     line-height:1.5em;
     background-color:#DDD;
 }
+.spacer{
+    width:75%;
+    height:30px;
+    display:none;
+}
