@@ -235,6 +235,14 @@ $(function(){
             $(cont).val(charName);
         },
         showCharacter:function(char,group){
+            //Change the colour of the character in the groups
+            $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").children(".char-handle").removeClass("red");
+            $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").each(function(){
+                if($(this).children(".char-handle").text()===char.handle){
+                    $(this).children(".char-handle").addClass("red");
+                }
+            });
+            
             this.selectedGroup = group;
             this.selectedCharacter = char;
             //Show all of the character stats
@@ -718,8 +726,10 @@ $(function(){
                 break;
             }
         }
-        //Level up to the mean of levelmin and levelmax (estimate high)
-        var mean = Math.ceil((parseInt($(".levelmin").val())+parseInt($(".levelmax").val()))/2);
+        //Level up to the mean of levelmin and levelmax (minus 1 as level 1 is start)
+        var mean = Math.ceil((parseInt($(".levelmin").val())+parseInt($(".levelmax").val()))/2)-1;
+        stats[primary]+=5;
+        stats[secondary]+=3;
         stats = DC.levelTo(stats,primary,secondary,mean);
         
         var keys = Object.keys(stats);
@@ -876,14 +886,20 @@ $(function(){
     //Re-generate base stats when the level is changed.
     $(document).on("focusout",".levelmin",function(){
         //Make sure the level min is not greater than the levelmax
-        if(parseInt($(this).val())>parseInt($(".levelmax").val())) $(this).val(parseInt($(".levelmax").val()));
-        
+        if(parseInt($(this).val())>parseInt($(".levelmax").val())) $(".levelmax").val(parseInt($(this).val()));
+        DC.selectedCharacter.levelmin=parseInt($(".levelmin").val());
+        DC.selectedCharacter.levelmax=parseInt($(".levelmax").val());
         //If we're using the random stats, generate them
         if($("#use-rand").children("p").text()==="Using Random"){
             $("#randomize-base-stats").trigger("click");
         }
     });
     $(document).on("focusout",".levelmax",function(){
+        //Make sure the level min is not greater than the levelmax
+        if(parseInt($(".levelmin").val())>parseInt($(this).val())) $(".levelmin").val(parseInt($(this).val()));
+        DC.selectedCharacter.levelmin=parseInt($(".levelmin").val());
+        DC.selectedCharacter.levelmax=parseInt($(".levelmax").val());
+        
         //If we're using the random stats, generate them
         if($("#use-rand").children("p").text()==="Using Random"){
             $("#randomize-base-stats").trigger("click");
@@ -898,6 +914,8 @@ $(function(){
         var group = $(this).parent().parent().parent().children(".char-group-top").children(".group-name").children("p").text();
         DC.removeCharacter(group,$(this).parent().children(".char-handle").text());
         $(this).parent().remove();
+        var groups = Object.keys(DC.characters);
+        DC.showCharacter(DC.characters[groups[0]][Object.keys(DC.characters[groups[0]])[0]],groups[0]);
     });
     
     $(document).on("click",".remove-group",function(){
