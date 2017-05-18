@@ -124,10 +124,6 @@ $(function(){
             }
             if(firstChar){
                 this.showCharacter(firstChar,firstGroup);
-                $(".right-hand-gear").trigger("change");
-                $(".left-hand-gear").trigger("change");
-                $(".armour-gear").trigger("change");
-                $(".footwear-gear").trigger("change");
             } else {
                 $("#menu-create-group").trigger("click");
                 $("#char-box-left").hide();
@@ -174,7 +170,7 @@ $(function(){
                 <div class="char-group">\n\
                     <div class="char-group-top light-blue-gradient">\n\
                         <div class="group-name"><p>'+name+'</p></div>\n\
-                        <div class="btn btn-group center var-remove remove-choice-deep">x</div>\n\
+                        <div class="btn btn-group center var-remove remove-group remove-choice-deep">x</div>\n\
                         <div class="add-char-button btn btn-quarter half-top">Add Character</div>\n\
                     </div>\n\
                     <div class="char-buttons">\n\
@@ -187,7 +183,7 @@ $(function(){
             $("#group-menu").children(".char-group").last().children(".char-buttons").last().append('\n\
                 <div class="char-button">\n\
                     <div class="char-handle btn btn-group center thirty-height">'+char.handle+'</div>\n\
-                    <div class="btn btn-group center var-remove remove-choice">x</div>\n\
+                    <div class="btn btn-group center var-remove remove-character">x</div>\n\
                 </div>\n\
             ');
             this.characters[group][char.handle] = char;
@@ -246,12 +242,27 @@ $(function(){
                 var prop = $(e).attr("class").split(" ")[1];
                 $(e).val(char[prop]);
             });
+            //Save the props so they don't get overriden in the change trigger.
+            var rh = char["right-hand-material"];
+            var lh = char["left-hand-material"];
+            var ar = char["armour-material"];
+            var fw = char["footwear-material"];
             //Show all of the equipment
             $("#char-box-left").children(".equipment-cont").children(".prop-cont").children(".char-prop").each(function(num,e){
                 var prop = $(e).attr("class").split(" ")[1];
                 $("."+prop).val(char[prop]);
                 $(this).trigger("change");
             });
+            
+            $(".right-hand-material").val(rh);
+            char["right-hand-material"] = rh;
+            $(".left-hand-material").val(lh);
+            char["left-hand-material"] = lh;
+            $(".armour-material").val(ar);
+            char["armour-material"] = ar;
+            $(".footwear-material").val(fw);
+            char["footwear-material"] = fw;
+            
             
             //Show all of the techniques
             $("#char-box-right").children(".techniques-cont").children(".prop-cont").children(".char-prop").each(function(num,e){
@@ -260,26 +271,53 @@ $(function(){
             });
             //Show all of the base stats. If it is set to randomize, generate the stats.
             if(Array.isArray(char.baseStats)){
+                
                 $("#rand-base-stats").val(char.baseStats[0]);
                 $("#value-rand-base-stats").val(char.baseStats[1]);
+                
+                $("#use-rand").children("p").text("Using Random");
+                $("#use-rand").parent().children("#randomize-base-stats").show();
+                $("#use-rand").parent().children("#rand-base-stats").show();
+                $("#use-rand").parent().children("#value-rand-base-stats").show();
+                $("#use-rand").parent().children(".spacer").hide();
+                
                 $("#randomize-base-stats").trigger("click");
+                
             } else {
-                $("#char-box-right").children(".base-stats-cont").children(".base-stats").children("li").children(".char-prop").each(function(i){
+                $("#char-box-right").children(".base-stats-cont").children(".base-stats").children("li").children(".base-stat").each(function(i){
                     var prop = $(this).attr("class").split(" ")[1];
                     $(this).val(char.baseStats[prop]);
                 });
+                $("#use-rand").children("p").text("Using Defined Stats");
+                $("#use-rand").parent().children("#randomize-base-stats").hide();
+                $("#use-rand").parent().children("#rand-base-stats").hide();
+                $("#use-rand").parent().children("#value-rand-base-stats").hide();
+                $("#use-rand").parent().children(".spacer").show();
             }
             //Generate values for the full stats. (TO DO MAYBE)
             var cont = $("#char-box-right").children(".full-stats-cont");
             
             
         },
-        changeName:function(oldName,newName){
+        removeCharacter:function(group,name){
+            delete DC.characters[group][name];
+        },
+        removeGroup:function(group){
+            delete DC.characters[group];
+        },
+        //Checks to make sure a name is not already in use
+        nameExists:function(group,name){
+            var exists = false;
+            Object.keys(this.characters[group]).forEach(function(obj){
+                if(obj===name) exists = true;
+            });
+            return exists;
+        },
+        changeName:function(group,oldName,newName){
+            //Check if the name exists
             $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").each(function(){
                 if($(this).children(".char-handle").text()===oldName){
                     $(this).children(".char-handle").text(newName);
-                    //Copy this entry to the new name and delete the old name
-                    var group = $(this).parent().parent().children(".char-group-top").children(".group-name").text();
                     DC.characters[group][newName] = DC.characters[group][oldName];
                     delete DC.characters[group][oldName];
                 }
@@ -322,6 +360,9 @@ $(function(){
         },
         saveCharacterProp:function(prop,val){
             DC.selectedCharacter[prop] = val;
+        },
+        saveBaseStat:function(prop,val){
+            DC.selectedCharacter.baseStats[prop] = val;
         },
         //Locks in a name from input to div
         lockInName:function(itm){
@@ -416,13 +457,26 @@ $(function(){
     $(document).on("change",".char-prop",function(){
         DC.saveCharacterProp($(this).attr("class").split(" ")[1],$(this).val());
     });
+    $(document).on("change",".base-stat",function(){
+        DC.saveBaseStat($(this).attr("class").split(" ")[1],$(this).val());
+    });
+    $(document).on("change","#rand-base-stats",function(){
+        DC.selectedCharacter.baseStats[0] = $(this).val();
+    });
+    $(document).on("change","#value-rand-base-stats",function(){
+        DC.selectedCharacter.baseStats[1] = $(this).val();
+    });
     
     //Changing a character's name
     $(document).on("focus",".handle",function () {
         $(this).attr("old-value",this.value);
     }).on("change",".handle",function() {
         if(confirm("Caution: If you've referenced this character somewhere in an event, it will not work properly.")){
-            DC.changeName($(this).attr("old-value"),$(this).val());
+            if(!DC.nameExists(DC.selectedGroup,$(this).val())){
+                DC.changeName(DC.selectedGroup,$(this).attr("old-value"),$(this).val());
+            } else {
+                $(this).val($(this).attr("old-value"));
+            }
         } else {
             $(this).val($(this).attr("old-value"));
         }
@@ -536,9 +590,10 @@ $(function(){
     });
     
     $("#default-technique-button").click(function(){
-        var techs = DC.techniqueData[DC.charGen.classNames[DC.selectedCharacter.charClass]];
+        var techs = DC.techniqueData[DC.selectedCharacter.charClass];
         $(this).parent().parent().children(".prop-cont").each(function(i){
             $(this).children(".char-prop").val(techs[i].name);
+            $(this).children(".char-prop").trigger("change");
         });
     });
     $("#rand-technique-button").click(function(){
@@ -668,7 +723,7 @@ $(function(){
         stats = DC.levelTo(stats,primary,secondary,mean);
         
         var keys = Object.keys(stats);
-        $(this).parent().parent().children(".base-stats").children("li").children(".char-prop").each(function(i){
+        $(this).parent().parent().children(".base-stats").children("li").children(".base-stat").each(function(i){
             $(this).val(stats[keys[i]]);
         });
         if($("#use-rand").children("p").text()!=="Using Random"){
@@ -684,7 +739,7 @@ $(function(){
             <div class="char-group">\n\
                 <div class="char-group-top light-blue-gradient">\n\
                     <input class="group-name" value="" placeholder="Enter Group Name">\n\
-                    <div class="btn btn-group center var-remove remove-choice-deep">x</div>\n\
+                    <div class="btn btn-group center var-remove remove-group remove-choice-deep">x</div>\n\
                 </div>\n\
                 <div class="char-buttons">\n\
                 </div>\n\
@@ -692,14 +747,18 @@ $(function(){
         ');
     });
     $(document).on("click",".add-char-button",function(){
-        var name = 'New Character '+numNewChars;
+        var name = 'NewCharacter'+numNewChars;
+        var group = $(this).parent().parent().children(".char-group-top").children(".group-name").children("p").text();
+        while(DC.nameExists(group,name)){
+            numNewChars++;
+            name = 'NewCharacter'+numNewChars;
+        }
         $(this).parent().parent().children(".char-buttons").append('\n\
             <div class="char-button">\n\
                 <div class="char-handle btn btn-group center thirty-height">'+name+'</div>\n\
-                <div class="btn btn-group center var-remove remove-choice">x</div>\n\
+                <div class="btn btn-group center var-remove remove-character">x</div>\n\
             </div>\n\
         ');
-        var group = $(this).parent().parent().children(".char-group-top").children(".group-name").children("p").text();
         //If the group name is still an input
         if(!group) group = $(this).parent().parent().children(".char-group-top").children(".group-name").val();
         DC.characters[group][name] = DC.createNewCharacter(name);
@@ -728,12 +787,15 @@ $(function(){
         var gear = $(this).val();
         if(gear==="None"){
             $(".right-hand-material").append("<option value='None'>None</option>");
+            $(".right-hand-material").trigger("change");
             return;
         } else if(gear==="Random"){
             $(".right-hand-material").append("<option value='Random Low'>Random Low</option><option value='Random Medium'>Random Medium</option><option value='Random High'>Random High</option><option value='Random'>Random</option>");
+            $(".right-hand-material").trigger("change");
             return;
         } else if(gear==="Default"){
             $(".right-hand-material").append("<option value='Default'>Default</option>");
+            $(".right-hand-material").trigger("change");
             return;
         }
         var data = DC.equipmentData.Weapons[gear];
@@ -749,12 +811,15 @@ $(function(){
         var gear = $(this).val();
         if(gear==="None"){
             $(".left-hand-material").append("<option value='None'>None</option>");
+            $(".left-hand-material").trigger("change");
             return;
         } else if(gear==="Random"){
             $(".left-hand-material").append("<option value='Random Low'>Random Low</option><option value='Random Medium'>Random Medium</option><option value='Random High'>Random High</option><option value='Random'>Random</option>");
+            $(".left-hand-material").trigger("change");
             return;
         } else if(gear==="Default"){
             $(".left-hand-material").append("<option value='Default'>Default</option>");
+            $(".left-hand-material").trigger("change");
             return;
         }
         var data = DC.equipmentData.Weapons[gear];
@@ -770,12 +835,15 @@ $(function(){
         var gear = $(this).val();
         if(gear==="None"){
             $(".armour-material").append("<option value='None'>None</option>");
+            $(".armour-material").trigger("change");
             return;
         } else if(gear==="Random"){
             $(".armour-material").append("<option value='Random Low'>Random Low</option><option value='Random Medium'>Random Medium</option><option value='Random High'>Random High</option><option value='Random'>Random</option>");
+            $(".armour-material").trigger("change");
             return;
         } else if(gear==="Default"){
             $(".armour-material").append("<option value='Default'>Default</option>");
+            $(".armour-material").trigger("change");
             return;
         }
         var data = DC.equipmentData.Armour[gear];
@@ -788,12 +856,15 @@ $(function(){
         var gear = $(this).val();
         if(gear==="None"){
             $(".footwear-material").append("<option value='None'>None</option>");
+            $(".footwear-material").trigger("change");
             return;
         } else if(gear==="Random"){
             $(".footwear-material").append("<option value='Random Low'>Random Low</option><option value='Random Medium'>Random Medium</option><option value='Random High'>Random High</option><option value='Random'>Random</option>");
+            $(".footwear-material").trigger("change");
             return;
         } else if(gear==="Default"){
             $(".footwear-material").append("<option value='Default'>Default</option>");
+            $(".footwear-material").trigger("change");
             return;
         }
         var data = DC.equipmentData.Footwear[gear];
@@ -821,6 +892,17 @@ $(function(){
     
     $("#menu-save-file").click(function(){
         DC.saveFile();
+    });
+    
+    $(document).on("click",".remove-character",function(){
+        var group = $(this).parent().parent().parent().children(".char-group-top").children(".group-name").children("p").text();
+        DC.removeCharacter(group,$(this).parent().children(".char-handle").text());
+        $(this).parent().remove();
+    });
+    
+    $(document).on("click",".remove-group",function(){
+        var group = $(this).parent().children(".group-name").children("p").text();
+        DC.removeGroup(group);
     });
     
     DC.init();

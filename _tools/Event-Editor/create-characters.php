@@ -173,41 +173,41 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
                     <ul class="base-stats">
                         <li class="third-width">
                             <div class="stat-name"><p>STR</p></div>
-                            <input class="char-prop str" type="number" min=1 value=1>
+                            <input class="base-stat str" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>END</p></div>
-                            <input class="char-prop end" type="number" min=1 value=1>
+                            <input class="base-stat end" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>DEX</p></div>
-                            <input class="char-prop dex" type="number" min=1 value=1>
+                            <input class="base-stat dex" type="number" min=1 value=1>
                         </li>
                         
                         <li class="third-width">
                             <div class="stat-name"><p>WSK</p></div>
-                            <input class="char-prop wsk" type="number" min=1 value=1>
+                            <input class="base-stat wsk" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>RFL</p></div>
-                            <input class="char-prop rfl" type="number" min=1 value=1>
+                            <input class="base-stat rfl" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>INI</p></div>
-                            <input class="char-prop ini" type="number" min=1 value=1>
+                            <input class="base-stat ini" type="number" min=1 value=1>
                         </li>
                         
                         <li class="third-width">
                             <div class="stat-name"><p>ENR</p></div>
-                            <input class="char-prop enr" type="number" min=1 value=1>
+                            <input class="base-stat enr" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>SKL</p></div>
-                            <input class="char-prop skl" type="number" min=1 value=1>
+                            <input class="base-stat skl" type="number" min=1 value=1>
                         </li>
                         <li class="third-width">
                             <div class="stat-name"><p>EFF</p></div>
-                            <input class="char-prop eff" type="number" min=1 value=1>
+                            <input class="base-stat eff" type="number" min=1 value=1>
                         </li>
                     </ul>
                 </div>

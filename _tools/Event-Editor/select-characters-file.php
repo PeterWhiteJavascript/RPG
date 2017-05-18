@@ -23,7 +23,7 @@ if(isset($_GET['err'])){
         <select id="file-select">
             <?php
             forEach($files as $file){
-                echo '<option value='.$file.'>'.$file.'</option>';
+                echo '<option value="'.$file.'">'.$file.'</option>';
             }
             ?>
         </select>
