@@ -12,6 +12,6 @@ if ($handle = opendir('../../data/json/story/characters')) {
 }
 
 
-file_put_contents('../../data/json/story/characters/'.$filename, json_encode((object)[]));
+file_put_contents('../../data/json/story/characters/'.$filename, json_encode((object)[],JSON_PRETTY_PRINT));
 
 header( "Location:create-characters.php?file-name=$filename");

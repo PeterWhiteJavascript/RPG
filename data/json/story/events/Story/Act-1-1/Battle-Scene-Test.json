@@ -1,0 +1,62 @@
+{
+    "name": "Battle-Scene-Test",
+    "desc": "asd",
+    "kind": "battleScene",
+    "map": "fun-stuff.tmx",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "changeMoveSpeed",
+                "props": [
+                    [
+                        "Legionnaire",
+                        1
+                    ],
+                    0.3
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "battle.mp3"
+                ]
+            },
+            {
+                "text": [
+                    "asd'",
+                    "asdfg"
+                ],
+                "asset1": "story\/knight.png",
+                "asset2": "story\/empty.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                0,
+                3
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                0,
+                1
+            ],
+            "dir": "right"
+        }
+    ]
+}

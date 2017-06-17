@@ -63,6 +63,7 @@ $('#footer a').click( function(e) {
     var form = $('<form action="show-events.php" method="post"></form>');
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
     form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+    form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
     $("body").append(form);
     form.submit();
 });
@@ -72,15 +73,17 @@ $('#go-to-scene').click( function(e) {
         var form = $('<form action="edit-battle-event.php" method="post"></form>');
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+        form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
         $("body").append(form);
         form.submit();
     } 
     //Kind is battle scene
     else {
-        var form = $('<form action="edit-battleScene-event.php" method="post"></form>');
+        var form = $('<form action="edit-battleScene-script.php" method="post"></form>');
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-        //Trim the map string
+        form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
+        //Trim the map string to remove the ../../data/ in the path.
         var map = $("#maps-select").val().slice(11,$("#maps-select").val().length);
         form.append('<input type="text" name="map" value="'+map+'">');
         $("body").append(form);

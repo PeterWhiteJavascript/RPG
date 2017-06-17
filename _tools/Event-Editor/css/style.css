@@ -498,7 +498,7 @@ audio{
 }
 #quintus_container{
     position:absolute !important;
-    left:0 !important;
+    top:40px !important;
 }
 li{
     font-size:16px;
@@ -564,11 +564,6 @@ li{
 }
 .new-script-item{
     margin:0 auto;
-}
-.new-script-img{
-    max-width:50px;
-    width:auto;
-    height:50px;
 }
 #canvas-coordinates{
     position:absolute;
@@ -844,4 +839,9 @@ li{
 }
 .var-props .value{
     width:100%;
+}
+
+#maps-select{
+    height:30px;
+    width:1000px;
 }

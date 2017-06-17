@@ -281,10 +281,10 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
                 for(var j=0;j<eqKeys.length;j++){
                     var eqData = data[types[keys[i]]][eqKeys[j]];
                     for(var k=0;k<eqData.materials.length;k++){
-                        generateEquipment(eqKeys[j],eqData.materials[k],types[keys[i]],"Average");
-                        /*for(var l=0;l<qualityKeys.length;l++){
+                        //generateEquipment(eqKeys[j],eqData.materials[k],types[keys[i]],"Average");
+                        for(var l=0;l<qualityKeys.length;l++){
                             generateEquipment(eqKeys[j],eqData.materials[k],types[keys[i]],qualityKeys[l]);
-                        }*/
+                        }
                     }
                 }
             }

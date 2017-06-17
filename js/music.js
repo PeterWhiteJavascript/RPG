@@ -1,5 +1,5 @@
 Quintus.Music=function(Q){
-//Make sure that when the user enables music, it start playing
+//Make sure that when the user enables music, it starts playing
 Q.state.on("change.musicEnabled",function(value){
     if(value){
         var music = Q.state.get("currentMusic");

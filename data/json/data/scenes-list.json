@@ -157,7 +157,8 @@
             "eventOrder": [
                 "Full-Test",
                 "Event-1",
-                "MetaximoMarket"
+                "MetaximoMarket",
+                "Battle-Scene-Test"
             ],
             "vrs": []
         },
@@ -245,7 +246,7 @@
             "name": "",
             "desc": null,
             "eventOrder": [],
-            "vrs": {}
+            "vrs": []
         }
     ]
 }

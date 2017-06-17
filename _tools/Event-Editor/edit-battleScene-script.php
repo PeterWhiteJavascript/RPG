@@ -1,34 +1,49 @@
 <?php
 $scene = $_POST['scene'];
 $name = $_POST['name'];
-$event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
+$type = $_POST['type'];
 
-//Save the characters to the file
-if(isset($_POST['characters'])){
-    $event['characters'] = json_decode($_POST['characters']);
-    file_put_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
-    $event = json_decode(file_get_contents('../../data/json/story/events/'.$scene.'/'.$name.'.json'), true);
+$event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
+
+if(isset($_POST['map'])){
+    $event['map'] = $_POST['map'];
+    file_put_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
+    $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 }
 
-$eventMusic = $event['music'];
 $eventMap = $event['map'];
-$variables = $event['vrs'];
 
 $bg_directory = '../../images/bg';
 $bgs = array_diff(scandir($bg_directory), array('..', '.'));
 
 $music_directory = '../../audio/bgm';
-$music = array_diff(scandir($music_directory), array('..', '.'));
+$music = array_values(array_diff(scandir($music_directory), array('..', '.')));
 
+$sound_directory = '../../audio/sfx';
+$sounds = array_values(array_diff(scandir($sound_directory), array('..', '.')));
 
 $directory = '../../data/json/story/events';
-$scenes =  array_values(array_diff(scandir($directory), array('..', '.')));
+$types =  array_values(array_diff(scandir($directory), array('..', '.')));
 
+$scenes = [];
 $eventNames = [];
-foreach($scenes as $s){
-    $eventNames[] = array_values(array_diff(scandir($directory."/".$s), array('..', '.')));
+for($i=0;$i<count($types);$i++){
+    $sc = array_values(array_diff(scandir($directory.'/'.$types[$i]),array('..','.')));
+    array_push($scenes,$sc);
+    foreach($sc as $s){
+        $ev = array_values(array_diff(scandir($directory.'/'.$types[$i].'/'.$s),array('..','.')));
+        $eventNames[] = $ev;
+    }
+    
 }
 $images =  array_diff(scandir("../../images/story"), array('..', '.'));
+
+$characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
+$characters = (object)[];
+for($i=0;$i<count($characterFiles);$i++){
+    $characters->$characterFiles[$i] = json_decode(file_get_contents('../../data/json/story/characters/'.$characterFiles[$i]), true);
+    
+}
 
 ?>
 
@@ -38,44 +53,64 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
         <?php include 'quintus-lib.php'; ?>
         <?php include 'config.php';?>
         <script src="js/edit-battleScene-script.js"></script>
+        <script src="../../js/music.js"></script>
+        <link rel="stylesheet" href="css/edit-battleScene.css">
     </head>
     <body>
+        <div id="all-characters" hidden><?php echo json_encode($characters); ?></div>
+        <div id="all-scene-types" hidden><?php echo json_encode($types); ?></div>
         <div id="all-scene-names" hidden><?php echo json_encode($scenes); ?></div>
         <div id="all-event-names" hidden><?php echo json_encode($eventNames); ?></div>
+        <div id="all-music-names" hidden><?php echo json_encode($music); ?></div>
+        <div id="all-sound-names" hidden><?php echo json_encode($sounds); ?></div>
         
         <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
-        <h2>Create the script</h2>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
+        <div id="scene-type" hidden><h2><?php echo $type; ?></h2></div>
         <div id="event-map" hidden><?php echo $eventMap; ?></div>
-        <div id="characters" hidden><?php echo json_encode($event['characters']); ?></div>
         
-        <ul id="script-options" class="menu btn-group">
-            
-        </ul>
-        <div id="script-menu">
-            <?php
-            forEach($event['scene'] as $scriptItem){
-            ?>
-            <ul class="sortable">
-                <li><div class="minimize"><?php echo $scriptItem['name']?></div></li>
-                <?php
-                forEach($scriptItem['items'] as $itm){
-                    if(isset($itm['text'])){
-                        $text = $itm['text'];
-                        $num = strlen($text[0]);
-                        if($num>19){ $num=19;}
-                        $displayText = substr($text[0], 0, $num);
-                        echo "<li text=".json_encode($text)." asset='".json_encode($itm['asset'])."' pos='".$itm['pos']."' autoCycle='".$itm['autoCycle']."' noCycle='".$itm['noCycle']."'><div class='text-or-func'>Text</div><a class='script-item text btn btn-default'>".$displayText."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
-                    } else {
-                        echo "<li func='".$itm['func']."' props='".json_encode($itm['props'])."'><div class='text-or-func'>Func</div><a class='script-item func btn btn-default'>".$itm['func']."</a><a class='remove-choice'><div class='btn btn-default'>x</div></a></li>";
-                    }
-                }
-                ?>
-            </ul>
-            <?php
-            }
-            ?>
+        <div id="event-data" hidden><?php echo json_encode($event); ?></div>
+        
+        <div id="editor-content">
+            <div id="top-bar">
+                <ul>
+                    <li class="top-bar-btn"><div class="menu-button btn btn-default">-</div></li>
+                    <li class="top-bar-btn"><div id="menu-create-group" class="menu-button btn btn-default">Create Group</div></li>
+                    <li class="top-bar-btn"><div id="menu-add-text-item" class="menu-button btn btn-default">Add Text Item</div></li>
+                    <li class="top-bar-btn"><div id="menu-add-func-item" class="menu-button btn btn-default">Add Func Item</div></li>
+                    <li class="top-bar-btn"><div id="menu-save-file" class="menu-button btn btn-default" filename="<?php echo $filename?>">Save</div></li>
+                    <li class="top-bar-btn"><div id="menu-test-event" class="menu-button btn btn-default">Test</div></li>
+                    <li class="top-bar-btn"><div id="menu-go-back" class="menu-button btn btn-default">Back</div></li>
+                </ul>
+            </div>
+            <div id="canvas-coordinates"></div>
+            <div id="left-box">
+                <div id="event-characters-box">
+                    <p class="editor-descriptor dark-gradient">Event Characters</p>
+                    <ul id="characters-list" class="droppable sortable">
+                        
+                    </ul>
+                </div>
+                <div id="event-script-box">
+                    <p class="editor-descriptor dark-gradient">Script</p>
+                    <div id="script-list" class="sortable">
+                        
+                    </div>
+                </div>
+            </div>
+            <div id="right-box">
+                <div id="all-characters-box">
+                    <p class="editor-descriptor dark-gradient">Character Files</p>
+                    <div id="files"></div>
+                </div>
+                
+                <div id="script-item-box">
+                    <p class="editor-descriptor dark-gradient">Script Item</p>
+                    
+                </div>
+            </div>
         </div>
+        
         <select id="images-holder" hidden>
             <?php 
             forEach($images as $im){
@@ -83,6 +118,5 @@ $images =  array_diff(scandir("../../images/story"), array('..', '.'));
             }
             ?>
         </select>
-        <div id="canvas-coordinates"></div>
     </body>
 </html>

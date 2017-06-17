@@ -583,6 +583,7 @@ Quintus.SceneFuncs=function(Q){
         chars.forEach(function(char){
             stage.insert(char);
         });
+        //DialogueController holds the functions for the battleScene
         Q.stageScene("script",1,{data:data});
     },{sort:true});
     Q.scene("battle",function(stage){

@@ -346,8 +346,8 @@
             "text": "TO DO: BATTLE SCENE OR SOMETHING.",
             "choices": [],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Start of path",

@@ -112,8 +112,9 @@ $(function(){
             if(groups.length){
                 for(var i=0;i<groups.length;i++){
                     this.createGroup(groups[i]);
-                    for(var j=0;j<file[groups[i]].length;j++){
-                        var char = this.decodeChar(file[groups[i]][j]);
+                    var chars = Object.keys(file[groups[i]]);
+                    for(var j=0;j<chars.length;j++){
+                        var char = this.decodeChar(file[groups[i]][chars[j]]);
                         this.addCharacter(groups[i],char);
                         if(!firstChar){
                             firstChar = char;
@@ -447,11 +448,11 @@ $(function(){
             var groupKeys = Object.keys(data);
             var encoded = {};
             for(var i=0;i<groupKeys.length;i++){
-                encoded[groupKeys[i]] = [];
+                encoded[groupKeys[i]] = {};
                 var chars = data[groupKeys[i]];
                 var charKeys = Object.keys(chars);
                 for(var j=0;j<charKeys.length;j++){
-                    encoded[groupKeys[i]].push(this.encodeChar(chars[charKeys[j]]));
+                    encoded[groupKeys[i]][charKeys[j]] = this.encodeChar(chars[charKeys[j]]);
                 }
             }
             var form = $('<form action="save-characters.php" method="post"></form>');
