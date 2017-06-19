@@ -32,7 +32,7 @@ for($i=0;$i<count($types);$i++){
     array_push($scenes,$sc);
     foreach($sc as $s){
         $ev = array_values(array_diff(scandir($directory.'/'.$types[$i].'/'.$s),array('..','.')));
-        $eventNames[] = $ev;
+        $eventNames[$s] = preg_replace('/\\.[^.\\s]{3,4}$/', '', $ev);
     }
     
 }
@@ -42,7 +42,6 @@ $characterFiles = array_values(array_diff(scandir('../../data/json/story/charact
 $characters = (object)[];
 for($i=0;$i<count($characterFiles);$i++){
     $characters->$characterFiles[$i] = json_decode(file_get_contents('../../data/json/story/characters/'.$characterFiles[$i]), true);
-    
 }
 
 ?>

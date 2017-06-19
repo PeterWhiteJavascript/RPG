@@ -191,7 +191,6 @@ Q.Sprite.extend("CharacterSprite",{
     allowPlacement:function(){
         allowSpriteSelecting = false;
         this.on("step",this,"stickToCursor");
-        this.on("confirmPlacement");
         this.p.lastLoc = [this.p.loc[0],this.p.loc[1]];
     },
     stickToCursor:function(){
@@ -208,7 +207,6 @@ Q.Sprite.extend("CharacterSprite",{
         if(this.p.loc[0]<0||this.p.loc[0]>Q.stage(0).mapWidth||this.p.loc[1]<0||this.p.loc[1]>Q.stage(0).mapHeight) return;
         if(!DC.grid[this.p.loc[1]][this.p.loc[0]]){
             this.off("step",this,"stickToCursor");
-            this.off("confirmPlacement");
             DC.grid[this.p.loc[1]][this.p.loc[0]] = this;
             allowSpriteSelecting = true;
             var pos = Q.getXY(this.p.loc);
@@ -252,7 +250,6 @@ var DC = {
                     char.group = groups[j];
                     $(cont).children(".file-groups").last().children(".groups").children(".file-chars").last().children(".chars").append("<div class='file-character draggable' data='"+JSON.stringify(char)+"'>"+char.handle+"</div>");
                 }
-                $(".minimizable").trigger("click");
             }
         }
         $('.draggable').draggable({helper: "clone"});
@@ -270,8 +267,7 @@ var DC = {
                     file:char.file,
                     uniqueId:DC.genUniqueId(char.handle),
                     handle:char.handle,
-                    group:char.group,
-                    dir:"down"
+                    group:char.group
                 };
                 DC.addCharacterToList(data);
                 //Double click the last character for placement
@@ -303,8 +299,6 @@ var DC = {
             //Name the group 'Initial'
             $(".script-list-group").children(".script-group-title").children(".nameable").last().val("Initial");
             $(".script-list-group").children(".script-group-title").children(".nameable").last().trigger("focusout");
-            //Select the group
-            $(".script-group-name").last().trigger("click");
             //Create the options
             var group = this.getScriptItemGroup("Initial");
             $(group).children(".script-items").append("<div class='script-item func' func='centerView' props='"+JSON.stringify([[Math.floor(Q.stage(0).mapWidth/2),Math.floor(Q.stage(0).mapHeight/2)]])+"'><div class='script-item-name'>centerView</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
@@ -340,6 +334,7 @@ var DC = {
             }
             $(group).children(".script-items").children(".script-item").first().trigger("click");
         }
+                $(".minimize-icon").trigger("click");
     },
     genUniqueId:function(handle){
         var id = 0;
@@ -628,6 +623,7 @@ Q.getSpriteAt = function(loc){
 };
 //Run to allow for character selection
 Q.toCharSelection = function(){
+    selectedGroup = false;
     //When a character is clicked on the map
     Q.stage(0).on("selectedCharacter",function(obj){
         var selectedCharacter = DC.p.selectedChars[0];
@@ -679,7 +675,7 @@ Q.scene("map",function(stage){
                 Q.stage(0).trigger("selectedLocation",[locX,locY]);
             }
         } else {
-            DC.p.selectedChars[0].trigger("confirmPlacement");
+            DC.p.selectedChars[0].confirmPlacement();
         }
     });
     Q.el.addEventListener("mousemove",function(e) {
@@ -701,6 +697,10 @@ Q.scene("map",function(stage){
 },{sort:true});
 
 $(document).on("click",".char-btn",function(){
+    //Make sure to remove the selected from the previous script item
+    $(".selected-script-item").removeClass("selected-script-item");
+    $(".selected-group").removeClass("selected-group");
+    $(".script-item-div").hide();
     var data = JSON.parse($(this).parent().attr("data"));
     var handle = data.handle;
     var id = data.uniqueId;
@@ -725,6 +725,8 @@ $(document).on("click",".char-btn",function(){
         DC.deselectChar();
         DC.selectChar(newChar);
     }
+    Q.stage(0).off("selectedCharacter");
+    Q.toCharSelection();
 });
 
 $(document).on("click",".char-remove",function(){
@@ -734,12 +736,13 @@ $(document).on("click",".char-remove",function(){
     characterSprite.removeFromExistence();
     //TO DO: find all references to this character and remove them.
     console.log(DC.p.saveCharacters.indexOf(saveCharacter));
+    
 });
 
 var selectedGroup;
 var groupCounter = 0;
 $(document).on("click","#menu-create-group",function(e){
-    $("#script-list").append("<div class='script-list-group'><div class='script-group-title'><div class='minimize-icon'>-</div><input class='nameable' placeholder='New Group "+groupCounter+"' value=''><div class='btn btn-group center remove-nameable remove-choice'>x</div></div><div class='script-items minimize sortable'></div></div>");
+    $("#script-list").append("<div class='script-list-group'><div class='script-group-title'><div class='minimize-icon-deep'>-</div><input class='nameable' placeholder='New Group "+groupCounter+"' value=''><div class='btn btn-group center remove-nameable remove-choice'>x</div></div><div class='script-items minimize sortable'></div></div>");
     
     $( ".sortable" ).sortable({
         axis: "y"
@@ -788,6 +791,17 @@ $(document).on("click",".minimize-icon",function(){
         $(this).parent().children(".minimize-icon").text("+");
     }
 });
+$(document).on("click",".minimize-icon-deep",function(){
+    var content = $(this).parent().parent().children(".minimize");
+    console.log(content)
+    if($(content).css("display")==="none"){
+        $(content).show();
+        $(this).parent().children(".minimize-icon-deep").text("-");
+    } else {
+        $(content).hide();
+        $(this).parent().children(".minimize-icon-deep").text("+");
+    }
+});
 
 
 $(document).on("click",".script-item",function(e){
@@ -795,8 +809,8 @@ $(document).on("click",".script-item",function(e){
     if($(this).hasClass("selected-script-item")) return;
     
     //Make sure the group is selected
-    if($(this).parent().parent().children(".script-group-name").text()!==$(selectedGroup).text()){
-        $(this).parent().parent().children(".script-group-name").trigger("click");
+    if($(this).parent().parent().children(".script-group-title").children(".script-group-name").text()!==$(selectedGroup).text()){
+        $(this).parent().parent().children(".script-group-title").children(".script-group-name").trigger("click");
     }
     //Clear any selected squares
     Q("SelectedSquare",0).items.forEach(function(square){
@@ -839,6 +853,7 @@ $(document).on("click",".script-item",function(e){
     
     $("#event-script-box").addClass("selected-background");
     $("#script-item-box").addClass("selected-background");
+    $(".script-item-div").show();
     //Add the darker theme to the character boxes
     $("#event-characters-box").removeClass("selected-background");
     $("#all-characters-box").removeClass("selected-background");
@@ -868,7 +883,7 @@ $(document).on("click",".script-group-name",function(){
         $(".script-group-name").removeClass("selected-group");
         $(this).addClass("selected-group");
         //Select the first item
-        $(this).parent().children(".script-items").children(".script-item").first().trigger("click");
+        $(this).parent().parent().children(".script-items").children(".script-item").first().trigger("click");
     }
 });
 
@@ -1185,7 +1200,10 @@ DC.setUpFuncs = {
             });
             if(val!==undefined){
                 $("#mod-dialogue-box").val(val[0]);
+            } else {
+                $("#mod-dialogue-box").val("hide");
             }
+            DC.saveFuncScriptItem();
         }
     ],
     waitTime:[
@@ -1197,8 +1215,10 @@ DC.setUpFuncs = {
             });
             if(val!==undefined){
                 $("#waiting-time").val(parseInt(val[0]));
+            } else {
+                $("#waiting-time").val(0);
             }
-            
+            DC.saveFuncScriptItem();
         }
     ],
     fadeChar:[
@@ -1402,37 +1422,58 @@ DC.setUpFuncs = {
             var sceneTypes = ["Character","Officer","Other","Story"];
             var scenes = JSON.parse($("#all-scene-names").text());
             var events = JSON.parse($("#all-event-names").text());
+            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Type.</p><select id='scene-types' class='script-func'></select>");
             $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Scene.</p><select id='scene-names' class='script-func'></select>");
             $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select an Event.</p><select id='event-names' class='script-func'></select>");
             
             $.each(sceneTypes, function(key, value) {
-                $.each(scenes[key], function(key2, value2) {
-                    $('#scene-names')
-                        .append($('<option>', { value : value2 })
-                        .text(value2));
-                });
+                $('#scene-types')
+                    .append($('<option>', { value : value })
+                    .text(value));
             });
+            $("#scene-types").on("change",function(key,value){
+                $("#scene-names").empty();
+                $("#event-names").empty();
+                var scene = scenes[$(this).prop("selectedIndex")];
+                $.each(scene, function(key, value) {
+                    $('#scene-names')
+                        .append($('<option>', { value :value})
+                        .text(value)); 
+                });
+                $("#scene-names").val($("#scene-names option:first").val());
+                
+            });
+            
             //Fill the events select
             $("#scene-names").on("change",function(){
                 $("#event-names").empty();
-                var event = events[$(this).prop("selectedIndex")];
+                var event = events[$(this).val()];
                 $.each(event, function(key, value) {
                     $('#event-names')
                         .append($('<option>', { value :value})
                         .text(value)); 
                 });
+                $("#event-names").val($("#event-names option:first").val());
+                DC.saveFuncScriptItem();
             });
             $("#event-names").on("change",function(){
                 DC.saveFuncScriptItem();
             });
             if(val!==undefined){
-                $("#scene-names").val(val[0]);
+                $("#scene-types").val(val[0]);
+                $("#scene-types").trigger("change");
+                $("#scene-names").val(val[1]);
                 $("#scene-names").trigger("change");
-                $("#event-names").val(val[1]);
+                $("#event-names").val(val[2]);
+                console.log(val)
             } else {
+                $("#scene-types").val($("#scene-types option:first").val());
+                $("#scene-names").trigger("change");
                 $("#scene-names").val($("#scene-names option:first").val());
                 $("#scene-names").trigger("change");
+                $("#event-names").val($("#scene-names option:first").val());
             }
+            DC.saveFuncScriptItem();
         }
     ]
 };
@@ -1496,13 +1537,15 @@ var createSaveForm = function(form){
     //Get the characters
     $(".event-character").each(function(){
         var props = JSON.parse($(this).attr("data"));
+        //Get the character sprite
+        var sprite = DC.getCharacter(props.handle,props.uniqueId);
         data.characters.push({
             file:props.file,
             group:props.group,
             handle:props.handle,
             uniqueId:props.uniqueId,
-            loc:props.loc,
-            dir:props.dir
+            loc:sprite.p.loc,
+            dir:sprite.p.dir
         });
     });
     var json = JSON.stringify(data);
@@ -1519,7 +1562,7 @@ $(document).on("click","#menu-save-file",function(e){
     $("body").append(form);
     form.submit();
 });
-$(document).on("click","#test-scene",function(e){
+$(document).on("click","#menu-test-event",function(e){
     var form = $('<form action="save-battleScene-script.php" method="post"></form>');
     form = createSaveForm(form);
     form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');

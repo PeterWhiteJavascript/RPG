@@ -13,7 +13,7 @@
                         "Legionnaire",
                         1
                     ],
-                    0.3
+                    "0.30"
                 ]
             },
             {
@@ -23,10 +23,7 @@
                 ]
             },
             {
-                "text": [
-                    "asd'",
-                    "asdfg"
-                ],
+                "text": ["asd'","asd"],
                 "asset1": "story\/knight.png",
                 "asset2": "story\/empty.png",
                 "pos": "Left",

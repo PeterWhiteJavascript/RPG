@@ -241,6 +241,8 @@ Q.load(files.join(','),function(){
     Q.state.set("storyEvents",Q.assets["json/data/story-events.json"].events);
     //The list of events
     Q.state.set("scenesList",Q.assets["json/data/scenes-list.json"]);
+    //All of the character files
+    Q.state.set("characterFiles",JSON.parse($("#all-characters").text()));
     
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();

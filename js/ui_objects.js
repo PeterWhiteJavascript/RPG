@@ -949,7 +949,9 @@ Quintus.UIObjects=function(Q){
                 //Which text are we on (array of text)
                 textNum:0,
                 //Start on the first entry
-                scriptNum:0,
+                groupNum:0,
+                scriptNum:1,
+                
                 //Which character we're on for the text
                 textIndex:0,
                 
@@ -983,23 +985,27 @@ Quintus.UIObjects=function(Q){
             this.next();
         },
         cycleText:function(){
-            if(this.p.textIndex>this.p.script[this.p.scriptNum].text[this.p.textNum].length-1){
+            if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length-1){
                 this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
                 this.off("step",this,"cycleText");
                 return;
             }
             //Q.playSound("text_stream.mp3");
-            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.scriptNum].text[this.p.textNum][this.p.textIndex]);
+            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum][this.p.textIndex]);
             this.p.textIndex++;
         },
         next:function(){
-            var data = this.p.script[this.p.scriptNum];
+            if(this.p.scriptNum>=this.p.script[this.p.groupNum].length){
+                this.p.groupNum++;
+                this.p.scriptNum = 1;
+            }
+            var data = this.p.script[this.p.groupNum][this.p.scriptNum];
             //If it's text
             if(data.text){
                 this.p.textNum = 0;
                 this.p.textIndex = 0;
-                $(this.p.leftImage).attr("src","images/"+data.asset[0]);
-                $(this.p.rightImage).attr("src","images/"+data.asset[1]);
+                $(this.p.leftImage).attr("src","images/"+data.asset1);
+                $(this.p.rightImage).attr("src","images/"+data.asset2);
                 $(this.p.textBox).text("");
                 
                 if(data.autoCycle>0){
@@ -1025,7 +1031,7 @@ Quintus.UIObjects=function(Q){
         nextText:function(){
             this.p.textNum++;
             //If we're at the end of the text array
-            if(this.p.textNum>=this.p.script[this.p.scriptNum].text.length){
+            if(this.p.textNum>=this.p.script[this.p.groupNum][this.p.scriptNum].text.length){
                 this.p.scriptNum++;
                 this.next();
             } else {
@@ -1046,12 +1052,12 @@ Quintus.UIObjects=function(Q){
             if(Q.inputs['confirm']){
                 if(!this.p.cantCycle&&!this.p.noCycle){
                     //Check if the text is complete
-                    if($(this.p.textBox).text().length===this.p.script[this.p.scriptNum].text[this.p.textNum].length){
+                    if($(this.p.textBox).text().length===this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length){
                         if(this.p.nextTextTri) this.p.nextTextTri.destroy();
                         this.nextText();
                     } else {
-                        $(this.p.textBox).text(this.p.script[this.p.scriptNum].text[this.p.textNum]);
-                        this.p.textIndex = this.p.script[this.p.scriptNum].text[this.p.textNum].length;
+                        $(this.p.textBox).text(this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum]);
+                        this.p.textIndex = this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length;
                     }
                     /*this.p.inputsTimer=this.p.inputsTime;
                     this.off("step",this,"checkInputs");
@@ -1061,10 +1067,10 @@ Quintus.UIObjects=function(Q){
             }
         },
         //SCRIPT FUNCTIONS BELOW
-        changeEvent:function(scene,event){
+        changeEvent:function(type,scene,event){
             //Remove everything related to this scene
             $(this.p.container).remove();
-            Q.startScene(scene,event);
+            Q.startScene(type,scene,event);
             return true;
         },
         //Enable cycling and cycle to the next text
@@ -1104,11 +1110,11 @@ Quintus.UIObjects=function(Q){
             //For now, just add the character to the party 100% of the time
             Q.state.get("allies").push(Q.state.get("characters")[name]);
         },
-        getStoryCharacter:function(id){
+        getStoryCharacter:function(handle,id){
             //Gets a story character by their id
             if(Q._isNumber(id)){
                 return Q.stage(0).lists.StoryCharacter.filter(function(char){
-                    return char.p.storyId===id;
+                    return char.p.handle===handle&&char.p.uniqueId===id;
                 })[0];
             } 
             //Gets a story character by a property
@@ -1147,14 +1153,14 @@ Quintus.UIObjects=function(Q){
         //Sets the viewport at a location or object
         setView:function(obj,flash){
             var spr = Q.stage(0).viewSprite;
+            //Follow object
+            if(Q._isString(obj[0])){
+                spr.followObj(this.getStoryCharacter(obj[0],obj[1]));
+            }
             //Go to location
-            if(Q._isArray(obj)){
+            else {
                 spr.p.loc = obj;
                 Q.BatCon.setXY(spr);
-            } 
-            //Follow object (passed in id number)
-            else {
-                spr.followObj(this.getStoryCharacter(obj));
             }
             if(flash){
                 Q.stageScene("fader",11);
@@ -1169,20 +1175,20 @@ Quintus.UIObjects=function(Q){
             var spr = Q.stage(0).viewSprite;
             spr.p.obj = false;
             var t = this;
-            //Go to location
-            if(Q._isArray(obj)){
-                var pos = Q.BatCon.getXY(obj);
-                spr.animate({x:pos.x,y:pos.y},1,Q.Easing.Quadratic.InOut,{callback:function(){
-                    t.forceCycle();
-                }});
-            } 
-            //Follow object (passed in id number)
-            else {
-                var to = this.getStoryCharacter(obj);
+            //Follow object
+            if(Q._isString(obj[0])){
+                var to = this.getStoryCharacter(obj[0],obj[1]);
                 spr.animate({x:to.p.x,y:to.p.y},speed?speed:1,Q.Easing.Quadratic.InOut,{callback:function(){
                     spr.followObj(to);
                     t.forceCycle();
                     t.showDialogueBox();
+                }});
+            } 
+            //Go to location
+            else {
+                var pos = Q.BatCon.getXY(obj);
+                spr.animate({x:pos.x,y:pos.y},1,Q.Easing.Quadratic.InOut,{callback:function(){
+                    t.forceCycle();
                 }});
             }
             return true;
@@ -1190,26 +1196,26 @@ Quintus.UIObjects=function(Q){
         },
         //Changes the direction of a story character
         changeDir:function(id,dir){
-            var obj = this.getStoryCharacter(id);
+            var obj = this.getStoryCharacter(id[0],id[1]);
             obj.playStand(dir);
         },
         playAnim:function(id,anim,dir,sound){
             Q.playSound(sound+".mp3");
-            this.getStoryCharacter(id)["play"+anim](dir);
+            this.getStoryCharacter(id[0],id[1])["play"+anim](dir);
         },
         changeMoveSpeed:function(id,speed){
-            var obj = this.getStoryCharacter(id);
+            var obj = this.getStoryCharacter(id[0],id[1]);
             obj.p.stepDelay = speed;
         },
         //Moves a character along a path
         moveAlong:function(id,path,dir,allowCycle){
-            var obj = this.getStoryCharacter(id);
+            var obj = this.getStoryCharacter(id[0],id[1]);
             //If the is a function that should be played once the object reaches its destination
             obj.on("doneAutoMove",obj,function(){
                 //If we have a new path, do it!
                 this.playStand(dir);
                 //If we're cycling on arrival
-                if(allowCycle==="true"){
+                if(allowCycle){
                     Q.dialogueController.p.scriptNum++;
                     Q.dialogueController.next();
                     //Allow cycling to the next script item
@@ -1219,13 +1225,11 @@ Quintus.UIObjects=function(Q){
             obj.moveAlongPath(path);
             this.p.noCycle = true;
             //If we're waiting on arrival
-            if(allowCycle==="true"){
-                return true;
-            }
+            return allowCycle;
         },
         //Fades a character in or out
         fadeChar:function(id,inout){
-            var obj = this.getStoryCharacter(id);
+            var obj = this.getStoryCharacter(id[0],id[1]);
             if(inout==="in"){
                 obj.animate({opacity:1},1,Q.Easing.Linear);
                 obj.show();
@@ -1337,7 +1341,9 @@ Quintus.UIObjects=function(Q){
             this._super(p,{
                 w:Q.tileW,
                 h:Q.tileH,
-                type:Q.SPRITE_NONE
+                type:Q.SPRITE_NONE,
+                x:0,
+                y:0
             });
             this.add("animation, tween");
         },

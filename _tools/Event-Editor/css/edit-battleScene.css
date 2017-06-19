@@ -65,6 +65,12 @@ body, html{
     padding-right:10px;
     width:20px;
 }
+.minimize-icon-deep{
+    float:left;
+    font-size:100%;
+    padding-right:10px;
+    width:20px;
+}
 #characters-list{
     width:100%;
     height:calc(100% - 30px);
@@ -132,7 +138,7 @@ body, html{
     margin-bottom:5px;
     background-color:white;
 }
-.script-list-group .minimize-icon{
+.script-list-group .minimize-icon-deep{
     padding-left:6px;
     padding-top:6px;
     width:30px;
@@ -267,6 +273,10 @@ body, html{
     text-align:center;
 }
 #move-speed{
+    width:100%;
+    height:30px;
+}
+#scene-types{
     width:100%;
     height:30px;
 }

@@ -11,17 +11,16 @@ if(!isset($_POST['copying'])){
     $newFile = [
         'name' => $name,
         'desc' => $_POST['desc'],
-        'kind' => $eventType,
-        'vrs' => []
+        'kind' => $eventType
     ];
     switch($eventType){
         case "story":
             $newFile['pages'] = [];
+            $newFile['vrs'] = [];
             break;
         case "battleScene":
-            $newFile['scene'] = [];
-            $newFile['characters'] = (object)[];
-            $newFile['music'] = "";
+            $newFile['script'] = [];
+            $newFile['characters'] = [];
             $newFile['map'] = "";
             break;
         case "battle":
@@ -30,6 +29,7 @@ if(!isset($_POST['copying'])){
             $newFile['characters'] = (object)[];
             break;
     }
+    $newFile['kind'] = $eventType;
     file_put_contents("../../data/json/story/events/".$type."/".$scene."/".$name.".json", json_encode($newFile,JSON_PRETTY_PRINT));
     
     //Add the event to the event order of the scene

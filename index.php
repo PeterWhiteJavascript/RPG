@@ -6,6 +6,12 @@ if(isset($_POST['name'])){$name = $_POST['name'];}
 if(isset($_POST['name'])){$scene = $_POST['scene'];}
 if(isset($_POST['name'])){$type = $_POST['type'];}
 
+//Load all of the character files
+$characterFiles = array_values(array_diff(scandir('data/json/story/characters'),array('..','.')));
+$characters = (object)[];
+for($i=0;$i<count($characterFiles);$i++){
+    $characters->$characterFiles[$i] = json_decode(file_get_contents('data/json/story/characters/'.$characterFiles[$i]), true);
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +47,7 @@ if(isset($_POST['name'])){$type = $_POST['type'];}
         <?php
         }
         ?>
+        <div id="all-characters" hidden><?php echo json_encode($characters); ?></div>
         
         <script src='js/main.js'></script>
         <script src='js/objects.js'></script>

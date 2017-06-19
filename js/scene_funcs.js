@@ -46,7 +46,7 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("script",function(stage){
         Q.inputs['confirm'] = false;
         var scriptData = stage.options.scriptData = stage.options.data;
-        Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.scene}));
+        Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.script}));
         
     }); 
     Q.scene("location",function(stage){
@@ -192,7 +192,6 @@ Quintus.SceneFuncs=function(Q){
                     var charClass = this.classKeys[classNum];
                     return charClass;
                 case "gender":
-                    
                     return this.genders[this.getIdx([this.classes[char.charClass].gender[char.natNum],100],this.rand())];
                 case "value":
                     return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
@@ -269,10 +268,10 @@ Quintus.SceneFuncs=function(Q){
             char.officer = data.officer;
             char.awards = data.awards?data.awards:this.setUpAwards();
             
-            char.nationality = data.nationality?this.nationalities[data.nationality]:this.generateProp("nationality",char);
+            char.nationality = data.nationality?data.nationality:this.generateProp("nationality",char);
             char.natNum = Q.getNationalityNum(char.nationality);
             
-            char.charClass = data.charClass?this.classNames[data.charClass]:this.generateProp("charClass",char);
+            char.charClass = data.charClass?data.charClass:this.generateProp("charClass",char);
             char.classNum = Q.getCharClassNum(char.charClass);
             
             char.skills = data.skills?getSkills(data.skills):this.generateSkills(char);
@@ -541,7 +540,31 @@ Quintus.SceneFuncs=function(Q){
         Q.BatCon.stage = stage;
 
         var allyData = Q.state.get("allies");
-        var charData = data.characters;
+        //data.characters contains a reference to where to find the character data, as well as the character's dir and loc.
+        var charData = [];
+        //Find the character in the files
+        var files = Q.state.get("characterFiles");
+        data.characters.forEach(function(char){
+            var ref = files[char.file][char.group][char.handle];
+            var newChar = {
+                baseStats:ref.baseStats,
+                charClass:ref.charClass,
+                equipment:ref.equipment,
+                gender:ref.gender,
+                levelmax:ref.levelmax,
+                levelmin:ref.levelmin,
+                name:ref.name,
+                nationality:ref.nationality,
+                techniques:ref.techniques,
+                handle:ref.handle,
+                group:char.group,
+                file:char.file,
+                dir:char.dir,
+                loc:char.loc,
+                uniqueId:char.uniqueId
+            }
+            charData.push(newChar)
+        });
         var chars = [];
         charData.forEach(function(char){
             var character;
@@ -553,7 +576,7 @@ Quintus.SceneFuncs=function(Q){
                 char.classNum = Q.charGen.getClassNum(char.charClass);
             }
             //Set values that are empty as random
-            ["level","nationality","charClass","gender","name","value","method","personality"].forEach(function(key){
+            ["level","nationality","charClass","gender","name","value","methodology","personality"].forEach(function(key){
                 if(!char[key]||char[key].length===0){
                     char[key] = Q.charGen.generateProp(key,char);
                 }
@@ -565,13 +588,13 @@ Quintus.SceneFuncs=function(Q){
                     return ally.name===char.name;
                 })[0];
                 if(data){
-                    character = new Q.StoryCharacter({charClass:data.charClass,storyId:char.storyId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
+                    character = new Q.StoryCharacter({charClass:data.charClass,uniqueId:char.uniqueId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
                     character.add("statCalcs");
                 } else {
-                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:char.team,awards:char.awards});
+                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",uniqueId:char.uniqueId,team:char.team,awards:char.awards,handle:char.handle});
                 }
             } else {
-                character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",storyId:char.storyId,team:"enemy"});
+                character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",uniqueId:char.uniqueId,team:"enemy",handle:char.handle});
             }
             chars.push(character);
             character.p.loc = char.loc;
