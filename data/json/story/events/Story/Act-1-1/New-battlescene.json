@@ -121,6 +121,17 @@
         },
         {
             "file": "Proto.json",
+            "group": "Named",
+            "handle": "Boss",
+            "uniqueId": 1,
+            "loc": [
+                15,
+                10
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
             "group": "Low",
             "handle": "Legionnaire",
             "uniqueId": 0,
@@ -171,6 +182,17 @@
             "loc": [
                 20,
                 13
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Legionnaire",
+            "uniqueId": 5,
+            "loc": [
+                17,
+                10
             ],
             "dir": "down"
         }

@@ -603,6 +603,9 @@ Q.addViewport = function(stage){
         dragged = true;
     };
     obj.on("drag");
+    obj.on("touchEnd",function(){
+        dragged = false;
+    });
     stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
     stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
     stage.follow(obj,{x:true,y:true});
@@ -734,8 +737,25 @@ $(document).on("click",".char-remove",function(){
     var characterSprite = DC.getCharacter(dataToRemove.handle,dataToRemove.uniqueId);
     var saveCharacter = DC.getSaveCharacter(dataToRemove.handle,dataToRemove.uniqueId);
     characterSprite.removeFromExistence();
-    //TO DO: find all references to this character and remove them.
-    console.log(DC.p.saveCharacters.indexOf(saveCharacter));
+    var funcs = $(".script-items").children(".func");
+    $(funcs).each(function(){
+        //Check all of the functions that can include a character
+        var func = $(this).attr("func");
+        var props = JSON.parse($(this).attr("props"));
+        switch(func){
+            case "setView":
+            case "centerView":
+            case "moveAlong":
+            case "fadeChar":
+            case "changeMoveSpeed":
+            case "playAnim":
+                //This contains a reference to this character
+                if(saveCharacter.handle===props[0][0]&&saveCharacter.uniqueId===props[0][1]){
+                    $(this).children(".remove-choice").trigger("click");
+                }
+                break;
+        }
+    });
     
 });
 
@@ -759,6 +779,7 @@ $(document).on("click","#menu-create-group",function(e){
 });
 
 $(document).on("click","#menu-add-text-item",function(e){
+    if(!selectedGroup) return;
     var group = DC.getScriptItemGroup($(".selected-group").text());
     $(group).children(".script-items").append("<div class='script-item text'><div class='script-item-name'></div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
 
@@ -766,6 +787,7 @@ $(document).on("click","#menu-add-text-item",function(e){
 });
 
 $(document).on("click","#menu-add-func-item",function(e){
+    if(!selectedGroup) return;
     //Add a new func to the script
     var group = DC.getScriptItemGroup($(".selected-group").text());
     $(group).children(".script-items").append("<div class='script-item func'><div class='script-item-name'></div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
@@ -793,7 +815,6 @@ $(document).on("click",".minimize-icon",function(){
 });
 $(document).on("click",".minimize-icon-deep",function(){
     var content = $(this).parent().parent().children(".minimize");
-    console.log(content)
     if($(content).css("display")==="none"){
         $(content).show();
         $(this).parent().children(".minimize-icon-deep").text("-");
@@ -1465,7 +1486,6 @@ DC.setUpFuncs = {
                 $("#scene-names").val(val[1]);
                 $("#scene-names").trigger("change");
                 $("#event-names").val(val[2]);
-                console.log(val)
             } else {
                 $("#scene-types").val($("#scene-types option:first").val());
                 $("#scene-names").trigger("change");

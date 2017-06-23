@@ -61,5 +61,6 @@ if(isset($_GET['err'])){
                 });
             });
         </script>
+        <div id="footer"><a href="index.php"><div class="menu-button btn btn-default">BACK</div></a></div>
     <body>
 </html>
