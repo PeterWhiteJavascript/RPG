@@ -78,11 +78,11 @@
                 "Low"
             ],
             "techniques": [
-                null,
-                null,
-                null,
-                null,
-                null,
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
                 "Whirlwind Strike"
             ],
             "nationality": "Venorian",
@@ -124,11 +124,11 @@
                 "Medium"
             ],
             "techniques": [
-                null,
-                null,
-                null,
-                null,
-                null,
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
                 "Whirlwind Strike"
             ],
             "nationality": "Venorian",
@@ -171,9 +171,9 @@
                 "Long Shot",
                 "Armour Piercing Shot",
                 "Rapid Shot",
-                "Shower",
-                "Fire Shot",
-                "Tri Shot"
+                "Critical Shot",
+                "Painful Shot",
+                "Sniper Shot"
             ],
             "nationality": "Venorian",
             "charClass": "Archer"
@@ -221,12 +221,12 @@
                 "eff": "10"
             },
             "techniques": [
-                "Rage",
-                null,
+                "Push",
+                "Staredown",
                 "Charge Through",
-                null,
+                "Headbutt",
                 "Pull",
-                null
+                "War Cry"
             ],
             "nationality": "Venorian",
             "charClass": "Berserker"

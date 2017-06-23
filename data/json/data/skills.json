@@ -2,194 +2,339 @@
     "Legionnaire":[
         {
             "name":"Forced March",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their Move by 1/10 of user’s Skill for 2 Rounds.",
-            "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "range":[0,"self"],
+            "aoe":[2,"line"],
             "cost":25,
-            "damage":""
+            "resist":"None"
         },
         {
             "name":"Fortify",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their Defensive Ability by the user’s Skill for 2 Rounds.",
-            "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "range":[0,"self"],
+            "aoe":[2,"line"],
             "cost":30,
-            "damage":""
+            "resist":"None"
         },
         {
             "name":"Embolden",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their Skill by the user’s Skill for 2 Rounds.",
-            "range":[1,"normal"],
+            "range":[0,"self"],
             "aoe":[2,"line"],
             "cost":25,
-            "damage":""
+            "resist":"None"
         },
         {
             "name":"Fervour",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their Strength by the user’s Skill for 2 Rounds.",
-            "range":[1,"normal"],
+            "range":[0,"self"],
             "aoe":[2,"line"],
             "cost":25,
-            "damage":""
+            "resist":"None"
         },
         {
             "name":"Direct",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their Efficiency by half of the user’s Skill for 2 Rounds.",
             "range":[1,"normal"],
             "aoe":[2,"line"],
             "cost":25,
-            "damage":""
+            "resist":"None"
         },
         {
             "name":"Phalanx",
-            "types":["Support"],
+            "type":"Support",
             "desc":"Target allies increase their DR by half of the user’s Skill for 2 Rounds and also gain +100 to their Physical Resistance for 2 Rounds.",
             "range":[1,"normal"],
             "aoe":[1,"2x3box"],
             "cost":25,
-            "damage":""
+            "resist":""
         }
     ],
     "Berserker":[
         {
-            "name":"Rage",
-            "desc":"The user attacks all units around them in a rage.",
-            "types":["Physical"],
-            "range":[0,"self"],
-            "aoe":[2,"normal"],
+            "name":"Push",
+            "desc":"Target character is pushed backwards one space, or, if pushed onto an Icy space, is pushed backwards until they collide with another a wall, or are no longer crossing Icy Spaces.  however if they collide with another character, that character will be Pushed along too.",
+            "type":"Debilitate",
+            "range":[1,"allyNoMiss"],
+            "aoe":[1,"normal"],
             "cost":20,
-            "damage":""
+            "resist":"Physical"
         },
         {
-            
+            "name":"Staredown",
+            "desc":"Enemy Attack Accuracy is reduced by the attacking character’s Skill for 3 Rounds.",
+            "type":"Debilitate",
+            "range":[6,"enemyFacingThis"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":"Mental"
         },
         {
             "name":"Charge Through",
             "desc":"The user charges through the target. If there is no free space behind the target, this just does damage. Charge Through does 20-30+skl damage and does double if the target is hit from behind.",
-            "types":["Physical"],
-            "range":[1,"normal"],
+            "type":"Debilitate",
+            "range":[1,"allyNoMiss"],
             "aoe":[1,"normal"],
-            "cost":50,
-            "damage":[10,20,"skl"]
+            "cost":25,
+            "resist":"Physical"
         },
         {
+            "name":"Headbutt",
+            "desc":"The target character’s Initiative is reduced by twice the attacking character’s Skill for 3 Rounds. Note that an Initiative roll below zero indicates that the character does not get to participate in a given Round.",
+            "type":"Debilitate",
+            "range":[1,"enemyFacingThis"],
+            "aoe":[1,"normal"],
+            "cost":40,
+            "resist":"Physical"
             
         },
         {
             "name":"Pull",
             "desc":"Target character and attacking character both move one space backwards, relative to the attacking character, provided that there is a free space to move into.",
-            "types":["Physical","Knockback"],
-            "range":[1,"normal"],
+            "type":"Debilitate",
+            "range":[1,"allyNoMiss"],
             "aoe":[1,"normal"],
             "cost":20,
-            "damage":""
+            "resist":"Physical"
         },
         {
-            
+            "name":"War Cry",
+            "desc":"Affected characters Move is reduced to 1 for 2 Rounds.",
+            "type":"Debilitate",
+            "range":[0,"self"],
+            "aoe":[3,"custom"],
+            "cost":60,
+            "resist":"Mental"
         }
     ],
     "Vanguard":[
-        {},
-        {},
-        {},
-        {},
-        {},
+        {
+            "name":"Critical Strike",
+            "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
+            "type":"Damage",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":25,
+            "resist":"Dodge/Block"
+        },
+        {
+            "name":"Rapid Strike",
+            "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
+            "type":"Damage",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":25,
+            "resist":"Dodge/Block"
+        },
+        {
+            "name":"Surprising Strike",
+            "desc":"The character makes an attack as usual but there is no defense against this attack.",
+            "type":"Damage",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":35,
+            "resist":"Dodge/Block"
+        },
+        {
+            "name":"Armour Piercing Strike",
+            "desc":"The character makes an attack as usual but enemy Damage Reduction is reduced by the attacker’s Skill.",
+            "type":"Damage",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":"Dodge/Block"
+        },
+        {
+            "name":"Painful Strike",
+            "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
+            "type":"Damage",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":"Dodge/Block"
+        },
         {
             "name":"Whirlwind Strike",
             "desc":"The character attacks all units adjacent to them, friend or foe. The damage is equal to half of their regular damage, plus Skill.",
-            "types":["Physical"],
+            "type":"Damage",
             "range":[0,"self"],
             "aoe":[2,"normal"],
             "cost":80,
-            "damage":""
+            "resist":"Dodge/Block"
         }
     ],
     "Assassin":[
         {
-            
+            "name":"Bleeding Strike",
+            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Threshold by the amount of Bleeding they have.",
+            "type":"Debilitate",
+            "range":["weapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":["Dodge/Block","Physical"]
         },
         {
             "name":"Caltrops",
             "desc":"Places caltrops in area of effect which slows movement. Entering the caltrops ends a character’s movement and deals 1-10 damage, and leaving the caltrops ends a character’s movement. Movement within the mud is at a maximum of 2 Spaces per round.",
-            "types":["Field"],
-            "range":[8,"normal"],
+            "type":"Debilitate",
+            "range":[5,"normal"],
             "aoe":[2,"normal"],
             "cost":100,
-            "damage":""
+            "resist":"None"
         },
-        {},
-        {},
-        {},
-        {}
+        {
+            "name":"Weakening Strike",
+            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
+            "type":"Debilitate",
+            "range":["weapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":["Dodge/Block","Physical"]
+        },
+        {
+            "name":"Nerve Strike",
+            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
+            "type":"Debilitate",
+            "range":["weapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":["Dodge/Block","Physical"]
+        },
+        {
+            "name":"Acid Bomb",
+            "desc":"Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker’s Skill. This lasts until the combat is finished.",
+            "type":"Debilitate",
+            "range":[3,"enemy"],
+            "aoe":[1,"normal"],
+            "cost":50,
+            "resist":"Dodge"
+        },
+        {
+            "name":"Poison Strike",
+            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character’s Hit Points by a like amount at the end of every Round.",
+            "type":"Debilitate",
+            "range":["weapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":50,
+            "resist":["Dodge/Block","Physical"]
+        }
         
     ],
     "Skirmisher":[
-        {},
-        {},
-        {},
-        {},
-        {},
-        {}
+        {
+            "name":"Quicken",
+            "desc":"Target allies increase their Initiative by the user’s Skill for 2 Rounds.",
+            "type":"Support",
+            "range":[1,"diagonalForwardAdjacent"],
+            "aoe":[2,"custom"],
+            "cost":25,
+            "resist":"None"
+        },
+        {
+            "name":"Forewarn",
+            "desc":"Target allies increase their Counter Chance by the user’s Skill for 2 Rounds.",
+            "type":"Support",
+            "range":[1,"diagonalForwardAdjacent"],
+            "aoe":[2,"custom"],
+            "cost":40,
+            "resist":"None"
+        },
+        {
+            "name":"Sharpen",
+            "desc":"Target allies increase their Attack Accuracy by the user’s Skill for 2 Rounds.",
+            "type":"Support",
+            "range":[1,"diagonalForwardAdjacent"],
+            "aoe":[2,"custom"],
+            "cost":30,
+            "resist":"None"
+        },
+        {
+            "name":"Vitalize",
+            "desc":"Target allies increase their Critical Chance by half of the user’s Skill for 2 Rounds.",
+            "type":"Support",
+            "range":[1,"diagonalForwardAdjacent"],
+            "aoe":[2,"custom"],
+            "cost":40,
+            "resist":"None"
+        },
+        {
+            "name":"Vivify",
+            "desc":"Target allies increase their Attack Speed by the user’s Skill for 2 Rounds.",
+            "type":"Support",
+            "range":[1,"diagonalForwardAdjacent"],
+            "aoe":[2,"custom"],
+            "cost":35,
+            "resist":"None"
+        },
+        {
+            "name":"Coordinated Attack",
+            "desc":"The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
+            "type":"Support",
+            "range":["meleeWeapon","enemy"],
+            "aoe":[2,"custom"],
+            "cost":150,
+            "resist":"None"
+        }
     ],
     "Archer":[
         {
             "name":"Long Shot",
             "desc":"Character attacks as usual with their ranged weapon, but gains +1 range for every 10 Skill they have (minimum 1).",
-            "types":["Physical"],
-            "range":["longshot","special"],
+            "type":"Damage",
+            "range":["custom","enemy"],
             "aoe":[1,"normal"],
-            "cost":50,
-            "damage":"normal"
+            "cost":20,
+            "resist":"Dodge/Block"
         },
         {
             "name":"Armour Piercing Shot",
             "desc":"Character attacks as usual with their ranged weapon, but enemy’s Damage Reduction from armour is reduced by attacker’s Skill.",
-            "types":["Physical"],
-            "range":[0,"bow"],
-            "aoe":[2,"normal"],
-            "cost":50,
-            "damage":"normal"
+            "type":"Damage",
+            "range":["rangedWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":30,
+            "resist":"Dodge/Block"
         },
         {
             "name":"Rapid Shot",
-            "desc":"Character attacks as usual with their ranged weapon, but their Attack Speed is increased by +30.",
-            "types":["Physical"],
-            "range":[0,"bow"],
+            "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
+            "type":"Damage",
+            "range":["rangedWeapon","enemy"],
             "aoe":[1,"normal"],
-            "cost":50,
-            "damage":"normal"
+            "cost":25,
+            "resist":"Dodge/Block"
         },
         {
-            "name":"Shower",
-            "desc":"The user showers a ground location with arrows, dealing damage to all characters within 1 tile of the target.",
-            "types":["Physical"],
-            "range":[0,"bow"],
-            "aoe":[2,"normal"],
-            "cost":100,
-            "damage":"normal"
+            "name":"Critical Shot",
+            "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
+            "type":"Damage",
+            "range":["rangedWeapon","enemy"],
+            "aoe":[1,"normal"],
+            "cost":25,
+            "resist":"Dodge/Block"
         },
         {
-            "name":"Fire Shot",
-            "desc":"The user shoots fire arrows which set the target ground ablaze. The chance of setting the tile on fire is based on the tile type.",
-            "types":["Physical","Elemental"],
-            "range":[0,"bow"],
+            "name":"Painful Shot",
+            "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
+            "type":"Damage",
+            "range":["rangedWeapon","enemy"],
             "aoe":[1,"normal"],
-            "cost":100,
-            "damage":"normal"
+            "cost":30,
+            "resist":"Dodge/Block"
         },
         {
-            "name":"Tri Shot",
-            "desc":"The user chooses three targets and shoots them all in rapid succession.",
-            "types":["Physical"],
-            "range":[0,"bow"],
+            "name":"Sniper Shot",
+            "desc":"The character makes an attack as usual but uses Skill instead of Weapon Skill to see if they hit-- they may target any enemy on an outdoor tile.",
+            "type":"Damage",
+            "range":[20,"enemy"],
             "aoe":[1,"normal"],
-            "cost":200,
-            "damage":"normal"
+            "cost":60,
+            "resist":"Dodge/Block"
             
         }
     ],
@@ -197,169 +342,181 @@
         {
             "name":"Slow",
             "desc":"Target character(s) suffers a penalty to their Initiative and Reflexes equal to the caster’s Skill. Lasts for one round.",
-            "types":["Magical","Debuff"],
+            "type":"Debilitate",
             "range":[3,"normal"],
-            "aoe":["skl/20","normal"],
+            "aoe":["custom","normal"],
             "cost":35,
-            "damage":""
+            "resist":"Mental"
         },
         {
             "name":"Stun",
             "desc":"Target character is Stunned (Must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or lose that turn (once Skill roll has succeeded, character is no longer Stunned).)",
-            "types":["Mental","Debuff"],
+            "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[1,"normal"],
             "cost":200,
-            "damage":""
+            "resist":"Mental"
+            
         },
         {
             "name":"Hypnotic Mirage",
             "desc":"All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be drawn to the “Mirage” (the space on which the spell was cast). A character drawn to the “Mirage” will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
-            "types":["Mental","Debuff"],
+            "type":"Debilitate",
             "range":[5,"normal"],
             "aoe":[4,"normal"],
             "cost":200,
-            "damage":""
+            "resist":"Mental"
+            
         },
         {
             "name":"Blind",
             "desc":"Character is Blinded. (Target character’s Attack Accuracy and Defensive Ability are reduced by half for three turns.)",
-            "types":["Magical","Debuff"],
+            "type":"Debilitate",
             "range":[3,"normal"],
             "aoe":[1,"normal"],
             "cost":300,
-            "damage":""
+            "resist":"Mental"
+            
         },
         {
             "name":"Temporary Insanity",
             "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or remain Insane. While Insane, a character will select a random target, friend, foe, or even self, and select a random action to do (using a Technique provided they have the TP, giving an item, attacking, etc.)",
-            "types":["Mental","Debuff"],
+            "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[1,"normal"],
             "cost":300,
-            "damage":""
+            "resist":"Mental"
+            
         },
         {
             "name":"Antithesis",
             "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or lose TP equal to the cost of the spell (300). If the target didn’t have at least 300 TP, they lose 1 HP for every full 10 TP they had under 300.",
-            "types":["Mental","Debuff"],
+            "type":"Debilitate",
             "range":[2,"normal"],
             "aoe":[1,"normal"],
             "cost":300,
-            "damage":""
+            "resist":"Mental"
+            
         }
         
     ],
     "Elementalist":[
         {
             "name":"Stone",
-            "desc":"Deals 10-20 + Skill damage to target, (if ranged attacks can somehow be dodged or blocked, this attack can be dodged or blocked)",
-            "types":["Magical","Elemental"],
+            "desc":"Deals 10-20 + Skill damage to target.",
+            "type":"Damage",
             "range":[4,"normal"],
             "aoe":[1,"normal"],
-            "cost":25,
-            "damage":[10,20,"skl"]
+            "cost":20,
+            "resist":"Dodge/Block"
         },
         {
             "name":"Flamethrower",
             "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in first space of area of effect gains no Damage Reduction from armour against this damage. Damage halved for back spaces if first space is occupied.",
-            "types":["Magical","Elemental"],
+            "type":"Damage",
             "range":[1,"normal"],
-            "aoe":[3,"T"],
+            "aoe":[2,"T"],
             "cost":100,
-            "damage":[50,80,"skl"]
+            "resist":"None"
         },
         {
             "name":"Fireball",
             "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in central space of area of effect gains no Damage Reduction from armour against this damage.",
-            "types":["Magical","Elemental"],
+            "type":"Damage",
             "range":[5,"normal"],
             "aoe":[2,"normal"],
             "cost":150,
-            "damage":[50,80,"skl"]
+            "resist":"None"
         },
         {
             "name":"Frost Ray",
-            "desc":"Deals 10-50 + Skill damage to all characters within spell’s area of effect, plus  target characters must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be Frozen. Characters who are not Frozen are instead Cold. All spaces touched by the attack are made Icy. Icy Spaces cost 2 Spaces of movement to cross, and any character Pushed on them will continue moving until they reach a non Icy Space or collide with an object, however if they collide with another character, that character will be Pushed along too.",
-            "types":["Magical","Elemental"],
+            "desc":" Deals 10-50 + Skill damage to all characters within spell’s Target Type, plus  target characters who failed their Physical Resistance are Frozen for 2 Rounds (Character cannot move or take any action, but also gains 50 Damage Reduction). All spaces touched by the attack are made Icy. Icy Spaces cost 2 Spaces of movement to cross, and any character Pushed on them will continue moving until they reach a non Icy Space or collide with an object, however if they collide with another character, that character will be Pushed along too.",
+            "type":"Damage",
             "range":[1,"normal"],
-            "aoe":["skl/10","normal"],
+            "aoe":["custom","line"],
             "cost":150,
-            "damage":[10,50,"skl"]
+            "resist":"None"
         },
         {
             "name":"Choke",
             "desc":"Target character takes 100-200 + Skill damage. Target gains no Damage Reduction from armour against this damage.",
-            "types":["Mental"],
+            "type":"Damage",
             "range":[3,"normal"],
             "aoe":[1,"normal"],
-            "cost":500,
-            "damage":[100,200,"skl"]
+            "cost":300,
+            "damage":[100,200,"skl"],
+            "resist":"None"
         },
         {
             "name":"Lightning Storm",
             "desc":"Three different random spaces in the spell’s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
-            "types":["Magical","Elemental"],
+            "type":"Damage",
             "range":[6,"normal"],
             "aoe":[3,"corners"],
             "cost":500,
-            "damage":[150,200,"skl"]
+            "resist":"None"
         }
     ],
     "Healer":[
         {
             "name":"Stability Field",
             "desc":"All characters, friend or foe, within this spell’s effects are considered 'stable'. Lasts for 3 rounds.",
-            "types":["Magical","Field"],
-            "range":["skl/5","normal"],
+            "type":"Support",
+            "range":["custom","tile"],
             "aoe":[5,"normal"],
             "cost":50,
-            "damage":""
+            "resist":"None"
+            
         },
         {
             "name":"Heal",
             "desc":"All characters, friend or foe, within this spell’s effects immediately regain a random number of HP from Skill to Skill x 2",
-            "types":["Magical","Aiding"],
-            "range":["skl/20","normal"],
-            "aoe":["skl/30","normal"],
+            "type":"Support",
+            "range":["custom","normal"],
+            "aoe":["custom","normal"],
             "cost":100,
-            "damage":""
+            "resist":"None"
+            
         },
         {
             "name":"Cure",
             "desc":"Removes all debuff effects from all characters within spell’s effects.",
-            "types":["Magical","Aiding"],
-            "range":["skl/25","normal"],
-            "aoe":["skl/35","normal"],
+            "type":"Support",
+            "range":["custom","normal"],
+            "aoe":["custom","normal"],
             "cost":100,
-            "damage":""
+            "resist":"None"
+            
         },
         {
-            "name":"Bless",
+            "name":"Revive",
             "desc":"Targeted character’s random % results cannot roll higher than 100 - ½ the Skill of the caster. Target’s critical chance is also improved by Skill/5. Lasts for 3 rounds.",
-            "types":["Magical","Buff"],
+            "type":"Support",
             "range":[1,"normal"],
             "aoe":[1,"normal"],
             "cost":200,
-            "damage":""
+            "resist":"None"
+            
         },
         {
             "name":"Energize",
             "desc":"Target character gains TP equal to 50+ the caster’s Skill.",
-            "types":["Magical","Aiding"],
-            "range":["skl/20","normal"],
+            "type":"Support",
+            "range":["custom","normal"],
             "aoe":[1,"normal"],
             "cost":125,
-            "damage":""
+            "resist":"None"
+            
         },
         {
             "name":"Endow",
-            "desc":"Targeted character is Energized, Blessed, Cured, and Healed.",
-            "types":["Magical","Aiding","Buff"],
+            "desc":"Targeted character immediately recovers from Bleeding Out and regains a random number of HP from Skill to Skill x 2",
+            "type":"Support",
             "range":[1,"normal"],
             "aoe":[1,"normal"],
             "cost":525,
-            "damage":""
+            "resist":"None"
+            
         }
     ]
 }

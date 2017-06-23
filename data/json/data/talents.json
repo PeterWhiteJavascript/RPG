@@ -1,0 +1,150 @@
+{
+    "General": {
+        "Fighter":[
+            {
+                "name":"Front Liner",
+                "desc":"Whenever an enemy finishes their movement in the Space directly in front of this character, the character makes an immediate attack before the enemy finishes their turn."
+            }
+        ],
+        "Rogue":[
+            {
+                "name":"Stealth",
+                "desc":"When standing in Obscuring Terrain this character cannot be targeted by ranged attacks."
+            }
+        ],
+        "Mage":[
+            {
+                "name":"Wands and Staves",
+                "desc":"This character can equip wands and staves (others can’t)."
+            }
+        ]
+    },
+    "CharClass": {
+        "Legionnaire":[
+            {
+                "name":"Defensive Formation",
+                "desc":"When standing adjacent to allied characters facing the same direction as them, this character gains a +5 boost to Defensive Ability for each, but only from attacks in the direction that this character is currently facing"
+            },
+            {
+                "name":"Aggressive Formation",
+                "desc":"When standing adjacent to allied characters facing the same direction as them, this character gains a +5 boost to Attack Accuracy for each."
+            },
+            {
+                "name":"Shieldwall",
+                "desc":"Characters standing on either side of this character gain a bonus to Defensive Ability equal to half of the bonus to Defensive Ability that this character gains from their equipment, but only from attacks in the direction that this character is currently facing."
+            }
+        ],
+        "Berserker":[
+            {
+                "name":"Bloodlust",
+                "desc":"Whenever this character scores a Critical Hit, they gain TP equal to half of the damage they cause."
+            },
+            {
+                "name":"Second Wind",
+                "desc":"When this character’s HP are pushed below 10% (but they have not fainted), they regain all TP and gain an immediate turn."
+            },
+            {
+                "name":"Frenzy",
+                "desc":"If this character’s attack defeats or causes an enemy to faint, they gain an immediate additional turn during which they cannot use Frenzy again."
+            }
+        ],
+        "Vanguard":[
+            {
+                "name":"Armoured Attack",
+                "desc":"Encumbrance does not affect this character’s Attack Accuracy."
+            },
+            {
+                "name":"Armoured Defense",
+                "desc":"Encumbrance does not affect this character’s Defensive Ability."
+            },
+            {
+                "name":"Armoured March",
+                "desc":"Encumbrance does not affect this character’s Move."
+            }
+        ],
+        "Archer":[
+            {
+                "name":"Bowmanship",
+                "desc":"This character may equip bows (others can’t)."
+            },
+            {
+                "name":"Sniper",
+                "desc":"All ranged weapons have +2 Range in this character’s hands."
+            },
+            {
+                "name":"Multi-Targeting",
+                "desc":"When this character is able to make an additional attack with a ranged weapon due to Weapon Speed, they may choose to aim that attack at a different target."
+            }
+        ],
+        "Skirmisher":[
+            {
+                "name":"Dual Wielder",
+                "desc":"When fighting with a weapon in either hand, Defensive Ability and Attack Speed are increased by +5 each."
+            },
+            {
+                "name":"Flanking Strike",
+                "desc":"When attacking an enemy from either side (but not the front or back), this character gains a +30 bonus to Attack Speed."
+            },
+            {
+                "name":"Whirlwind Defense",
+                "desc":"Whenever this character is about to be attacked, they automatically turn to face that attack, gaining all defensive bonuses for facing the enemy."
+            }
+        ],
+        "Assassin":[
+            {
+                "name":"Backstab",
+                "desc":"Any attack on a foe who does not get a defense roll (such as from behind them) has its Crit Chance tripled."
+            },
+            {
+                "name":"Critical Mastery",
+                "desc":"All Critical Hits dealt by this character deal bonus damage equal to their Skill + Level."
+            },
+            {
+                "name":"Critical Flurry",
+                "desc":"Additional attacks on this character’s turn (those gained from Attack Speed) have their Crit Chance increased by +20."
+            }
+        ],
+        "Elementalist":[
+            {
+                "name":"Fire Strike",
+                "desc":"When this character attacks using only a wand, staff, or their fists, they gain a bonus to damage equal to their Skill which cannot be absorbed by DR."
+            },
+            {
+                "name":"Deflecting Whirlwind",
+                "desc":"Ranged attacks against this character suffer a penalty to Attack Accuracy equal to this character’s Skill."
+            },
+            {
+                "name":"Wind Walking",
+                "desc":"This character’s movements ignore all terrain, and they may pass over spaces occupied by enemies."
+            }
+        ],
+        "Illusionist":[
+            {
+                "name":"Illusionary Attack",
+                "desc":"Targets of this character’s attacks suffer a -1 Penalty to Defensive Ability against those attacks for every 10 TP the attacker currently has."
+            },
+            {
+                "name":"Illusionary Defense",
+                "desc":"This character gains a +1 Bonus to Defensive Ability for every 10 TP  they currently have."
+            },
+            {
+                "name":"Draining Strike",
+                "desc":"All damage dealt to enemies also reduces their TP equal to the damage dealt."
+            }
+        ],
+        "Healer":[
+            {
+                "name":"Stabilizing Touch",
+                "desc":"Any character this character carries is Stable while being carried by them."
+            },
+            {
+                "name":"Self Empowerment",
+                "desc":"This character cannot be targeted by Debilitate Techniques."
+            },
+            {
+                "name":"Regenerating Aura",
+                "desc":"Any allied character who ends their turn adjacent to this character gains +5 HP."
+            }
+        ]
+    }
+}

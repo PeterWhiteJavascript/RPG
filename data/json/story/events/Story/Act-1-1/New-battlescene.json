@@ -88,7 +88,7 @@
                 "text": [
                     "Dunzo"
                 ],
-                "asset1": "story\/empty.png",
+                "asset1": "story\/pyro.png",
                 "asset2": "story\/empty.png",
                 "pos": "Left",
                 "autoCycle": 0,
@@ -100,9 +100,9 @@
             {
                 "func": "changeEvent",
                 "props": [
-                    "Character",
-                    "Feasts",
-                    "Feast1"
+                    "Story",
+                    "Act-1-1",
+                    "Full-Test"
                 ]
             }
         ]
