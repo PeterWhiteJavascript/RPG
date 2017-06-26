@@ -106,7 +106,7 @@ Q.newGame=function(options){
         //For now, alex is the only character
         var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea);
         
-        var legion = Q.charGen.generateCharacter({charClass:"Legionnaire",gender:"Female",nationality:"Nomadic",loyalty:90,personality:[["A little","Violent"]]});
+        var legion = Q.charGen.generateCharacter({charClass:"Legionnaire",gender:"Female",nationality:"Nomadic",loyalty:90,personality:[["A little","Violent"]],uniqueId:0});
         //console.log(legion)
         Q.state.set("allies",[storyAlex,legion,astraea]);
         //Set up the new game bag
@@ -134,7 +134,7 @@ Q.newGame=function(options){
         if(Q.state.get("startSceneType")) Q.state.get("saveData").startSceneType = Q.state.get("startSceneType");
         
         //Start a scene
-        Q.startScene(Q.state.get("startSceneType"),Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
+        Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
         
     });
 };

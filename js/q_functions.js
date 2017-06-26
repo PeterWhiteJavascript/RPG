@@ -67,14 +67,14 @@ Quintus.QFunctions=function(Q){
         return "Pragmatic";
     };
     
-    Q.getPathData=function(data,path){
+   /* Q.getPathData=function(data,path){
         var newData = data;
         var arr = path.split('/');
         for(var i=0;i<arr.length;i++){
             newData = newData[arr[i]];
         }
         return newData;
-    };
+    };*/
     Q.setOption=function(opt,value){
         Q.state.p.options[opt]=value;
     };

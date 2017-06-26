@@ -604,7 +604,7 @@ Quintus.Objects=function(Q){
                 //The current exp
                 exp:0
             });
-            this.p.sheet = this.p.charClass;
+            this.p.sheet = this.p.charClass.toLowerCase();
             //Quintus components
             this.add("2d, animation, tween");
             //Custom components

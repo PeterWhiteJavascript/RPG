@@ -21,12 +21,10 @@ Quintus.SceneFuncs=function(Q){
 
                         break;
                     case "battle":
-                        Q.loadTMX(data.bgs.concat(data.chars).concat(data.maps).join(','), function() {
+                        Q.loadTMX(data.map, function() {
                             Q.clearStages();
                             Q.stageScene("battle",0,{data:data});
-
                         });
-
                         break;
                 }
             });
@@ -179,7 +177,6 @@ Quintus.SceneFuncs=function(Q){
                     charName = charName.charAt(0).toUpperCase() + charName.slice(1);
                     return charName;
                 case "level":
-                    
                     return this.scenes[chapter].startLevel+this.getIdx(this.scenes[chapter].spread,this.rand());
                 case "nationality":
                     var natNum = this.getIdx(this.scenes[chapter].natSpread,this.rand());
@@ -300,6 +297,8 @@ Quintus.SceneFuncs=function(Q){
             char.loyalty = data.loyalty?data.loyalty:50;
             char.morale = data.morale?data.morale:50;
             char.name = data.name?data.name:this.generateProp("name",char);
+            //TODO: make sure that if a character has the same name as another character, they have a different uniqueId
+            char.uniqueId = data.uniqueId?data.uniqueId:0;
             char.combatStats = this.generateStats(char);
             
             //For now, there is only one personality generated
@@ -517,34 +516,11 @@ Quintus.SceneFuncs=function(Q){
             obj.p.awards[prop]+=value;
         }
     });
-    Q.scene("battleScene",function(stage){
-        Q.inputs['confirm'] = false;
-        Q.stageScene("fader",11);
-        //Get the data to play out this scene
-        var data = stage.options.data;
-        //Display the tmx tile map
-        //If one is not passed in, we are re-using the map from the previous battle
-        if(data.map){
-            Q.stageTMX(data.map, stage);
-        }
-        stage.lists.TileLayer[0].p.z = 0;
-        stage.lists.TileLayer[1].p.z = 1;
-        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-        stage.add("viewport");
-        stage.viewport.scale = 2;
-        //The invisible sprite that the viewport follows
-        stage.viewSprite = stage.insert(new Q.ViewSprite());
-        Q.viewFollow(stage.viewSprite,stage);
-        //Set the batcon's stage
-        Q.BatCon.stage = stage;
-
-        var allyData = Q.state.get("allies");
-        //data.characters contains a reference to where to find the character data, as well as the character's dir and loc.
+    Q.placeCharacters = function(characters,stage){
         var charData = [];
         //Find the character in the files
         var files = Q.state.get("characterFiles");
-        data.characters.forEach(function(char){
+        characters.forEach(function(char){
             var ref = files[char.file][char.group][char.handle];
             var newChar = {
                 baseStats:ref.baseStats,
@@ -562,8 +538,8 @@ Quintus.SceneFuncs=function(Q){
                 dir:char.dir,
                 loc:char.loc,
                 uniqueId:char.uniqueId
-            }
-            charData.push(newChar)
+            };
+            charData.push(newChar);
         });
         var chars = [];
         charData.forEach(function(char){
@@ -584,7 +560,7 @@ Quintus.SceneFuncs=function(Q){
             //If the character is an ally, get the data from the allies array
             if(char.team==="ally"){
                 //Find the data in the allies array
-                var data = allyData.filter(function(ally){
+                var data = Q.state.get("allies").filter(function(ally){
                     return ally.name===char.name;
                 })[0];
                 if(data){
@@ -606,13 +582,39 @@ Quintus.SceneFuncs=function(Q){
         chars.forEach(function(char){
             stage.insert(char);
         });
+    };
+    Q.scene("battleScene",function(stage){
+        Q.inputs['confirm'] = false;
+        Q.stageScene("fader",11);
+        //Get the data to play out this scene
+        var data = stage.options.data;
+        //Display the tmx tile map
+        //If one is not passed in, we are re-using the map from the previous battle
+        if(data.map){
+            Q.stageTMX(data.map, stage);
+        }
+        stage.lists.TileLayer[0].p.z = 0;
+        stage.lists.TileLayer[1].p.z = 1;
+        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+        stage.add("viewport");
+        stage.viewport.scale = 2;
+        //The invisible sprite that the viewport follows
+        stage.viewSprite = stage.insert(new Q.ViewSprite());
+        Q.viewFollow(stage.viewSprite,stage);
+        //Set the batcon's stage
+        Q.BatCon.stage = stage;
+        
+        Q.placeCharacters(data.characters,stage);
+        
         //DialogueController holds the functions for the battleScene
         Q.stageScene("script",1,{data:data});
     },{sort:true});
     Q.scene("battle",function(stage){
         Q.stageScene("fader",11);
         //The data that is used for this battle
-        var battleData = stage.options.battleData = Q.getPathData(stage.options.data,stage.options.path);
+        var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
+        console.log(stage)
         var music = battleData.music;
         if(!music) music = Q.state.get("currentMusic"); 
         Q.playMusic(music,function(){
@@ -631,26 +633,45 @@ Quintus.SceneFuncs=function(Q){
             stage.add("viewport");
             stage.viewport.scale = 2;
             
+            
             var allyData = Q.state.get("allies");
             var allies = [];
-            allyData.forEach(function(ally,i){
-                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,team:"ally",hp:ally.hp,sp:ally.sp,awards:ally.awards});
+            /*allyData.forEach(function(ally,i){
+                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,team:"ally",hp:ally.hp,tp:ally.tp,awards:ally.awards});
                 char.p.savedData = ally;
                 char.add("statCalcs,save");
                 allies.push(char);
-                char.p.loc = [battleData.placementSquares[i][0],battleData.placementSquares[i][1]];
-                char.p.dir = battleData.placementSquares[i][2];
-            });
+            });*/
             //Display the enemies, interactables, pickups, and placement locations
-            var enemyData = battleData.enemies;
+            var enemyData = battleData.characters;
+            //Find the character in the files
+            var files = Q.state.get("characterFiles");
             var enemies = [];
-            enemyData.forEach(function(enm){
-                var char = new Q.Character({charClass:enm.charClass,level:enm.level,equipmentRank:enm.equipmentRank,equipmentType:enm.equipmentType,gender:"male",team:"enemy",dir:enm.dir?enm.dir:"left",awards:Q.setUpAwards()});
+            enemyData.forEach(function(enemy){
+                var ref = files[enemy.file][enemy.group][enemy.handle];
+                var newChar = {
+                    baseStats:ref.baseStats,
+                    charClass:ref.charClass,
+                    equipment:ref.equipment,//TODO
+                    gender:ref.gender,
+                    levelmax:ref.levelmax,
+                    levelmin:ref.levelmin,
+                    level:Math.floor(Math.random()*(ref.levelmax-ref.levelmin))+ref.levelmin,
+                    name:ref.name,
+                    nationality:ref.nationality,
+                    techniques:ref.techniques,
+                    handle:ref.handle,
+                    group:enemy.group,
+                    file:enemy.file,
+                    dir:enemy.dir,
+                    loc:enemy.loc,
+                    uniqueId:enemy.uniqueId
+                };
+                var char = new Q.Character(newChar);
                 char.add("randomCharacter,statCalcs");
                 enemies.push(char);
-                char.p.loc = enm.loc;
             });
-            
+            /*
             var neutralData = battleData.neutral?battleData.neutral:[];
             var neutral = [];
             neutralData.forEach(function(neu){
@@ -668,34 +689,38 @@ Quintus.SceneFuncs=function(Q){
                 neutral.push(char);
                 char.p.loc = neu.loc;
             });
-            
             var interactables = battleData.ineractables?battleData.ineractables:[];
             var inter = [];
             //Insert the interactables (TODO)
             interactables.forEach(function(){
                 
             });
-            allies.forEach(function(ally){
-                stage.insert(ally);
-            });
+            */
             enemies.forEach(function(enemy){
                 stage.insert(enemy);
             });
-            neutral.forEach(function(neut){
+            /*neutral.forEach(function(neut){
                 stage.insert(neut);
-            });
+            });*/
             //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-            Q.pointer = stage.insert(new Q.Pointer({loc:allies[0].p.loc}));
+            Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
 
             //Default to following the pointer
             Q.viewFollow(Q.pointer,stage);
 
             //Display the hud which shows character and terrain information
             Q.stageScene("battleHUD",3,{pointer:Q.pointer});
-            Q.BatCon.startBattle();
+            Q.BatCon.showPlacementSquares();
+            Q.BatCon.startPlacingAllies();
+            
         });
         
     },{sort:true});
+    //Displayed when selecting a character to place in battle
+    Q.scene("placeCharacterMenu",function(stage){
+        stage.insert(new Q.CharacterSelectionMenu({selected:stage.options.placedIdx}));
+    });
+    
     //Displayed when selecting a character in battle
     Q.scene("characterMenu",function(stage){
         var target = stage.options.target;

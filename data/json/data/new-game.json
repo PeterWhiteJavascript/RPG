@@ -49,8 +49,9 @@
         "Talumpatua":[50,50]
     },
     
-    "startSceneName":"locations",
-    "startEventName":"metaximo1",
+    "startSceneName":"act-1-1",
+    "startSceneType":"Story",
+    "startEventName":"battleTest",
     
     "chapter":"Chapter1-1",
     "applicationsRoster":[]

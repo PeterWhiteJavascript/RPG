@@ -1376,5 +1376,13 @@ Quintus.UIObjects=function(Q){
 
         }
     });
+    Q.UI.Container.extend("PlacementSquare",{
+        init:function(p){
+            this._super(p,{
+                w:32,h:32,fill:"blue"
+            });
+            this.p.z = this.p.y;
+        }
+    });
 };
 

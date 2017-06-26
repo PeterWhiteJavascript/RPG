@@ -28,7 +28,8 @@
             "value":50,
             "method":50,
             "charClass":"knight",
-            "exp":0
+            "exp":0,
+            "uniqueId":0
         },
         {
             "name": "Astrea",
@@ -54,7 +55,8 @@
             "value":50,
             "method":50,
             "charClass":"archer",
-            "exp":80
+            "exp":80,
+            "uniqueId":0
         }
     ],
     "inventory":{

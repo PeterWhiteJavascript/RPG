@@ -65,6 +65,77 @@ Quintus.GameObjects=function(Q){
             }
             return loc;
         },
+        checkStartBattle:function(){
+            var ready = false;
+            var allies = Q.state.get("allies");
+            for(var i=0;i<allies.length;i++){
+                var ally = allies[i];
+                if(ally.placedOnMap){
+                    ready = true;
+                }
+            }
+            if(ready){
+                //Make sure there is at least one character placed.
+                var start = confirm("Start Battle?");
+                if(start){
+                    Q.BatCon.startBattle();
+                }
+            }
+        },
+        checkPlacement:function(){
+            //If there's a character there, select it and go to the directional phase
+            var allies = Q.state.get("allies");
+            for(var i=0;i<allies.length;i++){
+                var ally = allies[i];
+                if(ally.placedOnMap){
+                    if(ally.loc[0]===Q.pointer.p.loc[0]&&ally.loc[1]===Q.pointer.p.loc[1]){
+                        ally.placedOnMap = false;
+                        //Re-create the list of possible allies
+                        Q.BatCon.genPlaceableAllies();
+                        //Find the ally's sprite and set up directional controls for this character
+                        Q.stage(0).lists['Character'].forEach(function(char,j){
+                            if(char.p.name===ally.name&&char.p.uniqueId===ally.uniqueId){
+                                char.add("directionControls");
+                                char.on("pressedConfirm",function(){
+                                    Q.BatCon.confirmPlacement(this);
+                                    this.directionControls.removeControls();
+                                });
+                                char.on("pressedBack",function(){
+                                    this.directionControls.removeControls();
+                                    this.destroy();
+                                    Q.stageScene("placeCharacterMenu",1,{placedIdx:0});
+                                });
+                            }
+                        });
+                        Q.pointer.hide();
+                        Q.pointer.off("checkInputs");
+                        Q.pointer.off("checkConfirm");
+                        Q.pointer.off("pressedConfirm",Q.pointer,"checkPlacement");
+                        Q.pointer.off("pressedShift",Q.pointer,"checkStartBattle");
+                        return;
+                    }
+                }
+            }
+            var canPlace = false;
+            var tiles = Q.BatCon.stage.options.data.placementSquares;
+            //Check if we're on a placement square.
+            tiles.forEach(function(tile){
+                if(Q.pointer.p.loc[0]===tile[0]&&Q.pointer.p.loc[1]===tile[1]){
+                    canPlace = true;
+                }
+            });
+            //If we're on a placement square, load the menu that shows all of the allies that the player can choose from for this battle.
+            if(canPlace){
+                Q.stageScene("placeCharacterMenu",1);
+                this.off("checkInputs");
+                this.off("checkConfirm");
+                this.off("pressedConfirm",this,"checkPlacement");
+                this.off("pressedShift",this,"checkStartBattle");
+                Q.pointer.hide();
+            } else {
+                Q.playSound("cannot_do.mp3");
+            }
+        },
         addControls:function(skill){
             this.show();
             if(skill&&skill.range){
@@ -114,10 +185,13 @@ Quintus.GameObjects=function(Q){
             var input = Q.inputs;
             //If we're trying to load a menu
             if(input['confirm']){
-                this.displayCharacterMenu();
+                this.trigger("pressedConfirm");
+                //this.displayCharacterMenu();
                 input['confirm']=false;
                 return;
             } else if(input['esc']){
+                this.trigger("esc");
+                /*
                 var obj = Q.BatCon.turnOrder[0];
                 //If the character has moved this turn
                 if(obj.p.didMove){
@@ -132,7 +206,10 @@ Quintus.GameObjects=function(Q){
                     }
                 }
                 this.snapTo(obj);
+                */
                 input['esc']=false;
+            } else if(input['shift']){
+                this.trigger("pressedShift");
             }
         },
         //Do the logic for the directional inputs that were pressed
@@ -259,6 +336,7 @@ Quintus.GameObjects=function(Q){
         reset:function(){
             //When an item is inserted into this stage, check if it's an interactable and add it to the grid if it is
             this.stage.on("inserted",this,function(itm){
+                if(!itm.p.loc) return;
                 this.addObjectToBattle(itm);
             });
             this.grid = [];
@@ -514,16 +592,67 @@ Quintus.GameObjects=function(Q){
             this.markedForRemoval = [];
             this.add("attackFuncs,skillFuncs");
         },
+        showPlacementSquares:function(){
+            var stage = this.stage;
+            var tiles = stage.options.data.placementSquares;
+            tiles.forEach(function(tile){
+                var sq = stage.insert(new Q.PlacementSquare({loc:tile}));
+                Q.BatCon.setXY(sq);
+            });
+        },
+        genPlaceableAllies:function(){
+            //All placeable allies (not wounded, must be preset, not already placed)
+            var placeableAllies = [];
+            Q.state.get("allies").forEach(function(ally){
+                if(ally.wounded) return;
+                else if(ally.unavailable) return;
+                else if(ally.placedOnMap) return;
+                placeableAllies.push(Q.charGen.generateCharacter(ally));
+            });
+            this.placeableAllies = placeableAllies;
+        },
+        //Start placing allies at the start of a battle
+        startPlacingAllies:function(){
+            this.genPlaceableAllies();
+            Q.pointer.show();
+            Q.pointer.on("checkInputs");
+            Q.pointer.on("checkConfirm");
+            Q.pointer.on("pressedConfirm","checkPlacement");
+            Q.pointer.on("pressedShift","checkStartBattle");
+        },
+        //Confirms when a character is placed after their direction is set
+        confirmPlacement:function(char){
+            //Find the character in placeable allies and set placedOnMap to true
+            var allies = Q.state.get("allies");
+            for(var i=0;i<allies.length;i++){
+                var ally = allies[i];
+                if(ally.name===char.p.name&&ally.uniqueId===char.p.uniqueId){
+                    ally.placedOnMap = true;
+                    ally.loc = char.p.loc;
+                    i = allies.length;
+                }
+            }
+            this.startPlacingAllies();
+        },
         //Run once at the start of battle
         startBattle:function(){
+            Q.pointer.destroy();
+            Q.clearStage(1);
+            //Create a new pointer
+            Q.pointer = Q.stage(0).insert(new Q.Pointer({loc:[0,0]}));
+            Q.viewFollow(Q.pointer,Q.stage(0));
+            
             this.turnOrder = this.generateTurnOrder(this.stage.lists["Character"]);
+            //TODO: take all of the character locations, destroy all character sprites on the placement squares, create new character sprites that are set up for battle.
+            
             this.allies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="ally"; 
             });
+            console.log(this.allies)
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="enemy"; 
             });
-            
+            //Do start battle animation, and then start turn (TODO)
             this.startTurn();
         },
         finishBattle:function(){
@@ -566,6 +695,7 @@ Quintus.GameObjects=function(Q){
         },
         //Starts the character that is first in turn order
         startTurn:function(){
+            
             var obj = this.turnOrder[0];
             //Hide and disable the pointer if it's not an ally's turn
             //TEMP (Take out false to enable)
@@ -628,6 +758,7 @@ Quintus.GameObjects=function(Q){
                     return turnOrder;
                 }
             };
+            console.log(objects)
             var tO = sortForSpeed();
             return tO;
         },

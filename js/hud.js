@@ -66,6 +66,7 @@ Quintus.HUD=function(Q){
             }
             Q.pointer.on("onTarget",this,"displayTarget");
             Q.pointer.on("offTarget",this,"hideHUD");
+            this.hide();
         },
         displayTarget:function(obj){
             this.show();
@@ -73,7 +74,7 @@ Quintus.HUD=function(Q){
             if(obj.p.team==="enemy") this.p.fill = "crimson";
             var stats = this.p.stats;
             var labels = [
-                ""+obj.p.className,
+                ""+obj.p.charClass,
                 ""+obj.p.level,
                 ""+obj.p.move,
                 ""+obj.p.hp+"/"+obj.p.maxHp,
@@ -241,7 +242,7 @@ Quintus.HUD=function(Q){
                 this.entity.trigger("pressConfirm",this.selected);
                 Q.inputs['confirm']=false;
             }
-            if(Q.inputs['esc']){
+            if(Q.inputs['esc']||Q.inputs['back']){
                 this.entity.trigger("pressBack",this.menuNum);       
                 Q.inputs['esc']=false;
             }
@@ -323,6 +324,8 @@ Quintus.HUD=function(Q){
             var funcs = [];
             var skills = [];
             //Set possible skills
+            console.log(rh)
+            return;
             var rh = target.p.equipment.righthand;
             var lh = target.p.equipment.lefthand;
             if(rh.equipmentType){
@@ -1639,10 +1642,17 @@ Quintus.HUD=function(Q){
 
     Q.component("directionControls", {
         added: function() {
-            this.entity.on("step",this,"step");
-            this.canMove = true;
             this.dirTri = this.entity.stage.insert(new Q.dirTri({x:this.entity.p.x,y:this.entity.p.y}));
             this.dirTri.changePos(this.entity.p.dir,this.entity);
+            this.entity.on("step",this,"step");
+            this.canMove = true;
+        },
+        removeControls:function(){
+            this.entity.off("pressedConfirm");
+            this.entity.off("pressedBack");
+            this.entity.off("step",this,"step");
+            this.entity.del("directionControls");
+            this.entity.stage.remove(this.dirTri);
         },
         step:function(dt){
             var dir;
@@ -1659,13 +1669,105 @@ Quintus.HUD=function(Q){
                 this.entity.playStand(dir);
                 this.dirTri.changePos(this.entity.p.dir,this.entity);
             }
-            if(Q.inputs['confirm']){
-                this.dirTri.destroy();
+            if(Q.inputs['esc']){
+                this.entity.trigger("pressedBack");
+                Q.inputs['esc']=false;
+            } 
+            else if(Q.inputs['confirm']){
+                this.entity.trigger("pressedConfirm");
+                /*
                 Q.BatCon.endTurn();
-                this.entity.del("directionControls");
+                this.entity.del("directionControls");*/
                 Q.inputs['confirm']=false;
             }
         }
     });
-    
+    Q.UI.Container.extend("CharacterSelectionMenu",{
+       init:function(p){
+            this._super(p,{
+                w:200,
+                h:350,
+                fill:"blue",
+                opacity:0.5,
+                border:2,
+                cx:0,cy:0,
+                options:[],
+                conts:[],
+                selected:0
+            });
+            this.p.x = Q.width-this.p.w;
+            this.p.y = Q.height-this.p.h;
+            
+            //Fill this menu with the placeable characters
+            this.p.options.push(Q.BatCon.placeableAllies);
+            //Add the inputs for the menu
+            this.add("menuControls");
+            this.on("inserted");
+        },
+        
+        inserted:function(){
+            //When the user presses back
+            this.on("pressBack");
+            //When the user presses confirm
+            this.on("pressConfirm");
+            //When hovering an option, change the character sprite
+            this.on("hoverOption");
+            //Turn on the inputs
+            this.menuControls.turnOnInputs();
+            //Display the menu options
+            this.displayMenu(this.menuControls.menuNum,this.p.selected);
+        },
+        displayMenu:function(menuNum,selected){
+            this.menuControls.menuNum = menuNum;
+            if(this.p.conts.length) this.menuControls.destroyConts();
+            var options = this.p.options[menuNum];
+            this.p.conts = [];
+            for(var i=0;i<options.length;i++){
+                var cont = this.insert(new Q.UI.Container({x:10,y:10+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0}));
+                cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i].name,cx:0,size:16}));
+                this.p.conts.push(cont);
+            }
+            this.menuControls.selected = 0;
+            this.menuControls.cycle(selected);
+        },
+        //Confirm that this character is the one that should be selected. Load the directional phase.
+        pressConfirm:function(){
+            var idx = this.menuControls.selected;
+            this.placingCharacter.add("directionControls");
+            this.placingCharacter.on("pressedConfirm",function(){
+                Q.BatCon.confirmPlacement(this);
+                this.directionControls.removeControls();
+            });
+            this.placingCharacter.on("pressedBack",function(){
+                this.directionControls.removeControls();
+                this.destroy();
+                Q.stageScene("placeCharacterMenu",1,{placedIdx:idx});
+            });
+            this.destroy();
+            Q.clearStage(1);
+        },
+        //Go back to the pointer
+        pressBack:function(){
+            if(this.placingCharacter){
+                if(this.placingCharacter.has("directionControls")) this.placingCharacter.directionControls.removeControls();
+                this.placingCharacter.destroy();
+            }
+            this.destroy();
+            Q.pointer.trigger("offTarget");
+            Q.clearStage(1);
+            Q.pointer.show();
+            Q.pointer.on("checkInputs");
+            Q.pointer.on("checkConfirm");
+            Q.pointer.on("pressedConfirm","checkPlacement");
+            Q.pointer.on("pressedShift","checkStartBattle");
+        },
+        hoverOption:function(num){
+            var char = Q.BatCon.placeableAllies[num];
+            char.loc = Q.pointer.p.loc;
+            if(this.placingCharacter) this.placingCharacter.destroy();
+            this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
+            //console.log(Q.stage(0).lists['Character'])
+            Q.pointer.trigger("onTarget",this.placingCharacter);
+        }
+    });
 };
