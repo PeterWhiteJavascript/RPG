@@ -118,8 +118,31 @@ Quintus.SceneFuncs=function(Q){
                     
                     char.primaryStat = this.primaryStats[char.classNum];
                     char.secondaryStat = this.secondaryStats[char.classNum];
-                    
-                    char.equipment = data.equipment || this.generateAllEquipment(char.charClass);//TODO
+                    //Generate random values for the roster. At the moment it's the same as enemy generation
+                    char.equipment = this.getEquipment(
+                        {
+                            "righthand": [
+                                "Default",
+                                "Default",
+                                "Default"
+                            ],
+                            "lefthand": [
+                                "Default",
+                                "Default",
+                                "Default"
+                            ],
+                            "armour": [
+                                "Default",
+                                "Default",
+                                "Default"
+                            ],
+                            "footwear": [
+                                "Default",
+                                "Default",
+                                "Default"
+                            ],
+                            "accessory": "None"
+                        },char.classNum,char.natNum,char.level);
                     char.techniques = data.techniques || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
                     char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.secondaryStat,char.level);//Requires level, primary, and secondary
                     char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
@@ -223,7 +246,7 @@ Quintus.SceneFuncs=function(Q){
                     char.primaryStat = this.primaryStats[char.classNum];
                     char.secondaryStat = this.secondaryStats[char.classNum];
                     
-                    char.equipment = this.enemyEquipment(data.equipment,char.classNum,char.natNum);
+                    char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
                     
                     char.techniques = data.techniques;//Techniques are always filled out and are not random for enemies.
                     char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.secondaryStat);
@@ -287,6 +310,7 @@ Quintus.SceneFuncs=function(Q){
         //Changes the equipment from an array to an object containing all of the stats from equipment.json
         //eq is an array [gearMaterial,gearName]
         convertEquipment:function(eq,quality){
+            if(!eq) return false;
             var data = this.equipment.gear[eq[1]];
             var keys = Object.keys(data);
             var gear = {
@@ -310,14 +334,14 @@ Quintus.SceneFuncs=function(Q){
             if(gear.damageReduction) gear.damageReduction = Math.ceil(gear.damageReduction*materialData[1]*qualityData[0]);
             return gear;
         },
-        enemyEquipment:function(val,classNum,natNum){
-            var rh = this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],classNum,natNum));
+        getEquipment:function(val,classNum,natNum,level){
+            var rh = this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],level));
             var lh = false;
             if(rh.hands!==2){
-                lh = this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],classNum,natNum));
+                lh = this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],level));
             }
-            var ar = this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],classNum,natNum));
-            var ft = this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],classNum,natNum));
+            var ar = this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],level));
+            var ft = this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],level));
             //Accessory is always either set or not. No Random.
             var ac = false;
             if(val.accessory&&val.accessory!=="None"){
@@ -476,16 +500,6 @@ Quintus.SceneFuncs=function(Q){
                 techs.push(allSkills[charClass][i]);
             }
             return techs;
-        },
-        //Used for the applications roster. TODO: take into account the act for what equipment to spawn. Also the charClass.
-        generateAllEquipment:function(charClass){
-            var equipment = {};
-            equipment.righthand = this.randomizeEquipment();
-            equipment.lefthand = this.randomizeEquipment();
-            equipment.armour = this.randomizeEquipment();
-            equipment.footwear = this.randomizeEquipment();
-            equipment.accessory = false;//this.randomizeEquipment("Accessory");
-            return equipment;
         },
         //Generates a random piece of equipment by filling in the vars that are to be randomized.
         randomizeEquipment:function(quality,material,gear){

@@ -44,8 +44,8 @@
         "equipment":{
             "righthand":["Average","Brass","Short Sword"],
             "lefthand":["Average","Wood","Small Shield"],
-            "body":["Average","Soft Leather","Shirt"],
-            "feet":["Average","Wood","Shoes"],
+            "armour":["Average","Soft Leather","Shirt"],
+            "footwear":["Average","Wood","Shoes"],
             "accessory":false
         },
         "baseStats":{
