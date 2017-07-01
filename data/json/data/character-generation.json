@@ -3,13 +3,15 @@
     "values":["Egoist","Nepotist","Altruist"],
     "methodologies":["Pragmatic","Intuitive","Kind"],
     "classNames":["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"],
+    "firstPromotion":["Veteran","Ravager","Champion","Cutthroat","Harrier","Sharpshooter","Occultist","Druid","Miraclist"],
+    "secondPromotion":["Warlord","Destroyer","Hero","Eradicator","Marauder","Deadshot","Sorcerer","Wild Mage","Saint"],
     "genders":["Male","Female"],
     "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
     "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
     "primaryStats":["wsk","str","end","dex","rfl","ini","eff","skl","enr"],
     "secondaryStats":["str","end","wsk","ini","dex","rfl","skl","eff","skl"],
-    "order":["primary","secondary","primary","random","auto"],
-    "autoChance":["primary","primary","secondary","random"],
+    "order":["primary","secondary","primary","secondary","primary"],
+    "autoChance":["primary","primary","secondary","primary"],
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
@@ -140,67 +142,67 @@
         ]
     },
     "scenes":{
-        "Chapter1-1":{
+        "Act-1-1":{
             "startLevel":1,
             "spread":[75,15,7,3],
             "natSpread":[80,10,7,1,2]
         },
-        "Chapter1-2":{
+        "Act-1-2":{
             "startLevel":3,
             "spread":[5,20,40,20,10,5],
             "natSpread":[80,5,4,1,10]
         },
-        "Chapter1-3":{
+        "Act-1-3":{
             "startLevel":7,
             "spread":[5,20,40,20,10,5],
             "natSpread":[80,15,3,1,1]
         },
-        "Chapter1-4":{
+        "Act-1-4":{
             "startLevel":11,
             "spread":[5,20,40,20,10,5],
             "natSpread":[70,5,15,5,5]
         },
-        "Chapter2-1":{
+        "Act-2-1":{
             "startLevel":15,
             "spread":[5,20,40,20,10,5],
             "natSpread":[5,15,75,1,4]
         },
-        "Chapter2-2":{
+        "Act-2-2":{
             "startLevel":19,
             "spread":[5,20,40,20,10,5],
             "natSpread":[5,15,75,1,4]
         },
-        "Chapter2-3":{
+        "Act-2-3":{
             "startLevel":23,
             "spread":[5,20,40,20,10,5],
             "natSpread":[5,15,75,1,4]
         },
-        "Chapter2-4":{
+        "Act-2-4":{
             "startLevel":27,
             "spread":[5,20,40,20,10,5],
             "natSpread":[5,15,75,1,4]
         },
-        "Chapter3-1":{
+        "Act-3-1":{
             "startLevel":31,
             "spread":[5,20,40,20,10,5],
             "natSpread":[15,60,15,7,3]
         },
-        "Chapter3-2":{
+        "Act-3-2":{
             "startLevel":35,
             "spread":[5,20,40,20,10,5],
             "natSpread":[2,2,1,94,1]
         },
-        "Chapter3-3":{
+        "Act-3-3":{
             "startLevel":39,
             "spread":[5,20,40,20,10,5],
             "natSpread":[4,10,4,80,2]
         },
-        "Chapter3-4":{
+        "Act-3-4":{
             "startLevel":43,
             "spread":[5,20,40,20,10,5],
             "natSpread":[2,2,1,94,1]
         },
-        "FinalChapter":{
+        "FinalAct":{
             "startLevel":47,
             "spread":[5,20,40,20,10,5],
             "natSpread":[60,10,10,10,10]

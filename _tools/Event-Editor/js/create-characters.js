@@ -40,7 +40,7 @@ $(function(){
             });
             //Equipment
             var equipment = this.equipmentData = JSON.parse($("#equipment").text());
-            var hands = ["Default","Random","None"].concat(Object.keys(equipment.Weapons)).concat(Object.keys(equipment.Shields));
+            var hands = ["Default","None"].concat(Object.keys(equipment.Weapons)).concat(Object.keys(equipment.Shields));
             var cont = $("#char-box-left").children(".equipment-cont");
             $(cont).children(".prop-cont").children(".char-prop").each(function(num,e){
                 var prop = $(e).attr("class").split(" ")[1];
@@ -60,12 +60,12 @@ $(function(){
                         });
                         break;
                     case "armour-gear":
-                        ["Default","Random","None"].concat(Object.keys(equipment.Armour)).forEach(function(obj){
+                        ["Default","None"].concat(Object.keys(equipment.Armour)).forEach(function(obj){
                             DC.addOption($(e),obj);
                         });
                         break;
                     case "footwear-gear":
-                        ["Default","Random","None"].concat(Object.keys(equipment.Footwear)).forEach(function(obj){
+                        ["Default","None"].concat(Object.keys(equipment.Footwear)).forEach(function(obj){
                             DC.addOption($(e),obj);
                         });
                         break;
@@ -531,7 +531,7 @@ $(function(){
         
         $(".accessory").val("None");
     });
-    $("#rand-equipment-button").click(function(){
+    /*$("#rand-equipment-button").click(function(){
         $(".right-hand-quality").val("Random");
         $(".right-hand-gear").val("Random");
         $(".right-hand-gear").trigger("change");
@@ -551,7 +551,7 @@ $(function(){
         $(".footwear-gear").val("Random");
         $(".footwear-gear").trigger("change");
         $(".footwear-material").val("Random");
-    });
+    });*/
     $("#full-rand-equipment-button").click(function(){
         var ra = function(cl){
             options = $(cl+" > option");

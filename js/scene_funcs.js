@@ -82,6 +82,306 @@ Quintus.SceneFuncs=function(Q){
             this.secondaryStats = data.secondaryStats;
             this.order = data.order;
             this.autoChance = data.autoChance;
+            
+            this.equipment = Q.state.get("equipment");
+            this.qualityKeys = Object.keys(this.equipment.Quality);
+        },
+        //Generates a character by processing the passed in data.
+        //All properties are included except loc and dir, which depend on the event.
+        //These properties should be added to the returned character
+        generateCharacter:function(data,type){
+            var char = {};
+            var act = "Act-"+Q.state.get("saveData").act;
+            switch(type){
+                //Create a character for the applications roster.
+                //Data will not be completely random, but will be based on the act/chapter.
+                //Seeds are taken from the character-genartion.json file.
+                case "roster":
+                    char.team = "ally";
+                    //Generate the level based on the Act
+                    char.level = data.level || this.generateLevel(act);
+                    char.nationality = data.nationality || this.generateNationality(act);
+                    
+                    if(data.personality){
+                        char.personality = data.personality;
+                    } else {
+                        char.personality = [];
+                        for(var i=0,j=Math.ceil(Math.random()*3);i<j;i++){
+                            char.personality.push(this.generatePersonality());
+                        }
+                    }
+                    
+                    char.natNum = this.getNatNum(char.nationality);
+                    char.charClass = data.charClass || this.generateCharClass(char.nationality);
+                    char.classNum = this.getClassNum(char.charClass);
+                    char.charGroup = this.generateCharGroup(char.classNum);
+                    
+                    char.primaryStat = this.primaryStats[char.classNum];
+                    char.secondaryStat = this.secondaryStats[char.classNum];
+                    
+                    char.equipment = data.equipment || this.generateAllEquipment(char.charClass);//TODO
+                    char.techniques = data.techniques || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
+                    char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.secondaryStat,char.level);//Requires level, primary, and secondary
+                    char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
+                    char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
+                    char.combatStats = this.getCombatStats(char);
+                    
+                    char.exp = data.exp || 0;
+                    char.loyalty = data.loyalty || 50;
+                    char.morale = data.morale || 50;
+                    break;
+                //Special case for Alex as he/she does not have personality, methodology, value, loyalty, or morale.
+                case "alex":
+                    char.team = "ally";
+                    char.officer = true;
+                    char.name = data.name;
+                    char.level = data.level;
+                    char.gender = data.gender;
+                    char.equipment = {
+                        righthand:data.equipment.righthand?this.convertEquipment([data.equipment.righthand[1],data.equipment.righthand[2]],data.equipment.righthand[0]):false,
+                        lefthand:data.equipment.lefthand?this.convertEquipment([data.equipment.lefthand[1],data.equipment.lefthand[2]],data.equipment.lefthand[0]):false,
+                        armour:data.equipment.armour?this.convertEquipment([data.equipment.armour[1],data.equipment.armour[2]],data.equipment.armour[0]):false,
+                        footwear:data.equipment.footwear?this.convertEquipment([data.equipment.footwear[1],data.equipment.footwear[2]],data.equipment.footwear[0]):false,
+                        accessory:data.equipment.accessory?this.equipment.gear[data.accessory]:false
+                    };
+                    char.baseStats = data.baseStats;
+                    char.techniques = data.techniques;
+                    char.nationality = data.nationality;
+                    char.natNum = this.getNatNum(char.nationality);
+                    char.charClass = data.charClass;
+                    char.classNum = this.getClassNum(char.charClass);
+                    char.charGroup = this.generateCharGroup(char.classNum);
+                    
+                    char.exp = data.exp;
+                    char.primaryStat = data.primaryStat;
+                    char.secondaryStat = data.secondaryStat;
+                    
+                    char.combatStats = this.getCombatStats(char);
+                    char.uniqueId = 0;
+                break;
+                //This is done when generating an officer from the officers.json. Only do this for new officers.
+                //Officers have all of their properties preset so they always start the same each playthrough.
+                case "officer":
+                    //Set this character to officer for easy reference later.
+                    char.officer = true;
+                    data.uniqueId = 0;
+                //Take the save data and create an ally character based on it.
+                //This is done only when the game is initialized.
+                case "saved":
+                    char.team = "ally";
+                    char.name = data.name;
+                    char.uniqueId = data.uniqueId;
+                    char.level = data.level;
+                    char.gender = data.gender;
+                    
+                    char.equipment = {
+                        righthand:data.equipment.righthand?this.convertEquipment([data.equipment.righthand[1],data.equipment.righthand[2]],data.equipment.righthand[0]):false,
+                        lefthand:data.equipment.lefthand?this.convertEquipment([data.equipment.lefthand[1],data.equipment.lefthand[2]],data.equipment.lefthand[0]):false,
+                        armour:data.equipment.armour?this.convertEquipment([data.equipment.armour[1],data.equipment.armour[2]],data.equipment.armour[0]):false,
+                        footwear:data.equipment.footwear?this.convertEquipment([data.equipment.footwear[1],data.equipment.footwear[2]],data.equipment.footwear[0]):false,
+                        accessory:data.equipment.accessory?this.equipment.gear[data.accessory]:false
+                    };
+                    char.baseStats = data.baseStats;
+                    char.techniques = data.techniques;
+                    char.nationality = data.nationality;
+                    char.natNum = this.getNatNum(char.nationality);
+                    char.charClass = data.charClass;
+                    char.classNum = this.getClassNum(char.charClass);
+                    char.charGroup = this.generateCharGroup(char.classNum);
+                    
+                    char.value = data.value;
+                    char.methodology = data.methodology;
+                    char.exp = data.exp;
+                    char.primaryStat = data.primaryStat;
+                    char.secondaryStat = data.secondaryStat;
+                    char.loyalty = data.loyalty;
+                    char.morale = data.morale;
+                    char.personality = data.personality;
+                    
+                    char.combatStats = this.getCombatStats(char);
+                    break;
+                //Create an enemy used in battles
+                //The data will include a reference to the actual character properties that are in the character's file.
+                case "enemy":
+                    char.team = "enemy";
+                    char.loc = data.loc;
+                    char.dir = data.dir;
+                    char.uniqueId = data.uniqueId;
+                    char.exp = 0;
+                    //Reset the data variable
+                    data = Q.state.get("characterFiles")[data.file][data.group][data.handle];
+                    
+                    //Random number between levelmin and levelmax
+                    char.level = Math.floor(Math.random()*(data.levelmax-data.levelmin))+data.levelmin;
+                    char.nationality = data.nationality==="Random"?this.generateNationality(act):data.nationality;
+                    
+                    char.natNum = this.getNatNum(char.nationality);
+                    char.charClass = data.charClass==="Random"?this.generateCharClass(char.nationality):data.charClass;
+                    char.classNum = this.getClassNum(char.charClass);
+                    char.charGroup = this.generateCharGroup(char.classNum);
+                    
+                    char.primaryStat = this.primaryStats[char.classNum];
+                    char.secondaryStat = this.secondaryStats[char.classNum];
+                    
+                    char.equipment = this.enemyEquipment(data.equipment,char.classNum,char.natNum);
+                    
+                    char.techniques = data.techniques;//Techniques are always filled out and are not random for enemies.
+                    char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.secondaryStat);
+                    
+                    char.gender = data.gender==="Random"?this.generateGender(char.charClass,char.natNum):data.gender;//Requires charClass and natNum
+                    char.name = data.name.length ? data.name : this.generateName(char.natNum,char.gender);
+                    
+                    char.combatStats = this.getCombatStats(char);
+                    break;
+                //Creates a simple character sprite used in battle scenes.
+                //Doesn't generate combat 
+                case "simple":
+                    
+                    break;
+            }
+            return char;
+        },
+        equipQuality:function(val,level){
+            var qualities = Q.state.get("defaultEquipment").quality;
+            var qualityChance = 0;
+            switch(val){
+                case "Default":
+                    if(level>=50) qualityChance = 5;
+                    else if(level>=40) qualityChance = 4;
+                    else if(level>=30) qualityChance = 3;
+                    else if(level>=20) qualityChance = 2;
+                    else if(level>=10) qualityChance = 1;
+                    else if(level>=1) qualityChance = 0;
+                    return this.qualityKeys[this.getIdx(qualities[qualityChance],this.rand())];
+                case "Random Low":
+                    qualityChance = Math.floor(Math.random()*2);
+                    return this.qualityKeys[qualityChance];
+                case "Random Medium":
+                    qualityChance = Math.floor(Math.random()*3)+2;
+                    return this.qualityKeys[qualityChance];
+                case "Random High":
+                    qualityChance = Math.floor(Math.random()*2)+5;
+                    return this.qualityKeys[qualityChance];
+                case "Random":
+                    qualityChance = Math.floor(Math.random()*7);
+                    return this.qualityKeys[qualityChance];
+                default:
+                    return val;
+            }
+        },
+        //Position is rh,lh,armour, etc..
+        equipGear:function(gearName,material,classNum,natNum,position){
+            switch(gearName){
+                case "Default":
+                    var gear = Q.state.get("defaultEquipment").gear;
+                    var eq = gear[classNum][natNum][position];
+                    //Randomize between the few that are here
+                    //The 0th position is reserved for the random chance array.
+                    return eq[this.getIdx(eq[0],this.rand())+1];
+                case "None":
+                    return false;
+                default:
+                    return [gear,material];
+            }
+        },
+        //Changes the equipment from an array to an object containing all of the stats from equipment.json
+        //eq is an array [gearMaterial,gearName]
+        convertEquipment:function(eq,quality){
+            var data = this.equipment.gear[eq[1]];
+            var keys = Object.keys(data);
+            var gear = {
+                material:eq[0],
+                quality:quality,
+                name:eq[1]
+            };
+            keys.forEach(function(key){
+                if(key==="materials") return;
+                gear[key] = data[key];
+            });
+            var materialData = this.equipment.Materials[gear.material];
+            var qualityData = this.equipment.Quality[gear.quality];
+            gear.weight = Math.ceil(gear.weight+materialData[0]);
+            gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]);
+            if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
+            if(gear.wield) gear.wield = Math.ceil(gear.wield*qualityData[0]);
+            if(gear.mindmg) gear.mindmg = Math.ceil(gear.mindmg*materialData[1]);
+            if(gear.maxdmg) gear.maxdmg = Math.ceil(gear.maxdmg*materialData[1]);
+            if(gear.speed) gear.speed = Math.ceil(gear.speed*qualityData[0]);
+            if(gear.damageReduction) gear.damageReduction = Math.ceil(gear.damageReduction*materialData[1]*qualityData[0]);
+            return gear;
+        },
+        enemyEquipment:function(val,classNum,natNum){
+            var rh = this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],classNum,natNum));
+            var lh = false;
+            if(rh.hands!==2){
+                lh = this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],classNum,natNum));
+            }
+            var ar = this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],classNum,natNum));
+            var ft = this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],classNum,natNum));
+            //Accessory is always either set or not. No Random.
+            var ac = false;
+            if(val.accessory&&val.accessory!=="None"){
+                ac = this.equipment.gear[val.accessory];
+            }
+            return {
+               righthand:rh,
+               lefthand:lh,
+               armour:ar,
+               footwear:ft,
+               accessory:ac
+            };
+        },
+        enemyBaseStats:function(val,level,primary,secondary){
+            if(Q._isArray(val)){
+                switch(val[0]){
+                    case "Random":
+                        switch(val[1]){
+                            case "Low":
+                                return this.statsToLevel(this.generateBaseStats(10,5),primary,secondary,level);
+                            case "Medium":
+                                return this.statsToLevel(this.generateBaseStats(12,5),primary,secondary,level);
+                            case "High":
+                                return this.statsToLevel(this.generateBaseStats(15,5),primary,secondary,level);
+                            case "Maxed":
+                                return this.statsToLevel(this.generateBaseStats(20,0),primary,secondary,level);
+                        }
+                        break;
+                    case "Specialized":
+                        switch(val[1]){
+                            case "Low":
+                                var stats = this.statsToLevel(this.generateBaseStats(10,5),primary,secondary,level);
+                                stats[primary]+=5;
+                                stats[secondary]+=3;
+                                return stats;
+                            case "Medium":
+                                var stats = this.statsToLevel(this.generateBaseStats(12,5),primary,secondary,level);
+                                stats[primary]+=5;
+                                stats[secondary]+=3;
+                                return stats;
+                            case "High":
+                                var stats = this.statsToLevel(this.generateBaseStats(15,5),primary,secondary,level);
+                                stats[primary]+=5;
+                                stats[secondary]+=3;
+                                return stats;
+                            case "Maxed":
+                                var stats = this.statsToLevel(this.generateBaseStats(20,0),primary,secondary,level);
+                                stats[primary]+=5;
+                                stats[secondary]+=3;
+                                return stats;
+                        }
+                        break;
+                }
+            } 
+            //If the stats are in object form, they are already generated
+            else {
+                return val;
+            }
+        },
+        getNatNum:function(nat){
+            return this.nationalities.indexOf(nat);
+        },
+        getClassNum:function(cl){
+            return this.classNames.indexOf(cl);
         },
         getIdx:function(group,num){
             //Loop through elements in array until a match is found
@@ -91,6 +391,43 @@ Quintus.SceneFuncs=function(Q){
                     return i;
                 }
             }
+        },
+        generatePersonality:function(){
+            return this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
+        },
+        generateMethodology:function(charClass,natNum){
+            return this.methodologies[this.getIdx(this.classes[charClass].methodology[natNum],this.rand())];
+        },
+        generateValue:function(charClass,natNum){
+            return this.values[this.getIdx(this.classes[charClass].value[natNum],this.rand())];
+        },
+        generateLevel:function(act){
+            return this.scenes[act].startLevel+this.getIdx(this.scenes[act].spread,this.rand());  
+        },
+        generateCharClass:function(nationality){
+            return this.classKeys[this.getIdx(this.natClasses[nationality].classSpread,this.rand())];
+        },
+        generateCharGroup:function(classNum){
+            return classNum<3?"Fighter":classNum>5?"Mage":"Rogue";
+        },
+        generateNationality:function(act){
+            return this.natKeys[this.getIdx(this.scenes[act].natSpread,this.rand())];
+        },
+        generateGender:function(charClass,natNum){
+            return this.genders[this.getIdx([this.classes[charClass].gender[natNum],100],this.rand())]; 
+        },
+        
+        generateName:function(natNum,gender){
+            var numNameParts = this.getIdx(this.nameParts[natNum].nameParts,this.rand())+1;
+            var charName = "";
+            var main = this.nameParts[natNum].main;
+            for(var i=0;i<numNameParts;i++){
+                charName+=main[Math.floor(Math.random()*main.length)];
+            }
+            //Nomads have different prefix
+            if(this.nationalities[natNum]==="Nomadic") charName=this.nameParts[natNum][gender][Math.floor(Math.random()*this.nameParts[natNum][gender].length)]+charName;
+            else charName+=this.nameParts[natNum][gender][Math.floor(Math.random()*this.nameParts[natNum][gender].length)];
+            return charName.charAt(0).toUpperCase() + charName.slice(1);
         },
         levelUp:function(statTo,stats,primary,secondary){
             switch(statTo){
@@ -109,144 +446,174 @@ Quintus.SceneFuncs=function(Q){
             }
             return stats;
         },
-        getNatNum:function(nat){
-            return this.nationalities.indexOf(nat);
-        },
-        getClassNum:function(cl){
-            return this.classNames.indexOf(cl);
-        },
-        getStats:function(level,classNum){
-            var stats = {};
-            //Set all starting stats
-            this.statNames.forEach(function(st){
-                stats[st] = Math.floor(Math.random()*10)+10;
-            });
-            var primary = this.primaryStats[classNum];
-            var secondary = this.secondaryStats[classNum];
+        statsToLevel:function(stats,primary,secondary,level){
             stats[primary]+=5;
             stats[secondary]+=3;
-            
             for(var idx=0;idx<level;idx++){
                 var num = idx%this.order.length;
                 stats = this.levelUp(this.order[num],stats,primary,secondary);
-            }
+            }  
             return stats;
         },
-        
-        generateSkills:function(char){
-            var allSkills = Q.state.get("skills");
-            //To do: Come up with a way to give reasonable skills
-            var skills = {};
-            skills[char.charClass] = [allSkills[char.charClass][0],allSkills[char.charClass][1]];
-            return skills;
+        //Generate lv 1 base stats for a character with control over the range of random values (default 10-20)
+        generateBaseStats:function(min,variance){
+            min = min?min:10,variance = variance?variance:10;
+            var stats = {};
+            //Set all lv 1 stats
+            this.statNames.forEach(function(st){
+                stats[st] = Math.floor(Math.random()*variance)+min;
+            });
+            return stats;
         },
-        generateAllEquipment:function(char){
+        generateTechniques:function(charClass,level){
+            var allSkills = Q.state.get("skills");
+            var techs = [];
+            //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
+            var len = Math.floor(level/4)+1;
+            //For now, always give class specific techniques.
+            if(len>6) len = 6;
+            for(var i=0;i<len;i++){
+                techs.push(allSkills[charClass][i]);
+            }
+            return techs;
+        },
+        //Used for the applications roster. TODO: take into account the act for what equipment to spawn. Also the charClass.
+        generateAllEquipment:function(charClass){
             var equipment = {};
-            equipment.righthand = this.randomizeEquipment("Weapons");
-            equipment.lefthand = this.randomizeEquipment("Shields");
-            equipment.armour = this.randomizeEquipment("Armour");
-            equipment.footwear = this.randomizeEquipment("Footwear");
+            equipment.righthand = this.randomizeEquipment();
+            equipment.lefthand = this.randomizeEquipment();
+            equipment.armour = this.randomizeEquipment();
+            equipment.footwear = this.randomizeEquipment();
             equipment.accessory = false;//this.randomizeEquipment("Accessory");
             return equipment;
         },
         //Generates a random piece of equipment by filling in the vars that are to be randomized.
-        randomizeEquipment:function(type,quality,material,gear){
-            var eq = Q.state.get("equipment")[type];
-            if(!quality) quality = Object.keys(Q.state.get("equipment").Quality)[Math.floor(Math.random()*Object.keys(Q.state.get("equipment").Quality).length)];
+        randomizeEquipment:function(quality,material,gear){
+            var eq = this.equipment.gear;
+            if(!quality) quality = this.qualityKeys[Math.floor(Math.random()*this.qualityKeys.length)];
             if(!gear) gear = Object.keys(eq)[Math.floor(Math.random()*Object.keys(eq).length)];
             if(!material) material = eq[gear].materials[Math.floor(Math.random()*eq[gear].materials.length)];
-            return [type,quality,material,gear];
+            return [quality,material,gear];
         },
         rand:function(){
             return Math.ceil(Math.random()*100);
         },
-        generateProp:function(prop,char){
-            var chapter = Q.state.get("saveData").chapter;
-            switch(prop){
-                case "name":
-                    var numNameParts = this.getIdx(this.nameParts[char.natNum].nameParts,this.rand())+1;
-                    var charName = "";
-                    var main = this.nameParts[char.natNum].main;
-                    for(var i=0;i<numNameParts;i++){
-                        charName+=main[Math.floor(Math.random()*main.length)];
-                    }
-
-                    //Nomads have different prefix
-                    if(this.nationalities[char.natNum]==="Nomadic") charName=this.nameParts[char.natNum][char.gender][Math.floor(Math.random()*this.nameParts[char.natNum][char.gender].length)]+charName;
-                    else charName+=this.nameParts[char.natNum][char.gender][Math.floor(Math.random()*this.nameParts[char.natNum][char.gender].length)];
-                    charName = charName.charAt(0).toUpperCase() + charName.slice(1);
-                    return charName;
-                case "level":
-                    return this.scenes[chapter].startLevel+this.getIdx(this.scenes[chapter].spread,this.rand());
-                case "nationality":
-                    var natNum = this.getIdx(this.scenes[chapter].natSpread,this.rand());
-                    char.natNum = natNum;
-                    var charNat = this.natKeys[natNum];
-                    return charNat;
-                case "charClass":
-                    var classNum = this.getIdx(this.natClasses[char.nationality].classSpread,this.rand());
-                    char.classNum = classNum;
-                    var charClass = this.classKeys[classNum];
-                    return charClass;
-                case "gender":
-                    return this.genders[this.getIdx([this.classes[char.charClass].gender[char.natNum],100],this.rand())];
-                case "value":
-                    return this.values[this.getIdx(this.classes[char.charClass].value[char.natNum],this.rand())];
-                case "methodology":
-                    return this.methodologies[this.getIdx(this.classes[char.charClass].methodology[char.natNum],this.rand())];
-                case "personality":
-                    return [this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];
-                    
-            }
+        getEquipmentProp:function(prop,eq){
+            return eq&&eq[prop]?eq[prop]:0;
         },
-        
-        generateStats:function(char){
+        getCombatStats:function(char){
             var stats = {
-                maxHp:this.getHp(char.level,char.baseStats.str,char.baseStats.end),
-                painTolerance:100,
-                maxTp:this.getTp(char.level,char.baseStats.dex),
-                accuracy:100,
-                criticalChance:0,//this.getCriticalChance(base),
-                defense:0,//this.getDefense(base),
-                attackSpeed:100,
-                range:0,//this.getRange(base),
-                maxAtk:0,//this.getDamageHigh(base),
-                minAtk:0,//this.getDamageLow(base),
-                encThreshold:100,
-                totalWeight:100,
-                encPenalty:100,
-                moveSpeed:0,//this.getSpeed(base),
-                move:Q.state.get("charClasses")[char.charClass].move,
-                zoc:0//Q.state.get("charClasses")[char.charClass].zoc
+                maxHp:this.getHp(char.level,char.baseStats.end,char.charGroup),
+                painTolerance:this.getPainTolerance(char.level,char.baseStats.end,char.charGroup),
+                damageReduction:this.getDamageReduction(this.getEquipmentProp("damageReduction",char.equipment.armour)),
+                physicalResistance:this.getPhysicalResistance(char.baseStats.str,char.baseStats.end),
+                mentalResistance:this.getMentalResistance(char.baseStats.ini,char.baseStats.eff),
+                magicalResistance:this.getMagicalResistance(char.baseStats.enr,char.baseStats.skl),
+                
+                atkRange:this.getAttackRange(this.getEquipmentProp("range",char.equipment.righthand),this.getEquipmentProp("range",char.equipment.lefthand)),
+                maxAtkDmg:this.getMaxAttackDamage(char.baseStats.str,char.level,this.getEquipmentProp("maxdmg",char.equipment.righthand),this.getEquipmentProp("handed",char.equipment.righthand),char.charGroup),
+                minAtkDmg:this.getMinAttackDamage(char.baseStats.str,char.level,this.getEquipmentProp("mindmg",char.equipment.righthand),this.getEquipmentProp("handed",char.equipment.righthand),char.charGroup),
+                maxSecondaryDmg:this.getMaxSecondaryAttackDamage(char.baseStats.str,char.level,this.getEquipmentProp("maxdmg",char.equipment.lefthand),char.charGroup),
+                minSecondaryDmg:this.getMinSecondaryAttackDamage(char.baseStats.str,char.level,this.getEquipmentProp("mindmg",char.equipment.lefthand),char.charGroup),
+                
+                maxTp:this.getTp(char.baseStats.enr,char.level,char.charGroup),
+                
+                encumbranceThreshold:this.getEncumbranceThreshold(char.baseStats.str,char.charGroup),
+                totalWeight:this.getTotalWeight(this.getEquipmentProp("weight",char.equipment.righthand),this.getEquipmentProp("weight",char.equipment.lefthand),this.getEquipmentProp("weight",char.equipment.armour),this.getEquipmentProp("weight",char.equipment.shoes),this.getEquipmentProp("weight",char.equipment.accessory)),
+                
+                initiative:this.getInitiative(char.baseStats.ini)
             };
+            stats.encumbrancePenalty = this.getEncumbrancePenalty(stats.totalWeight,stats.encumbranceThreshold);
+            stats.atkAccuracy = this.getAttackAccuracy(char.baseStats.wsk,((this.getEquipmentProp("wield",char.equipment.righthand)+this.getEquipmentProp("wield",char.equipment.lefthand))/2),stats.encumbrancePenalty,char.level);
+            stats.critChance = this.getCriticalChance(stats.atkAccuracy,char.charGroup);
+            stats.atkSpeed = this.getAttackSpeed(char.baseStats.dex,this.getEquipmentProp("speed",char.equipment.righthand),this.getEquipmentProp("speed",char.equipment.lefthand),stats.encumbrancePenalty,char.level,char.charGroup);
+            stats.defensiveAbility = this.getDefensiveAbility(char.baseStats.rfl,stats.encumbrancePenalty,char.level,this.getEquipmentProp("block",char.equipment.lefthand));
+            stats.moveSpeed = this.getMoveSpeed(stats.encumbrancePenalty,char.charGroup);
+            
             stats.hp = stats.maxHp;
             stats.tp = stats.maxTp;
             return stats;
         },
-        //The user's hp is a bit complex :)
-        getHp:function(level,str,end){
-            //Every 5 levels, get a stat boost. every 10 levels, get a big stat boost
-            return Math.floor(Math.ceil(level/5)*(end+str)+Math.ceil(level/10)*(str+end))+1;
+        getHp:function(level,end,charGroup){
+            var r = charGroup==="Fighter"?3:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
+            var q = charGroup==="Fighter"?12:charGroup==="Rogue"?10:charGroup==="Mage"?3:0;
+            return Math.floor((end*q)+(level*r));
         },
-        //The user's tp is a bit complex :)
-        getTp:function(level,dex){
-            return Math.floor(Math.ceil(level/10)*(dex+dex))+1;
+        getPainTolerance:function(level,end,charGroup){
+            var z = charGroup==="Fighter"?5:charGroup==="Rogue"?4:charGroup==="Mage"?3:0;
+            return Math.floor(end*z+level);
         },
+        getDefensiveAbility:function(rfl,encPenalty,level,block){
+            return rfl+encPenalty+level+block;
+        },
+        getDamageReduction:function(damageReductionOfArmour){
+            return damageReductionOfArmour;
+        },
+        getPhysicalResistance:function(str,end){
+            return str+end;
+        },
+        getMentalResistance:function(ini,eff){
+            return ini+eff;
+        },
+        getMagicalResistance:function(enr,skl){
+            return enr+skl;
+        },
+        getAttackAccuracy:function(wsk,wield,encPenalty,level){
+            return Math.floor(wsk+wield+encPenalty+level);
+        },
+        getCriticalChance:function(attackAccuracy,charGroup){
+            var g = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
+            return Math.floor(attackAccuracy/g);
+        },
+        getAttackSpeed:function(dex,weaponSpeedRight,weaponSpeedLeft,encPenalty,level,charGroup){
+            var d = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
+            return Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)+encPenalty+(level*d));
+        },
+        getAttackRange:function(attackRangeRight,attackRangeLeft){
+            return attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
+        },
+        getMaxAttackDamage:function(str,level,maxDamageRight,handed,charGroup){
+            var t = handed===1?1:1.5;
+            var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
+            return Math.floor((str*t)+(level*h)+maxDamageRight);
+        },
+        getMinAttackDamage:function(str,level,minDamageRight,handed,charGroup){
+            var t = handed===1?1:1.5;
+            var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
+            return Math.floor((str*t)+(level*h)+minDamageRight);
+        },
+        getMaxSecondaryAttackDamage:function(str,level,maxDamageLeft,charGroup){
+            var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
+            return Math.floor((str*0.5)+(level*h)+maxDamageLeft);
+        },
+        getMinSecondaryAttackDamage:function(str,level,minDamageLeft,charGroup){
+            var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
+            return Math.floor((str*0.5)+(level*h)+minDamageLeft);
+        },
+        
+        getTp:function(enr,level,charGroup){
+            var f = charGroup==="Fighter"?2:charGroup==="Rogue"?3:charGroup==="Mage"?5:0;
+            return Math.floor((enr*f)+level);
+        },
+        getMoveSpeed:function(encPenalty,charGroup){
+            var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
+            return m + Math.floor(encPenalty/10);
+        },
+        getEncumbranceThreshold:function(str,charGroup){
+            var e = charGroup==="Fighter"?2:charGroup==="Rogue"?1.5:charGroup==="Mage"?1:0;
+            return Math.floor(str*e);
+        },
+        getTotalWeight:function(rightHandWeight,leftHandWeight,armourWeight,shoesWeight,accessoryWeight){
+            return rightHandWeight+leftHandWeight+armourWeight+shoesWeight+accessoryWeight;
+        },
+        getEncumbrancePenalty:function(totalWeight,encThreshold){
+            return Math.max(0,totalWeight-encThreshold);
+        },
+        getInitiative:function(ini){
+            return ini;
+        }
         //Generates a character by filling in the blanks for data that is not set
-        generateCharacter:function(data){
-            function getEquipment(equipmentData){
-                var equipment = Q.state.get("equipment");
-                var keys = Object.keys(equipmentData);
-                var eq = {};
-                keys.forEach(function(key){
-                    if(equipmentData[key]){
-                        eq[key] = equipment[equipmentData[key][0]][equipmentData[key][1]];
-                    } else {
-                        eq[key] = {};
-                    }
-                });
-                return eq;
-            }
+        /*generateCharacter:function(data){
             function getSkills(skillsData){
                 var skills = Q.state.get("skills");
                 var keys = Object.keys(skillsData);
@@ -271,10 +638,11 @@ Quintus.SceneFuncs=function(Q){
             char.charClass = data.charClass?data.charClass:this.generateProp("charClass",char);
             char.classNum = Q.getCharClassNum(char.charClass);
             
+            char.level = data.level?data.level:this.generateProp("level",char);
+            
             char.skills = data.skills?getSkills(data.skills):this.generateSkills(char);
             
             char.gender = data.gender?data.gender:this.generateProp("gender",char);
-            char.level = data.level?data.level:this.generateProp("level",char);
             char.exp = data.exp?data.exp:0;
             char.baseStats = data.baseStats?data.baseStats:this.getStats(char.level,char.classNum);
             //No equipment is set
@@ -514,11 +882,12 @@ Quintus.SceneFuncs=function(Q){
         setAward:function(obj,prop,value){
             if(!obj) return;
             obj.p.awards[prop]+=value;
-        }
+        }*/
     });
     Q.placeCharacters = function(characters,stage){
         var charData = [];
         //Find the character in the files
+        /*
         var files = Q.state.get("characterFiles");
         characters.forEach(function(char){
             var ref = files[char.file][char.group][char.handle];
@@ -565,7 +934,7 @@ Quintus.SceneFuncs=function(Q){
                 })[0];
                 if(data){
                     character = new Q.StoryCharacter({charClass:data.charClass,uniqueId:char.uniqueId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
-                    character.add("statCalcs");
+
                 } else {
                     character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",uniqueId:char.uniqueId,team:char.team,awards:char.awards,handle:char.handle});
                 }
@@ -581,7 +950,7 @@ Quintus.SceneFuncs=function(Q){
         });
         chars.forEach(function(char){
             stage.insert(char);
-        });
+        });*/
     };
     Q.scene("battleScene",function(stage){
         Q.inputs['confirm'] = false;
@@ -614,7 +983,6 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
-        console.log(stage)
         var music = battleData.music;
         if(!music) music = Q.state.get("currentMusic"); 
         Q.playMusic(music,function(){
@@ -633,75 +1001,11 @@ Quintus.SceneFuncs=function(Q){
             stage.add("viewport");
             stage.viewport.scale = 2;
             
-            
-            var allyData = Q.state.get("allies");
-            var allies = [];
-            /*allyData.forEach(function(ally,i){
-                var char = new Q.Character({charClass:ally.charClass,level:ally.level,exp:ally.exp,name:ally.name,skills:ally.skills,equipment:ally.equipment,gender:ally.gender,stats:ally.stats,team:"ally",hp:ally.hp,tp:ally.tp,awards:ally.awards});
-                char.p.savedData = ally;
-                char.add("statCalcs,save");
-                allies.push(char);
-            });*/
             //Display the enemies, interactables, pickups, and placement locations
             var enemyData = battleData.characters;
-            //Find the character in the files
-            var files = Q.state.get("characterFiles");
-            var enemies = [];
             enemyData.forEach(function(enemy){
-                var ref = files[enemy.file][enemy.group][enemy.handle];
-                var newChar = {
-                    baseStats:ref.baseStats,
-                    charClass:ref.charClass,
-                    equipment:ref.equipment,//TODO
-                    gender:ref.gender,
-                    levelmax:ref.levelmax,
-                    levelmin:ref.levelmin,
-                    level:Math.floor(Math.random()*(ref.levelmax-ref.levelmin))+ref.levelmin,
-                    name:ref.name,
-                    nationality:ref.nationality,
-                    techniques:ref.techniques,
-                    handle:ref.handle,
-                    group:enemy.group,
-                    file:enemy.file,
-                    dir:enemy.dir,
-                    loc:enemy.loc,
-                    uniqueId:enemy.uniqueId
-                };
-                var char = new Q.Character(newChar);
-                char.add("randomCharacter,statCalcs");
-                enemies.push(char);
+                stage.insert(new Q.Character(Q.charGen.generateCharacter(enemy,"enemy")));
             });
-            /*
-            var neutralData = battleData.neutral?battleData.neutral:[];
-            var neutral = [];
-            neutralData.forEach(function(neu){
-                var ally = Q.state.get("characters")[neu.name];
-                var char;
-                //If the neutral character is a story character
-                if(ally){
-                    var storyChar = Q.charGen.generateCharacter(ally);
-                    char = new Q.Character({charClass:storyChar.charClass,level:storyChar.level,exp:storyChar.exp,name:storyChar.name,skills:storyChar.skills,equipment:storyChar.equipment,gender:storyChar.gender,stats:storyChar.stats,team:"ally",awards:storyChar.awards});
-                    char.add("statCalcs");
-                } else {
-                    char = new Q.Character({charClass:neu.charClass,level:neu.level,equipmentRank:neu.equipmentRank,equipmentType:neu.equipmentType,gender:"male",team:"enemy",dir:neu.dir?neu.dir:"left",awards:Q.setUpAwards()});
-                    char.add("randomCharacter,statCalcs");
-                }
-                neutral.push(char);
-                char.p.loc = neu.loc;
-            });
-            var interactables = battleData.ineractables?battleData.ineractables:[];
-            var inter = [];
-            //Insert the interactables (TODO)
-            interactables.forEach(function(){
-                
-            });
-            */
-            enemies.forEach(function(enemy){
-                stage.insert(enemy);
-            });
-            /*neutral.forEach(function(neut){
-                stage.insert(neut);
-            });*/
             //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
             Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
 

@@ -100,15 +100,12 @@ Q.newGame=function(options){
         //Gender is based on what the player selected
         alex.gender = options.gender;
         
-        var storyAlex = Q.charGen.generateCharacter(alex);
-        //Set the catchphrase for Alex
-        storyAlex.catchphrase = "It's a me, Mario!";
+        var storyAlex = Q.charGen.generateCharacter(alex,"alex");
         //For now, alex is the only character
-        var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea);
+        var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
         
-        var legion = Q.charGen.generateCharacter({charClass:"Legionnaire",gender:"Female",nationality:"Nomadic",loyalty:90,personality:[["A little","Violent"]],uniqueId:0});
         //console.log(legion)
-        Q.state.set("allies",[storyAlex,legion,astraea]);
+        Q.state.set("allies",[storyAlex,astraea]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[
@@ -125,7 +122,7 @@ Q.newGame=function(options){
         //For now, there will be 4 random characters in it
         var freeSpaces = 4;
         for(var i=0;i<freeSpaces;i++){
-            var char = Q.charGen.generateCharacter({});
+            var char = Q.charGen.generateCharacter({},"roster");
             Q.state.get("saveData").applicationsRoster.push(char);
         };
         //TESTING ONLY
@@ -206,13 +203,29 @@ var files = [
     "json/data/modules.json",
     "json/data/story-events.json",
     "json/data/scenes-list.json",
+    "json/data/default-equipment.json",
     
     "json/story/global-vars.json"
 ];
+function convertEquipment(data){
+    var obj = {
+        gear:{},
+        Quality:data.Quality,
+        Materials:data.Materials
+    };
+    var keys = ["Weapons","Shields","Armour","Footwear","Accessories"];
+    keys.forEach(function(key){
+        var gears = Object.keys(data[key]);
+        gears.forEach(function(gear){
+            obj.gear[gear] = data[key][gear];
+        });
+    });
+    return obj;
+};
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){
     //All equipment data
-    Q.state.set("equipment",Q.assets['json/data/equipment.json']);
+    Q.state.set("equipment",convertEquipment(Q.assets['json/data/equipment.json']));
     //Items that are not equipment. I may make key items seperate.
     Q.state.set("items",Q.assets['json/data/items.json']);
     //All default values for the locations (used when generating the menus).
@@ -243,6 +256,8 @@ Q.load(files.join(','),function(){
     Q.state.set("scenesList",Q.assets["json/data/scenes-list.json"]);
     //All of the character files
     Q.state.set("characterFiles",JSON.parse($("#all-characters").text()));
+    //Default equipment for enemy generation
+    Q.state.set("defaultEquipment",Q.assets["json/data/default-equipment.json"]);
     
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();

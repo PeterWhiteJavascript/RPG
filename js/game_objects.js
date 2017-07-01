@@ -607,7 +607,7 @@ Quintus.GameObjects=function(Q){
                 if(ally.wounded) return;
                 else if(ally.unavailable) return;
                 else if(ally.placedOnMap) return;
-                placeableAllies.push(Q.charGen.generateCharacter(ally));
+                placeableAllies.push(ally);
             });
             this.placeableAllies = placeableAllies;
         },

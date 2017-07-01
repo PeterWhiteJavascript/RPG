@@ -49,7 +49,7 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:220,h:345,
+                w:220,h:550,
                 type:Q.SPRITE_NONE,
                 fill:"blue",
                 opacity:0.5
@@ -58,7 +58,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","Move","HP","SP","Damage","Armour","Speed","Strike","Parry","Critical","Range","Exp."];
+            var info = ["Class","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Magi Res","Ment Res","Pain Tolerance","Weight","Exp."];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -72,26 +72,37 @@ Quintus.HUD=function(Q){
             this.show();
             if(obj.p.team==="ally") this.p.fill = "blue";
             if(obj.p.team==="enemy") this.p.fill = "crimson";
+            var objStats = obj.p.combatStats;
             var stats = this.p.stats;
             var labels = [
                 ""+obj.p.charClass,
                 ""+obj.p.level,
-                ""+obj.p.move,
-                ""+obj.p.hp+"/"+obj.p.maxHp,
-                ""+obj.p.sp+"/"+obj.p.maxSp,
-                ""+obj.p.totalDamageLow+"-"+obj.p.totalDamageHigh,
-                ""+obj.p.armour,
-                ""+obj.p.totalSpeed,
-                ""+obj.p.strike,
-                ""+obj.p.parry,
-                ""+obj.p.criticalChance,
-                ""+obj.p.range,
+                ""+objStats.moveSpeed,
+                ""+objStats.hp+"/"+objStats.maxHp,
+                ""+objStats.tp+"/"+objStats.maxTp,
+                ""+objStats.minAtkDmg+"-"+objStats.maxAtkDmg,
+                ""+objStats.atkAccuracy,
+                ""+objStats.atkRange,
+                ""+objStats.atkSpeed,
+                ""+objStats.defensiveAbility,
+                ""+objStats.critChance,
+                ""+objStats.damageReduction,
+                ""+objStats.encumbrancePenalty,
+                ""+objStats.encumbranceThreshold,
+                ""+objStats.initiative,
+                
+                ""+objStats.physicalResistance,
+                ""+objStats.magicalResistance,
+                ""+objStats.mentalResistance,
+                ""+objStats.painTolerance,
+                ""+objStats.totalWeight,
+                
                 ""+obj.p.exp
             ];
             for(var i=0;i<stats.length;i++){
                 stats[i].p.label = labels[i];
             }
-            
+            console.log(obj)
         },
         hideHUD:function(){
             this.hide();

@@ -1,51 +1,301 @@
 {
-    "Legionnaire":{
-        "Venorian":[
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]],
-            [[],[],[]]
+    "quality":[
+        [75,19,5,1,0,0,0],
+        [36,50,10,3,1,0,0],
+        [15,50,25,6,3,1,0],
+        [2,50,30,8,6,3,1],
+        [1,33,40,10,8,6,2],
+        [1,14,50,12,10,8,5]
+    ],
+    "gear":[
+        [
+            [
+                [[75,20,5],["Brass","Spear"],["Brass","Short Sword"],["Bronze","Spear"]],
+                [[75,20,5],["Hard Leather","Shield"],["Brass","Shield"],["Bronze","Shield"]],
+                [[75,20,5],["Brass","Breastplate"],["Brass","Cuirass"],["Bronze","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Iron","Spear"],["Iron","Pike"],["Iron","Sword"]],
+                [[75,20,5],["Wood","Shield"],["Wood","Small Shield"],["Iron","Small Shield"]],
+                [[75,20,5],["Hard Leather","Outfit"],["Iron","Maille"],["Hard Leather","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bronze","Pike"],["Flint","Spear"],["Bronze","Mace"]],
+                [[75,20,5],["Wicker","Body Shield"],["Wicker","Shield"],["Bronze","Small Shield"]],
+                [[75,20,5],["Silk","Outfit"],["Hard Leather","Lamellar"],["Bronze","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Spear"],["Bronze","Short Sword"],["Bronze","Ax"]],
+                [[75,20,5],["Hide","Body Shield"],["Wood","Body Shield"],["Bronze","Ax"]],
+                [[75,20,5],false,["Brass","Maille"],["Bronze","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Ax"],["Steel","Pike"],["Steel","Spear"]],
+                [[98,1,1],["Hide","Small Shield"],["Steel","Small Shield"],["Steel","Dagger"]],
+                [[98,1,1],["Hide","Vest"],["Iron","Lamellar"],["Steel","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
         ],
-        "Dardoian":[
-            
+        [
+            [
+                [[75,20,5],["Brass","Short Sword"],["Soft Leather","Sling"],["Bronze","Ax"]],
+                [[75,20,5],["Hard Leather","Shield"],["Wood","Shield"],false],
+                [[75,20,5],["Soft Leather","Vest"],["Soft Leather","Shirt"],["Bronze","Cuirass"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Iron","Short Sword"],["Iron","Javelin"],["Iron","Spear"]],
+                [[75,20,5],["Wood","Small Shield"],["Iron","Small Shield"],["Wood","Shield"]],
+                [[75,20,5],["Hard Leather","Breastplate"],["Hard Leather","Cuirass"],["Fur","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bronze","Glaive"],["Bronze","Ax"],["Bronze","Dagger"]],
+                [[75,20,5],["Wicker","Shield"],["Bronze","Ax"],["Bronze","Dagger"]],
+                [[75,20,5],["Silk","Outfit"],["Hard Leather","Lamellar"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Spear"],["Bronze","Ax"],["Bone","Javelin"]],
+                [[75,20,5],["Bone","Dagger"],["Bronze","Ax"],false],
+                [[75,20,5],false,["Bone","Lamellar"],["Bronze","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Ax"],["Steel","Glaive"],["Steel","Great Ax"]],
+                [[98,1,1],["Hide","Small Shield"],["Steel","Knife"],["Steel","Dagger"]],
+                [[98,1,1],["Fur","Vest"],["Steel","Cuirass"],["Steel","Maille"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
         ],
-        "Aliudramilan":[
-            
+        [
+            [
+                [[75,20,5],["Brass","Short Sword"],["Brass","Ax"],["Bronze","Javelin"]],
+                [[75,20,5],["Hard Leather","Shield"],["Wood","Shield"],["Brass","Shield"]],
+                [[75,20,5],["Brass","Outfit"],["Bronze","Breastplate"],["Bronze","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Iron","Ax"],["Iron","Great Ax"],["Iron","Glaive"]],
+                [[75,20,5],["Wood","Shield"],["Wood","Small Shield"],["Iron","Small Shield"]],
+                [[75,20,5],["Hard Leather","Outfit"],["Iron","Maille"],["Hard Leather","Cuirass"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bronze","Mace"],["Bronze","Spear"],["Soft Leather","Sling"]],
+                [[75,20,5],["Wicker","Shield"],["Wicker","Body Shield"],["Brass","Small Shield"]],
+                [[75,20,5],["Bronze","Lamellar"],["Hard Leather","Lamellar"],["Silk","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Spear"],["Bronze","Spear"],["Bronze","Short Sword"]],
+                [[75,20,5],["Hide","Shield"],["Wood","Shield"],["Bronze","Short Sword"]],
+                [[75,20,5],false,["Brass","Lamellar"],["Bronze","Maille"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Ax"],["Steel","Glaive"],["Steel","Great Ax"]],
+                [[98,1,1],["Hide","Small Shield"],["Steel","Knife"],["Steel","Dagger"]],
+                [[98,1,1],["Bone","Lamellar"],["Iron","Outfit"],["Steel","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
         ],
-        "Talumpatuan":[
-            
+        
+        [
+            [
+                [[75,20,5],["Brass","Knife"],["Brass","Dagger"],["Bronze","Knife"]],
+                [[75,20,5],false,["Brass","Dagger"],["Bronze","Knife"]],
+                [[75,20,5],["Wool","Capelet"],["Wool","Shirt"],["Wool","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Iron","Knife"],["Iron","Dagger"],["Iron","Ax"]],
+                [[75,20,5],false,["Iron","Dagger"],["Iron","Ax"]],
+                [[75,20,5],["Fur","Vest"],["Fur","Shirt"],["Hide","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Flint","Knife"],["Flint","Dagger"],["Bronze","Dagger"]],
+                [[75,20,5],["Hard Leather","Small Shield"],false,["Bronze","Dagger"]],
+                [[75,20,5],["Silk","Vest"],["Silk","Capelet"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Dagger"],["Bone","Javelin"],["Bone","Knife"]],
+                [[75,20,5],["Bone","Dagger"],false,["Bone","Knife"]],
+                [[75,20,5],false,["Hide","Capelet"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Knife"],["Steel","Knife"],["Steel","Dagger"]],
+                [[98,1,1],false,["Steel","Knife"],["Steel","Dagger"]],
+                [[98,1,1],false,["Iron","Breastplate"],["Iron","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
         ],
-        "Nomadic":[
-            
+        [
+            [
+                [[75,20,5],["Brass","Short Sword"],["Brass","Spear"],["Bronze","Short Sword"]],
+                [[75,20,5],["Brass","Dagger"],["Wood","Shield"],["Bronze","Short Sword"]],
+                [[75,20,5],["Soft Leather","Vest"],["Wool","Shirt"],["Brass","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Iron","Short Sword"],["Iron","Sword"],["Iron","Ax"]],
+                [[75,20,5],["Iron","Short Sword"],["Iron","Small Shield"],["Iron","Ax"]],
+                [[75,20,5],["Fur","Vest"],["Fur","Shirt"],["Iron","Maille"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bronze","Javelin"],["Bronze","Short Sword"],["Bronze","Mace"]],
+                [[75,20,5],["Bronze","Short Sword"],false,["Bronze","Mace"]],
+                [[75,20,5],["Silk","Outfit"],["Silk","Shirt"],["Hard Leather","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Dagger"],["Bone","Javelin"],["Bone","Knife"]],
+                [[75,20,5],["Bone","Dagger"],["Wood","Shield"],["Bone","Knife"]],
+                [[75,20,5],false,["Hide","Vest"],["Bone","Lamellar"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Spear"],["Steel","Dagger"],["Steel","Sword"]],
+                [[98,1,1],["Hide","Small Shield"],["Steel","Dagger"],["Steel","Sword"]],
+                [[98,1,1],["Fur","Capelet"],["Iron","Cuirass"],["Steel","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
+        ],
+        [
+            [
+                [[100],["Wood","Bow"]],
+                [[100],false],
+                [[75,20,5],["Soft Leather","Vest"],["Soft Leather","Outfit"],["Soft Leather","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[100],["Wood","Bow"]],
+                [[100],false],
+                [[75,20,5],["Hide","Vest"],["Hide","Shirt"],["Hard Leather","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[100],["Bone","Bow"]],
+                [[100],false],
+                [[75,20,5],["Silk","Vest"],["Silk","Capelet"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,25,5],["Wood","Bow"],["Bone","Bow"],["Wood","Bow"]],
+                [[100],false],
+                [[75,20,5],false,["Hide","Capelet"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Bone","Bow"],["Wood","Bow"],["Wood","Bow"]],
+                [[100],false],
+                [[98,1,1],["Hide","Capelet"],["Iron","Breastplate"],["Iron","Breastplate"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
+        ],
+        [
+            [
+                [[75,20,5],["Soft Leather","Sling"],false,["Brass","Knife"]],
+                [[75,20,5],false,false,["Hard Leather","Shield"]],
+                [[75,20,5],false,["Wool","Vest"],["Wool","Capelet"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],false,["Iron","Javelin"],["Iron","Ax"]],
+                [[100],false],
+                [[75,20,5],false,false,["Hard Leather","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Flint","Knife"],false,["Bronze","Short Sword"]],
+                [[75,20,5],false,false,["Wicker","Small Shield"]],
+                [[75,20,5],["Silk","Vest"],["Silk","Capelet"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Knife"],["Bone","Javelin"],["Bone","Dagger"]],
+                [[75,20,5],["Hide","Shield"],false,["Bone","Dagger"]],
+                [[75,20,5],false,["Hide","Vest"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],false,["Steel","Javelin"],["Steel","Knife"]],
+                [[98,1,1],false,["Steel","Javelin"],["Steel","Knife"]],
+                [[98,1,1],false,["Fur","Capelet"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
+        ],
+        [
+            [
+                [[75,20,5],["Soft Leather","Sling"],false,["Brass","Knife"]],
+                [[75,20,5],false,false,["Hard Leather","Shield"]],
+                [[75,20,5],false,["Wool","Vest"],["Wool","Capelet"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],false,["Iron","Javelin"],["Iron","Ax"]],
+                [[100],false],
+                [[75,20,5],false,["Hide","Vest"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Flint","Knife"],false,["Bronze","Short Sword"]],
+                [[75,20,5],false,false,["Wicker","Small Shield"]],
+                [[75,20,5],["Silk","Vest"],["Silk","Capelet"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Knife"],["Bone","Javelin"],["Bone","Dagger"]],
+                [[75,20,5],["Hide","Shield"],false,["Bone","Dagger"]],
+                [[75,20,5],false,["Bone","Lamellar"],["Hide","Outfit"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],["Flint","Dagger"],["Steel","Javelin"],["Steel","Short Sword"]],
+                [[98,1,1],false,["Steel","Javelin"],["Steel","Short Sword"]],
+                [[98,1,1],false,["Fur","Capelet"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
+        ],
+        [
+            [
+                [[75,20,5],["Soft Leather","Sling"],false,["Brass","Knife"]],
+                [[75,20,5],false,false,["Hard Leather","Shield"]],
+                [[75,20,5],false,["Wool","Vest"],["Wool","Capelet"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],false,["Iron","Javelin"],["Iron","Ax"]],
+                [[100],false],
+                [[75,20,5],false,["Fur","Vest"],["Fur","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Flint","Knife"],false,["Bronze","Short Sword"]],
+                [[75,20,5],false,false,["Wicker","Small Shield"]],
+                [[75,20,5],["Silk","Vest"],["Silk","Capelet"],["Silk","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[75,20,5],["Bone","Knife"],["Bone","Javelin"],["Bone","Dagger"]],
+                [[75,20,5],["Hide","Shield"],false,["Bone","Dagger"]],
+                [[75,20,5],false,["Wood","Lamellar"],["Hide","Capelet"]],
+                [[100],["Soft Leather","Shoes"]]
+            ],
+            [
+                [[98,1,1],false,["Steel","Sword"],["Steel","Mace"]],
+                [[98,1,1],false,["Steel","Sword"],["Steel","Mace"]],
+                [[98,1,1],false,["Fur","Capelet"],["Hide","Shirt"]],
+                [[100],["Soft Leather","Shoes"]]
+            ]
         ]
-    },
-    "Berserker":{
-        
-    },
-    "Vanguard":{
-        
-    },
-    "Archer":{
-        
-    },
-    "Skirmisher":{
-        
-    },
-    "Assassin":{
-        
-    },
-    "Elementalist":{
-        
-    },
-    "Illusionist":{
-        
-    },
-    "Healer":{
-        
-    }
+    ]
 }

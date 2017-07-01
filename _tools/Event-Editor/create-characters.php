@@ -80,9 +80,9 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
                 <div class="char-stat-title medium-gradient"><p>Equipment</p></div>
                 <div class="equipment-cont">
                     <div class="equipment-options">
-                        <div id="default-equipment-button" class="btn btn-quarter third-width"><p>Default</p></div>
-                        <div id="rand-equipment-button" class="btn btn-quarter third-width"><p>Rand</p></div>
-                        <div id="full-rand-equipment-button" class="btn btn-quarter third-width"><p>Full Rand</p></div>
+                        <div id="default-equipment-button" class="btn btn-quarter fifty-width"><p>Default</p></div>
+                        <!--<div id="rand-equipment-button" class="btn btn-quarter third-width"><p>Rand</p></div>-->
+                        <div id="full-rand-equipment-button" class="btn btn-quarter fifty-width"><p>Full Rand</p></div>
                     </div>
                     <div class="prop-cont">
                         <div class="stat-name-wide"><p>Right Hand</p></div>

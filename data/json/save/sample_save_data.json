@@ -1,91 +1,71 @@
 {
-    "startScene":"The-player-starts-his-journey!",
+    "startSceneName":"Act-1-1",
+    "startSceneType":"Story",
+    "startEventName":"battleTest",
     "day":10,
     "gold":1000,
     "allies":[
         {
             "name": "Alex",
             "level":1,
-            "gender":"female",
+            "gender":"Male",
             "equipment":{
-                "righthand":["weapon","woodenSword"],
-                "lefthand":["shield","woodenShield"],
-                "body":["body","shirt"],
-                "feet":["feet","sandals"],
+                "righthand":["Average","Brass","Short Sword"],
+                "lefthand":["Average","Wood","Small Shield"],
+                "armour":["Average","Soft Leather","Shirt"],
+                "footwear":["Average","Wood","Shoes"],
                 "accessory":false
             },
-            "stats":{
+            "baseStats":{
                 "str":15,
                 "end":15,
                 "dex":5,
                 "wsk":5,
-                "rfl":10
+                "rfl":10,
+                "ini":10,
+                "enr":10,
+                "skl":10,
+                "eff":10
             },
-            "skills":{
-                "sword":["stab"],
-                "shield":["defend","firstAid"]
-            },
-            "value":50,
-            "method":50,
-            "charClass":"knight",
+            "techniques":[
+                "Forced March",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "nationality":"Venorian",
+            "charClass":"Legionnaire",
             "exp":0,
-            "uniqueId":0
-        },
-        {
-            "name": "Astrea",
-            "level":1,
-            "gender":"female",
-            "equipment":{
-                "righthand":false,
-                "lefthand":["weapon","woodenBow"],
-                "body":["body","shirt"],
-                "feet":["feet","sandals"],
-                "accessory":false
-            },
-            "stats":{
-                "str":8,
-                "end":8,
-                "dex":12,
-                "wsk":12,
-                "rfl":10
-            },
-            "skills":{
-                "bow":["shoot"]
-            },
-            "value":50,
-            "method":50,
-            "charClass":"archer",
-            "exp":80,
-            "uniqueId":0
+            "primaryStat":"str",
+            "secondaryStat":"end",
+            "officer":true
         }
     ],
     "inventory":{
         "consumable":[
-            ["potion",1]
+            
         ],
         "weapon":[
-            ["woodenBow",1],
-            ["bronzeSword",1]
+            
         ],
         "shield":[
-            ["woodenShield",2]
+            
         ],
         "body":[
-            ["shirt",2]
+            
         ],
         "feet":[
-            ["leatherShoes",1]
+            
         ],
         "accessory":[
             
         ],
         "key":[
-            ["goldCoin",1]
+            
         ]
     },
-    "tasked":[
-        {"party":["Alex","Astrea"],"days":1,"job":"gatherInfo"}
-    ],
     
     "options":{
         "musicEnabled":false,

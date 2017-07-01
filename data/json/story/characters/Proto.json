@@ -4,7 +4,7 @@
             "handle": "Legionnaire",
             "name": "",
             "levelmin": 1,
-            "levelmax": 3,
+            "levelmax": 1,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -30,7 +30,7 @@
                 "accessory": "None"
             },
             "baseStats": [
-                "Random",
+                "Specialized",
                 "Low"
             ],
             "techniques": [

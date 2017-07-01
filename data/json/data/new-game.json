@@ -12,7 +12,7 @@
             
         ],
         "weapon":[
-            ["woodenSword",1]
+            ["Shoddy","Brass","Short Sword",1]
         ],
         "shield":[
             
@@ -21,7 +21,7 @@
             
         ],
         "feet":[
-            ["leatherShoes",1]
+            
         ],
         "accessory":[
             
@@ -49,10 +49,10 @@
         "Talumpatua":[50,50]
     },
     
-    "startSceneName":"act-1-1",
+    "startSceneName":"Act-1-1",
     "startSceneType":"Story",
     "startEventName":"battleTest",
     
-    "chapter":"Chapter1-1",
+    "act":"1-1",
     "applicationsRoster":[]
 }
