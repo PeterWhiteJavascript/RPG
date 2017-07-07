@@ -196,6 +196,7 @@ var files = [
     "json/data/character-classes.json",
     "json/data/officers.json",
     "json/data/skills.json",
+    "json/data/talents.json",
     "json/data/status.json",
     "json/data/awards.json",
     "json/data/ui_objects.json",
@@ -222,6 +223,17 @@ function convertEquipment(data){
     });
     return obj;
 };
+function convertSkills(data){
+    var charClasses = Q.state.get("charGeneration").classNames;
+    var techs = {};
+    for(var i=0;i<charClasses.length;i++){
+        for(var j=0;j<data[charClasses[i]].length;j++){
+            techs[data[charClasses[i]][j].name] = data[charClasses[i]][j];
+        }
+    }
+    return techs;
+    
+}
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 Q.load(files.join(','),function(){
     //All equipment data
@@ -236,16 +248,20 @@ Q.load(files.join(','),function(){
     Q.state.set("charClasses",Q.assets['json/data/character-classes.json']);
     //The story characters that you can recruit (including alex)
     Q.state.set("characters",Q.assets['json/data/officers.json']);
+    //A bunch of values for generating random characters
+    Q.state.set("charGeneration",Q.assets['json/data/character-generation.json']);
     //The list of skills and their effects
     Q.state.set("skills",Q.assets['json/data/skills.json']);
+    //Puts all of the skills in a single object for easy access
+    Q.state.set("allSkills",convertSkills(Q.state.get("skills")));
+    //The talents list
+    Q.state.set("talents",Q.assets['json/data/talents.json']);
     //The list of awards and descriptions
     Q.state.set("awards",Q.assets['json/data/awards.json']);
     //The descriptions for status effects
     Q.state.set("status",Q.assets['json/data/status.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
-    //A bunch of values for generating random characters
-    Q.state.set("charGeneration",Q.assets['json/data/character-generation.json']);
     //The global variables that are set in global-vars.json
     Q.state.set("globalVars",Q.assets['json/story/global-vars.json'].vrs);
     //The modules for text replacement

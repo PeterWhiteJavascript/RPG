@@ -36,6 +36,17 @@
                 11
             ],
             "dir": "right"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                12
+            ],
+            "dir": "right"
         }
     ]
 }

@@ -67,6 +67,10 @@ Quintus.QFunctions=function(Q){
         return "Pragmatic";
     };
     
+    Q.setAward = function(obj,prop,amount){
+        
+    };
+    
    /* Q.getPathData=function(data,path){
         var newData = data;
         var arr = path.split('/');
@@ -112,6 +116,30 @@ Quintus.QFunctions=function(Q){
                 return [-1,0];
         }
     };
+    Q.getRotatedDir = function(dir){
+        switch(dir){
+            case "up":
+                return "right";
+            case "right":
+                return "down";
+            case "down":
+                return "left";
+            case "left":
+                return "up";
+        }
+    };
+    Q.getOppositeDir = function(dir){
+        switch(dir){
+            case "up":
+                return "down";
+            case "right":
+                return "left";
+            case "down":
+                return "up";
+            case "left":
+                return "right";
+        }
+    };
     Q.getMatrix = function(type,team,required){
         var tileTypes = Q.state.get("tileTypes");
         var cM=[];
@@ -126,34 +154,34 @@ Quintus.QFunctions=function(Q){
         }
         function getTarget(){
             return Q.BattleGrid.getObject([i_walk,j_walk]);
-        }
+        }/*
         function getZOC(){
             return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
-        }
+        }*/
         for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
             var costRow = [];
             for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
                 var cost = 1;
                 var objOn = false;
-                var zocOn = false;
+                //var zocOn = false;
                 //If we're walking, enemies are impassable
                 if(type==="walk"){
                     cost = getWalkable();
                     //Don't check for other objects and ZOC in the story
                     if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
-                        zocOn = getZOC();
+                        //zocOn = getZOC();
                     }
 
                     //Allow walking over allies and dead people as long as there's no zoc tile
-                    if(objOn&&(objOn.p.team===team||objOn.p.hp<=0)&&!zocOn){objOn=false;};
+                    if(objOn&&(objOn.p.team===team||objOn.p.hp<=0)/*&&!zocOn*/){objOn=false;};
                 }
                 //If there's still no enemy on the sqaure, get the tileCost
                 if(objOn){
                     costRow.push(1000000);
-                } else if(zocOn){
+                }/* else if(zocOn){
                     costRow.push(1000);
-                } else {
+                }*/ else {
                     costRow.push(cost);
                 }
             }

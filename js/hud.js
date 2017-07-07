@@ -102,7 +102,6 @@ Quintus.HUD=function(Q){
             for(var i=0;i<stats.length;i++){
                 stats[i].p.label = labels[i];
             }
-            console.log(obj)
         },
         hideHUD:function(){
             this.hide();
@@ -112,9 +111,9 @@ Quintus.HUD=function(Q){
         added:function(){
             this.getAOERange(this.entity.p.loc,this.entity.p.skill.aoe);
         },
-        moveStraightTiles:function(dir){
+        moveStraightTiles:function(pointer){
             var tiles = this.aoeTiles;
-            var arr = Q.getDirArray(dir);
+            var arr = Q.getDirArray(pointer.p.user.p.dir);
             //Loop backwards so the closer enemy is targeted
             for(var i=tiles.length-1;i>=0;i--){
                 var tile = tiles[i];
@@ -127,9 +126,30 @@ Quintus.HUD=function(Q){
                 }
             }
         },
-        moveTiles:function(to){
+        moveHLineTiles:function(pointer){
+            var tiles = this.aoeTiles;
+            var arr = Q.getDirArray(Q.getRotatedDir(pointer.p.user.p.dir));
+            var radius = pointer.p.skill.aoe[0];
+            var len = tiles.length-1;
+            if(pointer.p.skill.aoe[2]==="excludeCenter") len++;
+            var idx = 0;
+            //Loop backwards so the closer enemy is targeted
+            for(var i=len-1;i>=0;i--){
+                if(pointer.p.skill.aoe[2]==="excludeCenter"&&i===radius-1) i--;
+                var tile = tiles[idx];
+                var loc = tile.p.center;
+                tile.p.loc = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                Q.BatCon.setXY(tile);
+                var objOn = Q.BattleGrid.getObject(tile.p.loc);
+                if(objOn){
+                    Q.pointer.trigger("onTarget",objOn);
+                }
+                idx++;
+            }
+        },
+        moveTiles:function(pointer){
             this.aoeTiles.forEach(function(tile){
-                tile.p.loc = [tile.p.relative[0]+to[0],tile.p.relative[1]+to[1]];
+                tile.p.loc = [tile.p.relative[0]+pointer.p.loc[0],tile.p.relative[1]+pointer.p.loc[1]];
                 Q.BatCon.setXY(tile);
             });
         },
@@ -142,8 +162,8 @@ Quintus.HUD=function(Q){
             this.entity.del("AOEGuide");
         },
         getAOERange:function(loc,aoe){
-            var area = aoe[0];
-            var radius = aoe[1];
+            var radius = aoe[0];
+            var area = aoe[1];
             var special = aoe[2];
             var aoeTiles = this.aoeTiles =[];
             var bounds = Q.BattleGrid.getBounds(loc,radius);
@@ -174,15 +194,17 @@ Quintus.HUD=function(Q){
                         aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
                     break;
-            }
-            //Don't include the middle square
-            if(special==="excludeCenter"){
-                aoeTiles.forEach(function(obj,i){
-                    if(obj.p.loc[0]===loc[0]&&obj.p.loc[1]===loc[1]){
-                        aoeTiles[i].destroy();
-                        aoeTiles.splice(i,1);
+                //Horizontal line
+                case "hLine":
+                    var dir = this.entity.p.user.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    for(var i=-radius;i<radius+1;i++){
+                        if(special==="excludeCenter"&&i===0) i++;
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
-                });
+                    break;
             }
         }
     });
@@ -256,6 +278,7 @@ Quintus.HUD=function(Q){
             if(Q.inputs['esc']||Q.inputs['back']){
                 this.entity.trigger("pressBack",this.menuNum);       
                 Q.inputs['esc']=false;
+                Q.inputs['back']=false;
             }
             if(Q.inputs['left']){
                 this.entity.trigger("pressLeft");
@@ -284,7 +307,7 @@ Quintus.HUD=function(Q){
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
                 options:[["Move","Attack","Skill","Lift","Item","Status","End Turn"],["Status","Exit Menu"],[]],
-                funcs:[["loadMove","loadAttack","loadSkillsMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
+                funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[]
             });
             this.p.x = Q.width-this.p.w;
@@ -297,7 +320,7 @@ Quintus.HUD=function(Q){
             //If this is the active character, set up the skills options and check for lifted
             if(this.p.active){
                 this.menuControls.menuNum = 0;
-                this.setSkillOptions();
+                this.setActionOptions();
                 this.checkLifting();
             } else this.menuControls.menuNum = 1;
         },
@@ -322,42 +345,35 @@ Quintus.HUD=function(Q){
                 //Send us back to the main menu
                 this.displayMenu(0,0);
             } 
+            //We're in the main menu
             else {
-                Q.pointer.addControls();
-                Q.pointer.on("checkConfirm");
-                //Make sure the characterMenu is gone
-                Q.clearStage(2);
+                //Reset the move
+                if(this.p.target.p.didMove){
+                    this.p.target.resetMove();
+                    Q.pointer.snapTo(this.p.target);
+                    this.displayMenu(0,0);
+                } else {
+                    Q.pointer.add("pointerRoamingControls");
+                    //Make sure the characterMenu is gone
+                    this.hide();
+                    this.menuControls.turnOffInputs();
+                }
             }
         },
-        setSkillOptions:function(){
+        setActionOptions:function(){
             var target = this.p.target;
             var opts = [];
             var funcs = [];
-            var skills = [];
-            //Set possible skills
-            console.log(rh)
-            return;
-            var rh = target.p.equipment.righthand;
-            var lh = target.p.equipment.lefthand;
-            if(rh.equipmentType){
-                var keys = Object.keys(target.p.skills[rh.equipmentType]);
-                keys.forEach(function(key){
-                    opts.push(target.p.skills[rh.equipmentType][key].name);
-                    funcs.push("loadSkill");
-                    skills.push(target.p.skills[rh.equipmentType][key]);
-                });
-            }
-            if(lh.equipmentType){
-                var keys = Object.keys(target.p.skills[lh.equipmentType]);
-                keys.forEach(function(key){
-                    opts.push(target.p.skills[lh.equipmentType][key].name);
-                    funcs.push("loadSkill");
-                    skills.push(target.p.skills[lh.equipmentType][key]);
-                });
+            var techniques = [];
+            //Set possible techniques
+            for(var i=0;i<target.p.techniques.length;i++){
+                opts.push(target.p.techniques[i].name);
+                funcs.push("loadTechnique");
+                techniques.push(target.p.techniques[i]);
             }
             this.p.options[2]=opts;
             this.p.funcs[2]=funcs;
-            this.p.skills=skills;
+            this.p.techniques=techniques;
             //Set items
             var opts = [];
             var funcs = [];
@@ -376,7 +392,7 @@ Quintus.HUD=function(Q){
             }
             this.p.options[3]=opts;
             this.p.funcs[3]=funcs;
-            this.p.items=itms;  
+            this.p.items=itms;
         },
         checkLifting:function(){
             var lifting = this.p.target.p.lifting;
@@ -410,83 +426,78 @@ Quintus.HUD=function(Q){
             for(var i=0;i<options.length;i++){
                 var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
                 var name = cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i],cx:0,size:16}));
+                //Skills menu
                 if(menuNum===2){
                     name.p.x = 4;
                     name.p.align="left";
-                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.skills[i].cost,cx:0,align:"right",size:16}));
+                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.techniques[i].cost,cx:0,align:"right",size:16}));
                 }
                 this.p.conts.push(cont);
             }
             this.menuControls.selected = 0;
             this.menuControls.cycle(selected);
+            Q.pointer.checkTarget();
             this.trigger("checkGray",menuNum);
         },
         //Shows the move grid and zoc
         loadMove:function(){
-            Q.BattleGrid.showZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
+            //Q.BattleGrid.showZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
-            Q.pointer.addControls();
-            Q.pointer.snapTo(this.p.target);
+            Q.pointer.add("pointerMoveControls");
         },
         //Shows the attack grid
         loadAttack:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
-            Q.pointer.addControls();
-            Q.pointer.snapTo(this.p.target);
+            Q.pointer.add("pointerAttackControls");
         },
         //Show the range for lifting (4 squares around the user)
         loadLift:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"lift"}));
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"lift"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
-            Q.pointer.addControls();
-            Q.pointer.snapTo(this.p.target);
+            Q.pointer.add("pointerLiftControls");
         },
         //Shows the range for dropping
         loadDrop:function(){
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"drop"}));
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"drop"}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
             Q.pointer.p.user = this.p.target;
-            Q.pointer.addControls();
-            Q.pointer.snapTo(this.p.target);
+            Q.pointer.add("pointerDropControls");
         },
         //Loads the special skills menu
-        loadSkillsMenu:function(){
+        loadTechniquesMenu:function(){
             this.displayMenu(2,0);
         },
         //Show the attack grid for the skill
-        loadSkill:function(){
-            var skill = this.p.skills[this.menuControls.selected];
-            if(this.p.target.p.sp-skill.cost<0){
-                alert("Not Enough SP!");
+        loadTechnique:function(){
+            var skill = this.p.techniques[this.menuControls.selected];
+            if(this.p.target.p.combatStats.tp-(skill.cost-this.p.target.p.combatStats.efficiency)<0){
+                alert("Not Enough TP!");
                 return;
             }
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
             //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
-            
-            if(!skill.aoe){
-                skill.aoe = ["normal",0];
-            }
             Q.pointer.p.skill = skill;
             Q.pointer.p.user = this.p.target;
             Q.pointer.snapTo(this.p.target);
-            Q.pointer.addControls(skill);
             //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
+            Q.pointer.add("pointerAttackControls");
+            
         },
         noItems:function(){
             Q.playSound("cannot_do.mp3");
@@ -495,21 +506,17 @@ Quintus.HUD=function(Q){
         loadItem:function(){
             var item = this.p.items[this.menuControls.selected];
             //Load the range grid
-            this.p.target.stage.RangeGrid = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",item:item}));
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",item:item}));
             //Hide this options box. Once the user confirms if the item should be used, destroy this. If he presses 'back' the selection num should be the same
             this.menuControls.turnOffInputs();
             this.hide();
-            if(!item.aoe){
-                item.aoe = ["normal",0];
-            }
-            Q.pointer.p.item = item;
-            //Must set it as a skill so it work for the aoe guide aoe
+            //Must set it as a skill so it works for the aoe guide aoe
             Q.pointer.p.skill = item;
             Q.pointer.p.user = this.p.target;
             Q.pointer.snapTo(this.p.target);
-            Q.pointer.addControls();
             //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
+            Q.pointer.add("pointerAttackControls");
         },
         //Loads the items menu
         loadItemsMenu:function(){
@@ -907,7 +914,7 @@ Quintus.HUD=function(Q){
             this.p.costText.p.label = "Cost: "+skill.cost;
             this.p.descText.p.label = "Description: "+skill.desc;
             this.p.damageText.p.label = skill.damageLow?"Damage: "+skill.damageLow+" - "+skill.damageHigh:"No Damage";
-            this.p.rangeText.p.label = "Range: "+skill.range[1];
+            this.p.rangeText.p.label = "Range: "+skill.range[0];
         },
         inserted:function(){
             var textSize = 14;
@@ -1122,29 +1129,29 @@ Quintus.HUD=function(Q){
             switch(this.p.kind){
                 case "walk":
                     //Loop through the user's move the get the move range
-                    this.getTileRange(user.p.loc,user.p.move,user.p["walkMatrix"]);
+                    this.getTileRange(user.p.loc,user.p.combatStats.moveSpeed,user.p["walkMatrix"]);
                     break;
                 case "attack":
-                    this.getTileRange(user.p.loc,user.p.range,user.p["attackMatrix"]);
+                    this.getTileRange(user.p.loc,user.p.combatStats.atkRange,user.p["attackMatrix"]);
                     break;
                 //Used for skills that have a weird range (eg 'T' shape)
                 case "skill":
                     var skill = this.p.skill?this.p.skill:this.p.item;
-                    switch(skill.range[0]){
+                    switch(skill.range[1]){
                         case "self":
                             //Self skills can target the tile that the user is on
                             this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[user.p.loc[0],user.p.loc[1]]})));
                             //If there is range, then the skill can target self, or other squares (using potion, etc...)
-                            if(skill.range[1]>0){
-                                this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"]);
+                            if(skill.range[0]>0){
+                                this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"]);
                             }
                             break;
                         case "normal":
-                            this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"]);
+                            this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"]);
                             break;
                             //No diagonal attack
                         case "straight":
-                            this.getTileRange(user.p.loc,skill.range[1],user.p["attackMatrix"],skill.range[0]);
+                            this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"],skill.range[1]);
                             break;
                     }
                     break;
@@ -1235,31 +1242,74 @@ Quintus.HUD=function(Q){
             Q.playSound("cannot_do.mp3");
             this.p.cannotDo = true;
         },
+        checkConfirmMove:function(){
+            if(this.checkValidPointerLoc()){
+                var user = this.p.user;
+                if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                    //Hide the zoc
+                    //Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
+                    //Make the character move to the spot
+                    user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
+                    //Destroy this range grid
+                    this.fullDestroy();
+                    Q.pointer.pointerMoveControls.disable();
+                } else {this.cannotDo();}
+            } else {this.cannotDo();}
+        },
+        checkConfirmAttack:function(){
+            if(this.checkValidPointerLoc()){
+                var user = this.p.user;
+                if(Q.pointer.p.skill){
+                    var skill = Q.pointer.p.skill;
+                    //Use the skill's aoe, else it's a normal single target
+                    var aoe = skill.aoe?skill.aoe:[1,"normal"];
+                    //Make sure there's a target 
+                    var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user));
+                    //Remove any characters that are not affected.
+                    if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
+                    //If there is at least one target
+                    if(targets.length){
+                        Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
+                        this.fullDestroy();
+                        Q.pointer.pointerAttackControls.remove();
+                    } else {this.cannotDo();}
+
+                } else {
+                    if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                        Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
+                        //Destroy this range grid
+                        this.fullDestroy();
+                        Q.pointer.pointerAttackControls.remove();
+                    } else {this.cannotDo();}
+                }
+            }
+        },
         step:function(){
+            return;
             //Run this when pressing confirm on a range tile
             if(Q.inputs['confirm']){
                 //Make sure the pointer is on a valid tile
                 if(this.checkValidPointerLoc()){
                     var user = this.p.user;
                     switch(this.p.kind){
-                        case "walk":
+                       /* case "walk":
                             if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 //Hide the zoc
                                 Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
                                 //Make the character move to the spot
                                 user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
                             } else {this.cannotDo();}
-                            break;
+                            break;*/
                         case "attack":
                             //Make sure there's a target there
-                            if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                            /*if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
                                 Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
-                            } else {this.cannotDo();}
+                            } else {this.cannotDo();}*/
                             break;
                         case "skill":
-                            var skill = this.p.skill?this.p.skill:this.p.item;
+                            /*var skill = this.p.skill?this.p.skill:this.p.item;
                             //Use the skill's aoe, else it's a normal single target
                             var aoe = skill.aoe?skill.aoe:["normal",0];
                             //Make sure there's a target 
@@ -1272,7 +1322,7 @@ Quintus.HUD=function(Q){
                                 Q.pointer.off("checkInputs");
                                 Q.pointer.off("checkConfirm");
                             } else {this.cannotDo();}
-                            
+                            */
                             break;
                         case "lift":
                             var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
@@ -1400,10 +1450,9 @@ Quintus.HUD=function(Q){
                 this.off("step",this,"checkInputs");
                 this.destroy();
                 Q.inputs['confirm']=false;
-            } else if(Q.inputs['esc']){
+            } else if(Q.inputs['esc']||Q.inputs['back']){
                 this.destroy();
                 if(this.p.skill){
-                    if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
                     if(this.p.skill.kind==="consumable"){
                         this.stage.ActionMenu.loadItem();
                     } else {
@@ -1414,6 +1463,7 @@ Quintus.HUD=function(Q){
                     this.stage.ActionMenu.loadAttack();
                 }
                 Q.inputs['esc']=false;
+                Q.inputs['back']=false;
             }
         },
         inserted:function(){
@@ -1423,9 +1473,9 @@ Quintus.HUD=function(Q){
             var defender = this.p.targets[0];
             var atkTile = attacker.p.tileEffect;
             var defTile = defender.p.tileEffect;
-            var low = attacker.p.totalDamageLow;
-            var high = attacker.p.totalDamageHigh;
-            if(atkTile.stat==="damage"){
+            var low = attacker.p.combatStats.minAtkDmg;
+            var high = attacker.p.combatStats.maxAtkDmg;
+            /*if(atkTile.stat==="damage"){
                 low*=atkTile.amount;
                 high*=atkTile.amount;
             }
@@ -1435,10 +1485,10 @@ Quintus.HUD=function(Q){
             if(defTile.stat==="armour") armour*=defTile.amount;
             if(defender.p.status.sturdy) armour*=1.5;
             var parry = defender.p.parry;
-            if(defTile.stat==="parry") parry*=defTile.amount;
+            if(defTile.stat==="parry") parry*=defTile.amount;*/
             //The comparison between the attacker's dir and defender's dir
             var dir = Q.BatCon.attackFuncs.compareDirection(attacker,defender);
-            var accuracy = Math.floor((strike-parry)*dir);
+            var accuracy = attacker.p.combatStats.atkAccuracy;
             //If the attack is a skill, display different information
             if(this.p.skill){
                 if(this.p.skill.damageLow&&this.p.skill.damageHigh){
@@ -1680,9 +1730,9 @@ Quintus.HUD=function(Q){
                 this.entity.playStand(dir);
                 this.dirTri.changePos(this.entity.p.dir,this.entity);
             }
-            if(Q.inputs['esc']){
+            if(Q.inputs['back']){
                 this.entity.trigger("pressedBack");
-                Q.inputs['esc']=false;
+                Q.inputs['back']=false;
             } 
             else if(Q.inputs['confirm']){
                 this.entity.trigger("pressedConfirm");
@@ -1761,21 +1811,21 @@ Quintus.HUD=function(Q){
         pressBack:function(){
             if(this.placingCharacter){
                 if(this.placingCharacter.has("directionControls")) this.placingCharacter.directionControls.removeControls();
+                Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
                 this.placingCharacter.destroy();
             }
             this.destroy();
             Q.pointer.trigger("offTarget");
+            Q.pointer.add("pointerPlaceAllies");
             Q.clearStage(1);
-            Q.pointer.show();
-            Q.pointer.on("checkInputs");
-            Q.pointer.on("checkConfirm");
-            Q.pointer.on("pressedConfirm","checkPlacement");
-            Q.pointer.on("pressedShift","checkStartBattle");
         },
         hoverOption:function(num){
             var char = Q.BatCon.placeableAllies[num];
             char.loc = Q.pointer.p.loc;
-            if(this.placingCharacter) this.placingCharacter.destroy();
+            if(this.placingCharacter){
+                this.placingCharacter.destroy();
+                Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
+            }
             this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
             //console.log(Q.stage(0).lists['Character'])
             Q.pointer.trigger("onTarget",this.placingCharacter);

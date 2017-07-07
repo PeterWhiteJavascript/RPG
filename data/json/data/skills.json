@@ -5,7 +5,7 @@
             "type":"Support",
             "desc":"Target allies increase their Move by 1/10 of user’s Skill for 2 Rounds.",
             "range":[0,"self"],
-            "aoe":[2,"line"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
         },
@@ -14,7 +14,7 @@
             "type":"Support",
             "desc":"Target allies increase their Defensive Ability by the user’s Skill for 2 Rounds.",
             "range":[0,"self"],
-            "aoe":[2,"line"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
             "resist":"None"
         },
@@ -23,7 +23,7 @@
             "type":"Support",
             "desc":"Target allies increase their Skill by the user’s Skill for 2 Rounds.",
             "range":[0,"self"],
-            "aoe":[2,"line"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
         },
@@ -32,7 +32,7 @@
             "type":"Support",
             "desc":"Target allies increase their Strength by the user’s Skill for 2 Rounds.",
             "range":[0,"self"],
-            "aoe":[2,"line"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
         },
@@ -41,7 +41,7 @@
             "type":"Support",
             "desc":"Target allies increase their Efficiency by half of the user’s Skill for 2 Rounds.",
             "range":[1,"normal"],
-            "aoe":[2,"line"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
         },
@@ -50,7 +50,7 @@
             "type":"Support",
             "desc":"Target allies increase their DR by half of the user’s Skill for 2 Rounds and also gain +100 to their Physical Resistance for 2 Rounds.",
             "range":[1,"normal"],
-            "aoe":[1,"2x3box"],
+            "aoe":[0,"2x3box"],
             "cost":25,
             "resist":""
         }
@@ -61,7 +61,7 @@
             "desc":"Target character is pushed backwards one space, or, if pushed onto an Icy space, is pushed backwards until they collide with another a wall, or are no longer crossing Icy Spaces.  however if they collide with another character, that character will be Pushed along too.",
             "type":"Debilitate",
             "range":[1,"allyNoMiss"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":20,
             "resist":"Physical"
         },
@@ -70,7 +70,7 @@
             "desc":"Enemy Attack Accuracy is reduced by the attacking character’s Skill for 3 Rounds.",
             "type":"Debilitate",
             "range":[6,"enemyFacingThis"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":"Mental"
         },
@@ -79,7 +79,7 @@
             "desc":"The user charges through the target. If there is no free space behind the target, this just does damage. Charge Through does 20-30+skl damage and does double if the target is hit from behind.",
             "type":"Debilitate",
             "range":[1,"allyNoMiss"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":25,
             "resist":"Physical"
         },
@@ -88,7 +88,7 @@
             "desc":"The target character’s Initiative is reduced by twice the attacking character’s Skill for 3 Rounds. Note that an Initiative roll below zero indicates that the character does not get to participate in a given Round.",
             "type":"Debilitate",
             "range":[1,"enemyFacingThis"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":40,
             "resist":"Physical"
             
@@ -98,7 +98,7 @@
             "desc":"Target character and attacking character both move one space backwards, relative to the attacking character, provided that there is a free space to move into.",
             "type":"Debilitate",
             "range":[1,"allyNoMiss"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":20,
             "resist":"Physical"
         },
@@ -107,7 +107,7 @@
             "desc":"Affected characters Move is reduced to 1 for 2 Rounds.",
             "type":"Debilitate",
             "range":[0,"self"],
-            "aoe":[3,"custom"],
+            "aoe":[2,"custom"],
             "cost":60,
             "resist":"Mental"
         }
@@ -118,7 +118,7 @@
             "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
             "type":"Damage",
             "range":["meleeWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":25,
             "resist":"Dodge/Block"
         },
@@ -127,7 +127,7 @@
             "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
             "type":"Damage",
             "range":["meleeWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":25,
             "resist":"Dodge/Block"
         },
@@ -136,7 +136,7 @@
             "desc":"The character makes an attack as usual but there is no defense against this attack.",
             "type":"Damage",
             "range":["meleeWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":35,
             "resist":"Dodge/Block"
         },
@@ -145,7 +145,7 @@
             "desc":"The character makes an attack as usual but enemy Damage Reduction is reduced by the attacker’s Skill.",
             "type":"Damage",
             "range":["meleeWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":"Dodge/Block"
         },
@@ -154,7 +154,7 @@
             "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
             "type":"Damage",
             "range":["meleeWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":"Dodge/Block"
         },
@@ -163,7 +163,7 @@
             "desc":"The character attacks all units adjacent to them, friend or foe. The damage is equal to half of their regular damage, plus Skill.",
             "type":"Damage",
             "range":[0,"self"],
-            "aoe":[2,"normal"],
+            "aoe":[1,"normal"],
             "cost":80,
             "resist":"Dodge/Block"
         }
@@ -174,7 +174,7 @@
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Threshold by the amount of Bleeding they have.",
             "type":"Debilitate",
             "range":["weapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":["Dodge/Block","Physical"]
         },
@@ -183,7 +183,7 @@
             "desc":"Places caltrops in area of effect which slows movement. Entering the caltrops ends a character’s movement and deals 1-10 damage, and leaving the caltrops ends a character’s movement. Movement within the mud is at a maximum of 2 Spaces per round.",
             "type":"Debilitate",
             "range":[5,"normal"],
-            "aoe":[2,"normal"],
+            "aoe":[1,"normal"],
             "cost":100,
             "resist":"None"
         },
@@ -192,7 +192,7 @@
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
             "type":"Debilitate",
             "range":["weapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":["Dodge/Block","Physical"]
         },
@@ -201,7 +201,7 @@
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
             "type":"Debilitate",
             "range":["weapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":["Dodge/Block","Physical"]
         },
@@ -210,7 +210,7 @@
             "desc":"Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker’s Skill. This lasts until the combat is finished.",
             "type":"Debilitate",
             "range":[3,"enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":50,
             "resist":"Dodge"
         },
@@ -219,7 +219,7 @@
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character’s Hit Points by a like amount at the end of every Round.",
             "type":"Debilitate",
             "range":["weapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":50,
             "resist":["Dodge/Block","Physical"]
         }
@@ -230,7 +230,7 @@
             "name":"Quicken",
             "desc":"Target allies increase their Initiative by the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[1,"diagonalForwardAdjacent"],
+            "range":[0,"diagonalForwardAdjacent"],
             "aoe":[2,"custom"],
             "cost":25,
             "resist":"None"
@@ -240,7 +240,7 @@
             "desc":"Target allies increase their Counter Chance by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"custom"],
             "cost":40,
             "resist":"None"
         },
@@ -249,7 +249,7 @@
             "desc":"Target allies increase their Attack Accuracy by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"custom"],
             "cost":30,
             "resist":"None"
         },
@@ -258,7 +258,7 @@
             "desc":"Target allies increase their Critical Chance by half of the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"custom"],
             "cost":40,
             "resist":"None"
         },
@@ -267,7 +267,7 @@
             "desc":"Target allies increase their Attack Speed by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"custom"],
             "cost":35,
             "resist":"None"
         },
@@ -276,7 +276,7 @@
             "desc":"The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
             "type":"Support",
             "range":["meleeWeapon","enemy"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"custom"],
             "cost":150,
             "resist":"None"
         }
@@ -287,7 +287,7 @@
             "desc":"Character attacks as usual with their ranged weapon, but gains +1 range for every 10 Skill they have (minimum 1).",
             "type":"Damage",
             "range":["custom","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":20,
             "resist":"Dodge/Block"
         },
@@ -296,7 +296,7 @@
             "desc":"Character attacks as usual with their ranged weapon, but enemy’s Damage Reduction from armour is reduced by attacker’s Skill.",
             "type":"Damage",
             "range":["rangedWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":"Dodge/Block"
         },
@@ -305,7 +305,7 @@
             "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
             "type":"Damage",
             "range":["rangedWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":25,
             "resist":"Dodge/Block"
         },
@@ -314,7 +314,7 @@
             "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
             "type":"Damage",
             "range":["rangedWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":25,
             "resist":"Dodge/Block"
         },
@@ -323,7 +323,7 @@
             "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
             "type":"Damage",
             "range":["rangedWeapon","enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":30,
             "resist":"Dodge/Block"
         },
@@ -332,7 +332,7 @@
             "desc":"The character makes an attack as usual but uses Skill instead of Weapon Skill to see if they hit-- they may target any enemy on an outdoor tile.",
             "type":"Damage",
             "range":[20,"enemy"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":60,
             "resist":"Dodge/Block"
             
@@ -353,7 +353,7 @@
             "desc":"Target character is Stunned (Must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or lose that turn (once Skill roll has succeeded, character is no longer Stunned).)",
             "type":"Debilitate",
             "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":200,
             "resist":"Mental"
             
@@ -363,7 +363,7 @@
             "desc":"All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be drawn to the “Mirage” (the space on which the spell was cast). A character drawn to the “Mirage” will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
             "type":"Debilitate",
             "range":[5,"normal"],
-            "aoe":[4,"normal"],
+            "aoe":[3,"normal"],
             "cost":200,
             "resist":"Mental"
             
@@ -373,7 +373,7 @@
             "desc":"Character is Blinded. (Target character’s Attack Accuracy and Defensive Ability are reduced by half for three turns.)",
             "type":"Debilitate",
             "range":[3,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":300,
             "resist":"Mental"
             
@@ -383,7 +383,7 @@
             "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) at the start of each turn or remain Insane. While Insane, a character will select a random target, friend, foe, or even self, and select a random action to do (using a Technique provided they have the TP, giving an item, attacking, etc.)",
             "type":"Debilitate",
             "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":300,
             "resist":"Mental"
             
@@ -393,7 +393,7 @@
             "desc":"Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or lose TP equal to the cost of the spell (300). If the target didn’t have at least 300 TP, they lose 1 HP for every full 10 TP they had under 300.",
             "type":"Debilitate",
             "range":[2,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":300,
             "resist":"Mental"
             
@@ -406,7 +406,7 @@
             "desc":"Deals 10-20 + Skill damage to target.",
             "type":"Damage",
             "range":[4,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":20,
             "resist":"Dodge/Block"
         },
@@ -415,7 +415,7 @@
             "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in first space of area of effect gains no Damage Reduction from armour against this damage. Damage halved for back spaces if first space is occupied.",
             "type":"Damage",
             "range":[1,"normal"],
-            "aoe":[2,"T"],
+            "aoe":[1,"T"],
             "cost":100,
             "resist":"None"
         },
@@ -424,7 +424,7 @@
             "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in central space of area of effect gains no Damage Reduction from armour against this damage.",
             "type":"Damage",
             "range":[5,"normal"],
-            "aoe":[2,"normal"],
+            "aoe":[1,"normal"],
             "cost":150,
             "resist":"None"
         },
@@ -442,7 +442,7 @@
             "desc":"Target character takes 100-200 + Skill damage. Target gains no Damage Reduction from armour against this damage.",
             "type":"Damage",
             "range":[3,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":300,
             "damage":[100,200,"skl"],
             "resist":"None"
@@ -452,7 +452,7 @@
             "desc":"Three different random spaces in the spell’s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
             "type":"Damage",
             "range":[6,"normal"],
-            "aoe":[3,"corners"],
+            "aoe":[2,"corners"],
             "cost":500,
             "resist":"None"
         }
@@ -463,7 +463,7 @@
             "desc":"All characters, friend or foe, within this spell’s effects are considered 'stable'. Lasts for 3 rounds.",
             "type":"Support",
             "range":["custom","tile"],
-            "aoe":[5,"normal"],
+            "aoe":[4,"normal"],
             "cost":50,
             "resist":"None"
             
@@ -493,7 +493,7 @@
             "desc":"Targeted character’s random % results cannot roll higher than 100 - ½ the Skill of the caster. Target’s critical chance is also improved by Skill/5. Lasts for 3 rounds.",
             "type":"Support",
             "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":200,
             "resist":"None"
             
@@ -503,7 +503,7 @@
             "desc":"Target character gains TP equal to 50+ the caster’s Skill.",
             "type":"Support",
             "range":["custom","normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":125,
             "resist":"None"
             
@@ -513,7 +513,7 @@
             "desc":"Targeted character immediately recovers from Bleeding Out and regains a random number of HP from Skill to Skill x 2",
             "type":"Support",
             "range":[1,"normal"],
-            "aoe":[1,"normal"],
+            "aoe":[0,"normal"],
             "cost":525,
             "resist":"None"
             

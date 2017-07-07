@@ -97,7 +97,7 @@ Quintus.Objects=function(Q){
                 if(this.p.lifting){
                     this.play("countering"+this.p.dir);
                 }
-                else if(this.p.hp<=this.p.maxHp/5){
+                else if(this.p.combatStats.hp<=this.p.combatStats.maxHp/5){
                     this.play("hurt"+this.p.dir);
                 } 
                 else {
@@ -156,6 +156,14 @@ Quintus.Objects=function(Q){
             playLevelUp:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("levelingUp");
+            },
+            playFainted:function(dir){
+                this.p.dir = this.checkPlayDir(dir);
+                this.play("dying"+this.p.dir);
+                this.on("doneDying",function(){
+                    this.off("doneDying");
+                    this.play("dead"+this.p.dir);
+                });
             },
             playSonicBoom:function(dir,callback,targets){
                 this.playAttack(dir);
@@ -264,7 +272,7 @@ Quintus.Objects=function(Q){
             showDamage:function(dmg,time,sound){
                 this.stage.insert(new Q.DynamicNumber({color:"red", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
                 //Show the death animation at this point
-                if(this.p.hp<=0){
+                if(this.p.combatStats.hp<=0){
                     this.playDying(this.p.dir);
                     //Probably want to do unit specific death sounds
                     Q.playSound("dying.mp3");
@@ -293,18 +301,23 @@ Quintus.Objects=function(Q){
                 }
                 return time?time:300;
             },
+            showHealed:function(amount){
+                this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
+                Q.playSound("coin.mp3");
+                return 300;
+            },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
             takeDamage:function(dmg,attacker){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
-                this.p.hp-=dmg;
-                this.trigger("saveProp",{name:"hp",value:this.p.hp});
+                this.p.combatStats.hp-=dmg;
+                this.trigger("saveProp",{name:"hp",value:this.p.combatStats.hp});
                 Q.setAward(attacker,"damageDealt",dmg);
                 Q.setAward(this,"damageTaken",dmg);
                 //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
                 if(attacker) this.addToHitBy(attacker);
-                if(this.p.hp<=0){
+                if(this.p.combatStats.hp<=0){
                     //If this character that is dying is lifting another object
                     if(this.p.lifting){
                         this.on("doneDying",function(){
@@ -316,13 +329,13 @@ Quintus.Objects=function(Q){
                             Q.BatCon.dropObject(this,this.p.lifting,locs[dropLoc]);
                         });
                     }
-                    Q.BattleGrid.removeZOC(this);
+                    //Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
                     //Q.BattleGrid.removeObject(this.p.loc);
                     Q.BatCon.markForRemoval(this);
                     //Set the hp to 0
-                    this.p.hp = 0;
-                    this.trigger("saveProp",{name:"hp",value:this.p.hp});
+                    this.p.combatStats.hp = 0;
+                    this.trigger("saveProp",{name:"hp",value:this.p.combatStats.hp});
                     //Give the character that got the last hit an 'enemiesDefeated' award
                     Q.setAward(attacker,"enemiesDefeated",1);
                     Q.setAward(this,"timesDied",1);
@@ -338,11 +351,15 @@ Quintus.Objects=function(Q){
                         }
                     }
                 } else {
-                    this.playStand(this.p.dir);
+                    //Give the character the "Fainted" status.
+                    if(dmg>this.p.combatStats.painTolerance){
+                        this.playFainted(this.p.dir);
+                        this.addStatus("fainted",5,attacker);
+                        if(this===Q.BatCon.turnOrder[0]) Q.BatCon.endTurn();
+                    } else {
+                        this.playStand(this.p.dir);
+                    }
                 }
-            },
-            healHp:function(amount){
-                this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
             },
             addStatus:function(name,turns,user){
                 this.addToHitBy(user);
@@ -649,13 +666,23 @@ Quintus.Objects=function(Q){
             this.p.initialLoc = [this.p.loc[0],this.p.loc[1]];
             var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
             exc.add("tween");
-            var t = this;
             exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();
+            var t = this;
                 //TEMP
                 /*if(t.p.team==="enemy"){
                     Q.BatCon.endTurn();
                 }*/
                 }});
+        },
+        //Moves the character back to its original location (from the start of the turn)
+        resetMove:function(){
+            Q.BattleGrid.moveObject(this.p.loc,this.p.didMove,this);
+            this.p.loc = [this.p.didMove[0],this.p.didMove[1]];
+            Q.BatCon.setXY(this);
+            this.p.z = this.p.y;
+            this.updateTileEffect(this.p.loc);
+            this.p.didMove = false;
+            this.revealStatusDisplay();
         },
         updateTileEffect:function(loc){
             var tile = Q.BatCon.getTileType(loc);
@@ -664,8 +691,6 @@ Quintus.Objects=function(Q){
         },
         //Move this character to a location based on the passed path
         moveAlong:function(path){
-            Q.pointer.off("checkInputs");
-            Q.pointer.off("checkConfirm");
             this.hideStatusDisplay();
             
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
@@ -677,8 +702,6 @@ Quintus.Objects=function(Q){
             this.add("autoMove");
             var t = this;
             this.on("doneAutoMove",function(){
-                Q.pointer.on("checkInputs");
-                Q.pointer.on("checkConfirm");
                 Q.pointer.checkTarget();
                 this.revealStatusDisplay();
                 //If this character hasn't attacked yet this turn, generate a new attackgraph
@@ -693,18 +716,15 @@ Quintus.Objects=function(Q){
                     } 
                     //Load the action menu
                     else {
-                        Q.pointer.displayCharacterMenu();
+                        Q.pointer.pointerMoveControls.remove();
                     }
                 } else {
                     //TEMP
                     if(false&&this.p.team==="enemy"){
                         this.trigger("setAIDirection");
                     } else {
-                        Q.pointer.off("checkInputs");
-                        Q.pointer.off("checkConfirm");
-                        Q.pointer.snapTo(this);
-                        Q.pointer.hide();
-                        this.add("directionControls");
+                        Q.BatCon.showEndTurnDirection(this);
+                        Q.pointer.del("pointerMoveControls");
                     }
                 }
                 t.off("doneAutoMove");
