@@ -84,12 +84,6 @@ Quintus.Objects=function(Q){
         },
         extend:{
             checkPlayDir:function(dir){
-                //TEMPORARY SINCE THE FINAL SPRITES WILL NOT BE ISOMETRIC
-                if(this.p.dir==="down"||this.p.dir==="right"){
-                    this.p.flip = 'x';
-                } else {
-                    this.p.flip = false;
-                }
                 if(!dir){return this.p.dir;}else{return dir||"down";}
             },
             playStand:function(dir){
@@ -149,6 +143,7 @@ Quintus.Objects=function(Q){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("dying"+this.p.dir);
                 this.on("doneDying",function(){
+                    if(callback) callback();
                     this.off("doneDying");
                     this.play("dead"+this.p.dir);
                 });
@@ -157,10 +152,11 @@ Quintus.Objects=function(Q){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("levelingUp");
             },
-            playFainted:function(dir){
+            playFainted:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("dying"+this.p.dir);
                 this.on("doneDying",function(){
+                    if(callback) callback();
                     this.off("doneDying");
                     this.play("dead"+this.p.dir);
                 });
@@ -262,8 +258,7 @@ Quintus.Objects=function(Q){
             //Displays the miss dynamic number
             showMiss:function(attacker,time){
                 //Face the attacker
-                this.faceTarget(attacker.p.loc);
-                this.playMiss(this.p.dir);
+                this.playMiss(Q.compareLocsForDirection(this.p.loc,attacker.p.loc,this.p.dir));
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
                 Q.playSound("cannot_do.mp3");
                 return time?time:300;
@@ -283,8 +278,7 @@ Quintus.Objects=function(Q){
                 return time?time:300;
             },
             showCounter:function(toCounter,time){
-                this.faceTarget(toCounter.p.loc);
-                this.playCounter(this.p.dir);
+                this.playCounter(Q.compareLocsForDirection(this.p.loc,toCounter.p.loc,this.p.dir));
                 Q.playSound("slashing.mp3");
                 return time?time:1000;
             },
@@ -305,6 +299,10 @@ Quintus.Objects=function(Q){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
                 Q.playSound("coin.mp3");
                 return 300;
+            },
+            showFainted:function(attacker){
+                var t = this;
+                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,attacker)});
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
@@ -339,9 +337,10 @@ Quintus.Objects=function(Q){
                     //Give the character that got the last hit an 'enemiesDefeated' award
                     Q.setAward(attacker,"enemiesDefeated",1);
                     Q.setAward(this,"timesDied",1);
+                    //Remove all status effects
+                    this.removeAllStatus();
+                    this.p.fainted = false;
                     if(!this.p.died){
-                        //Remove all status effects
-                        this.removeAllStatus();
                         //Set died to true so that if the character comes back to life, it will not give exp
                         this.p.died = true;
                         //Only give exp if possible (if an ally killed this character, no exp is given)
@@ -351,14 +350,7 @@ Quintus.Objects=function(Q){
                         }
                     }
                 } else {
-                    //Give the character the "Fainted" status.
-                    if(dmg>this.p.combatStats.painTolerance){
-                        this.playFainted(this.p.dir);
-                        this.addStatus("fainted",5,attacker);
-                        if(this===Q.BatCon.turnOrder[0]) Q.BatCon.endTurn();
-                    } else {
-                        this.playStand(this.p.dir);
-                    }
+                    this.playStand(this.p.dir);
                 }
             },
             addStatus:function(name,turns,user){
@@ -367,6 +359,11 @@ Quintus.Objects=function(Q){
                 else {this.p.statusDisplay.p.status.push(name);}
                 this.p.status[name] = {name:name,turns:turns};
                 Q.playSound("inflict_status.mp3");
+            },
+            refreshStatus:function(name,turns,user){
+                this.addToHitBy(user);
+                this.p.status[name] = {name:name,turns:turns};
+                Q.playSound("coin.mp3");
             },
             addToHitBy:function(obj){
                 //Don't add team attackers for exp
@@ -381,7 +378,6 @@ Quintus.Objects=function(Q){
                 }
             },
             doAttackAnim:function(targets,animation,sound,callback){
-                this.faceTarget(targets[0].p.loc);
                 this["play"+animation](this.p.dir,callback,targets);
                 Q.playSound(sound+".mp3");
             },
@@ -406,6 +402,7 @@ Quintus.Objects=function(Q){
             removeStatus:function(name){
                 this.p.status[name] = false;
                 this.p.statusDisplay.removeStatus(name);
+                if(name==="fainted") this.p.fainted = false;
             },
             removeAllStatus:function(){
                 var status = this.p.status;
@@ -421,38 +418,7 @@ Quintus.Objects=function(Q){
             },
             revealStatusDisplay:function(){
                 if(this.p.statusDisplay) this.p.statusDisplay.reveal();
-            },
-            faceTarget:function(tLoc){
-                var pLoc = this.p.loc;
-                var xDif = tLoc[0]-pLoc[0];
-                var yDif = tLoc[1]-pLoc[1];
-                if(xDif===0&&yDif===0){return this.p.dir;};
-                var newDir = "";
-                switch(true){
-                    case yDif<0:
-                        newDir+="up";
-                        this.p.flip=false;
-                        break
-                    case yDif>0:
-                        newDir+="down";
-                        this.p.flip='x';
-                        break;
-                }
-                if(newDir.length===0){
-                    switch(true){
-                        case xDif<0:
-                            newDir+="left";
-                            this.p.flip=false;
-                            break
-                        case xDif>0:
-                            newDir+="right";
-                            this.p.flip='x';
-                            break;
-                    }
-                }
-                this.p.dir = newDir;
             }
-            
         }
     });
     Q.component("autoMove", {
@@ -572,22 +538,18 @@ Quintus.Objects=function(Q){
                     switch(p.walkPath[0][1]){
                         case "up":
                             p.dir="up";
-                            p.flip = false;
                             break;
                         case "down":
                             p.dir="down";
-                            p.flip = 'x';
                             break;
                     }
                     if(p.dir.length===0){
                         switch(p.walkPath[0][0]){
                             case "right":
                                 p.dir+="right";
-                                p.flip = 'x';
                                 break;
                             case "left":
                                 p.dir+="left";
-                                p.flip = false;
                                 break;
                         }
                     }

@@ -40,7 +40,7 @@
             "name":"Direct",
             "type":"Support",
             "desc":"Target allies increase their Efficiency by half of the user’s Skill for 2 Rounds.",
-            "range":[1,"normal"],
+            "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
@@ -49,8 +49,8 @@
             "name":"Phalanx",
             "type":"Support",
             "desc":"Target allies increase their DR by half of the user’s Skill for 2 Rounds and also gain +100 to their Physical Resistance for 2 Rounds.",
-            "range":[1,"normal"],
-            "aoe":[0,"2x3box"],
+            "range":[0,"self"],
+            "aoe":["custom"],
             "cost":25,
             "resist":""
         }
@@ -107,7 +107,7 @@
             "desc":"Affected characters Move is reduced to 1 for 2 Rounds.",
             "type":"Debilitate",
             "range":[0,"self"],
-            "aoe":[2,"custom"],
+            "aoe":["custom"],
             "cost":60,
             "resist":"Mental"
         }
@@ -231,7 +231,7 @@
             "desc":"Target allies increase their Initiative by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[0,"diagonalForwardAdjacent"],
-            "aoe":[2,"custom"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
             "resist":"None"
         },
@@ -240,7 +240,7 @@
             "desc":"Target allies increase their Counter Chance by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"custom"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
             "resist":"None"
         },
@@ -249,7 +249,7 @@
             "desc":"Target allies increase their Attack Accuracy by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"custom"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
             "resist":"None"
         },
@@ -258,7 +258,7 @@
             "desc":"Target allies increase their Critical Chance by half of the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"custom"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
             "resist":"None"
         },
@@ -267,7 +267,7 @@
             "desc":"Target allies increase their Attack Speed by the user’s Skill for 2 Rounds.",
             "type":"Support",
             "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"custom"],
+            "aoe":[1,"hLine","excludeCenter"],
             "cost":35,
             "resist":"None"
         },

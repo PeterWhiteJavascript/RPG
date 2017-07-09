@@ -147,6 +147,13 @@ Quintus.HUD=function(Q){
                 idx++;
             }
         },
+        movePhalanxTiles:function(pointer){
+            var locs = this.getCustomAOE(pointer.p.loc,pointer.p.skill,pointer.p.user.p.dir);
+            this.aoeTiles.forEach(function(tile,i){
+                tile.p.loc = locs[i];
+                Q.BatCon.setXY(tile);
+            });
+        },
         moveTiles:function(pointer){
             this.aoeTiles.forEach(function(tile){
                 tile.p.loc = [tile.p.relative[0]+pointer.p.loc[0],tile.p.relative[1]+pointer.p.loc[1]];
@@ -161,11 +168,38 @@ Quintus.HUD=function(Q){
             this.entity.p.skill=false;
             this.entity.del("AOEGuide");
         },
+        getCustomAOE:function(loc,skill,dir){
+            switch(skill.name){
+                case "Phalanx":
+                    var upDown = Q.getDirArray(dir);
+                    var sideSide = Q.getDirArray(Q.getRotatedDir(dir));
+                    var diagBehind = Q.getBehindDirArray(dir);
+                    var locs = [];
+                    for(var i=-1;i<2;i++){
+                        if(i===0) i++;
+                        locs.push([i*upDown[0]+loc[0],i*upDown[1]+loc[1]]);
+                        locs.push([i*sideSide[0]+loc[0],i*sideSide[1]+loc[1]]);
+                        if(dir==="up"||dir==="down"){
+                            locs.push([i*diagBehind[0]+loc[0],Math.abs(i)*diagBehind[1]+loc[1]]);
+                        } else {
+                            locs.push([Math.abs(i)*diagBehind[0]+loc[0],i*diagBehind[1]+loc[1]]);
+                        }
+                    }
+                    return locs;
+                    break;
+            }
+        },
         getAOERange:function(loc,aoe){
             var radius = aoe[0];
             var area = aoe[1];
             var special = aoe[2];
-            var aoeTiles = this.aoeTiles =[];
+            var aoeTiles = this.aoeTiles = [];
+            if(aoe[0]==="custom"){ 
+                var locs = this.getCustomAOE(loc,this.entity.p.skill,this.entity.p.user.p.dir);
+                for(var i=0;i<locs.length;i++){
+                    aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:locs[i]})));
+                }
+            }
             var bounds = Q.BattleGrid.getBounds(loc,radius);
             switch(area){
                 //Diamond shape
@@ -306,7 +340,7 @@ Quintus.HUD=function(Q){
                 fill:"blue",
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
-                options:[["Move","Attack","Skill","Lift","Item","Status","End Turn"],["Status","Exit Menu"],[]],
+                options:[["Move","Attack","Skill","Lift","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[]
             });
@@ -1261,10 +1295,8 @@ Quintus.HUD=function(Q){
                 var user = this.p.user;
                 if(Q.pointer.p.skill){
                     var skill = Q.pointer.p.skill;
-                    //Use the skill's aoe, else it's a normal single target
-                    var aoe = skill.aoe?skill.aoe:[1,"normal"];
                     //Make sure there's a target 
-                    var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user));
+                    var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
                     //Remove any characters that are not affected.
                     if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
                     //If there is at least one target
@@ -1275,7 +1307,8 @@ Quintus.HUD=function(Q){
                     } else {this.cannotDo();}
 
                 } else {
-                    if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                    var obj = Q.BattleGrid.getObject(Q.pointer.p.loc)
+                    if(obj&&Q.BattleGrid.removeDead([obj]).length){
                         Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                         //Destroy this range grid
                         this.fullDestroy();
@@ -1399,6 +1432,7 @@ Quintus.HUD=function(Q){
                 type:Q.SPRITE_NONE
             });
             Q.BatCon.setXY(this);
+            this.p.z = 3;
         }
     });
     Q.Sprite.extend("AOETile",{
@@ -1411,6 +1445,7 @@ Quintus.HUD=function(Q){
                 type:Q.SPRITE_NONE
             });
             Q.BatCon.setXY(this);
+            this.p.z = 3
         }
     });
     Q.Sprite.extend("ZOCTile",{
@@ -1425,6 +1460,7 @@ Quintus.HUD=function(Q){
                 number:1
             });
             Q.BatCon.setXY(this);
+            this.p.z = this.p.y-Q.tileH/2;
         }
     });
     Q.UI.Container.extend("AttackPreviewBox",{
@@ -1456,7 +1492,7 @@ Quintus.HUD=function(Q){
                     if(this.p.skill.kind==="consumable"){
                         this.stage.ActionMenu.loadItem();
                     } else {
-                        this.stage.ActionMenu.loadSkill();
+                        this.stage.ActionMenu.loadTechnique();
                     }
                 }
                 else {
@@ -1827,7 +1863,6 @@ Quintus.HUD=function(Q){
                 Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
             }
             this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
-            //console.log(Q.stage(0).lists['Character'])
             Q.pointer.trigger("onTarget",this.placingCharacter);
         }
     });

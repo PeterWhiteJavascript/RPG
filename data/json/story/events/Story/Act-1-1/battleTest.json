@@ -2,7 +2,7 @@
     "name": "battleTest",
     "desc": "Test for battles. Not made in editor",
     "kind": "battle",
-    "map": "demo1.tmx",
+    "map": "battle_balance1.tmx",
     "music":"demo.mp3",
     "placementSquares":[[5,10],[5,11],[5,12]],
     "maxAllies":3,
@@ -19,7 +19,51 @@
             "file": "Proto.json",
             "group": "Low",
             "handle": "Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
             "uniqueId": 1,
+            "loc": [
+                14,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Skirmisher",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                10
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
             "loc": [
                 12,
                 10
@@ -29,24 +73,72 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Legionnaire",
+            "handle": "Archer",
+            "uniqueId": 1,
+            "loc": [
+                14,
+                10
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Assassin",
             "uniqueId": 0,
             "loc": [
-                12,
-                11
+                8,
+                15
             ],
-            "dir": "right"
+            "dir": "down"
         },
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Legionnaire",
+            "handle": "Assassin",
+            "uniqueId": 1,
+            "loc": [
+                8,
+                16
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Elementalist",
             "uniqueId": 0,
             "loc": [
-                12,
-                12
+                15,
+                10
             ],
-            "dir": "right"
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Healer",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                8
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Illusionist",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                7
+            ],
+            "dir": "down"
         }
     ]
 }

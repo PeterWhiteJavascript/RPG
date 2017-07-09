@@ -128,6 +128,18 @@ Quintus.QFunctions=function(Q){
                 return "up";
         }
     };
+    Q.getBehindDirArray = function(dir){
+        switch(dir){
+            case "up":
+                return [-1,1];
+            case "right":
+                return [-1,-1];
+            case "down":
+                return [1,-1];
+            case "left":
+                return [1,1];
+        }
+    };
     Q.getOppositeDir = function(dir){
         switch(dir){
             case "up":
@@ -195,4 +207,20 @@ Quintus.QFunctions=function(Q){
         var end = graph.grid[toLoc[0]][toLoc[1]];
         return Q.astar.search(graph, start, end);
     };
+    Q.compareLocsForDirection = function(userLoc,loc,dir){
+        var difX = userLoc[0]-loc[0];
+        var difY = userLoc[1]-loc[1];
+        //When the pointer is on top of the character, don't change the direction
+        if(difX===0&&difY===0) return;
+        //If the x dif is greater than the y dif
+        if(Math.abs(difX)>Math.abs(difY)){
+            //If the user is to the left of the pointer, make him face right
+            if(difX<0) dir = "right";
+            else dir = "left";
+        } else {
+            if(difY<0) dir = "down";
+            else dir = "up";
+        }
+        return dir;
+    }
 };

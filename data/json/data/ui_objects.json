@@ -74,7 +74,47 @@
         "w":32,
         "h":32
     },
-    "ui_forcedmarch":{
+    "ui_movePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_defensePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_skillPlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_strengthPlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_efficiencyPlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_damageReductionPlus":{
         "tilew":32,
         "tileh":32,
         "sx":128,

@@ -1,4 +1,50 @@
 {
+    "OP": {
+        "Super Legionnaire": {
+            "handle": "Super Legionnaire",
+            "name": "",
+            "levelmin": 50,
+            "levelmax": 50,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Specialized",
+                "High"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Legionnaire"
+        }
+    },
     "Low": {
         "Legionnaire": {
             "handle": "Legionnaire",
@@ -30,7 +76,7 @@
                 "accessory": "None"
             },
             "baseStats": [
-                "Specialized",
+                "Random",
                 "Low"
             ],
             "techniques": [
@@ -87,6 +133,314 @@
             ],
             "nationality": "Venorian",
             "charClass": "Vanguard"
+        },
+        "Archer": {
+            "handle": "Archer",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Long Shot",
+                "Armour Piercing Shot",
+                "Rapid Shot",
+                "Critical Shot",
+                "Painful Shot",
+                "Sniper Shot"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Archer"
+        },
+        "Skirmisher": {
+            "handle": "Skirmisher",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Quicken",
+                "Forewarn",
+                "Sharpen",
+                "Vitalize",
+                "Vivify",
+                "Coordinated Attack"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Skirmisher"
+        },
+        "Berserker": {
+            "handle": "Berserker",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Berserker"
+        },
+        "Illusionist": {
+            "handle": "Illusionist",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Slow",
+                "Stun",
+                "Hypnotic Mirage",
+                "Blind",
+                "Temporary Insanity",
+                "Antithesis"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Illusionist"
+        },
+        "Elementalist": {
+            "handle": "Elementalist",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Stone",
+                "Flamethrower",
+                "Fireball",
+                "Frost Ray",
+                "Choke",
+                "Lightning Storm"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Elementalist"
+        },
+        "Healer": {
+            "handle": "Healer",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Stability Field",
+                "Heal",
+                "Cure",
+                "Revive",
+                "Energize",
+                "Endow"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Healer"
+        },
+        "Assassin": {
+            "handle": "Assassin",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Bleeding Strike",
+                "Caltrops",
+                "Weakening Strike",
+                "Nerve Strike",
+                "Acid Bomb",
+                "Poison Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Assassin"
         }
     },
     "Guards": {
