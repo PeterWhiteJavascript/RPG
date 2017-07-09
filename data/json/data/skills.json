@@ -7,7 +7,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Fortify",
@@ -16,7 +16,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Embolden",
@@ -25,7 +25,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Fervour",
@@ -34,7 +34,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Direct",
@@ -43,7 +43,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Phalanx",
@@ -63,7 +63,7 @@
             "range":[1,"allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"Physical"
+            "resist":"physical"
         },
         {
             "name":"Staredown",
@@ -72,7 +72,7 @@
             "range":[6,"enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"Mental"
+            "resist":"mental"
         },
         {
             "name":"Charge Through",
@@ -81,7 +81,7 @@
             "range":[1,"allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"Physical"
+            "resist":"physical"
         },
         {
             "name":"Headbutt",
@@ -90,7 +90,7 @@
             "range":[1,"enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":40,
-            "resist":"Physical"
+            "resist":"physical"
             
         },
         {
@@ -100,7 +100,7 @@
             "range":[1,"allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"Physical"
+            "resist":"physical"
         },
         {
             "name":"War Cry",
@@ -109,7 +109,7 @@
             "range":[0,"self"],
             "aoe":["custom"],
             "cost":60,
-            "resist":"Mental"
+            "resist":"mental"
         }
     ],
     "Vanguard":[
@@ -117,55 +117,55 @@
             "name":"Critical Strike",
             "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
             "type":"Damage",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Rapid Strike",
             "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
             "type":"Damage",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Surprising Strike",
             "desc":"The character makes an attack as usual but there is no defense against this attack.",
             "type":"Damage",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":35,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Armour Piercing Strike",
             "desc":"The character makes an attack as usual but enemy Damage Reduction is reduced by the attacker’s Skill.",
             "type":"Damage",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Painful Strike",
             "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
             "type":"Damage",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Whirlwind Strike",
             "desc":"The character attacks all units adjacent to them, friend or foe. The damage is equal to half of their regular damage, plus Skill.",
             "type":"Damage",
             "range":[0,"self"],
-            "aoe":[1,"normal"],
+            "aoe":[1,"noSelf"],
             "cost":80,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         }
     ],
     "Assassin":[
@@ -173,10 +173,10 @@
             "name":"Bleeding Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Threshold by the amount of Bleeding they have.",
             "type":"Debilitate",
-            "range":["weapon","enemy"],
+            "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["Dodge/Block","Physical"]
+            "resist":["dodge/block","physical"]
         },
         {
             "name":"Caltrops",
@@ -185,31 +185,31 @@
             "range":[5,"normal"],
             "aoe":[1,"normal"],
             "cost":100,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Weakening Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
             "type":"Debilitate",
-            "range":["weapon","enemy"],
+            "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["Dodge/Block","Physical"]
+            "resist":["dodge/block","physical"]
         },
         {
             "name":"Nerve Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
             "type":"Debilitate",
-            "range":["weapon","enemy"],
+            "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["Dodge/Block","Physical"]
+            "resist":["dodge/block","physical"]
         },
         {
             "name":"Acid Bomb",
             "desc":"Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker’s Skill. This lasts until the combat is finished.",
             "type":"Debilitate",
-            "range":[3,"enemy"],
+            "range":[3,"normal"],
             "aoe":[0,"normal"],
             "cost":50,
             "resist":"Dodge"
@@ -218,10 +218,10 @@
             "name":"Poison Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character’s Hit Points by a like amount at the end of every Round.",
             "type":"Debilitate",
-            "range":["weapon","enemy"],
+            "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":50,
-            "resist":["Dodge/Block","Physical"]
+            "resist":["dodge/block","physical"]
         }
         
     ],
@@ -233,7 +233,7 @@
             "range":[0,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Forewarn",
@@ -242,7 +242,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Sharpen",
@@ -251,7 +251,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Vitalize",
@@ -260,7 +260,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Vivify",
@@ -269,16 +269,16 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":35,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Coordinated Attack",
             "desc":"The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
             "type":"Support",
-            "range":["meleeWeapon","enemy"],
+            "range":["meleeWeapon","normal"],
             "aoe":[1,"custom"],
             "cost":150,
-            "resist":"None"
+            "resist":"none"
         }
     ],
     "Archer":[
@@ -286,55 +286,55 @@
             "name":"Long Shot",
             "desc":"Character attacks as usual with their ranged weapon, but gains +1 range for every 10 Skill they have (minimum 1).",
             "type":"Damage",
-            "range":["custom","enemy"],
+            "range":["custom","normal"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Armour Piercing Shot",
             "desc":"Character attacks as usual with their ranged weapon, but enemy’s Damage Reduction from armour is reduced by attacker’s Skill.",
             "type":"Damage",
-            "range":["rangedWeapon","enemy"],
+            "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Rapid Shot",
             "desc":"The character makes an attack as usual but adds their Skill to Atk Speed.",
             "type":"Damage",
-            "range":["rangedWeapon","enemy"],
+            "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Critical Shot",
             "desc":"The character makes an attack as usual but adds their Skill to Crit Chance.",
             "type":"Damage",
-            "range":["rangedWeapon","enemy"],
+            "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Painful Shot",
             "desc":"The character makes an attack as usual but the enemy’s Pain Tolerance is reduced by the attacker’s Skill for the consideration of this attack.",
             "type":"Damage",
-            "range":["rangedWeapon","enemy"],
+            "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Sniper Shot",
             "desc":"The character makes an attack as usual but uses Skill instead of Weapon Skill to see if they hit-- they may target any enemy on an outdoor tile.",
             "type":"Damage",
-            "range":[20,"enemy"],
+            "range":[20,"normal"],
             "aoe":[0,"normal"],
             "cost":60,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
             
         }
     ],
@@ -344,9 +344,9 @@
             "desc":"Target character(s) suffers a penalty to their Initiative and Reflexes equal to the caster’s Skill. Lasts for one round.",
             "type":"Debilitate",
             "range":[3,"normal"],
-            "aoe":["custom","normal"],
+            "aoe":["customRadius","normal"],
             "cost":35,
-            "resist":"Mental"
+            "resist":"magical"
         },
         {
             "name":"Stun",
@@ -354,18 +354,18 @@
             "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[0,"normal"],
-            "cost":200,
-            "resist":"Mental"
+            "cost":1,
+            "resist":"magical"
             
         },
         {
             "name":"Hypnotic Mirage",
             "desc":"All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be drawn to the “Mirage” (the space on which the spell was cast). A character drawn to the “Mirage” will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
             "type":"Debilitate",
-            "range":[5,"normal"],
+            "range":[5,"ground"],
             "aoe":[3,"normal"],
-            "cost":200,
-            "resist":"Mental"
+            "cost":1,
+            "resist":"magical"
             
         },
         {
@@ -374,8 +374,8 @@
             "type":"Debilitate",
             "range":[3,"normal"],
             "aoe":[0,"normal"],
-            "cost":300,
-            "resist":"Mental"
+            "cost":1,
+            "resist":"magical"
             
         },
         {
@@ -384,8 +384,8 @@
             "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[0,"normal"],
-            "cost":300,
-            "resist":"Mental"
+            "cost":1,
+            "resist":"magical"
             
         },
         {
@@ -394,8 +394,8 @@
             "type":"Debilitate",
             "range":[2,"normal"],
             "aoe":[0,"normal"],
-            "cost":300,
-            "resist":"Mental"
+            "cost":1,
+            "resist":"magical"
             
         }
         
@@ -408,7 +408,7 @@
             "range":[4,"normal"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"Dodge/Block"
+            "resist":"dodge/block"
         },
         {
             "name":"Flamethrower",
@@ -417,7 +417,7 @@
             "range":[1,"normal"],
             "aoe":[1,"T"],
             "cost":100,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Fireball",
@@ -426,7 +426,7 @@
             "range":[5,"normal"],
             "aoe":[1,"normal"],
             "cost":150,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Frost Ray",
@@ -435,7 +435,7 @@
             "range":[1,"normal"],
             "aoe":["custom","line"],
             "cost":150,
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Choke",
@@ -445,7 +445,7 @@
             "aoe":[0,"normal"],
             "cost":300,
             "damage":[100,200,"skl"],
-            "resist":"None"
+            "resist":"none"
         },
         {
             "name":"Lightning Storm",
@@ -454,7 +454,7 @@
             "range":[6,"normal"],
             "aoe":[2,"corners"],
             "cost":500,
-            "resist":"None"
+            "resist":"none"
         }
     ],
     "Healer":[
@@ -462,10 +462,10 @@
             "name":"Stability Field",
             "desc":"All characters, friend or foe, within this spell’s effects are considered 'stable'. Lasts for 3 rounds.",
             "type":"Support",
-            "range":["custom","tile"],
+            "range":["custom","ground"],
             "aoe":[4,"normal"],
             "cost":50,
-            "resist":"None"
+            "resist":"none"
             
         },
         {
@@ -475,7 +475,7 @@
             "range":["custom","normal"],
             "aoe":["custom","normal"],
             "cost":100,
-            "resist":"None"
+            "resist":"none"
             
         },
         {
@@ -485,7 +485,7 @@
             "range":["custom","normal"],
             "aoe":["custom","normal"],
             "cost":100,
-            "resist":"None"
+            "resist":"none"
             
         },
         {
@@ -495,7 +495,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":200,
-            "resist":"None"
+            "resist":"none"
             
         },
         {
@@ -505,7 +505,7 @@
             "range":["custom","normal"],
             "aoe":[0,"normal"],
             "cost":125,
-            "resist":"None"
+            "resist":"none"
             
         },
         {
@@ -515,7 +515,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":525,
-            "resist":"None"
+            "resist":"none"
             
         }
     ]

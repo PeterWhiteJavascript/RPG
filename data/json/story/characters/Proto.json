@@ -49,8 +49,8 @@
         "Legionnaire": {
             "handle": "Legionnaire",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -93,12 +93,12 @@
         "Vanguard": {
             "handle": "Vanguard",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 3,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
-                    "Default",
+                    "Excellent",
                     "Default",
                     "Default"
                 ],
@@ -119,10 +119,17 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Low"
-            ],
+            "baseStats": {
+                "str": 19,
+                "end": 54,
+                "dex": 19,
+                "wsk": 43,
+                "rfl": 18,
+                "ini": "1111",
+                "enr": 18,
+                "skl": 15,
+                "eff": 17
+            },
             "techniques": [
                 "Critical Strike",
                 "Rapid Strike",
@@ -137,8 +144,8 @@
         "Archer": {
             "handle": "Archer",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -181,8 +188,8 @@
         "Skirmisher": {
             "handle": "Skirmisher",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -225,8 +232,8 @@
         "Berserker": {
             "handle": "Berserker",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -269,8 +276,8 @@
         "Illusionist": {
             "handle": "Illusionist",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -296,8 +303,8 @@
                 "accessory": "None"
             },
             "baseStats": [
-                "Random",
-                "Medium"
+                "Specialized",
+                "High"
             ],
             "techniques": [
                 "Slow",
@@ -313,8 +320,8 @@
         "Elementalist": {
             "handle": "Elementalist",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -357,8 +364,8 @@
         "Healer": {
             "handle": "Healer",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -401,8 +408,8 @@
         "Assassin": {
             "handle": "Assassin",
             "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 50,
+            "levelmax": 50,
             "gender": "Male",
             "equipment": {
                 "righthand": [
@@ -566,13 +573,13 @@
             "baseStats": {
                 "str": "25",
                 "end": "20",
-                "dex": "14",
+                "dex": "504",
                 "wsk": "20",
-                "rfl": "15",
-                "ini": "10",
-                "enr": "15",
-                "skl": "10",
-                "eff": "10"
+                "rfl": "505",
+                "ini": "500",
+                "enr": "505",
+                "skl": "500",
+                "eff": "500"
             },
             "techniques": [
                 "Push",

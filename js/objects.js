@@ -263,6 +263,12 @@ Quintus.Objects=function(Q){
                 Q.playSound("cannot_do.mp3");
                 return time?time:300;
             },
+            showResisted:function(attacker,time){
+                this.playMiss(this.p.dir);
+                this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Resisted!",z:this.p.z}));
+                Q.playSound("cannot_do.mp3");
+                return time?time:300;
+            },
             //Displays the damage dynamic number
             showDamage:function(dmg,time,sound){
                 this.stage.insert(new Q.DynamicNumber({color:"red", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
@@ -272,7 +278,7 @@ Quintus.Objects=function(Q){
                     //Probably want to do unit specific death sounds
                     Q.playSound("dying.mp3");
                 } else {
-                    var sound = sound?sound:"hit1.mp3";
+                    sound = sound?sound:"hit1.mp3";
                     Q.playSound(sound);
                 }
                 return time?time:300;

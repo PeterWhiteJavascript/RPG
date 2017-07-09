@@ -58,7 +58,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Magi Res","Ment Res","Pain Tolerance","Weight","Exp."];
+            var info = ["Class","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Ment Res","Pain Tolerance","Weight","Exp."];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -92,7 +92,6 @@ Quintus.HUD=function(Q){
                 ""+objStats.initiative,
                 
                 ""+objStats.physicalResistance,
-                ""+objStats.magicalResistance,
                 ""+objStats.mentalResistance,
                 ""+objStats.painTolerance,
                 ""+objStats.totalWeight,
@@ -199,6 +198,12 @@ Quintus.HUD=function(Q){
                 for(var i=0;i<locs.length;i++){
                     aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:locs[i]})));
                 }
+            } else if(aoe[0]==="customRadius"){
+                switch(this.entity.p.skill.name){
+                    case "Slow":
+                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/20);
+                        break;
+                }
             }
             var bounds = Q.BattleGrid.getBounds(loc,radius);
             switch(area){
@@ -237,6 +242,14 @@ Quintus.HUD=function(Q){
                         if(special==="excludeCenter"&&i===0) i++;
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
+                    }
+                    break;
+                case "noSelf":
+                    for(var i=-radius;i<radius+1;i++){
+                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                            if(i===0&&j===radius) j++;
+                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
+                        }
                     }
                     break;
             }
@@ -1171,21 +1184,22 @@ Quintus.HUD=function(Q){
                 //Used for skills that have a weird range (eg 'T' shape)
                 case "skill":
                     var skill = this.p.skill?this.p.skill:this.p.item;
+                    var range = this.getRange(skill.range[0],skill);
                     switch(skill.range[1]){
                         case "self":
                             //Self skills can target the tile that the user is on
                             this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[user.p.loc[0],user.p.loc[1]]})));
                             //If there is range, then the skill can target self, or other squares (using potion, etc...)
                             if(skill.range[0]>0){
-                                this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"]);
+                                this.getTileRange(user.p.loc,range,user.p["attackMatrix"]);
                             }
                             break;
                         case "normal":
-                            this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"]);
+                            this.getTileRange(user.p.loc,range,user.p["attackMatrix"]);
                             break;
                             //No diagonal attack
                         case "straight":
-                            this.getTileRange(user.p.loc,skill.range[0],user.p["attackMatrix"],skill.range[1]);
+                            this.getTileRange(user.p.loc,range,user.p["attackMatrix"],skill.range[1]);
                             break;
                     }
                     break;
@@ -1198,6 +1212,46 @@ Quintus.HUD=function(Q){
                     this.getTileRange(user.p.loc,1,user.p["attackMatrix"]);
                     break;
             }
+        },
+        getCustomRange:function(skill,user){
+            var range = 0;
+            var name = skill.name;
+            switch(name){
+                case "Long Shot":
+                    var rh = user.p.equipment.righthand || {range:0};
+                    var lh = user.p.equipment.lefthand || {range:0};
+                    range = rh.range>lh.range?rh.range:lh.range;
+                    range+=Math.floor(user.p.baseStats.skl/10);
+                    break;
+            }
+            return range;
+        },
+        getRange:function(range,skill){
+            if(Q._isNumber(range)) return range;
+            var user = this.p.user;
+            switch(range){
+                case "custom":
+                    range = this.getCustomRange(skill,user);
+                    break;
+                case "weapon":
+                    var lh = user.p.equipment.lefthand;
+                    if(lh) range = lh.range;
+                    var rh = user.p.equipment.righthand;
+                    if(rh) range = rh.range;
+                    break;
+                case "rangedWeapon":
+                    var rh = user.p.equipment.righthand || {range:0};
+                    var lh = user.p.equipment.lefthand || {range:0};
+                    range = rh.range>lh.range?rh.range:lh.range;
+                    break;
+                case "meleeWeapon":
+                    var lh = user.p.equipment.lefthand;
+                    if(lh.range===1||lh.range===2) range = lh.range;
+                    var rh = user.p.equipment.righthand;
+                    if(rh.range===1||rh.range===2) range = rh.range;
+                    break;
+            }
+            return range;
         },
         fullDestroy:function(){
             this.p.moveGuide.forEach(function(itm){
@@ -1432,7 +1486,7 @@ Quintus.HUD=function(Q){
                 type:Q.SPRITE_NONE
             });
             Q.BatCon.setXY(this);
-            this.p.z = 3;
+            this.p.z = this.p.y;
         }
     });
     Q.Sprite.extend("AOETile",{

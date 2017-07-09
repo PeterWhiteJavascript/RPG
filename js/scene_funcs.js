@@ -164,8 +164,8 @@ Quintus.SceneFuncs=function(Q){
         Q.playMusic(music,function(){
             //Display the tmx tile map
             Q.stageTMX(battleData.map, stage);
-            stage.lists.TileLayer[0].p.z = -2;
-            stage.lists.TileLayer[1].p.z = -1;
+            stage.lists.TileLayer[0].p.z = 0;
+            stage.lists.TileLayer[1].p.z = 1;
             stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
             stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
             //Set the battlegrid's stage
