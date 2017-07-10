@@ -60,7 +60,7 @@
             "name":"Push",
             "desc":"Target character is pushed backwards one space, or, if pushed onto an Icy space, is pushed backwards until they collide with another a wall, or are no longer crossing Icy Spaces.  however if they collide with another character, that character will be Pushed along too.",
             "type":"Debilitate",
-            "range":[1,"allyNoMiss"],
+            "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
             "resist":"physical"
@@ -69,16 +69,16 @@
             "name":"Staredown",
             "desc":"Enemy Attack Accuracy is reduced by the attacking character’s Skill for 3 Rounds.",
             "type":"Debilitate",
-            "range":[6,"enemyFacingThis"],
+            "range":[6,"normal","enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":30,
             "resist":"mental"
         },
         {
             "name":"Charge Through",
-            "desc":"The user charges through the target. If there is no free space behind the target, this just does damage. Charge Through does 20-30+skl damage and does double if the target is hit from behind.",
+            "desc":"The user charges through the target-- there must be a free space on the opposite side of the target character to be able to use this ability. After using the ability, the character may reset their Facing.",
             "type":"Debilitate",
-            "range":[1,"allyNoMiss"],
+            "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":25,
             "resist":"physical"
@@ -87,7 +87,7 @@
             "name":"Headbutt",
             "desc":"The target character’s Initiative is reduced by twice the attacking character’s Skill for 3 Rounds. Note that an Initiative roll below zero indicates that the character does not get to participate in a given Round.",
             "type":"Debilitate",
-            "range":[1,"enemyFacingThis"],
+            "range":[1,"normal","enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":40,
             "resist":"physical"
@@ -97,7 +97,7 @@
             "name":"Pull",
             "desc":"Target character and attacking character both move one space backwards, relative to the attacking character, provided that there is a free space to move into.",
             "type":"Debilitate",
-            "range":[1,"allyNoMiss"],
+            "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
             "resist":"physical"
@@ -107,7 +107,7 @@
             "desc":"Affected characters Move is reduced to 1 for 2 Rounds.",
             "type":"Debilitate",
             "range":[0,"self"],
-            "aoe":["custom"],
+            "aoe":["customRadius","normal","enemy"],
             "cost":60,
             "resist":"mental"
         }

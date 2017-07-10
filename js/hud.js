@@ -203,6 +203,9 @@ Quintus.HUD=function(Q){
                     case "Slow":
                         radius = Math.floor(this.entity.p.user.p.combatStats.skill/20);
                         break;
+                    case "War Cry":
+                        radius = 4+Math.floor(this.entity.p.user.p.combatStats.skill/10);
+                        break;
                 }
             }
             var bounds = Q.BattleGrid.getBounds(loc,radius);
@@ -1181,7 +1184,6 @@ Quintus.HUD=function(Q){
                 case "attack":
                     this.getTileRange(user.p.loc,user.p.combatStats.atkRange,user.p["attackMatrix"]);
                     break;
-                //Used for skills that have a weird range (eg 'T' shape)
                 case "skill":
                     var skill = this.p.skill?this.p.skill:this.p.item;
                     var range = this.getRange(skill.range[0],skill);
@@ -1353,6 +1355,9 @@ Quintus.HUD=function(Q){
                     var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
                     //Remove any characters that are not affected.
                     if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
+                    //Remove characters that are not facing the user if the skill has enemyFacingThis
+                    if(skill.range[2]==="enemyFacingThis") Q.BatCon.removeNotFacing(targets,user);
+                    
                     //If there is at least one target
                     if(targets.length){
                         Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
@@ -1797,6 +1802,10 @@ Quintus.HUD=function(Q){
             this.dirTri.changePos(this.entity.p.dir,this.entity);
             this.entity.on("step",this,"step");
             this.canMove = true;
+            this.left = true;
+            this.right = true;
+            this.up = true;
+            this.down = true;
         },
         removeControls:function(){
             this.entity.off("pressedConfirm");
@@ -1807,13 +1816,13 @@ Quintus.HUD=function(Q){
         },
         step:function(dt){
             var dir;
-            if(Q.inputs['left']) {
+            if(Q.inputs['left']&&this.left) {
                 dir='left';
-            } else if(Q.inputs['right']) {;
+            } else if(Q.inputs['right']&&this.right) {;
                 dir='right';
-            } else if(Q.inputs['up']) {
+            } else if(Q.inputs['up']&&this.up) {
                 dir='up';
-            } else if(Q.inputs['down']) {
+            } else if(Q.inputs['down']&&this.down) {
                 dir='down';
             }
             if(dir){
@@ -1826,9 +1835,6 @@ Quintus.HUD=function(Q){
             } 
             else if(Q.inputs['confirm']){
                 this.entity.trigger("pressedConfirm");
-                /*
-                Q.BatCon.endTurn();
-                this.entity.del("directionControls");*/
                 Q.inputs['confirm']=false;
             }
         }

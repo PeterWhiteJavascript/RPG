@@ -245,6 +245,26 @@ Quintus.Objects=function(Q){
     //Any functions that are run because of skills are here as well
     Q.component("combatant",{
         extend:{
+            pulled:function(tileTo,targetTileTo,user){
+                console.log(tileTo,targetTileTo,user)
+                var posTo = Q.BatCon.getXY(tileTo);
+                this.hideStatusDisplay();
+                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
+                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
+                    this.p.loc = tileTo;
+                    Q.BatCon.setXY(this);
+                    this.revealStatusDisplay();
+                }});
+                var posTo = Q.BatCon.getXY(targetTileTo);
+                user.hideStatusDisplay();
+                user.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
+                    Q.BattleGrid.moveObject(user.p.loc,targetTileTo,user);
+                    user.p.loc = targetTileTo;
+                    Q.BatCon.setXY(user);
+                    user.revealStatusDisplay();
+                }});
+                Q.playSound("shooting.mp3");
+            },
             pushed:function(tileTo){
                 var posTo = Q.BatCon.getXY(tileTo);
                 this.hideStatusDisplay();
@@ -254,6 +274,19 @@ Quintus.Objects=function(Q){
                     Q.BatCon.setXY(this);
                     this.revealStatusDisplay();
                 }});
+                Q.playSound("shooting.mp3");
+            },
+            chargedThrough:function(tileTo,target){
+                var posTo = Q.BatCon.getXY(tileTo);
+                this.hideStatusDisplay();
+                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
+                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
+                    this.p.loc = tileTo;
+                    Q.BatCon.setXY(this);
+                    this.revealStatusDisplay();
+                }});
+                target.playMiss(target.p.dir);
+                Q.playSound("shooting.mp3");
             },
             //Displays the miss dynamic number
             showMiss:function(attacker,time){

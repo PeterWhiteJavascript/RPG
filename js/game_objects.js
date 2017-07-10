@@ -755,6 +755,9 @@ Quintus.GameObjects=function(Q){
                 Q.BatCon.setXY(sq);
             });
         },
+        removePlacementSquares:function(){
+            Q("PlacementSquare",0).invoke("destroy");
+        },
         genPlaceableAllies:function(){
             //All placeable allies (not wounded, must be preset, not already placed)
             var placeableAllies = [];
@@ -770,6 +773,7 @@ Quintus.GameObjects=function(Q){
         startPlacingAllies:function(){
             var t = this;
                 t.startBattle();
+                
             return;
             this.genPlaceableAllies();
             Q.pointer.add("pointerPlaceAllies");
@@ -802,6 +806,7 @@ Quintus.GameObjects=function(Q){
             Q.pointer = Q.stage(0).insert(new Q.Pointer({loc:[0,0]}));
             Q.viewFollow(Q.pointer,Q.stage(0));
             */
+           this.removePlacementSquares();
             this.allies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="ally"; 
             });
@@ -993,12 +998,22 @@ Quintus.GameObjects=function(Q){
             })[0];
             return target;
         },
+        validateTileTo:function(tileType,obj){
+            var required = Q.state.get("tileTypes")[tileType].required;
+            if(required){
+                if(obj.p.canMoveOn[required]){
+                    return tileType;
+                }
+                return "impassable";
+            }
+            return tileType;
+        },
         getTileType:function(loc){
             //Prioritize the collision objects
             var tileLayer = this.stage.lists.TileLayer[1];
             if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
                 var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type; 
-                 return type?type:"impassable";
+                return type || "impassable";
             }
             //If there's nothing on top, check the ground
             var tileLayer = this.stage.lists.TileLayer[0];
@@ -1011,6 +1026,15 @@ Quintus.GameObjects=function(Q){
             for(var i=arr.length-1;i>=0;i--){
                 if(arr[i].p.team!==team){
                     arr.splice(i,1);
+                }
+            }
+        },
+        //Removes any targets that are not facing the user.
+        removeNotFacing:function(targets,user){
+            for(var i=targets.length-1;i>=0;i--){
+                var dir = this.attackFuncs.compareDirection(targets[i],user);
+                if(dir==="back"||dir==="side"){
+                    targets.splice(i,1);
                 }
             }
         },
@@ -1034,8 +1058,17 @@ Quintus.GameObjects=function(Q){
             }
             Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,skill:skill}));
         },
-        showEndTurnDirection:function(obj){
+        showEndTurnDirection:function(obj,dirs){
             obj.add("directionControls");
+            if(dirs&&dirs.length){
+                obj.directionControls.left = false;
+                obj.directionControls.right = false;
+                obj.directionControls.up = false;
+                obj.directionControls.down = false;
+                dirs.forEach(function(dir){
+                    obj.directionControls[dir] = true;
+                });
+            }
             obj.on("pressedConfirm",function(){
                 obj.off("pressedConfirm");
                 obj.directionControls.removeControls();
@@ -1132,6 +1165,12 @@ Quintus.GameObjects=function(Q){
             //If any defenders dies from an attack, save the feedback and add it on to text at the end
             this.expText = [];
         },
+        getDiagDirs:function(aLoc,dLoc){
+            if(aLoc[0]<dLoc[0]&&aLoc[1]>dLoc[1]) return ["up","right"];
+            if(aLoc[0]<dLoc[0]&&aLoc[1]<dLoc[1]) return ["down","right"];
+            if(aLoc[0]>dLoc[0]&&aLoc[1]>dLoc[1]) return ["up","left"];
+            if(aLoc[0]>dLoc[0]&&aLoc[1]<dLoc[1]) return ["down","left"];
+        },
         //Compares the first obj's dir to the second object's dir.
         compareDirection:function(attacker,defender){
             var getDirection = function(dir,dirs){
@@ -1154,6 +1193,7 @@ Quintus.GameObjects=function(Q){
             
             //If the characters are diagonal to each other, we're attacking from the side, regardless of which direction either participants are facing
             if(Math.abs(attacker.p.loc[0]-defender.p.loc[0])===Math.abs(attacker.p.loc[1]-defender.p.loc[1])){
+                attacker.p.canSetDir = this.getDiagDirs(attacker.p.loc,defender.p.loc);
                 return side;
             }
             //Array of possible directions clockwise from 12 o'clock
@@ -1475,10 +1515,30 @@ Quintus.GameObjects=function(Q){
                 case "Antithesis":
                     
                     break;
+                case "Push":
+                    newText = this.entity.skillFuncs.push(1,defender,attacker);
+                    break;
+                case "Staredown":
+                    newText = this.entity.skillFuncs["addStatus"]("feared",3,defender,attacker);
+                    break;
+                case "Charge Through":
+                    newText = this.entity.skillFuncs.chargeThrough(defender,attacker);
+                    attacker.p.canSetDir = [];
+                    break;
+                case "Headbutt":
+                    newText = this.entity.skillFuncs["addStatus"]("iniDown",3,defender,attacker);
+                    break;
+                case "Pull":
+                    newText = this.entity.skillFuncs.pull(defender,attacker);
+                    break;
+                case "War Cry":
+                    newText = this.entity.skillFuncs["addStatus"]("slowGo",2,defender,attacker);
+                    break;
             }
             for(var i=0;i<newText.length;i++){
                 this.text.push(newText[i]);
             }
+            this.text.push({func:"waitTime",obj:this,props:[400]});
         },
         useDamageSkill:function(attacker,defender,skill){
             var damage = 0;
@@ -1518,7 +1578,6 @@ Quintus.GameObjects=function(Q){
                     this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[defender,"painTolerance"]});
                     break;
                 case "Sniper Shot":
-                    console.log(attacker.p.combatStats.atkAccuracy,attacker.p.combatStats.skill,attacker.p.combatStats.weaponSkill)
                     attacker.p.combatStats.weaponSkill = attacker.p.combatStats.skill;
                     Q.charGen.resetCombatStat(attacker,"atkAccuracy");
                     var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender));
@@ -1588,6 +1647,7 @@ Quintus.GameObjects=function(Q){
         },
         skillHit:function(attacker,defender,skill){
             var skillResist = skill.resist;
+            if(skill.range[2]==="allyNoMiss"&&attacker.p.team===defender.p.team) return true;
             if(skillResist==="none"||skillResist==="dodge/block") return true;
             var rand = Math.floor(Math.random()*100);
             var stat = defender.p.combatStats[skillResist+"Resistance"];
@@ -1740,8 +1800,12 @@ Quintus.GameObjects=function(Q){
             Q.BatCon.removeMarked();
             //If this character has now attacked and moved, end their turn.
             if(active.p.didMove){
+                if(active.p.canSetDir){
+                    Q.BatCon.showEndTurnDirection(active,active.p.canSetDir);
+                    active.p.canSetDir = false;
+                }
                 //TEMP
-                if(true||active.p.team!=="enemy"){
+                else if(true||active.p.team!=="enemy"){
                     //Q.BatCon.showEndTurnDirection(active);
                     Q.BatCon.endTurn();
                 } else {
@@ -1772,9 +1836,36 @@ Quintus.GameObjects=function(Q){
         }
     });
     Q.component("skillFuncs",{
-        pull:function(tiles,target,user){
+        pull:function(target,user){
+            var tiles = 1;
             var text = [];
-
+            var userTileTo = [];
+            var targetTileTo = [user.p.loc[0],user.p.loc[1]];
+            //Pulling in the y direction
+            if(user.p.loc[0]===target.p.loc[0]){
+                //Pulling up
+                if(user.p.loc[1]-target.p.loc[1]>0){
+                    userTileTo = [user.p.loc[0],user.p.loc[1]+tiles];
+                } 
+                //Pulling down
+                else {
+                    userTileTo = [user.p.loc[0],user.p.loc[1]-tiles];
+                }
+            }
+            //Pulling in the x direction
+            else if(user.p.loc[1]===target.p.loc[1]){
+                //Pulling left
+                if(user.p.loc[0]-target.p.loc[0]>0){
+                    userTileTo = [user.p.loc[0]+tiles,user.p.loc[1]];
+                } 
+                //Pulling right
+                else {
+                    userTileTo = [user.p.loc[0]-tiles,user.p.loc[1]];
+                }
+            }
+            if(!Q.BattleGrid.getObject(userTileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(userTileTo),user)!=="impassable"){
+                text.push({func:"pulled",obj:target,props:[targetTileTo,userTileTo,user]});
+            };
             return text;
         },
         //pushes a target
@@ -1805,13 +1896,40 @@ Quintus.GameObjects=function(Q){
             }
             //Make sure there's no object or impassable tile where the target will be pushed to.
             //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
-            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.getTileType(tileTo)!=="impassable"){
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target)!=="impassable"){
                 text.push({func:"pushed",obj:target,props:[tileTo]});
-                if(tiles===1){
-                    //text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tile!");
-                } else {
-                    //text.push(user.p.name+" pushed "+target.p.name+" "+tiles+" tiles!");
+            };
+            return text;
+        },
+        chargeThrough:function(target,user){
+            var tiles = 1;
+            var text = [];
+            var tileTo = [];
+            //Charging in the y direction
+            if(user.p.loc[0]===target.p.loc[0]){
+                //Charging up
+                if(user.p.loc[1]-target.p.loc[1]>0){
+                    tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
+                } 
+                //Charging down
+                else {
+                    tileTo = [target.p.loc[0],target.p.loc[1]+tiles];
                 }
+            }
+            //Charging in the x direction
+            else if(user.p.loc[1]===target.p.loc[1]){
+                //Charging left
+                if(user.p.loc[0]-target.p.loc[0]>0){
+                    tileTo = [target.p.loc[0]-tiles,target.p.loc[1]];
+                } 
+                //Charging right
+                else {
+                    tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
+                }
+            }
+            console.log(Q.BatCon.getTileType(tileTo))
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),user)!=="impassable"){
+                text.push({func:"chargedThrough",obj:user,props:[tileTo,target]});
             };
             return text;
         },
@@ -1828,7 +1946,7 @@ Quintus.GameObjects=function(Q){
             } else {
                 text.push({func:"addStatus",obj:target,props:[status,num,user]});
             }
-            text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[500]});
+            //text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[100]});
             return text;
         },
         

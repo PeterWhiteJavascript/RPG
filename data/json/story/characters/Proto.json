@@ -119,17 +119,10 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": {
-                "str": 19,
-                "end": 54,
-                "dex": 19,
-                "wsk": 43,
-                "rfl": 18,
-                "ini": "1111",
-                "enr": 18,
-                "skl": 15,
-                "eff": 17
-            },
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
             "techniques": [
                 "Critical Strike",
                 "Rapid Strike",
@@ -258,10 +251,17 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Medium"
-            ],
+            "baseStats": {
+                "str": 49,
+                "end": 39,
+                "dex": 12,
+                "wsk": 16,
+                "rfl": 12,
+                "ini": "100",
+                "enr": 14,
+                "skl": 16,
+                "eff": 14
+            },
             "techniques": [
                 "Push",
                 "Staredown",
