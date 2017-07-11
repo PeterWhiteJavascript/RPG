@@ -157,7 +157,7 @@
             "file": "Proto.json",
             "group": "Low",
             "handle": "Vanguard",
-            "uniqueId": 0,
+            "uniqueId": 1,
             "loc": [
                 13,
                 12
@@ -169,7 +169,7 @@
             "file": "Proto.json",
             "group": "Low",
             "handle": "Vanguard",
-            "uniqueId": 0,
+            "uniqueId": 2,
             "loc": [
                 14,
                 12

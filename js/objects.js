@@ -341,7 +341,7 @@ Quintus.Objects=function(Q){
             },
             showFainted:function(attacker){
                 var t = this;
-                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,attacker)});
+                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,attacker);});
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
@@ -369,7 +369,7 @@ Quintus.Objects=function(Q){
                     //Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
                     //Q.BattleGrid.removeObject(this.p.loc);
-                    Q.BatCon.markForRemoval(this);
+                    //Q.BatCon.markForRemoval(this);
                     //Set the hp to 0
                     this.p.combatStats.hp = 0;
                     this.trigger("saveProp",{name:"hp",value:this.p.combatStats.hp});
@@ -393,6 +393,7 @@ Quintus.Objects=function(Q){
                 }
             },
             addStatus:function(name,turns,user){
+                if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
@@ -400,6 +401,7 @@ Quintus.Objects=function(Q){
                 Q.playSound("inflict_status.mp3");
             },
             refreshStatus:function(name,turns,user){
+                if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
                 this.p.status[name] = {name:name,turns:turns};
                 Q.playSound("coin.mp3");
@@ -642,8 +644,8 @@ Quintus.Objects=function(Q){
             //This will be put in a 'process status at start of turn' function
             if(this.p.status.poisoned){
                 var text = [];
-                var damage = Math.floor(this.p.maxHp/8);
-                text.push({func:"showDamage",obj:this,props:[damage,500]});
+                var damage = this.p.poisonDamage;
+                this.showDamage(damage);
                 var dead = this.takeDamage(damage);
                 if(dead){
                     text.push.apply(text,dead);
@@ -652,7 +654,6 @@ Quintus.Objects=function(Q){
                     Q.BatCon.attackFuncs.doDefensiveAnim(text);
                     return;
                 }
-                Q.BatCon.attackFuncs.doDefensiveAnim(text);
             }
             this.advanceStatus();
             //Get the grid for walking from this position

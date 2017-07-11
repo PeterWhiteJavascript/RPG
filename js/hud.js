@@ -58,7 +58,7 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Ment Res","Pain Tolerance","Weight","Exp."];
+            var info = ["Class","Name","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Ment Res","Pain Tolerance","Weight","Exp."];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
@@ -76,6 +76,7 @@ Quintus.HUD=function(Q){
             var stats = this.p.stats;
             var labels = [
                 ""+obj.p.charClass,
+                ""+obj.p.name,
                 ""+obj.p.level,
                 ""+objStats.moveSpeed,
                 ""+objStats.hp+"/"+objStats.maxHp,

@@ -7,7 +7,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Fortify",
@@ -16,7 +16,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Embolden",
@@ -25,7 +25,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Fervour",
@@ -34,7 +34,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Direct",
@@ -43,7 +43,7 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Phalanx",
@@ -52,7 +52,7 @@
             "range":[0,"self"],
             "aoe":["custom"],
             "cost":25,
-            "resist":""
+            "resist":["none"]
         }
     ],
     "Berserker":[
@@ -63,7 +63,7 @@
             "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"physical"
+            "resist":["physical"]
         },
         {
             "name":"Staredown",
@@ -72,7 +72,7 @@
             "range":[6,"normal","enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"mental"
+            "resist":["mental"]
         },
         {
             "name":"Charge Through",
@@ -81,7 +81,7 @@
             "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"physical"
+            "resist":["physical"]
         },
         {
             "name":"Headbutt",
@@ -90,7 +90,7 @@
             "range":[1,"normal","enemyFacingThis"],
             "aoe":[0,"normal"],
             "cost":40,
-            "resist":"physical"
+            "resist":["physical"]
             
         },
         {
@@ -100,7 +100,7 @@
             "range":[1,"normal","allyNoMiss"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"physical"
+            "resist":["physical"]
         },
         {
             "name":"War Cry",
@@ -109,7 +109,7 @@
             "range":[0,"self"],
             "aoe":["customRadius","normal","enemy"],
             "cost":60,
-            "resist":"mental"
+            "resist":["mental"]
         }
     ],
     "Vanguard":[
@@ -120,7 +120,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Rapid Strike",
@@ -129,7 +129,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Surprising Strike",
@@ -138,7 +138,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":35,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Armour Piercing Strike",
@@ -147,7 +147,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Painful Strike",
@@ -156,7 +156,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Whirlwind Strike",
@@ -165,18 +165,18 @@
             "range":[0,"self"],
             "aoe":[1,"noSelf"],
             "cost":80,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         }
     ],
     "Assassin":[
         {
             "name":"Bleeding Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Threshold by the amount of Bleeding they have.",
-            "type":"Debilitate",
+            "type":"Damage",
             "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["dodge/block","physical"]
+            "resist":["dodge","block","physical"]
         },
         {
             "name":"Caltrops",
@@ -185,43 +185,43 @@
             "range":[5,"normal"],
             "aoe":[1,"normal"],
             "cost":100,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Weakening Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
-            "type":"Debilitate",
+            "type":"Damage",
             "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["dodge/block","physical"]
+            "resist":["dodge","block","physical"]
         },
         {
             "name":"Nerve Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
-            "type":"Debilitate",
+            "type":"Damage",
             "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":["dodge/block","physical"]
+            "resist":["dodge","block","physical"]
         },
         {
             "name":"Acid Bomb",
             "desc":"Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker’s Skill. This lasts until the combat is finished.",
-            "type":"Debilitate",
+            "type":"Damage",
             "range":[3,"normal"],
             "aoe":[0,"normal"],
             "cost":50,
-            "resist":"Dodge"
+            "resist":["dodge"]
         },
         {
             "name":"Poison Strike",
             "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character’s Hit Points by a like amount at the end of every Round.",
-            "type":"Debilitate",
+            "type":"Damage",
             "range":["weapon","normal"],
             "aoe":[0,"normal"],
             "cost":50,
-            "resist":["dodge/block","physical"]
+            "resist":["dodge","block","physical"]
         }
         
     ],
@@ -233,7 +233,7 @@
             "range":[0,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Forewarn",
@@ -242,7 +242,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Sharpen",
@@ -251,7 +251,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Vitalize",
@@ -260,7 +260,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":40,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Vivify",
@@ -269,7 +269,7 @@
             "range":[1,"diagonalForwardAdjacent"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":35,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Coordinated Attack",
@@ -278,7 +278,7 @@
             "range":["meleeWeapon","normal"],
             "aoe":[1,"custom"],
             "cost":150,
-            "resist":"none"
+            "resist":["none"]
         }
     ],
     "Archer":[
@@ -289,7 +289,7 @@
             "range":["custom","normal"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Armour Piercing Shot",
@@ -298,7 +298,7 @@
             "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Rapid Shot",
@@ -307,7 +307,7 @@
             "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Critical Shot",
@@ -316,7 +316,7 @@
             "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":25,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Painful Shot",
@@ -325,7 +325,7 @@
             "range":["rangedWeapon","normal"],
             "aoe":[0,"normal"],
             "cost":30,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Sniper Shot",
@@ -334,7 +334,7 @@
             "range":[20,"normal"],
             "aoe":[0,"normal"],
             "cost":60,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
             
         }
     ],
@@ -346,7 +346,7 @@
             "range":[3,"normal"],
             "aoe":["customRadius","normal"],
             "cost":35,
-            "resist":"magical"
+            "resist":["magical"]
         },
         {
             "name":"Stun",
@@ -355,7 +355,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":1,
-            "resist":"magical"
+            "resist":["magical"]
             
         },
         {
@@ -365,7 +365,7 @@
             "range":[5,"ground"],
             "aoe":[3,"normal"],
             "cost":1,
-            "resist":"magical"
+            "resist":["magical"]
             
         },
         {
@@ -375,7 +375,7 @@
             "range":[3,"normal"],
             "aoe":[0,"normal"],
             "cost":1,
-            "resist":"magical"
+            "resist":["magical"]
             
         },
         {
@@ -385,7 +385,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":1,
-            "resist":"magical"
+            "resist":["magical"]
             
         },
         {
@@ -395,7 +395,7 @@
             "range":[2,"normal"],
             "aoe":[0,"normal"],
             "cost":1,
-            "resist":"magical"
+            "resist":["magical"]
             
         }
         
@@ -408,7 +408,7 @@
             "range":[4,"normal"],
             "aoe":[0,"normal"],
             "cost":20,
-            "resist":"dodge/block"
+            "resist":["dodge","block"]
         },
         {
             "name":"Flamethrower",
@@ -417,7 +417,7 @@
             "range":[1,"normal"],
             "aoe":[1,"T"],
             "cost":100,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Fireball",
@@ -426,7 +426,7 @@
             "range":[5,"normal"],
             "aoe":[1,"normal"],
             "cost":150,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Frost Ray",
@@ -435,7 +435,7 @@
             "range":[1,"normal"],
             "aoe":["custom","line"],
             "cost":150,
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Choke",
@@ -445,7 +445,7 @@
             "aoe":[0,"normal"],
             "cost":300,
             "damage":[100,200,"skl"],
-            "resist":"none"
+            "resist":["none"]
         },
         {
             "name":"Lightning Storm",
@@ -454,7 +454,7 @@
             "range":[6,"normal"],
             "aoe":[2,"corners"],
             "cost":500,
-            "resist":"none"
+            "resist":["none"]
         }
     ],
     "Healer":[
@@ -465,7 +465,7 @@
             "range":["custom","ground"],
             "aoe":[4,"normal"],
             "cost":50,
-            "resist":"none"
+            "resist":["none"]
             
         },
         {
@@ -475,7 +475,7 @@
             "range":["custom","normal"],
             "aoe":["custom","normal"],
             "cost":100,
-            "resist":"none"
+            "resist":["none"]
             
         },
         {
@@ -485,7 +485,7 @@
             "range":["custom","normal"],
             "aoe":["custom","normal"],
             "cost":100,
-            "resist":"none"
+            "resist":["none"]
             
         },
         {
@@ -495,7 +495,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":200,
-            "resist":"none"
+            "resist":["none"]
             
         },
         {
@@ -505,7 +505,7 @@
             "range":["custom","normal"],
             "aoe":[0,"normal"],
             "cost":125,
-            "resist":"none"
+            "resist":["none"]
             
         },
         {
@@ -515,7 +515,7 @@
             "range":[1,"normal"],
             "aoe":[0,"normal"],
             "cost":525,
-            "resist":"none"
+            "resist":["none"]
             
         }
     ]

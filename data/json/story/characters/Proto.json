@@ -251,17 +251,10 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": {
-                "str": 49,
-                "end": 39,
-                "dex": 12,
-                "wsk": 16,
-                "rfl": 12,
-                "ini": "100",
-                "enr": 14,
-                "skl": 16,
-                "eff": 14
-            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
             "techniques": [
                 "Push",
                 "Staredown",
@@ -434,10 +427,17 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Medium"
-            ],
+            "baseStats": {
+                "str": "12346346346",
+                "end": 15,
+                "dex": 48,
+                "wsk": 12,
+                "rfl": 13,
+                "ini": "371111",
+                "enr": 15,
+                "skl": "16346346346",
+                "eff": 15
+            },
             "techniques": [
                 "Bleeding Strike",
                 "Caltrops",
