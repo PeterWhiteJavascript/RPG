@@ -1224,30 +1224,7 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
-        getBlow:function(attackNum,attacker,defendNum,defender){
-            /*var attackerCritChance = attacker.p.combatStats.critChance;
-            if(attacker.p.tileEffect.stat==="criticalChance") attackerCritChance*=attacker.p.tileEffect.amount;
-            var attackerStrike = attacker.p.strike;
-            if(attacker.p.tileEffect.stat==="strike") attackerStrike*=attacker.p.tileEffect.amount;
-            var attackerBlind = attacker.p.status.blind;
-            var defenderParry = defender.p.parry;
-            if(defender.p.tileEffect.stat==="parry") defenderParry*=attacker.p.tileEffect.amount;
-            var defenderBlind = defender.p.status.blind;*/
-            //Take into account which direction each of the participants are facing
-            //Defender is facing attacker -> 50% accuracy
-            //Attacker is facing the side of the defender -> 75% accuracy
-            //Attacker is attacking from behind the defender -> 100% accuracy
-            //Divide the random attackNum by the dir
-            //attackNum/=dir;
-            //Double crit chance if attacking from behind
-            //if(dir===1) attackerCritChance*=2;
-            //If the attacker is blind, decrease accuracy
-            /*if(attackerBlind) attackNum/=0.75;
-            //If the defender is blind, increase accuracy and make the defender less likely to parry
-            if(defenderBlind){
-                attackNum/=0.75;
-                defendNum/=0.75;
-            }*/
+        getBlow:function(attackNum,attackerCritChance,attackerAtkAccuracy,defendNum,defenderCounterChance,defenderReflexes,defenderDefensiveAbility,attackerTile,defenderTile){
             var attackResult = {
                 crit:false,
                 hit:false,
@@ -1258,11 +1235,11 @@ Quintus.GameObjects=function(Q){
                 block:false,
                 fail:false
             };
-            if(defendNum&&defender.hasStatus("fainted")){
+            if(defendNum&&defender.p.fainted){
                 attackResult.hit = true;
-            } else if(attackNum<attacker.p.combatStats.critChance){
+            } else if(attackNum<attackerCritChance){
                 attackResult.crit = true;
-            } else if(attackNum<attacker.p.combatStats.atkAccuracy){
+            } else if(attackNum<attackerAtkAccuracy){
                 attackResult.hit = true;
             } else {
                 attackResult.miss = true;
@@ -1273,11 +1250,11 @@ Quintus.GameObjects=function(Q){
                     defenseResult.fail = true;
                 } else if(dir==="back"){
                     defenseResult.fail = true;
-                } else if(defendNum<defender.p.combatStats.counterChance){
+                } else if(defendNum<defenderCounterChance){
                     defenseResult.counter = true;
-                } else if(dir==="side"&&defendNum<defender.p.combatStats.reflexes){
+                } else if(dir==="side"&&defendNum<defenderReflexes){
                     defenseResult.block = true;
-                } else if(dir==="front"&&defendNum<defender.p.combatStats.defensiveAbility){
+                } else if(dir==="front"&&defendNum<defenderDefensiveAbility){
                     defenseResult.block = true;
                 } else {
                     defenseResult.fail = true;
@@ -1285,30 +1262,30 @@ Quintus.GameObjects=function(Q){
             } else {
                 defenseResult.fail = true;
             }
-            var result = "Solid Blow";
+            var result = "Solid";
             if(attackResult.crit){
                 if(defenseResult.counter){
-                    result = "Glancing Blow";
+                    result = "Glancing";
                 } else if(defenseResult.block){
-                    result = "Critical Blow";
+                    result = "Critical";
                 } else if(defenseResult.fail){
-                    result = "Critical Blow";
+                    result = "Critical";
                 }
             } else if(attackResult.hit){
                 if(defenseResult.counter){
-                    result = "Counter Attack";
+                    result = "Counter";
                 } else if(defenseResult.block){
-                    result = "Glancing Blow";
+                    result = "Glancing";
                 } else if(defenseResult.fail){
-                    result = "Solid Blow";
+                    result = "Solid";
                 }
             } else if(attackResult.miss){
                 if(defenseResult.counter){
-                    result = "Counter Attack";
+                    result = "Counter";
                 } else if(defenseResult.block){
-                    result = "No Hit";
+                    result = "Miss";
                 } else if(defenseResult.fail){
-                    result = "No Hit";
+                    result = "Miss";
                 }
             }
            /* var rand = Math.floor(Math.random()*2);
@@ -1320,43 +1297,29 @@ Quintus.GameObjects=function(Q){
             if(dmg<=0) dmg=1;
             return dmg;
         },
-        //When a skill is used, figure out if it hit
-        processSkillResult:function(obj,skill){
-            var attacker = obj.attacker;
-            var defender = obj.defender;
-            var result = obj.result;
-            var hit;
-            //Make sure that neither of the participants have been defeated
-            if(attacker.p.combatStats.hp<=0||attacker.hasStatus("fainted")||defender.p.combatStats.hp<=0){return hit;};
-            if(result==="Critical Blow"||result==="Solid Blow"||result==="Glancing Blow") hit = true;
-            return hit;
-        },
         //When a regular attack is used
-        processResult:function(obj){
-            var attacker = obj.attacker;
-            var defender = obj.defender;
-            var result = obj.result;
+        processResult:function(props){
             var damage = 0;
             var sound = "hit1.mp3";
-            if(attacker.p.combatStats.hp<=0||attacker.hasStatus("fainted")||defender.p.combatStats.hp<=0){return;};
-            switch(obj.result){
-                case "Critical Blow":
-                    damage = this.criticalBlow(attacker,defender,result);
+            if(props.attackerHP<=0||props.attackerFainted||props.defenderHP<=0){return;};
+            switch(props.result){
+                case "Critical":
+                    damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.skill,props.attacker,props.defender);
                     sound = "critical_hit.mp3";
                     break;
-                case "Solid Blow":
-                    damage = this.solidBlow(attacker,defender,result);
+                case "Solid":
+                    damage = this.solidBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDamageReduction);
                     break;
-                case "Glancing Blow":
-                    damage = this.glancingBlow(attacker,defender,result);
+                case "Glancing":
+                    damage = this.glancingBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDefensiveAbility);
                     sound = "glancing_blow.mp3";
                     break;
-                case "No Hit":
+                case "Miss":
                     damage = 0;
                     break;
-                case "Counter Attack":
-                    var dist = Q.BattleGrid.getTileDistance(attacker.p.loc,defender.p.loc);
-                    if(defender.p.combatStats.atkRange>=dist){
+                case "Counter":
+                    var dist = Q.BattleGrid.getTileDistance(props.attackerLoc,props.defenderLoc);
+                    if(props.defenderAtkRange>=dist){
                         damage = -1;
                     } else {
                         damage = 0;
@@ -1388,74 +1351,33 @@ Quintus.GameObjects=function(Q){
         successfulSkillBlow:function(float, low, high, armour){
             return this.getDamage(this.calcSkillBlowDamage(float, low, high, armour));
         },
-        calcBlowDamage:function(attacker, defender, float) {
-            var attackerTile = attacker.p.tileEffect;
-            var low = attacker.p.combatStats.minAtkDmg;
-            var high = attacker.p.combatStats.maxAtkDmg;
-            if(attackerTile.stat==="damage") {
-                low*=attackerTile.amount;
-                high*=attackerTile.amount;
-            }
-            var defenderTile = defender.p.tileEffect;
-            var armour = defender.p.combatStats.damageReduction;
-            if(defenderTile.stat==="armour") armour*=defenderTile.amount;
-            return Math.floor(float*(high-low) + low)-Math.floor(armour);
+        calcBlowDamage:function(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction,float) {
+            return Math.floor(float*(attackerMaxAtkDmg-attackerMinAtkDmg) + attackerMinAtkDmg)-Math.floor(defenderDamageReduction);
         },
-        solidBlow:function(attacker,defender,result){
-            return this.getDamage(this.calcBlowDamage(attacker, defender, Math.random()));
+        solidBlow:function(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction){
+            return this.getDamage(this.calcBlowDamage(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction, Math.random()));
         },
-        criticalBlow:function(attacker,defender,result){
-            var speed = attacker.p.combatStats.atkSpeed;
-            var attackerTile = attacker.p.tileEffect;
-            if(attackerTile.stat==="speed"){
-                speed*=attackerTile.amount;
-            }
-            var damage = attacker.p.combatStats.maxAtkDmg;
-            if(attackerTile.stat==="damage") damage*=attackerTile.amount;
-            var rand = Math.ceil(Math.random()*100);
+        criticalBlow:function(attackerAtkSpeed,attackerMaxAtkDmg,defenderHP,skill,attacker,defender){
             //Maybe attack again!
             //BUG: If a character attack 3 times, it doesn't take into account all of the damage for less than 0.
-            if(rand<=speed&&defender.p.combatStats.hp-damage>0){
+            if(Math.ceil(Math.random()*100)<=attackerAtkSpeed&&defenderHP-attackerMaxAtkDmg>0){
                 console.log("Attacking Again!");
-                this.calcAttack(attacker,defender);
+                this.calcAttack(attacker,defender,skill);
             }
-            return damage;
+            return attackerMaxAtkDmg;
         },
-        glancingBlow:function(attacker,defender,result){
-            var attackerTile = attacker.p.tileEffect;
-            var low = attacker.p.combatStats.minAtkDmg;
-            var high = attacker.p.combatStats.maxAtkDmg;
-            if(attackerTile.stat==="damage") {
-                low*=attackerTile.amount;
-                high*=attackerTile.amount;
-            }
-            var defenderTile = defender.p.tileEffect;
-            var armour = defender.p.combatStats.defensiveAbility;
-            if(defenderTile.stat==="armour") armour*=defenderTile.amount;
-            var damage = this.getDamage(Math.floor(((Math.random()*(high-low)+low)-armour)/2));
-            return damage;
-        },
-        counterChance:function(attacker,defender,result){
-            if(defender.p.combatStats.hp<=0){return 0;};
+        glancingBlow:function(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDefensiveAbility){
+            return this.getDamage(Math.floor(((Math.random()*(attackerMaxAtkDmg-attackerMinAtkDmg)+attackerMinAtkDmg)-defenderDefensiveAbility)/2));
+        },/*
+        counterChance:function(defenderHP,defenderLoc,attackerLoc,defenderAtkRange,attacker,defender){
+            if(defenderHP<=0){return 0;};
             //Only allow counter attacking if the defender has enough range
-            if(Q.BattleGrid.getTileDistance(defender.p.loc,attacker.p.loc)<=defender.p.combatStats.atkRange){
-                
+            if(Q.BattleGrid.getTileDistance(defenderLoc,attackerLoc)<=defenderAtkRange){
                 this.calcAttack(defender,attacker);
             }
-            return 0;
-        },
-        miss:function(attacker,defender,result){
-            /*var speed = attacker.p.combatStats.atkSpeed;
-            var attackerTile = attacker.p.tileEffect;
-            if(attackerTile.stat==="speed"){
-                speed*=attackerTile.amount;
-            }
-            var rand = Math.ceil(Math.random()*100);
-            //Get a second chance at attacking
-            if(rand<=speed){
-                console.log("Missed, but attack again!");
-                this.calcAttack(attacker,defender);
-            }*/
+            return this.miss();
+        },*/
+        miss:function(){
             return 0;
         },
         useSupportSkill:function(user,target,skill){
@@ -1531,10 +1453,9 @@ Quintus.GameObjects=function(Q){
         useDamageSkill:function(attacker,defender,skill){
             var damage = 0;
             var sound = "cannot_do.mp3";
-            var hit = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-            if(!hit) return {damage:damage,sound:sound};
             switch(skill.name){
                 case "Long Shot":
+                    var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker.p.combatStats.critChance,attacker.p.combatStats.atkAccuracy,Math.ceil(Math.random()*100),defender.p.combatStats.counterChance,defender.p.combatStats.reflexes,defender.p.combatStats.defensiveAbility));
                     damage = this.successfulSkillBlow(Math.random(), attacker.p.combatStats.minAtkDmg, attacker.p.combatStats.maxAtkDmg, defender.p.combatStats.damageReduction);
                     sound = "hit1.mp3";
                     break;
@@ -1725,7 +1646,7 @@ Quintus.GameObjects=function(Q){
             } 
             //Regular attack
             else {
-                var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender));
+                var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker.p.combatStats.critChance,attacker.p.combatStats.atkAccuracy,Math.ceil(Math.random()*100),defender.p.combatStats.counterChance,defender.p.combatStats.reflexes,defender.p.combatStats.defensiveAbility));
                 /*if(!props) {
                     this.text.push({func:"waitTime",obj:this,props:[1000]});
                     return;
@@ -1753,8 +1674,12 @@ Quintus.GameObjects=function(Q){
             } 
             //Counter chance
             else if(damage===-1){
-                this.text.push({func:"showCounter",obj:defender,props:[attacker,time]});
-                this.calcAttack(defender,attacker);
+                if(skill){
+                    this.text.push({func:"showMiss",obj:defender,props:[attacker,time]});
+                } else {
+                    this.text.push({func:"showCounter",obj:defender,props:[attacker,time]});
+                    this.calcAttack(defender,attacker);
+                }
             }
         },
         doAttack:function(attacker,targets,skill){
