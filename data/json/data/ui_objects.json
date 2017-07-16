@@ -41,8 +41,7 @@
     },
     
     
-    
-    "ui_blind":{
+    "ui_skillPlus":{
         "tilew":32,
         "tileh":32,
         "sx":0,
@@ -50,7 +49,7 @@
         "w":32,
         "h":32
     },
-    "ui_sturdy":{
+    "ui_defensePlus":{
         "tilew":32,
         "tileh":32,
         "sx":32,
@@ -82,26 +81,11 @@
         "w":32,
         "h":32
     },
-    "ui_defensePlus":{
-        "tilew":32,
-        "tileh":32,
-        "sx":128,
-        "sy":32,
-        "w":32,
-        "h":32
-    },
-    "ui_skillPlus":{
-        "tilew":32,
-        "tileh":32,
-        "sx":128,
-        "sy":32,
-        "w":32,
-        "h":32
-    },
+    
     "ui_strengthPlus":{
         "tilew":32,
         "tileh":32,
-        "sx":128,
+        "sx":160,
         "sy":32,
         "w":32,
         "h":32
@@ -109,12 +93,61 @@
     "ui_efficiencyPlus":{
         "tilew":32,
         "tileh":32,
-        "sx":128,
+        "sx":192,
         "sy":32,
         "w":32,
         "h":32
     },
     "ui_damageReductionPlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":224,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_physicalResistancePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":256,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_initiativePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":288,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    
+    "ui_counterChancePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_atkAccuracyPlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_critChancePlus":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_atkSpeedPlus":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -123,7 +156,50 @@
         "h":32
     },
     
-    "ui_slowed":{
+    "ui_reflexesDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    
+    "ui_atkAccuracyDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_defensiveAbilityDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_moveDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    
+    
+    "ui_insane":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_TPDrain":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -140,8 +216,7 @@
         "w":32,
         "h":32
     },
-    
-    "ui_blinded":{
+    "ui_initiativeDown":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -150,7 +225,15 @@
         "h":32
     },
     
-    "ui_insane":{
+    "ui_painToleranceDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_bleedingOut":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -159,7 +242,7 @@
         "h":32
     },
     
-    "ui_feared":{
+    "ui_strengthDown":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -168,7 +251,15 @@
         "h":32
     },
     
-    "ui_iniDown":{
+    "ui_physicalResistanceDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_mentalResistanceDown":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -177,7 +268,7 @@
         "h":32
     },
     
-    "ui_slowGo":{
+    "ui_acid":{
         "tilew":32,
         "tileh":32,
         "sx":128,
@@ -186,25 +277,7 @@
         "h":32
     },
     
-    "ui_bleeding":{
-        "tilew":32,
-        "tileh":32,
-        "sx":128,
-        "sy":32,
-        "w":32,
-        "h":32
-    },
-    
-    "ui_weakened":{
-        "tilew":32,
-        "tileh":32,
-        "sx":128,
-        "sy":32,
-        "w":32,
-        "h":32
-    },
-    
-    "ui_resDown":{
+    "ui_painThresholdDown":{
         "tilew":32,
         "tileh":32,
         "sx":128,

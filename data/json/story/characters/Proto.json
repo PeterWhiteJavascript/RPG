@@ -119,10 +119,17 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Low"
-            ],
+            "baseStats": {
+                "str": 10,
+                "end": "30",
+                "dex": "11111111",
+                "wsk": "111111111",
+                "rfl": 12,
+                "ini": 11,
+                "enr": 13,
+                "skl": 14,
+                "eff": 10
+            },
             "techniques": [
                 "Critical Strike",
                 "Rapid Strike",
@@ -300,7 +307,7 @@
                 "High"
             ],
             "techniques": [
-                "Slow",
+                "Unnerve",
                 "Stun",
                 "Hypnotic Mirage",
                 "Blind",
@@ -393,7 +400,7 @@
                 "Cure",
                 "Revive",
                 "Energize",
-                "Endow"
+                "Resurrect"
             ],
             "nationality": "Venorian",
             "charClass": "Healer"
@@ -428,14 +435,14 @@
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "12346346346",
+                "str": 12,
                 "end": 15,
                 "dex": 48,
                 "wsk": 12,
                 "rfl": 13,
-                "ini": "371111",
+                "ini": 25,
                 "enr": 15,
-                "skl": "16346346346",
+                "skl": 12,
                 "eff": 15
             },
             "techniques": [

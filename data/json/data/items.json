@@ -1,7 +1,7 @@
 {
     "potion":{
         "name": "Potion",
-        "type":"Support",
+        "type":"Item",
         "desc": "Heals 20 hp",
         "kind": "Consumable",
         "range":[1,"self"],

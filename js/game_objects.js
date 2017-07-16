@@ -109,7 +109,12 @@ Quintus.GameObjects=function(Q){
                     this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.range[1]==="self"){
+                } else if(skill.aoe[1]==="hLineForward"){
+                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineForwardTiles");
+                    this.entity.hide();
+                    Q.inputs[this.entity.p.user.p.dir]=true;
+                } else if(skill.range[1]==="self"&&skill.range[0]===0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
@@ -140,6 +145,9 @@ Quintus.GameObjects=function(Q){
                 } else if(this.entity.p.skill.range[1]==="hLine"){
                     this.entity.off("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineTiles");
+                } else if(this.entity.p.skill.range[1]==="hLineForward"){
+                    this.entity.off("checkInputs",this.entity,"checkStraightInputs");
+                    this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineForwardTiles");
                 } else {
                     this.entity.off("checkInputs");
                     this.entity.off("inputMoved",this,"moveTiles");
@@ -546,8 +554,12 @@ Quintus.GameObjects=function(Q){
             //Then, create a new ZOC for this object
             this.setZOC(to,obj);
         },*/
+        outOfBounds:function(loc){
+            return loc[0]<0||loc[1]<0||loc[0]>this.stage.mapWidth||loc[1]>this.stage.mapHeight;
+        },
         //Get an object at a location in the grid
         getObject:function(loc){
+            if(this.outOfBounds(loc)) return false;
             return this.grid[loc[1]][loc[0]];
         },
         //Set an object to a space in the grid
@@ -579,7 +591,6 @@ Quintus.GameObjects=function(Q){
             if(obj.p.zoc) this.removeZOC(obj);
             this.removeObject(obj.p.loc);
         },
-        //Gets objects around a space based on the passed in aoe
         getObjectsAround:function(tiles){
             var objects = [];/*
             var radius = aoe[0];
@@ -813,7 +824,7 @@ Quintus.GameObjects=function(Q){
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="enemy"; 
             });
-            this.turnOrder = this.generateTurnOrder(this.stage.lists["Character"]);
+            this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
             //Do start battle animation, and then start turn (TODO)
             this.startTurn();
         },
@@ -863,9 +874,12 @@ Quintus.GameObjects=function(Q){
         //Starts the character that is first in turn order
         startTurn:function(){
             var obj = this.turnOrder[0];
-            console.log(this.turnOrder[0])
+            if(!obj) alert("Everything is dead.");
             while(!this.valid(obj)){
                 this.turnOrder.shift();
+                if(!this.turnOrder[0]){
+                    this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+                }
                 obj = this.turnOrder[0];
             }
             //Hide and disable the pointer if it's not an ally's turn
@@ -885,11 +899,14 @@ Quintus.GameObjects=function(Q){
             } else {
                 Q.pointer.checkTarget();
                 Q.pointer.on("atDest",function(){
-                    Q.BatCon.turnOrder[0].startTurn();
                     this.p.loc = Q.BatCon.turnOrder[0].p.loc;
                     this.checkTarget();
-                    //Display the menu on turn start
-                    Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:Q.BatCon.turnOrder[0],pointer:this});
+                    //Start the turn. Will return false if the character can't do anything this turn  for whatever reason (dead, ini under 0, etc...)
+                    if(Q.BatCon.turnOrder[0].startTurn()){
+                        //Display the menu on turn start
+                        Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:Q.BatCon.turnOrder[0],pointer:this});
+                        
+                    };
                     this.off("atDest");
                 });
             }
@@ -901,13 +918,15 @@ Quintus.GameObjects=function(Q){
         endTurn:function(){
             //Move the first character to the back (Maybe do some speed calculations to place them somewhere else)
             var lastTurn = this.turnOrder.shift();
+            //Advance the last character's status effects.
+            lastTurn.advanceStatus();
             /*this.turnOrder.push(lastTurn);
             while(this.turnOrder[0].p.fainted){
                 var lastTurn = this.turnOrder.shift();
                 this.turnOrder.push(lastTurn);
             }*/
             
-            if(!this.turnOrder.length) this.turnOrder = this.generateTurnOrder(this.stage.lists["Character"]);
+            if(!this.turnOrder.length) this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
             
             //Remove any dead characters
            // this.removeMarked();
@@ -1059,7 +1078,9 @@ Quintus.GameObjects=function(Q){
         //Previews a skill
         previewDoSkill:function(user,loc,skill){
             var targets = [];
-            if((Q._isNumber(skill.aoe[0])&&skill.aoe[0]>0)||skill.aoe[0]==="custom"||skill.aoe[0]==="customRadius"){
+            if(skill.range[2]==="ground"){
+               
+            } else if((Q._isNumber(skill.aoe[0])&&skill.aoe[0]>0)||skill.aoe[0]==="custom"||skill.aoe[0]==="customRadius"){
                 targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
                 //Don't allow for unnaffected targets
                 if(skill.range[1]==="enemy") this.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
@@ -1174,6 +1195,7 @@ Quintus.GameObjects=function(Q){
             this.text = [];
             //If any defenders dies from an attack, save the feedback and add it on to text at the end
             this.expText = [];
+            this.previousDamage = 0;
         },
         getDiagDirs:function(aLoc,dLoc){
             if(aLoc[0]<dLoc[0]&&aLoc[1]>dLoc[1]) return ["up","right"];
@@ -1224,7 +1246,7 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
-        getBlow:function(attackNum,attackerCritChance,attackerAtkAccuracy,defendNum,defenderCounterChance,defenderReflexes,defenderDefensiveAbility,attackerTile,defenderTile){
+        getBlow:function(props){
             var attackResult = {
                 crit:false,
                 hit:false,
@@ -1235,30 +1257,26 @@ Quintus.GameObjects=function(Q){
                 block:false,
                 fail:false
             };
-            if(defendNum&&defender.p.fainted){
+            if(props.defenderFainted){
                 attackResult.hit = true;
-            } else if(attackNum<attackerCritChance){
+            } else if(props.attackNum<props.attackerCritChance){
                 attackResult.crit = true;
-            } else if(attackNum<attackerAtkAccuracy){
+            } else if(props.attackNum<props.attackerAtkAccuracy){
                 attackResult.hit = true;
             } else {
                 attackResult.miss = true;
             }
-            if(defendNum){
-                var dir = this.compareDirection(attacker,defender);
-                if(defender.hasStatus("fainted")){
-                    defenseResult.fail = true;
-                } else if(dir==="back"){
-                    defenseResult.fail = true;
-                } else if(defendNum<defenderCounterChance){
-                    defenseResult.counter = true;
-                } else if(dir==="side"&&defendNum<defenderReflexes){
-                    defenseResult.block = true;
-                } else if(dir==="front"&&defendNum<defenderDefensiveAbility){
-                    defenseResult.block = true;
-                } else {
-                    defenseResult.fail = true;
-                }
+            var dir = this.compareDirection(props.attacker,props.defender);
+            if(props.defenderFainted){
+                defenseResult.fail = true;
+            } else if(dir==="back"){
+                defenseResult.fail = true;
+            } else if(props.defendNum<props.defenderCounterChance){
+                defenseResult.counter = true;
+            } else if(dir==="side"&&props.defendNum<props.defenderReflexes){
+                defenseResult.block = true;
+            } else if(dir==="front"&&props.defendNum<props.defenderDefensiveAbility){
+                defenseResult.block = true;
             } else {
                 defenseResult.fail = true;
             }
@@ -1287,10 +1305,8 @@ Quintus.GameObjects=function(Q){
                 } else if(defenseResult.fail){
                     result = "Miss";
                 }
-            }
-           /* var rand = Math.floor(Math.random()*2);
-            if(rand) result = "Counter Attack";*/
-            return {attacker:attacker,defender:defender,result:result};
+            };
+            return result;
         },
         //Forces the damage to be at least 1
         getDamage:function(dmg){
@@ -1301,10 +1317,10 @@ Quintus.GameObjects=function(Q){
         processResult:function(props){
             var damage = 0;
             var sound = "hit1.mp3";
-            if(props.attackerHP<=0||props.attackerFainted||props.defenderHP<=0){return;};
+            if(props.attackerHP<=0||props.attackerFainted||props.defenderHP<=0){return {damage:damage,sound:sound};};
             switch(props.result){
                 case "Critical":
-                    damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.skill,props.attacker,props.defender);
+                    damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.attacker,props.defender,props.skill);
                     sound = "critical_hit.mp3";
                     break;
                 case "Solid":
@@ -1318,7 +1334,7 @@ Quintus.GameObjects=function(Q){
                     damage = 0;
                     break;
                 case "Counter":
-                    var dist = Q.BattleGrid.getTileDistance(props.attackerLoc,props.defenderLoc);
+                    var dist = Q.BattleGrid.getTileDistance(props.attacker.p.loc,props.defender.p.loc);
                     if(props.defenderAtkRange>=dist){
                         damage = -1;
                     } else {
@@ -1357,10 +1373,14 @@ Quintus.GameObjects=function(Q){
         solidBlow:function(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction){
             return this.getDamage(this.calcBlowDamage(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction, Math.random()));
         },
-        criticalBlow:function(attackerAtkSpeed,attackerMaxAtkDmg,defenderHP,skill,attacker,defender){
+        criticalBlow:function(attackerAtkSpeed,attackerMaxAtkDmg,defenderHP,attacker,defender,skill){
             //Maybe attack again!
-            //BUG: If a character attack 3 times, it doesn't take into account all of the damage for less than 0.
-            if(Math.ceil(Math.random()*100)<=attackerAtkSpeed&&defenderHP-attackerMaxAtkDmg>0){
+            //BUG: If a character attacks 3 times, it doesn't take into account all of the damage for less than 0.
+            var rand = Math.ceil(Math.random()*100)
+            console.log(this.previousDamage)
+            if(rand<=attackerAtkSpeed&&defenderHP-attackerMaxAtkDmg-this.previousDamage>0){
+                this.previousDamage += attackerMaxAtkDmg;
+                console.log(this.previousDamage)
                 console.log("Attacking Again!");
                 this.calcAttack(attacker,defender,skill);
             }
@@ -1384,22 +1404,54 @@ Quintus.GameObjects=function(Q){
             var newText;
             switch(skill.name){
                 case "Forced March":
-                    newText = this.entity.skillFuncs["addStatus"]("movePlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("movePlus",2,"buff",target,user,{name:"moveSpeed",amount:Math.ceil(user.p.combatStats.skill/10)});
                     break;
                 case "Fortify":
-                    newText = this.entity.skillFuncs["addStatus"]("defensePlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("defensePlus",2,"buff",target,user,{name:"defensiveAbility",amount:user.p.combatStats.skill});
                     break;
                 case "Embolden":
-                    newText = this.entity.skillFuncs["addStatus"]("skillPlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("skillPlus",2,"buff",target,user,{name:"skill",amount:user.p.combatStats.skill});
                     break;
                 case "Fervour":
-                    newText = this.entity.skillFuncs["addStatus"]("strengthPlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("strengthPlus",2,"buff",target,user,{name:"strength",amount:user.p.combatStats.skill});
                     break;
                 case "Direct":
-                    newText = this.entity.skillFuncs["addStatus"]("efficiencyPlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("efficiencyPlus",2,"buff",target,user,{name:"efficiency",amount:Math.floor(user.p.combatStats.skill/2)});
                     break;
                 case "Phalanx":
-                    newText = this.entity.skillFuncs["addStatus"]("damageReductionPlus",2,target,user);
+                    newText = this.entity.skillFuncs["addStatus"]("damageReductionPlus",2,"buff",target,user,{name:"damageReduction",amount:Math.floor(user.p.combatStats.skill/2)});
+                    newText = newText.concat(this.entity.skillFuncs["addStatus"]("physicalResistancePlus",2,"buff",target,user,{name:"physicalResistance",amount:100}));
+                    break;
+                case "Quicken":
+                    newText = this.entity.skillFuncs["addStatus"]("initiativePlus",2,"buff",target,user,{name:"initiative",amount:user.p.combatStats.skill});
+                    break;
+                case "Forewarn":
+                    newText = this.entity.skillFuncs["addStatus"]("counterChancePlus",2,"buff",target,user,{name:"counterChance",amount:user.p.combatStats.skill});
+                    break;
+                case "Sharpen":
+                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyPlus",2,"buff",target,user,{name:"atkAccuracy",amount:user.p.combatStats.skill});
+                    break;
+                case "Vitalize":
+                    newText = this.entity.skillFuncs["addStatus"]("critChancePlus",2,"buff",target,user,{name:"critChance",amount:Math.floor(user.p.combatStats.skill/2)});
+                    break;
+                case "Vivify":
+                    newText = this.entity.skillFuncs["addStatus"]("atkSpeedPlus",2,"buff",target,user,{name:"atkSpeed",amount:user.p.combatStats.skill});
+                    break;
+                case "Heal":
+                    newText = this.entity.skillFuncs["healHp"](Math.floor(Math.random()*user.p.combatStats.skill)+user.p.combatStats.skill,target,user);
+                    break;
+                case "Cure":
+                    newText = this.entity.skillFuncs["removeDebuff"]("all",target,user);
+                    break;
+                case "Revive":
+                    newText = this.entity.skillFuncs["removeDebuff"]("fainted",target,user);
+                    break;
+                case "Energize":
+                    newText = this.entity.skillFuncs["healTp"](user.p.combatStats.skill+25,target,user);
+                    break;
+                case "Resurrect":
+                    newText = this.entity.skillFuncs["removeDebuff"]("bleedingOut",target,user);
+                    newText = newText.concat(this.entity.skillFuncs["healHp"](Math.floor(Math.random()*user.p.combatStats.skill)+user.p.combatStats.skill,target,user));
                     break;
             }
             for(var i=0;i<newText.length;i++){
@@ -1409,184 +1461,239 @@ Quintus.GameObjects=function(Q){
         useDebilitateSkill:function(attacker,defender,skill){
             var newText = [];
             switch(skill.name){
-                case "Slow":
-                    newText = this.entity.skillFuncs["addStatus"]("slowed",1,defender,attacker);
+                case "Unnerve":
+                    newText = this.entity.skillFuncs["addStatus"]("painToleranceDown",100,"debuff",defender,attacker,{name:"painTolerance",amount:-(attacker.p.combatStats.skill*2)});
+                    attacker.p.gaveStatus.push({char:defender,status:"painToleranceDown"});
                     break;
                 case "Stun":
-                    newText = this.entity.skillFuncs["addStatus"]("stunned",5,defender,attacker);
-                    break;
-                case "Hypnotic Mirage":
-                    
+                    newText = this.entity.skillFuncs["addStatus"]("stunned",100,"debuff",defender,attacker);
+                    attacker.p.gaveStatus.push({char:defender,skill:"stunned"});
                     break;
                 case "Blind":
-                    newText = this.entity.skillFuncs["addStatus"]("blinded",3,defender,attacker);
+                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyDown",100,"debuff",defender,attacker,{name:"atkAccuracy",amount:-Math.floor(defender.p.combatStats.atkAccuracy/2)});
+                    newText = newText.concat(this.entity.skillFuncs["addStatus"]("defensiveAbilityDown",100,"debuff",defender,attacker,{name:"defensiveAbility",amount:-Math.floor(defender.p.combatStats.defensiveAbility/2)}));
+                    attacker.p.gaveStatus.push({char:defender,skill:"atkAccuracyDown"});
+                    attacker.p.gaveStatus.push({char:defender,skill:"defensiveAbilityDown"});
                     break;
                 case "Temporary Insanity":
-                    newText = this.entity.skillFuncs["addStatus"]("insane",3,defender,attacker);
+                    newText = this.entity.skillFuncs["addStatus"]("insane",100,"debuff",defender,attacker);
+                    attacker.p.gaveStatus.push({char:defender,skill:"insane"});
                     break;
                 case "Antithesis":
-                    
+                    newText = this.entity.skillFuncs["addStatus"]("TPDrain",100,"debuff",defender,attacker);
+                    attacker.p.gaveStatus.push({char:defender,skill:"TPDrain"});
                     break;
                 case "Push":
                     newText = this.entity.skillFuncs.push(1,defender,attacker);
                     break;
                 case "Staredown":
-                    newText = this.entity.skillFuncs["addStatus"]("feared",3,defender,attacker);
+                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyDown",3,"debuff",defender,attacker,{name:"atkAccuracy",amount:-attacker.p.combatStats.skill});
                     break;
                 case "Charge Through":
                     newText = this.entity.skillFuncs.chargeThrough(defender,attacker);
                     attacker.p.canSetDir = [];
                     break;
                 case "Headbutt":
-                    newText = this.entity.skillFuncs["addStatus"]("iniDown",3,defender,attacker);
+                    newText = this.entity.skillFuncs["addStatus"]("initiativeDown",3,"debuff",defender,attacker,{name:"initiative",amount:-(attacker.p.combatStats.skill*2)});
                     break;
                 case "Pull":
                     newText = this.entity.skillFuncs.pull(defender,attacker);
                     break;
                 case "War Cry":
-                    newText = this.entity.skillFuncs["addStatus"]("slowGo",2,defender,attacker);
+                    newText = this.entity.skillFuncs["addStatus"]("moveDown",2,"debuff",defender,attacker,{name:"moveSpeed",amount:-defender.p.combatStats.moveSpeed+1});
                     break;
             }
             this.text = this.text.concat(newText);
             this.text.push({func:"waitTime",obj:this,props:[400]});
         },
         useDamageSkill:function(attacker,defender,skill){
-            var damage = 0;
-            var sound = "cannot_do.mp3";
+            var damage;
+            var sound;
+            var result;
+            var props;
+            var atkProps = {
+                attackNum:Math.ceil(Math.random()*100),
+                defendNum:Math.ceil(Math.random()*100),
+                attackerCritChance:attacker.p.combatStats.critChance,
+                attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
+                defenderCounterChance:defender.p.combatStats.counterChance,
+                defenderReflexes:defender.p.combatStats.reflexes,
+                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                defenderFainted:defender.p.fainted,
+                
+                attackerFainted:attacker.p.fainted,
+                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
+                
+                attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
+                attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
+                attackerSecMaxAtkDmg:attacker.p.combatStats.maxSecondaryDmg,
+                attackerSecMinAtkDmg:attacker.p.combatStats.minSecondaryDmg,
+                
+                defenderHP:defender.p.combatStats.hp,
+                defenderDamageReduction:defender.p.combatStats.damageReduction,
+                defenderAtkRange:defender.p.combatStats.atkRange,
+                attacker:attacker,
+                defender:defender
+            };
             switch(skill.name){
                 case "Long Shot":
-                    var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker.p.combatStats.critChance,attacker.p.combatStats.atkAccuracy,Math.ceil(Math.random()*100),defender.p.combatStats.counterChance,defender.p.combatStats.reflexes,defender.p.combatStats.defensiveAbility));
-                    damage = this.successfulSkillBlow(Math.random(), attacker.p.combatStats.minAtkDmg, attacker.p.combatStats.maxAtkDmg, defender.p.combatStats.damageReduction);
-                    sound = "hit1.mp3";
+                    
                     break;
                 case "Armour Piercing Shot":
-                    damage = this.successfulSkillBlow(Math.random(), attacker.p.combatStats.minAtkDmg, attacker.p.combatStats.maxAtkDmg, Math.max(0,defender.p.combatStats.damageReduction-attacker.p.combatStats.skill));
-                    sound = "hit1.mp3";
+                    atkProps.defenderDamageReduction = Math.max(0,atkProps.defenderDamageReduction - attacker.p.combatStats.skill);
                     break;
                 case "Rapid Shot":
-                    attacker.p.combatStats.atkSpeed += attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"atkSpeed"]});
+                    atkProps.attackerAtkSpeed+=attacker.p.combatStats.skill;
                     break;
                 case "Critical Shot":
-                    attacker.p.combatStats.critChance += attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"critChance"]});
+                    atkProps.critChance+=attacker.p.combatStats.skill;
                     break;
                 case "Painful Shot":
-                    defender.p.combatStats.painTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[defender,"painTolerance"]});
+                    atkProps.defenderPainTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
                     break;
                 case "Sniper Shot":
-                    attacker.p.combatStats.weaponSkill = attacker.p.combatStats.skill;
-                    Q.charGen.resetCombatStat(attacker,"atkAccuracy");
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"weaponSkill"]},{func:"resetCombatStat",obj:Q.charGen,props:[attacker,"atkAccuracy"]});
+                    var wsk = attacker.p.combatStats.skill,
+                        wield = ((Q.charGen.getEquipmentProp("wield",attacker.p.equipment.righthand)+Q.charGen.getEquipmentProp("wield",attacker.p.equipment.lefthand))/2), 
+                        encPenalty = attacker.p.combatStats.encumbrancePenalty,
+                        level = attacker.p.level;
+                    atkProps.attackerAtkAccuracy = wsk+wield+encPenalty+level;
                     break;
                 case "Critical Strike":
-                    attacker.p.combatStats.critChance += attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"critChance"]});
+                    atkProps.critChance+=attacker.p.combatStats.skill;
                     break;
                 case "Rapid Strike":
-                    attacker.p.combatStats.atkSpeed += attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"atkSpeed"]});
+                    atkProps.attackerAtkSpeed+=attacker.p.combatStats.skill;
                     break;
                 case "Surprising Strike":
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,false,defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
+                    atkProps.defendNum = 100;
                     break;
                 case "Armour Piercing Strike":
-                    defender.p.combatStats.damageReduction = Math.max(0,defender.p.combatStats.damageReduction-attacker.p.combatStats.skill);
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[defender,"damageReduction"]});
+                    atkProps.defenderDamageReduction = Math.max(0,atkProps.defenderDamageReduction - attacker.p.combatStats.skill);
                     break;
                 case "Painful Strike":
-                    defender.p.combatStats.painTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[defender,"painTolerance"]});
+                    atkProps.defenderPainTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
                     break;
                 case "Whirlwind Strike":
-                    attacker.p.combatStats.minAtkDmg = attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill;
-                    attacker.p.combatStats.maxAtkDmg = attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill;
-                    attacker.p.combatStats.minSecondaryDmg = attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill;
-                    attacker.p.combatStats.maxSecondaryDmg = attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"minAtkDmg"]});
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"maxAtkDmg"]});
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"minSecondaryDmg"]});
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"maxSecondaryDmg"]});
+                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     break;
                 case "Bleeding Strike":
-                    attacker.p.combatStats.strength = attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"strength"]});
-                    if(damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("bleeding",2,defender,attacker));
+                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.result = this.getBlow(atkProps);
+                    props = this.processResult(atkProps);
+                    if(props.damage>0){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("painToleranceDown",100,"debuff",defender,attacker,{name:"painTolerance",amount:-Math.floor(props.damage/2)}));
                     }
                     break;
                 case "Weakening Strike":
-                    attacker.p.combatStats.strength = attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"strength"]});
-                    if(damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("weakened",2,defender,attacker));
+                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.result = this.getBlow(atkProps);
+                    props = this.processResult(atkProps);
+                    if(props.damage>0){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("strengthDown",2,"debuff",defender,attacker,{name:"strength",amount:-Math.floor(props.damage/10)}));
                     }
                     break;
                 case "Nerve Strike":
-                    attacker.p.combatStats.strength = attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"strength"]});
-                    if(damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("resDown",2,defender,attacker));
+                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.result = this.getBlow(atkProps);
+                    props = this.processResult(atkProps);
+                    if(props.damage>0){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("physicalResistanceDown",100,"debuff",defender,attacker,{name:"physicalResistance",amount:-Math.floor(props.damage/10)}));
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("mentalResistanceDown",100,"debuff",defender,attacker,{name:"mentalResistance",amount:-Math.floor(props.damage/10)}));
                     }
                     break;
                 case "Acid Bomb":
-                    defender.p.combatStats.damageReduction = Math.max(0,defender.p.combatStats.damageReduction-attacker.p.combatStats.skill);
-                    damage = Math.ceil(Math.random()*30)+10;
-                    sound = "hit1.mp3";
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[defender,"damageReduction"]});
-                    break;
-                case "Poison Strike":
-                    attacker.p.combatStats.strength = attacker.p.combatStats.skill;
-                    var props = this.processSkillResult(this.getBlow(Math.ceil(Math.random()*100),attacker,Math.ceil(Math.random()*100),defender),skill);
-                    damage = props.damage;
-                    sound = props.sound;
-                    this.text.push({func:"resetCombatStat",obj:Q.charGen,props:[attacker,"strength"]});
-                    if(damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("poisoned",2,defender,attacker));
-                        defender.p.poisonDamage = Math.floor(damage/4);
+                    props = {
+                        damage:Math.ceil(Math.random()*30)+10+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    if(props.damage>0){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("damageReductionDown",100,"debuff",defender,attacker,{name:"damageReduction",amount:-attacker.p.combatStats.skill}));
                     }
                     break;
+                case "Poison Strike":
+                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.result = this.getBlow(atkProps);
+                    result = this.processResult(atkProps);
+                    if(result.damage>0){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("poisoned",2,"debuff",defender,attacker));
+                        defender.p.buffs.poisonDamage = Math.floor(result.damage/4);
+                    }
+                    break;
+                case "Coordinated Attack":
+                    
+                    break;
+                case "Stone":
+                    props = {
+                        damage:Math.ceil(Math.random()*10)+10+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
+                case "Flamethrower":
+                    props = {
+                        damage:Math.ceil(Math.random()*30)+50+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
+                case "Fireball":
+                    props = {
+                        damage:Math.ceil(Math.random()*30)+50+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
+                case "Frost Ray":
+                    props = {
+                        damage:Math.ceil(Math.random()*40)+10+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
+                case "Choke":
+                    atkProps.defenderDamageReduction = 0;
+                    props = {
+                        damage:Math.ceil(Math.random()*100)+100+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
+                case "Lightning Storm":
+                    atkProps.defenderDamageReduction = 0;
+                    props = {
+                        damage:Math.ceil(Math.random()*50)+150+attacker.p.combatStats.skill,
+                        sound:"hit1.mp3"
+                    };
+                    break;
             }
-            return {damage:damage,sound:sound};
+            if(!result){
+                atkProps.result = this.getBlow(atkProps);
+            }
+            if(!props){
+                props = this.processResult(atkProps);
+            }
+            props.sound = sound || props.sound;
+            return {damage:props.damage,sound:props.sound};
+        },
+        useGroundSkill:function(targetLoc,user,skill){
+            switch(skill.name){
+                case "Hypnotic Mirage":
+                    this.text.push({func:"createMirage",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
+                case "Stability Field":
+                    this.text.push({func:"createStabilityField",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
+            }
         },
         useItem:function(user,target,item){
             var newText;
@@ -1642,15 +1749,38 @@ Quintus.GameObjects=function(Q){
                         damage = Math.max(0,props.damage);
                         sound = props.sound;
                         break;
+                    case "Item":
+                        this.useItem(attacker,defender,skill);
+                        break;
                 }
             } 
             //Regular attack
             else {
-                var props = this.processResult(this.getBlow(Math.ceil(Math.random()*100),attacker.p.combatStats.critChance,attacker.p.combatStats.atkAccuracy,Math.ceil(Math.random()*100),defender.p.combatStats.counterChance,defender.p.combatStats.reflexes,defender.p.combatStats.defensiveAbility));
-                /*if(!props) {
-                    this.text.push({func:"waitTime",obj:this,props:[1000]});
-                    return;
-                }*/
+                var blow = this.getBlow({
+                    attackNum:Math.ceil(Math.random()*100),
+                    defendNum:Math.ceil(Math.random()*100),
+                    attackerCritChance:attacker.p.combatStats.critChance,
+                    attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
+                    defenderCounterChance:defender.p.combatStats.counterChance,
+                    defenderReflexes:defender.p.combatStats.reflexes,
+                    defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                    defenderFainted:defender.p.fainted,
+                    attacker:attacker,
+                    defender:defender
+                });
+                var props = this.processResult({
+                    result:blow,
+                    attackerFainted:attacker.p.fainted,
+                    attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
+                    attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
+                    attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
+                    defenderHP:defender.p.combatStats.hp,
+                    defenderDamageReduction:defender.p.combatStats.damageReduction,
+                    defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                    defenderAtkRange:defender.p.combatStats.atkRange,
+                    attacker:attacker,
+                    defender:defender
+                });
                 damage = props.damage;
                 sound = props.sound;
             }
@@ -1661,12 +1791,9 @@ Quintus.GameObjects=function(Q){
                     defender.p.fainted = true;
                     this.text.splice(this.text.length-2,0,{func:"showFainted",obj:defender,props:[attacker]});
                 }
+                this.text.push({func:"playAttack",obj:attacker,props:[attacker.p.dir]});
+                this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker]});
                 this.text.push({func:"showDamage",obj:defender,props:[damage,time,sound]});
-                var expText = defender.takeDamage(damage,attacker);
-                //If a defender was defeated
-                if(expText){
-                    this.expText.push.apply(this.expText,expText);
-                }
             } 
             //Miss
             else if(damage===0){
@@ -1674,6 +1801,7 @@ Quintus.GameObjects=function(Q){
             } 
             //Counter chance
             else if(damage===-1){
+                this.previousDamage = 0;
                 if(skill){
                     this.text.push({func:"showMiss",obj:defender,props:[attacker,time]});
                 } else {
@@ -1696,10 +1824,16 @@ Quintus.GameObjects=function(Q){
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
             }
+            //If we have targetted the ground.
+            if(!targets.length){
+                this.useGroundSkill(Q.pointer.p.loc,attacker,skill);
+            }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
                 this.calcAttack(attacker,targets[i],skill);
+                this.previousDamage = 0;
             }
+            
             var text = this.text;
             //If a defender died, there will be an exp gain
             if(this.expText.length){
@@ -1870,7 +2004,7 @@ Quintus.GameObjects=function(Q){
             };
             return text;
         },
-        addStatus:function(status,turns,target,user){
+        addStatus:function(status,turns,type,target,user,props){
             var text = [];
             var num = turns;
             if(Q._isArray(turns)){
@@ -1879,17 +2013,28 @@ Quintus.GameObjects=function(Q){
             var curStatus = target.hasStatus(status);
             if(curStatus){
                 curStatus.turns = curStatus.turns>num?num:curStatus.turns;
-                text.push({func:"refreshStatus",obj:target,props:[status,num,user]});
+                text.push({func:"refreshStatus",obj:target,props:[status,num,user,props]});
             } else {
-                text.push({func:"addStatus",obj:target,props:[status,num,user]});
+                text.push({func:"addStatus",obj:target,props:[status,num,type,user,props]});
             }
             //text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[100]});
             return text;
         },
-        
+        removeDebuff:function(name,target,user){
+            if(name==="all"){
+                return [{func:"removeAllBadStatus",obj:target,props:[]}];
+            } else {
+                return [{func:"removeStatus",obj:target,props:[name]}];
+            }
+        },
+        healTp:function(amount,target,user){
+            var text = [];
+            if(target.p.combatStats.tp+amount>target.p.combatStats.maxTp) amount=target.p.combatStats.maxTp-target.p.combatStats.tp;
+            target.p.combatStats.tp+=amount;
+            text.push({func:"showHealed",obj:target,props:[amount]});
+            return text;
+        },
         healHp:function(amount,target,user){
-            Q.setAward(target,"selfHealed",amount);
-            Q.setAward(user,"targetHealed",amount);
             var text = [];
             if(target.p.combatStats.hp+amount>target.p.combatStats.maxHp) amount=target.p.combatStats.maxHp-target.p.combatStats.hp;
             target.p.combatStats.hp+=amount;
@@ -1902,6 +2047,13 @@ Quintus.GameObjects=function(Q){
             target.p.combatStats[stat]+=amount;
             text.push({func:"showStatUp",obj:target,props:[amount,stat]});
             return text;
+        },
+        createMirage:function(loc,user){
+            if(user.p.mirage) user.p.mirage.dispellMirage();
+            user.p.mirage = user.stage.insert(new Q.Mirage({loc:loc,objType:"mirage",user:user}));
+        },
+        createStabilityField:function(loc,user){
+            
         }
     });
     
@@ -2406,25 +2558,7 @@ Quintus.GameObjects=function(Q){
             obj.p.combatStats[prop] = this["get_"+prop](obj.p);
         },
         getCombatStats:function(char){
-            var stats = {
-                maxHp:this.get_maxHp(char),
-                painTolerance:this.get_painTolerance(char),
-                damageReduction:this.get_damageReduction(char),
-                physicalResistance:this.get_physicalResistance(char),
-                mentalResistance:this.get_mentalResistance(char),
-                magicalResistance:this.get_magicalResistance(char),
-                
-                atkRange:this.get_atkRange(char),
-                maxAtkDmg:this.get_maxAtkDmg(char),
-                minAtkDmg:this.get_minAtkDmg(char),
-                maxSecondaryDmg:this.get_maxSecondaryDmg(char),
-                minSecondaryDmg:this.get_minSecondaryDmg(char),
-                
-                maxTp:this.get_maxTp(char),
-                
-                encumbranceThreshold:this.get_encumbranceThreshold(char),
-                totalWeight:this.get_totalWeight(char),
-                
+            var baseCombatStats = {
                 strength:this.get_strength(char),
                 endurance:this.get_endurance(char),
                 dexterity:this.get_dexterity(char),
@@ -2435,98 +2569,118 @@ Quintus.GameObjects=function(Q){
                 skill:this.get_skill(char),
                 efficiency:this.get_efficiency(char)
             };
-            char.combatStats = stats;
-            stats.encumbrancePenalty = this.get_encumbrancePenalty(char);
-            stats.defensiveAbility = this.get_defensiveAbility(char);
-            stats.atkAccuracy = this.get_atkAccuracy(char);
-            stats.critChance = this.get_critChance(char);
-            stats.counterChance = this.get_counterChance(char);
-            stats.atkSpeed = this.get_atkSpeed(char);
+            char.combatStats = baseCombatStats;
+            char.combatStats.maxHp = this.get_maxHp(char);
+            char.combatStats.painTolerance = this.get_painTolerance(char);
+            char.combatStats.damageReduction = this.get_damageReduction(char);
+            char.combatStats.physicalResistance = this.get_physicalResistance(char);
+            char.combatStats.mentalResistance = this.get_mentalResistance(char);
+            char.combatStats.magicalResistance = this.get_magicalResistance(char);
+
+            char.combatStats.atkRange = this.get_atkRange(char);
+            char.combatStats.maxAtkDmg = this.get_maxAtkDmg(char);
+            char.combatStats.minAtkDmg = this.get_minAtkDmg(char);
+            char.combatStats.maxSecondaryDmg = this.get_maxSecondaryDmg(char);
+            char.combatStats.minSecondaryDmg = this.get_minSecondaryDmg(char);
+
+            char.combatStats.maxTp = this.get_maxTp(char);
+
+            char.combatStats.encumbranceThreshold = this.get_encumbranceThreshold(char);
+            char.combatStats.totalWeight = this.get_totalWeight(char);
+            char.combatStats.encumbrancePenalty = this.get_encumbrancePenalty(char);
+            char.combatStats.defensiveAbility = this.get_defensiveAbility(char);
+            char.combatStats.atkAccuracy = this.get_atkAccuracy(char);
+            char.combatStats.critChance = this.get_critChance(char);
+            char.combatStats.counterChance = this.get_counterChance(char);
+            char.combatStats.atkSpeed = this.get_atkSpeed(char);
             
-            stats.moveSpeed = this.get_moveSpeed(char);
+            char.combatStats.moveSpeed = this.get_moveSpeed(char);
             
-            stats.hp = stats.maxHp;
-            stats.tp = stats.maxTp;
-            return stats;
+            char.combatStats.hp = char.combatStats.maxHp;
+            char.combatStats.tp = char.combatStats.maxTp;
+            return char.combatStats;
         },
         get_maxHp:function(p){
-            var level = p.level, end = p.baseStats.end, charGroup = p.charGroup;
+            var level = p.level, end = p.combatStats.endurance, charGroup = p.charGroup;
             var r = charGroup==="Fighter"?3:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
             var q = charGroup==="Fighter"?12:charGroup==="Rogue"?10:charGroup==="Mage"?3:0;
             return Math.floor((end*q)+(level*r));
         },
         get_painTolerance:function(p){
-            var level = p.level, end = p.baseStats.end, charGroup = p.charGroup;
+            var level = p.level, end = p.combatStats.endurance, charGroup = p.charGroup;
             var z = charGroup==="Fighter"?5:charGroup==="Rogue"?4:charGroup==="Mage"?3:0;
             return Math.floor(end*z+level);
         },
         get_defensiveAbility:function(p){
-            var rfl = p.baseStats.rfl, encPenalty = p.combatStats.encumbrancePenalty,level = p.level,block = this.getEquipmentProp("block",p.equipment.lefthand);
+            var rfl = p.combatStats.reflexes, encPenalty = p.combatStats.encumbrancePenalty,level = p.level,block = this.getEquipmentProp("block",p.equipment.lefthand);
             return rfl+encPenalty+level+block;
         },
         get_damageReduction:function(p){
             return this.getEquipmentProp("damageReduction",p.equipment.armour);
         },
         get_physicalResistance:function(p){
-            var str = p.baseStats.str, end = p.baseStats.end;
+            var str = p.combatStats.strength, end = p.combatStats.endurance;
             return Math.min(25,str+end);
         },
         get_mentalResistance:function(p){
-            var ini = p.baseStats.ini, eff = p.baseStats.eff;
+            var ini = p.combatStats.initiative, eff = p.combatStats.efficiency;
             return Math.min(25,ini+eff);
         },
         get_magicalResistance:function(p){
-            var enr = p.baseStats.enr, skl = p.baseStats.skl;
+            var enr = p.combatStats.energy, skl = p.combatStats.skill;
             return Math.min(25,enr+skl);
         },
         get_atkAccuracy:function(p){
-            var wsk = p.combatStats.weaponSkill,wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/2), encPenalty = p.combatStats.encumbrancePenalty,level = p.level;
-            return Math.floor(wsk+wield+encPenalty+level);
+            var wsk = p.combatStats.weaponSkill,
+                wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/2), 
+                encPenalty = p.combatStats.encumbrancePenalty,
+                level = p.level;
+            return Math.min(99,Math.floor(wsk+wield+encPenalty+level));
         },
         get_critChance:function(p){
             var attackAccuracy = p.combatStats.atkAccuracy,charGroup = p.charGroup;
             var g = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
-            return Math.floor(attackAccuracy/g);
+            return Math.min(99,Math.floor(attackAccuracy/g));
         },
         get_counterChance:function(p){
             var defensiveAbility = p.combatStats.defensiveAbility,charGroup = p.charGroup;
             var g = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
-            return Math.floor(defensiveAbility/g);
+            return Math.min(75,Math.floor(defensiveAbility/g));
         },
         get_atkSpeed:function(p){
-            var dex = p.baseStats.dex, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment.righthand),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
+            var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment.righthand),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
             var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
-            return Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)+encPenalty+(level*d));
+            return Math.min(99,Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)+encPenalty+(level*d)));
         },
         get_atkRange:function(p){
             var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
             return attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
         },
         get_maxAtkDmg:function(p){
-            var str = p.baseStats.str, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
+            var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
             var t = handed===1?1:1.5;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
             return Math.floor((str*t)+(level*h)+maxDamageRight);
         },
         get_minAtkDmg:function(p){
-            var str = p.baseStats.str, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
+            var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
             var t = handed===1?1:1.5;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
             return Math.floor((str*t)+(level*h)+minDamageRight);
         },
         get_maxSecondaryDmg:function(p){
-            var str = p.baseStats.str, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment.lefthand), charGroup = p.charGroup;
+            var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment.lefthand), charGroup = p.charGroup;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
             return Math.floor((str*0.5)+(level*h)+maxDamageLeft);
         },
         get_minSecondaryDmg:function(p){
-            var str = p.baseStats.str, level = p.level, minDamageLeft = this.getEquipmentProp("mindmg",p.equipment.lefthand), charGroup = p.charGroup;
+            var str = p.combatStats.strength, level = p.level, minDamageLeft = this.getEquipmentProp("mindmg",p.equipment.lefthand), charGroup = p.charGroup;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
             return Math.floor((str*0.5)+(level*h)+minDamageLeft);
         },
         
         get_maxTp:function(p){
-            var enr = p.baseStats.enr, level = p.level, charGroup = p.charGroup;
+            var enr = p.combatStats.energy, level = p.level, charGroup = p.charGroup;
             var f = charGroup==="Fighter"?2:charGroup==="Rogue"?3:charGroup==="Mage"?5:0;
             return Math.floor((enr*f)+level);
         },
@@ -2536,7 +2690,7 @@ Quintus.GameObjects=function(Q){
             return m + Math.floor(encPenalty/10);
         },
         get_encumbranceThreshold:function(p){
-            var str = p.baseStats.str, charGroup = p.charGroup;
+            var str = p.combatStats.strength, charGroup = p.charGroup;
             var e = charGroup==="Fighter"?2:charGroup==="Rogue"?1.5:charGroup==="Mage"?1:0;
             return Math.floor(str*e);
         },

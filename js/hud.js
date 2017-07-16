@@ -69,6 +69,7 @@ Quintus.HUD=function(Q){
             this.hide();
         },
         displayTarget:function(obj){
+            if(obj.isA("Mirage")) return;
             this.show();
             if(obj.p.team==="ally") this.p.fill = "blue";
             if(obj.p.team==="enemy") this.p.fill = "crimson";
@@ -147,6 +148,27 @@ Quintus.HUD=function(Q){
                 idx++;
             }
         },
+        moveHLineForwardTiles:function(pointer){
+            var tiles = this.aoeTiles;
+            var arr = Q.getDirArray(Q.getRotatedDir(pointer.p.user.p.dir));
+            var radius = pointer.p.skill.aoe[0];
+            var len = tiles.length-1;
+            if(pointer.p.skill.aoe[2]==="excludeCenter") len++;
+            var idx = 0;
+            //Loop backwards so the closer enemy is targeted
+            for(var i=len-1;i>=0;i--){
+                if(pointer.p.skill.aoe[2]==="excludeCenter"&&i===radius-1) i--;
+                var tile = tiles[idx];
+                var loc = tile.p.center;
+                tile.p.loc = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                Q.BatCon.setXY(tile);
+                var objOn = Q.BattleGrid.getObject(tile.p.loc);
+                if(objOn){
+                    Q.pointer.trigger("onTarget",objOn);
+                }
+                idx++;
+            }
+        },
         movePhalanxTiles:function(pointer){
             var locs = this.getCustomAOE(pointer.p.loc,pointer.p.skill,pointer.p.user.p.dir);
             this.aoeTiles.forEach(function(tile,i){
@@ -201,11 +223,17 @@ Quintus.HUD=function(Q){
                 }
             } else if(aoe[0]==="customRadius"){
                 switch(this.entity.p.skill.name){
-                    case "Slow":
+                    case "Unnerve":
                         radius = Math.floor(this.entity.p.user.p.combatStats.skill/20);
                         break;
                     case "War Cry":
                         radius = 4+Math.floor(this.entity.p.user.p.combatStats.skill/10);
+                        break;
+                    case "Heal":
+                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/30);
+                        break;
+                    case "Cure":
+                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/35);
                         break;
                 }
             }
@@ -239,6 +267,16 @@ Quintus.HUD=function(Q){
                     break;
                 //Horizontal line
                 case "hLine":
+                    var dir = this.entity.p.user.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    for(var i=-radius;i<radius+1;i++){
+                        if(special==="excludeCenter"&&i===0) i++;
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
+                    }
+                    break;
+                case "hLineForward":
                     var dir = this.entity.p.user.p.dir;
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(Q.getRotatedDir(dir));
@@ -1193,7 +1231,7 @@ Quintus.HUD=function(Q){
                             //Self skills can target the tile that the user is on
                             this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[user.p.loc[0],user.p.loc[1]]})));
                             //If there is range, then the skill can target self, or other squares (using potion, etc...)
-                            if(skill.range[0]>0){
+                            if(range>0){
                                 this.getTileRange(user.p.loc,range,user.p["attackMatrix"]);
                             }
                             break;
@@ -1226,6 +1264,19 @@ Quintus.HUD=function(Q){
                     range = rh.range>lh.range?rh.range:lh.range;
                     range+=Math.floor(user.p.baseStats.skl/10);
                     break;
+                case "Stability Field":
+                    range = Math.ceil(user.p.combatStats.skill/5);
+                    break;
+                case "Heal":
+                    range = Math.ceil(user.p.combatStats.skill/20);
+                    break;
+                case "Cure":
+                    range = Math.ceil(user.p.combatStats.skill/25);
+                    break;
+                case "Energize":
+                    range = Math.ceil(user.p.combatStats.skill/20);
+                    break;
+                    
             }
             return range;
         },
@@ -1293,7 +1344,7 @@ Quintus.HUD=function(Q){
                 //Loop through the possible tiles
                 for(var i=0;i<tiles.length;i++){
                     //Get the path and then slice it if it goes across enemy ZOC
-                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph);
+                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph,stat);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
@@ -1352,13 +1403,22 @@ Quintus.HUD=function(Q){
                 var user = this.p.user;
                 if(Q.pointer.p.skill){
                     var skill = Q.pointer.p.skill;
-                    //Make sure there's a target 
-                    var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
+                    //Make sure there's a target
+                    var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles)
+                    if(skill.range[2]!=="dead"){
+                        targets = Q.BattleGrid.removeDead(targets);
+                    }
                     //Remove any characters that are not affected.
                     if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
                     //Remove characters that are not facing the user if the skill has enemyFacingThis
                     if(skill.range[2]==="enemyFacingThis") Q.BatCon.removeNotFacing(targets,user);
-                    
+                    //If the ability targets the ground, check if an object is there.
+                    if(skill.range[2]==="ground"){
+                        var tileType = Q.BatCon.getTileType(Q.pointer.p.loc);
+                        if(Q.BattleGrid.getObject(Q.pointer.p.loc)||tileType==="impassable"||tileType==="water"){
+                            targets = [];
+                        } else targets.push(true);
+                    }
                     //If there is at least one target
                     if(targets.length){
                         Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
@@ -1367,7 +1427,7 @@ Quintus.HUD=function(Q){
                     } else {this.cannotDo();}
 
                 } else {
-                    var obj = Q.BattleGrid.getObject(Q.pointer.p.loc)
+                    var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
                     if(obj&&Q.BattleGrid.removeDead([obj]).length){
                         Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
                         //Destroy this range grid
@@ -1491,8 +1551,11 @@ Quintus.HUD=function(Q){
                 w:Q.tileW,h:Q.tileH,
                 type:Q.SPRITE_NONE
             });
+            this.on("inserted");
+        },
+        inserted:function(){
             Q.BatCon.setXY(this);
-            this.p.z = this.p.y;
+            this.p.z = this.p.y-Q.tileH;
         }
     });
     Q.Sprite.extend("AOETile",{
@@ -1505,7 +1568,7 @@ Quintus.HUD=function(Q){
                 type:Q.SPRITE_NONE
             });
             Q.BatCon.setXY(this);
-            this.p.z = 3
+            this.p.z = 3;
         }
     });
     Q.Sprite.extend("ZOCTile",{
@@ -1563,6 +1626,8 @@ Quintus.HUD=function(Q){
             }
         },
         inserted:function(){
+            //targetting the ground
+            if(!this.p.targets.length) return;
             //Get the comparison between the two char's directions
             this.p.attackingFrom = Q.BatCon.attackFuncs.compareDirection(this.p.attacker,this.p.targets[0]);
             var attacker = this.p.attacker;
@@ -1663,8 +1728,7 @@ Quintus.HUD=function(Q){
                 statusNum:0,
                 time:0,
                 timeCycle:60,
-                sheet:"ui_blind",
-                frame:0
+                w:32,h:32
             });
             this.setPos();
             this.p.z = this.p.char.p.z+Q.tileH;

@@ -14,7 +14,8 @@ Q.setUpAnimations=function(){
         ['illusionist','illusionist.png',24,24,0,0,192,72],
         ['legionnaire','legionnaire.png',24,24,0,0,192,72],
         ['skirmisher','skirmisher.png',24,24,0,0,192,72],
-        ['vanguard','vanguard.png',24,24,0,0,192,72]
+        ['vanguard','vanguard.png',24,24,0,0,192,72],
+        ['mirage','mirage.png',32,32,0,0,128,32]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -49,11 +50,12 @@ Q.setUpAnimations=function(){
         
     var standRate = 1/3;
     var walkRate = 1/6;
-    var supafAst = 1/12
+    var supafAst = 1/12;
+    var tooFast = 1/24;
     Q.animations("Character", {
         standingup:{ frames: [0,1], rate:standRate},
         walkingup:{ frames: [0,1], rate:walkRate},
-        attackingup:{ frames: [0,0,1,0], rate:walkRate/2, loop:false,trigger:"doneAttack"},
+        attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
         missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"playStand"},
         counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
         liftup:{frames:[9,9,9],rate:standRate},
@@ -64,7 +66,7 @@ Q.setUpAnimations=function(){
         
         standingright:{ frames: [2,3], rate:standRate},
         walkingright:{ frames: [2,3], rate:walkRate},
-        attackingright:{ frames: [2,2,3,2], rate:walkRate, loop:false,trigger:"doneAttack"},
+        attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
         missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"playStand"},
         counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
         liftright:{frames:[9,9,9],rate:standRate},
@@ -75,7 +77,7 @@ Q.setUpAnimations=function(){
         
         standingleft:{ frames: [4,5], rate:standRate},
         walkingleft:{ frames: [4,5], rate:walkRate},
-        attackingleft:{ frames: [4,4,5,4], rate:walkRate, loop:false,trigger:"doneAttack"},
+        attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
         missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"playStand"},
         counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
         liftleft:{frames:[8,8,8],rate:standRate},
@@ -86,7 +88,7 @@ Q.setUpAnimations=function(){
         
         standingdown:{ frames: [6,7], rate:standRate},
         walkingdown:{ frames: [6,7], rate:walkRate},
-        attackingdown:{ frames: [6,6,7,6], rate:walkRate, loop:false,trigger:"doneAttack"},
+        attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
         misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"playStand"},
         counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
         liftdown:{frames:[8,8,8],rate:standRate},
@@ -106,6 +108,10 @@ Q.setUpAnimations=function(){
     Q.animations("Piercing",{
         piercingStart:{frames:[0,1],rate:1/6,loop:false,next:"piercingEnd",trigger:"doneAttack"},
         piercingEnd:{frames:[2,3],rate:1/6,loop:false,trigger:"finished"}
+    });
+    
+    Q.animations("mirage",{
+        doingItsThing:{frames:[0,0,0,0,1,2,3,3,2,1],rate:standRate}
     });
 };
     

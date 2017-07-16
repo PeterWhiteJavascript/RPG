@@ -246,7 +246,6 @@ Quintus.Objects=function(Q){
     Q.component("combatant",{
         extend:{
             pulled:function(tileTo,targetTileTo,user){
-                console.log(tileTo,targetTileTo,user)
                 var posTo = Q.BatCon.getXY(tileTo);
                 this.hideStatusDisplay();
                 this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
@@ -294,13 +293,13 @@ Quintus.Objects=function(Q){
                 this.playMiss(Q.compareLocsForDirection(this.p.loc,attacker.p.loc,this.p.dir));
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
                 Q.playSound("cannot_do.mp3");
-                return time?time:300;
+                return time?time:500;
             },
             showResisted:function(attacker,time){
                 this.playMiss(this.p.dir);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Resisted!",z:this.p.z}));
                 Q.playSound("cannot_do.mp3");
-                return time?time:300;
+                return time?time:500;
             },
             //Displays the damage dynamic number
             showDamage:function(dmg,time,sound){
@@ -314,7 +313,7 @@ Quintus.Objects=function(Q){
                     sound = sound?sound:"hit1.mp3";
                     Q.playSound(sound);
                 }
-                return time?time:300;
+                return time?time:500;
             },
             showCounter:function(toCounter,time){
                 this.playCounter(Q.compareLocsForDirection(this.p.loc,toCounter.p.loc,this.p.dir));
@@ -337,15 +336,19 @@ Quintus.Objects=function(Q){
             showHealed:function(amount){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
                 Q.playSound("coin.mp3");
+                if(!this.p.fainted&&this.p.combatStats.hp){
+                    this.playStand(this.p.dir);
+                }
                 return 300;
             },
             showFainted:function(attacker){
                 var t = this;
-                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,attacker);});
+                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,"debuff",attacker);});
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
             takeDamage:function(dmg,attacker){
+                var text = [];
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.combatStats.hp-=dmg;
@@ -378,6 +381,10 @@ Quintus.Objects=function(Q){
                     Q.setAward(this,"timesDied",1);
                     //Remove all status effects
                     this.removeAllStatus();
+                    this.removeAllGaveStatus();
+                    text.push({func:"removeStatus",obj:this,props:["fainted"]});
+                    text.push({func:"addStatus",obj:this,props:["bleedingOut",10,"debuff",this]});
+                    if(this.p.mirage) this.p.mirage.dispellMirage();
                     this.p.fainted = false;
                     if(!this.p.died){
                         //Set died to true so that if the character comes back to life, it will not give exp
@@ -385,25 +392,84 @@ Quintus.Objects=function(Q){
                         //Only give exp if possible (if an ally killed this character, no exp is given)
                         if(this.p.hitBy.length){
                             //Figure out how much exp should be awarded
-                            return Q.BatCon.giveExp(this,this.p.hitBy);
+                            text.push(Q.BatCon.giveExp(this,this.p.hitBy));
                         }
                     }
+                    return text;
                 } else {
-                    this.playStand(this.p.dir);
+                    if(!this.p.fainted){
+                        this.playStand(this.p.dir);
+                    }
                 }
             },
-            addStatus:function(name,turns,user){
-                if(this.p.combatStats.hp<=0) return;
+            //Generates stats based on buffs (called after adding and removing a buff)
+            generateRelevantStats:function(statName){
+                switch(statName){
+                    //Reflexes affects defensive ability, so recalculate it using the new value. Defensive Ability affects counter chance
+                    case "reflexes":
+                        this.p.combatStats.defensiveAbility = Q.charGen.get_defensiveAbility(this.p);
+                        this.p.combatStats.counterChance =  Q.charGen.get_counterChance(this.p);
+                        break;
+                    case "initiative":
+                        this.p.combatStats.mentalResistance = Q.charGen.get_mentalResistance(this.p);
+                        break;
+                    case "strength":
+                        this.p.combatStats.physicalResistance = Q.charGen.get_physicalResistance(this.p);
+                        this.p.combatStats.encumbranceThreshold = Q.charGen.get_encumbranceThreshold(this.p);
+                        this.p.combatStats.encumbrancePenalty = Q.charGen.get_encumbrancePenalty(this.p);
+                        this.p.combatStats.minAtkDmg = Q.charGen.get_minAtkDmg(this.p);
+                        this.p.combatStats.maxAtkDmg = Q.charGen.get_maxAtkDmg(this.p);
+                        this.p.combatStats.minSecondaryDmg = Q.charGen.get_minSecondaryDmg(this.p);
+                        this.p.combatStats.minSecondaryDmg = Q.charGen.get_minSecondaryDmg(this.p);
+                        this.p.combatStats.defensiveAbility = Q.charGen.get_defensiveAbility(this.p);
+                        this.p.combatStats.counterChance =  Q.charGen.get_counterChance(this.p);
+                        this.p.combatStats.atkAccuracy =  Q.charGen.get_atkAccuracy(this.p);
+                        this.p.combatStats.critChance =  Q.charGen.get_critChance(this.p);
+                        this.p.combatStats.moveSpeed =  Q.charGen.get_moveSpeed(this.p);
+                        break;
+                    case "skill":
+                        this.p.combatStats.magicalResistance =  Q.charGen.get_magicalResistance(this.p);
+                        break;
+                    case "efficiency":
+                        this.p.combatStats.mentalResistance =  Q.charGen.get_mentalResistance(this.p);
+                        break;
+                    case "defensiveAbility":
+                        this.p.combatStats.counterChance =  Q.charGen.get_counterChance(this.p);
+                        break;
+                    case "atkAccuracy":
+                        this.p.combatStats.critChance =  Q.charGen.get_critChance(this.p);
+                        break;
+                    case "moveSpeed":
+                        this.p.combatStats.moveSpeed = Q.charGen.get_moveSpeed(this.p);
+                        break;
+                        
+                }
+            },
+            addStatus:function(name,turns,type,user,props){
                 this.addToHitBy(user);
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
-                this.p.status[name] = {name:name,turns:turns};
+                this.p.status[name] = {name:name,turns:turns,type:type,user:user};
+                if(props){
+                    this.p.status[name].props = props;
+                    this.p.combatStats[props.name] += props.amount;
+                    this.generateRelevantStats(props.name);
+                }
                 Q.playSound("inflict_status.mp3");
             },
-            refreshStatus:function(name,turns,user){
+            refreshStatus:function(name,turns,user,props){
                 if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
-                this.p.status[name] = {name:name,turns:turns};
+                if(props){
+                    if(this.p.status[name].props.amount<props.amount){
+                        this.p.combatStats[props.name] -= this.p.status[name].props.amount;
+                        this.p.combatStats[props.name] += props.amount;
+                        this.p.status[name].amount = props.amount;
+                        this.generateRelevantStats(props.name);
+                    }
+                } else {
+                    this.p.status[name].turns = turns;
+                }
                 Q.playSound("coin.mp3");
             },
             addToHitBy:function(obj){
@@ -441,16 +507,47 @@ Quintus.Objects=function(Q){
                 return this.p.status[name];
             },
             removeStatus:function(name){
-                this.p.status[name] = false;
+                if(!this.p.status[name]) return;
+                this.p.status[name].user.removeGaveStatus(this);
+                this.removeGaveStatus(this.p.status[name]);
+                delete this.p.status[name];
                 this.p.statusDisplay.removeStatus(name);
-                if(name==="fainted") this.p.fainted = false;
+                this.generateRelevantStats(name);
+                if(name==="fainted"){
+                    this.p.fainted = false;
+                    this.playStand(this.p.dir);
+                }
+            },
+            removeGaveStatus:function(obj){
+                for(var i=this.p.gaveStatus.length-1;i>0;i--){
+                    if(obj===this.p.gaveStatus[i].char) this.p.gaveStatus.splice(i,1);
+                }
+            },
+            removeAllGaveStatus:function(){
+                for(var i=0;i<this.p.gaveStatus.length;i++){
+                    this.p.gaveStatus[i].char.removeStatus(this.p.gaveStatus[i].status);
+                }
+                this.p.gaveStatus = [];
+            },
+            removeAllBadStatus:function(){
+                var status = this.p.status;
+                var statusDisplay = this.p.statusDisplay;
+                var keys = Object.keys(status);
+                var t = this;
+                keys.forEach(function(key){
+                    if(status[key].type==="debuff"){
+                        t.removeStatus(key);
+                        if(statusDisplay) statusDisplay.removeStatus(key);
+                    }
+                });
             },
             removeAllStatus:function(){
                 var status = this.p.status;
                 var statusDisplay = this.p.statusDisplay;
                 var keys = Object.keys(status);
+                var t = this;
                 keys.forEach(function(key){
-                    status[key]=false;
+                    t.removeStatus(key);
                     if(statusDisplay) statusDisplay.removeStatus(key);
                 });
             },
@@ -607,14 +704,13 @@ Quintus.Objects=function(Q){
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
                 dir:"left",
-                //Any status effects (good and bad)
-                status:{
-                    //Good
-                    sturdy:false,
-                    //Bad
-                    blind:false,
-                    poisoned:false
+                //Store amounts for certain buffs/debuffs. Amounts are reset to 0 when the status finishes.
+                buffs:{
+                    poisonDamage:0
+                    
                 },
+                status:{},
+                gaveStatus:[],
                 //Allows the character to walk on tiles that it normally wouldn't be able to
                 canMoveOn:{
                     waterWalk:false
@@ -642,9 +738,9 @@ Quintus.Objects=function(Q){
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function
-            if(this.p.status.poisoned){
+            if(this.hasStatus("poisoned")){
                 var text = [];
-                var damage = this.p.poisonDamage;
+                var damage = this.p.buffs.poisonDamage;
                 this.showDamage(damage);
                 var dead = this.takeDamage(damage);
                 if(dead){
@@ -655,7 +751,33 @@ Quintus.Objects=function(Q){
                     return;
                 }
             }
-            this.advanceStatus();
+            //If the character's initiative is under 0, skip the turn
+            if(this.p.combatStats.initiative<0){
+                this.p.didMove = true;
+                var text = [];
+                text.push({func:"waitTime",obj:Q.BatCon.attackFuncs,props:[1000]});
+                Q.BatCon.attackFuncs.doDefensiveAnim(text);
+                return;
+            }
+            //If the character is in range of a mirage, roll and then move towards it if it failed.
+            if(Q("Mirage").items.length){
+                var inRange;
+                var itms = Q("Mirage").items;
+                for(var i=0;i<itms.length;i++){
+                    inRange = itms[i].checkInRange(this);
+                    if(inRange) i = itms.length;
+                }
+                if(inRange){
+                    var atkRoll = Math.floor(Math.random()*100)+inRange.p.user.p.combatStats.skill+inRange.p.user.p.level;
+                    var defRoll = Math.floor(Math.random()*100)+this.p.combatStats.skill+this.p.level;
+                    if(atkRoll>defRoll){
+                        this.p.didAction = true;
+                        this.moveTowardsMirage(inRange);
+                        return false;
+                    }
+                }
+            }
+            
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn));
             //Get the grid for attacking from this position
@@ -668,13 +790,8 @@ Quintus.Objects=function(Q){
             this.p.initialLoc = [this.p.loc[0],this.p.loc[1]];
             var exc = this.stage.insert(new Q.Sprite({x:this.p.x,y:this.p.y-Q.tileH,sheet:"turn_start_exclamation_mark",frame:0,type:Q.SPRITE_NONE,scale:0.1,z:this.p.z+1}));
             exc.add("tween");
-            exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();
-            var t = this;
-                //TEMP
-                /*if(t.p.team==="enemy"){
-                    Q.BatCon.endTurn();
-                }*/
-                }});
+            exc.animate({scale:1},0.5,Q.Easing.Quadratic.InOut,{callback:function(){exc.destroy();}});
+            return true;
         },
         //Moves the character back to its original location (from the start of the turn)
         resetMove:function(){
@@ -691,10 +808,21 @@ Quintus.Objects=function(Q){
             var data = Q.state.get("tileTypes")[tile];
             this.p.tileEffect = data.effect;
         },
-        //Move this character to a location based on the passed path
-        moveAlong:function(path){
-            this.hideStatusDisplay();
+        //Pass in a loc to walk 1 step towards
+        moveTowardsMirage:function(mirage){
+            var toLoc = mirage.p.loc;
+            var loc = this.p.loc;
+            var path = Q.getPath(loc,toLoc,new Q.Graph(Q.getMatrix("walk",false,this.p.canMoveOn)),5);
             
+            //The object that is at the spot we're going (it may move there this turn)
+            if(toLoc[0]===path[0].x&&toLoc[1]===path[0].y){
+                mirage.dispellMirage();
+            }
+            this.moveAlong([path[0]],true);
+        },
+        //Move this character to a location based on the passed path
+        moveAlong:function(path,noDir){
+            this.hideStatusDisplay();
             var newLoc = [path[path.length-1].x,path[path.length-1].y];
             Q.BattleGrid.moveObject(this.p.loc,newLoc,this);
             //Store the old loc in the moved variable. This will allow for redo-s
@@ -704,8 +832,12 @@ Quintus.Objects=function(Q){
             this.add("autoMove");
             var t = this;
             this.on("doneAutoMove",function(){
-                Q.pointer.checkTarget();
+                this.off("doneAutoMove");
                 this.revealStatusDisplay();
+                if(this!==Q.BatCon.turnOrder[0]){
+                    return;
+                }
+                Q.pointer.checkTarget();
                 //If this character hasn't attacked yet this turn, generate a new attackgraph
                 if(!t.p.didAction){
                     t.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
@@ -722,14 +854,18 @@ Quintus.Objects=function(Q){
                     }
                 } else {
                     //TEMP
-                    if(false&&this.p.team==="enemy"){
+                    if(noDir){
+                        setTimeout(function(){
+                            Q.BatCon.endTurn();
+                        },500);
+                        
+                    } else if(false&&this.p.team==="enemy"){
                         this.trigger("setAIDirection");
                     } else {
                         Q.BatCon.showEndTurnDirection(this);
                         Q.pointer.del("pointerMoveControls");
                     }
                 }
-                t.off("doneAutoMove");
             });
         }
     });
@@ -815,15 +951,36 @@ Quintus.Objects=function(Q){
             this.off("atDest","checkAtLoc");
         }
     });
-    //A chest that appears on the map that you can pick up
-    Q.Sprite.extend("Chest",{
+    
+    Q.Sprite.extend("Mirage",{
         init:function(p){
             this._super(p,{
                 w:20,h:30,
                 type:Q.SPRITE_NONE,
-                sheet:"chest",
-                frame:0
+                sheet:"mirage",
+                sprite:"mirage",
+                radius:Q.state.get("allSkills")["Hypnotic Mirage"].aoe[0]
             });
+            this.add("animation");
+            this.on("inserted");
+        },
+        inserted:function(){
+            Q.BatCon.setXY(this);
+            Q._generatePoints(this,true);
+            this.p.z = this.p.y;
+            this.play("doingItsThing");
+        },
+        checkInRange:function(obj){
+            var xDiff = Math.abs(obj.p.loc[0]-this.p.loc[0]);
+            var yDiff = Math.abs(obj.p.loc[1]-this.p.loc[1]);
+            if(xDiff<this.p.radius&&yDiff<this.p.radius){
+                return this;
+            }
+        },
+        dispellMirage:function(){
+            this.p.user.p.mirage = false;
+            this.destroy();
+            Q.playSound("shooting.mp3");
         }
     });
 };

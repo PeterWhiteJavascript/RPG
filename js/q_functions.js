@@ -156,7 +156,7 @@ Quintus.QFunctions=function(Q){
         var tileTypes = Q.state.get("tileTypes");
         var cM=[];
         var stage = Q.stage(0);
-        var otherTeam = team==="enemy"?"ally":"enemy";
+        //var otherTeam = team==="enemy"?"ally":"enemy";
         function getWalkable(){
             var tile = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])];
             var move = tile.move;
@@ -184,11 +184,11 @@ Quintus.QFunctions=function(Q){
                         objOn = getTarget();
                         //zocOn = getZOC();
                     }
-
+                    
                     //Allow walking over allies and dead people as long as there's no zoc tile
                     if(objOn&&(objOn.p.team===team||objOn.p.hp<=0)/*&&!zocOn*/){objOn=false;};
                 }
-                //If there's still no enemy on the sqaure, get the tileCost
+                //If there's still no enemy on the square, get the tileCost
                 if(objOn){
                     costRow.push(1000000);
                 }/* else if(zocOn){
@@ -202,10 +202,10 @@ Quintus.QFunctions=function(Q){
         return cM;
     };
     //Returns a path from one location to another
-    Q.getPath = function(loc,toLoc,graph){
+    Q.getPath = function(loc,toLoc,graph,max){
         var start = graph.grid[loc[0]][loc[1]];
         var end = graph.grid[toLoc[0]][toLoc[1]];
-        return Q.astar.search(graph, start, end);
+        return Q.astar.search(graph, start, end, {maxScore:max});
     };
     Q.compareLocsForDirection = function(userLoc,loc,dir){
         var difX = userLoc[0]-loc[0];
@@ -222,5 +222,5 @@ Quintus.QFunctions=function(Q){
             else dir = "up";
         }
         return dir;
-    }
+    };
 };

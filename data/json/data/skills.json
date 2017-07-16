@@ -171,7 +171,7 @@
     "Assassin":[
         {
             "name":"Bleeding Strike",
-            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Threshold by the amount of Bleeding they have.",
+            "desc":"Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character’s Pain Tolerance by the amount of Bleeding they have.",
             "type":"Damage",
             "range":["weapon","normal"],
             "aoe":[0,"normal"],
@@ -230,8 +230,8 @@
             "name":"Quicken",
             "desc":"Target allies increase their Initiative by the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[0,"diagonalForwardAdjacent"],
-            "aoe":[1,"hLine","excludeCenter"],
+            "range":[0,"self"],
+            "aoe":[1,"hLineForward","excludeCenter"],
             "cost":25,
             "resist":["none"]
         },
@@ -239,8 +239,8 @@
             "name":"Forewarn",
             "desc":"Target allies increase their Counter Chance by the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"hLine","excludeCenter"],
+            "range":[0,"self"],
+            "aoe":[1,"hLineForward","excludeCenter"],
             "cost":40,
             "resist":["none"]
         },
@@ -248,8 +248,8 @@
             "name":"Sharpen",
             "desc":"Target allies increase their Attack Accuracy by the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"hLine","excludeCenter"],
+            "range":[0,"self"],
+            "aoe":[1,"hLineForward","excludeCenter"],
             "cost":30,
             "resist":["none"]
         },
@@ -257,8 +257,8 @@
             "name":"Vitalize",
             "desc":"Target allies increase their Critical Chance by half of the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"hLine","excludeCenter"],
+            "range":[0,"self"],
+            "aoe":[1,"hLineForward","excludeCenter"],
             "cost":40,
             "resist":["none"]
         },
@@ -266,15 +266,15 @@
             "name":"Vivify",
             "desc":"Target allies increase their Attack Speed by the user’s Skill for 2 Rounds.",
             "type":"Support",
-            "range":[1,"diagonalForwardAdjacent"],
-            "aoe":[1,"hLine","excludeCenter"],
+            "range":[0,"self"],
+            "aoe":[1,"hLineForward","excludeCenter"],
             "cost":35,
             "resist":["none"]
         },
         {
             "name":"Coordinated Attack",
             "desc":"The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
-            "type":"Support",
+            "type":"Damage",
             "range":["meleeWeapon","normal"],
             "aoe":[1,"custom"],
             "cost":150,
@@ -340,8 +340,8 @@
     ],
     "Illusionist":[
         {
-            "name":"Slow",
-            "desc":"Target character(s) suffers a penalty to their Initiative and Reflexes equal to the caster’s Skill. Lasts for one round.",
+            "name":"Unnerve",
+            "desc":"Target character(s) suffers a penalty to their Pain Tolerance equal to half the caster’s Skill until the caster’s next Turn, at which point the caster makes a Skill check (1-100, check whether equal to or under Skill). If the caster succeeds at this check, the target remains Unnerved. If the caster Faints or is Knocked Out then all of their spell effects cease. ",
             "type":"Debilitate",
             "range":[3,"normal"],
             "aoe":["customRadius","normal"],
@@ -354,7 +354,7 @@
             "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[0,"normal"],
-            "cost":1,
+            "cost":60,
             "resist":["magical"]
             
         },
@@ -362,9 +362,9 @@
             "name":"Hypnotic Mirage",
             "desc":"All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster’s random 1-100 + Skill + Level) or be drawn to the “Mirage” (the space on which the spell was cast). A character drawn to the “Mirage” will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
             "type":"Debilitate",
-            "range":[5,"ground"],
-            "aoe":[3,"normal"],
-            "cost":1,
+            "range":[5,"normal","ground"],
+            "aoe":[4,"normal"],
+            "cost":100,
             "resist":["magical"]
             
         },
@@ -374,7 +374,7 @@
             "type":"Debilitate",
             "range":[3,"normal"],
             "aoe":[0,"normal"],
-            "cost":1,
+            "cost":60,
             "resist":["magical"]
             
         },
@@ -384,7 +384,7 @@
             "type":"Debilitate",
             "range":[1,"normal"],
             "aoe":[0,"normal"],
-            "cost":1,
+            "cost":30,
             "resist":["magical"]
             
         },
@@ -394,7 +394,7 @@
             "type":"Debilitate",
             "range":[2,"normal"],
             "aoe":[0,"normal"],
-            "cost":1,
+            "cost":150,
             "resist":["magical"]
             
         }
@@ -462,9 +462,9 @@
             "name":"Stability Field",
             "desc":"All characters, friend or foe, within this spell’s effects are considered 'stable'. Lasts for 3 rounds.",
             "type":"Support",
-            "range":["custom","ground"],
+            "range":["custom","normal","ground"],
             "aoe":[4,"normal"],
-            "cost":50,
+            "cost":40,
             "resist":["none"]
             
         },
@@ -472,49 +472,49 @@
             "name":"Heal",
             "desc":"All characters, friend or foe, within this spell’s effects immediately regain a random number of HP from Skill to Skill x 2",
             "type":"Support",
-            "range":["custom","normal"],
-            "aoe":["custom","normal"],
-            "cost":100,
+            "range":["custom","self"],
+            "aoe":["customRadius","normal"],
+            "cost":75,
             "resist":["none"]
             
         },
         {
             "name":"Cure",
-            "desc":"Removes all debuff effects from all characters within spell’s effects.",
+            "desc":"Removes all Debilitate effects from all characters within spell’s effects.",
             "type":"Support",
-            "range":["custom","normal"],
-            "aoe":["custom","normal"],
-            "cost":100,
+            "range":["custom","self"],
+            "aoe":["customRadius","normal"],
+            "cost":50,
             "resist":["none"]
             
         },
         {
             "name":"Revive",
-            "desc":"Targeted character’s random % results cannot roll higher than 100 - ½ the Skill of the caster. Target’s critical chance is also improved by Skill/5. Lasts for 3 rounds.",
+            "desc":"Targeted character immediately recovers from Fainting but not from Bleeding Out",
             "type":"Support",
             "range":[1,"normal"],
             "aoe":[0,"normal"],
-            "cost":200,
+            "cost":50,
             "resist":["none"]
             
         },
         {
             "name":"Energize",
-            "desc":"Target character gains TP equal to 50+ the caster’s Skill.",
+            "desc":"Target character gains TP equal to 25+ the caster’s Skill.",
             "type":"Support",
             "range":["custom","normal"],
             "aoe":[0,"normal"],
-            "cost":125,
+            "cost":75,
             "resist":["none"]
             
         },
         {
-            "name":"Endow",
+            "name":"Resurrect",
             "desc":"Targeted character immediately recovers from Bleeding Out and regains a random number of HP from Skill to Skill x 2",
             "type":"Support",
-            "range":[1,"normal"],
+            "range":[1,"normal","dead"],
             "aoe":[0,"normal"],
-            "cost":525,
+            "cost":100,
             "resist":["none"]
             
         }

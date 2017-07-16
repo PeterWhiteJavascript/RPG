@@ -162,6 +162,7 @@ var files = [
     "sprites/legionnaire.png",
     "sprites/skirmisher.png",
     "sprites/vanguard.png",
+    "sprites/mirage.png",
     
     //IMAGES UI
     "ui/ui_objects.png",

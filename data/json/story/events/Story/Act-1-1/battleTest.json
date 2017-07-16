@@ -139,42 +139,6 @@
                 7
             ],
             "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Vanguard",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                12
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Vanguard",
-            "uniqueId": 1,
-            "loc": [
-                13,
-                12
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Vanguard",
-            "uniqueId": 2,
-            "loc": [
-                14,
-                12
-            ],
-            "dir": "down"
         }
     ]
 }
