@@ -356,7 +356,7 @@ Quintus.GameObjects=function(Q){
                 p.loc = newLoc;
                 this.getTerrain();
                 this.checkTarget();
-                p.user.playStand(Q.compareLocsForDirection(p.user.p.loc,p.loc,p.user.p.dir));
+                if(p.user) p.user.playStand(Q.compareLocsForDirection(p.user.p.loc,p.loc,p.user.p.dir));
                 this.trigger("inputMoved",this);
             } else {
                 p.diffX = 0;
