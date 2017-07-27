@@ -69,6 +69,12 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).ActionMenu.show();
             Q.stage(2).ActionMenu.menuControls.turnOnInputs();
         },
+        disable:function(){
+            this.entity.off("pressedConfirm",this,"checkOnCharacter");
+            this.entity.off("pressedBack",this,"pressedBack");
+            this.entity.off("checkInputs");
+            this.entity.off("checkConfirm");
+        },
         pressedBack:function(){
             this.entity.snapTo(Q.BatCon.turnOrder[0]);
             this.remove();
@@ -81,7 +87,12 @@ Quintus.GameObjects=function(Q){
                 } 
                 //Load the status menu (not active character)
                 else {
-                    console.log("TODO")
+                    var box = Q.stage(2).insert(new Q.BigStatusBox({target:this.entity.p.target}));
+                    this.disable();
+                    box.on("pressedBack",function(){
+                        Q.pointer.add("pointerRoamingControls");
+                        Q.pointer.pointerRoamingControls.added();
+                    });
                 }
             }
         }

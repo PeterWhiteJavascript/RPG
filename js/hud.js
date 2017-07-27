@@ -49,7 +49,7 @@ Quintus.HUD=function(Q){
             this._super(p,{
                 x:0,y:0,
                 cx:0,cy:0,
-                w:220,h:550,
+                w:300,h:0,
                 type:Q.SPRITE_NONE,
                 fill:"blue",
                 opacity:0.5
@@ -58,12 +58,13 @@ Quintus.HUD=function(Q){
             this.on("inserted");
         },
         inserted:function(){
-            var info = ["Class","Name","Level","Move","HP","TP","Damage","Atk Accuracy","Atk Range","Atk Speed","Dfn Ability","Crit Chance","Dmg Reduction","Enc Penalty","Enc Threshold","Initiative","Phys Res","Ment Res","Pain Tolerance","Weight","Exp."];
+            var info = ["Class","Name","Level","HP","TP","Move"];
             this.p.stats = [];
             for(var i=0;i<info.length;i++){
                 this.insert(new Q.HUDText({label:info[i],x:10,y:10+i*25}));
                 this.p.stats.push(this.insert(new Q.HUDText({x:this.p.w-10,y:10+i*25,align:"right"})));
             }
+            this.p.h = info.length*25+20;
             Q.pointer.on("onTarget",this,"displayTarget");
             Q.pointer.on("offTarget",this,"hideHUD");
             this.hide();
@@ -79,26 +80,9 @@ Quintus.HUD=function(Q){
                 ""+obj.p.charClass,
                 ""+obj.p.name,
                 ""+obj.p.level,
-                ""+objStats.moveSpeed,
                 ""+objStats.hp+"/"+objStats.maxHp,
                 ""+objStats.tp+"/"+objStats.maxTp,
-                ""+objStats.minAtkDmg+"-"+objStats.maxAtkDmg,
-                ""+objStats.atkAccuracy,
-                ""+objStats.atkRange,
-                ""+objStats.atkSpeed,
-                ""+objStats.defensiveAbility,
-                ""+objStats.critChance,
-                ""+objStats.damageReduction,
-                ""+objStats.encumbrancePenalty,
-                ""+objStats.encumbranceThreshold,
-                ""+objStats.initiative,
-                
-                ""+objStats.physicalResistance,
-                ""+objStats.mentalResistance,
-                ""+objStats.painTolerance,
-                ""+objStats.totalWeight,
-                
-                ""+obj.p.exp
+                ""+objStats.moveSpeed
             ];
             for(var i=0;i<stats.length;i++){
                 stats[i].p.label = labels[i];
@@ -619,6 +603,10 @@ Quintus.HUD=function(Q){
             this.menuControls.turnOffInputs();
             //Insert the status menu
             this.p.bigStatusBox = this.stage.insert(new Q.BigStatusBox({target:this.p.target}));
+            this.p.bigStatusBox.on("pressedBack",function(){
+                Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+            });
+                
         },
         //Loads the directional arrows so the user can decide which direction to face
         loadEndTurn:function(){
@@ -655,9 +643,9 @@ Quintus.HUD=function(Q){
             if(Q.inputs['back']||Q.inputs['esc']){
                 this.destroyInfo();
                 this.destroy();
+                this.trigger("pressedBack");
                 Q.inputs['back'] = false;
                 Q.inputs['esc'] = false;
-                Q.stage(2).ActionMenu.menuControls.turnOnInputs();
             }
         },
         //Insert all of the parts of this menu

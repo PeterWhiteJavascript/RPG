@@ -277,7 +277,7 @@
             "type":"Damage",
             "range":["meleeWeapon","normal"],
             "aoe":[1,"custom"],
-            "cost":150,
+            "cost":80,
             "resist":["none"]
         }
     ],

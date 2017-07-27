@@ -181,6 +181,14 @@
         "w":32,
         "h":32
     },
+    "ui_damageReductionDown":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
     "ui_moveDown":{
         "tilew":32,
         "tileh":32,
