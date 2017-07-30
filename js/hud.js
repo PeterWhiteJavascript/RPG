@@ -144,7 +144,7 @@ Quintus.HUD=function(Q){
                 if(pointer.p.skill.aoe[2]==="excludeCenter"&&i===radius-1) i--;
                 var tile = tiles[idx];
                 var loc = tile.p.center;
-                tile.p.loc = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                tile.p.loc = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
                 Q.BatCon.setXY(tile);
                 var objOn = Q.BattleGrid.getObject(tile.p.loc);
                 if(objOn){
@@ -266,7 +266,7 @@ Quintus.HUD=function(Q){
                     var arr = Q.getDirArray(Q.getRotatedDir(dir));
                     for(var i=-radius;i<radius+1;i++){
                         if(special==="excludeCenter"&&i===0) i++;
-                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
                         aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
                     break;
@@ -667,8 +667,10 @@ Quintus.HUD=function(Q){
             cont.insert(new Q.BigOverviewBox1({target:this.p.target,x:spacing,w:width/5-spacing,h:this.p.h-spacing*2,y:spacing}));
             //Create the top middle box which contains the base stats
             cont.insert(new Q.BigOverviewBox2({target:this.p.target,x:width/5+spacing/2,w:width/5-spacing,h:this.p.h/5-spacing,y:spacing}));
-            //Create the bottom middle box which contains skills
-            cont.insert(new Q.BigOverviewBox3({target:this.p.target,x:width/5+spacing/2,w:width/5-spacing,h:this.p.h/5*4-spacing*1.5,y:this.p.h/5+spacing/2}));
+            //Create the middle middle box which contains skills
+            cont.insert(new Q.BigOverviewBox3({target:this.p.target,x:width/5+spacing/2,w:width/5-spacing,h:this.p.h/5*2-spacing/2,y:this.p.h/5+spacing/2}));
+            //Create the bottom middle bow which contains status effects
+            cont.insert(new Q.BigOverviewBox6({target:this.p.target,x:width/5+spacing/2,w:width/5-spacing,h:this.p.h/5*2-spacing*1.5,y:this.p.h/5*3+spacing/2}));
             //Create the right top box that contains derived stats
             cont.insert(new Q.BigOverviewBox4({target:this.p.target,x:width/5*2,w:width/5*3-spacing,h:this.p.h/5*4-spacing/2,y:spacing}));
             //Create the right bottom box that contains talents
@@ -749,8 +751,29 @@ Quintus.HUD=function(Q){
             var target = this.p.target;
             var skills = target.p.techniques;
             for(var i=0;i<skills.length;i++){
-                this.insert(new Q.UI.Text({label:skills[i].name,x:5,y:5+i*35,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
-                this.insert(new Q.UI.Text({label:""+Math.max(1,skills[i].cost-target.p.combatStats.efficiency),x:5,y:17.5+i*35,align:"left",size:16,cx:0,cy:0,family:"Consolas"}));
+                this.insert(new Q.UI.Text({label:skills[i].name,x:5,y:5+i*28,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
+                var color = skills[i].cost-target.p.combatStats.efficiency<=target.p.combatStats.tp?"green":"red";
+                this.insert(new Q.UI.Text({label:""+Math.max(1,skills[i].cost-target.p.combatStats.efficiency),x:5,y:17.5+i*28,align:"left",size:16,cx:0,cy:0,family:"Consolas",color:color}));
+            }
+        }
+    });
+    Q.UI.Container.extend("BigOverviewBox6",{
+        init:function(p){
+            this._super(p,{
+                cx:0,cy:0,
+                fill:"cyan",
+                border:2,
+                stroke:"yellow"
+            });
+            this.on("inserted");
+        },
+        inserted:function(){
+            var target = this.p.target;
+            var status = target.p.status;
+            var keys = Object.keys(status);
+            for(var i=0;i<keys.length;i++){
+                this.insert(new Q.UI.Text({label:status[keys[i]].name,x:5,y:5+i*28,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
+                this.insert(new Q.UI.Text({label:""+status[keys[i]].turns,x:this.p.w-5,y:5+i*28,align:"right",size:16,cx:0,cy:0,family:"Consolas"}));
             }
         }
     });
@@ -967,8 +990,8 @@ Quintus.HUD=function(Q){
             if(tiles.length){
                 //Loop through the possible tiles
                 for(var i=0;i<tiles.length;i++){
-                    //Get the path and then slice it if it goes across enemy ZOC
-                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph,stat);
+                    //Get the path and then slice it if it goes across enemy ZOC or caltrops
+                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph,stat+1000);
                     var pathCost = 0;
                     for(var j=0;j<path.length;j++){
                         pathCost+=path[j].weight;
@@ -978,7 +1001,7 @@ Quintus.HUD=function(Q){
                         if(pathCost<=stat){
                             this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
                         } 
-                        //If the path includes a single ZOC tile
+                        //If the path includes a single ZOC or caltrops tile
                         else if(pathCost>=1000) {
                             //Only include this path if the last tile is the ZOC tile
                             if(path[path.length-1].weight===1000){

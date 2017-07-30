@@ -182,7 +182,7 @@
             "name":"Caltrops",
             "desc":"Places caltrops in area of effect which slows movement. Entering the caltrops ends a character’s movement and deals 1-10 damage, and leaving the caltrops ends a character’s movement. Movement within the mud is at a maximum of 2 Spaces per round.",
             "type":"Debilitate",
-            "range":[5,"normal"],
+            "range":[5,"normal","ground"],
             "aoe":[1,"normal"],
             "cost":100,
             "resist":["none"]

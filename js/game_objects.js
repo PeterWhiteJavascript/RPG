@@ -565,6 +565,17 @@ Quintus.GameObjects=function(Q){
             //Then, create a new ZOC for this object
             this.setZOC(to,obj);
         },*/
+        //Returns a grid that is as big as the level that is empty
+        emptyGrid:function(){
+            var grid = [];
+            for(var i=0;i<Q.stage(0).mapHeight;i++){
+                grid.push([]);
+                for(var j=0;j<Q.stage(0).mapWidth;j++){
+                    grid[i].push(0);
+                }
+            }
+            return grid;
+        },
         outOfBounds:function(loc){
             return loc[0]<0||loc[1]<0||loc[0]>this.stage.mapWidth||loc[1]>this.stage.mapHeight;
         },
@@ -880,7 +891,24 @@ Quintus.GameObjects=function(Q){
             }
         },
         valid:function(obj){
-            if(obj.p.combatStats.hp>0&&!obj.p.fainted) return true;
+            if(obj.p.combatStats.hp>0&&!obj.p.fainted){
+                return true;
+            } else {
+                var stabilityFields = Q(".stability").items;
+                var onField = false;
+                stabilityFields.forEach(function(f){
+                    var tile = f.getTile(obj.p.loc[0],obj.p.loc[1]);
+                    if(tile) onField = true;
+                });
+                if(!onField){
+                    obj.p.status.bleedingOut.turns--;
+                    if(obj.p.status.bleedingOut.turns===0){
+                        obj.p.angle = 90;
+                        obj.removeStatus("bleedingOut");
+                        obj.addStatus("dead",99,"debuff",obj);
+                    }
+                }
+            }
         },
         //Starts the character that is first in turn order
         startTurn:function(){
@@ -1704,6 +1732,15 @@ Quintus.GameObjects=function(Q){
                 case "Stability Field":
                     this.text.push({func:"createStabilityField",obj:this.entity.skillFuncs,props:[targetLoc,user]});
                     break;
+                case "Caltrops":
+                    this.text.push({func:"createCaltrops",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
+                case "Lightning Storm":
+                    this.text.push({func:"doLightningStorm",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
+                case "Frost Ray":
+                    this.text.push({func:"doFrostRay",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
             }
         },
         useItem:function(user,target,item){
@@ -2061,13 +2098,74 @@ Quintus.GameObjects=function(Q){
         },
         createMirage:function(loc,user){
             if(user.p.mirage) user.p.mirage.dispellMirage();
-            user.p.mirage = user.stage.insert(new Q.Mirage({loc:loc,objType:"mirage",user:user}));
+            user.p.mirage = user.stage.insert(new Q.Mirage({loc:loc,user:user}));
         },
         createStabilityField:function(loc,user){
-            
+            if(user.p.stabilityField) user.p.stabilityField.destroy();
+            var tiles = Q.BattleGrid.emptyGrid();
+            var field = user.p.stabilityField = user.stage.insert(new Q.TileLayer({
+                tileW:Q.tileW,
+                tileH:Q.tileH,
+                sheet:"ground",
+                tiles:tiles,
+                type:Q.SPRITE_NONE,
+                loc:loc,
+                turns:3
+            }));
+            field.animateTo = function(frame){
+                var loc = field.p.loc;
+                var tiles = field.p.tiles;
+                var radius = Q.state.get("allSkills")["Stability Field"].aoe[0];
+                for(var i=0;i<radius*2+1;i++){
+                    for(var j=0;j<radius*2+1;j++){
+                        var tileType = Q.BatCon.getTileType([j-radius+loc[0],i-radius+loc[1]]);
+                        if(tileType!=="impassable"&&tileType!=="water"){
+                            tiles[i-radius+loc[1]][j-radius+loc[0]] = 0;
+                            if(Math.abs(radius-i)+Math.abs(radius-j)<=radius){
+                                field.setTile(j-radius+loc[0],i-radius+loc[1],frame);
+                            }
+                            //tiles[i-radius+loc[1]][j-radius+loc[0]] = frame;
+                        }
+                    }
+                }
+                
+            };
+            field.add("tween");
+            var flash = function(obj){
+                obj.animate({opacity:0.5},2, Q.Easing.Quadratic.InOut).chain({opacity:1},1, Q.Easing.Quadratic.InOut,{callback:function(){flash(obj);}});
+            };
+            field.animateTo(1);
+            flash(field);
+            field.add("stability");
+        },
+        createCaltrops:function(loc,user){
+            if(!Q.BattleGrid.caltrops){
+                var tiles = Q.BattleGrid.emptyGrid();
+                Q.BattleGrid.caltrops = user.stage.insert(new Q.TileLayer({
+                    tileW:Q.tileW,
+                    tileH:Q.tileH,
+                    sheet:"ground",
+                    tiles:tiles,
+                    type:Q.SPRITE_NONE
+                }));
+            }
+            var tiles = Q.BattleGrid.caltrops.p.tiles;
+            var radius = Q.state.get("allSkills")["Caltrops"].aoe[0];
+            for(var i=0;i<radius*2+1;i++){
+                for(var j=0;j<radius*2+1;j++){
+                    var tileType = Q.BatCon.getTileType([j-radius+loc[0],i-radius+loc[1]]);
+                    if(tileType!=="impassable"&&tileType!=="water"){
+                        tiles[i-radius+loc[1]][j-radius+loc[0]] = 0;
+                        if(Math.abs(radius-i)+Math.abs(radius-j)<=radius){
+                            Q.BattleGrid.caltrops.setTile(j-radius+loc[0],i-radius+loc[1],4);
+                        }
+                    }
+                }
+            }
         }
     });
-    
+    //Used for searching by
+    Q.component("stability",{});
     Q.GameObject.extend("CharacterGenerator",{
         init:function(){
             var data = Q.state.get("charGeneration");

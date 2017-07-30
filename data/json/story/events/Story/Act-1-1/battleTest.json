@@ -18,89 +18,11 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Legionnaire",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                11
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Berserker",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                11
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Berserker",
-            "uniqueId": 1,
-            "loc": [
-                14,
-                11
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
             "handle": "Skirmisher",
             "uniqueId": 0,
             "loc": [
                 13,
                 10
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                10
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 1,
-            "loc": [
-                14,
-                10
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Assassin",
-            "uniqueId": 0,
-            "loc": [
-                8,
-                15
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Assassin",
-            "uniqueId": 1,
-            "loc": [
-                8,
-                16
             ],
             "dir": "down"
         },
@@ -117,6 +39,17 @@
             "dir": "down"
         },
         
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Assassin",
+            "uniqueId": 0,
+            "loc": [
+                16,
+                10
+            ],
+            "dir": "down"
+        },
         {
             "file": "Proto.json",
             "group": "Low",

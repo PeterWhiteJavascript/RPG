@@ -382,8 +382,8 @@ Quintus.Objects=function(Q){
                     //Remove all status effects
                     this.removeAllStatus();
                     this.removeAllGaveStatus();
-                    text.push({func:"removeStatus",obj:this,props:["fainted"]});
-                    text.push({func:"addStatus",obj:this,props:["bleedingOut",10,"debuff",this]});
+                    this.removeStatus("fainted");
+                    this.addStatus("bleedingOut",5,"debuff",this);
                     if(this.p.mirage) this.p.mirage.dispellMirage();
                     this.p.fainted = false;
                     if(!this.p.died){
@@ -759,6 +759,12 @@ Quintus.Objects=function(Q){
                 Q.BatCon.attackFuncs.doDefensiveAnim(text);
                 return;
             }
+            //If the character is drawn to the mirage, refresh the status if the mirage still exists and move towards it.
+            if(this.hasStatus("drawnToMirage")){
+                this.refreshStatus("drawnToMirage",100,this.p.status.drawnToMirage.user);
+                this.moveTowardsMirage(this.p.status.drawnToMirage.user);
+                return false;
+            }
             //If the character is in range of a mirage, roll and then move towards it if it failed.
             if(Q("Mirage").items.length){
                 var inRange;
@@ -773,8 +779,18 @@ Quintus.Objects=function(Q){
                     if(atkRoll>defRoll){
                         this.p.didAction = true;
                         this.moveTowardsMirage(inRange);
+                        this.addStatus("drawnToMirage",100,"debuff",inRange);
                         return false;
                     }
+                }
+            }
+            //If the character has a stability field. Reduce the turns by 1
+            if(this.p.stabilityField){
+                this.p.stabilityField.p.turns--;
+                if(this.p.stabilityField.p.turns<=0){
+                    this.p.stabilityField.destroy();
+                    Q.playSound("shooting.mp3");
+                    this.p.stabilityField = false;
                 }
             }
             
@@ -812,11 +828,11 @@ Quintus.Objects=function(Q){
         moveTowardsMirage:function(mirage){
             var toLoc = mirage.p.loc;
             var loc = this.p.loc;
-            var path = Q.getPath(loc,toLoc,new Q.Graph(Q.getMatrix("walk",false,this.p.canMoveOn)),5);
-            
+            var path = Q.getPath(loc,toLoc,new Q.Graph(Q.getMatrix("walk",false,this.p.canMoveOn)),1000);
             //The object that is at the spot we're going (it may move there this turn)
             if(toLoc[0]===path[0].x&&toLoc[1]===path[0].y){
                 mirage.dispellMirage();
+                this.removeStatus("drawnToMirage");
             }
             this.moveAlong([path[0]],true);
         },
@@ -834,6 +850,12 @@ Quintus.Objects=function(Q){
             this.on("doneAutoMove",function(){
                 this.off("doneAutoMove");
                 this.revealStatusDisplay();
+                //If the character landed on caltrops, do some damage
+                if(Q.BattleGrid.caltrops&&Q.BattleGrid.caltrops.getTile(this.p.loc[0],this.p.loc[1])){
+                    var dmg = Math.ceil(Math.random()*10)
+                    this.showDamage(dmg);
+                    this.takeDamage(dmg);
+                }
                 if(this!==Q.BatCon.turnOrder[0]){
                     return;
                 }
@@ -973,14 +995,23 @@ Quintus.Objects=function(Q){
         checkInRange:function(obj){
             var xDiff = Math.abs(obj.p.loc[0]-this.p.loc[0]);
             var yDiff = Math.abs(obj.p.loc[1]-this.p.loc[1]);
-            if(xDiff<this.p.radius&&yDiff<this.p.radius){
+            if(xDiff+yDiff<=this.p.radius){
                 return this;
             }
         },
         dispellMirage:function(){
             this.p.user.p.mirage = false;
             this.destroy();
+            var mirage = this;
+            Q(".combatant").each(function(){
+                if(this.hasStatus("drawnToMirage")){
+                    if(this.p.status.drawnToMirage.user===mirage){
+                        this.removeStatus("drawnToMirage");
+                    }
+                }
+            });
             Q.playSound("shooting.mp3");
-        }
+        },
+        removeGaveStatus:function(){}
     });
 };

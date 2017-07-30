@@ -170,12 +170,16 @@ Quintus.QFunctions=function(Q){
         function getZOC(){
             return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
         }*/
+        function getCaltrops(){
+            return Q.BattleGrid.caltrops?Q.BattleGrid.caltrops.getTile(i_walk,j_walk):false;
+        }
         for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
             var costRow = [];
             for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
                 var cost = 1;
                 var objOn = false;
                 //var zocOn = false;
+                var caltropsOn = false;
                 //If we're walking, enemies are impassable
                 if(type==="walk"){
                     cost = getWalkable();
@@ -183,6 +187,7 @@ Quintus.QFunctions=function(Q){
                     if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
                         //zocOn = getZOC();
+                        caltropsOn = getCaltrops();
                     }
                     
                     //Allow walking over allies and dead people as long as there's no zoc tile
@@ -193,7 +198,10 @@ Quintus.QFunctions=function(Q){
                     costRow.push(1000000);
                 }/* else if(zocOn){
                     costRow.push(1000);
-                }*/ else {
+                }*/ 
+                else if(caltropsOn){
+                    costRow.push(1000);
+                } else {
                     costRow.push(cost);
                 }
             }

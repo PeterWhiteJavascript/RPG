@@ -15,7 +15,8 @@ Q.setUpAnimations=function(){
         ['legionnaire','legionnaire.png',24,24,0,0,192,72],
         ['skirmisher','skirmisher.png',24,24,0,0,192,72],
         ['vanguard','vanguard.png',24,24,0,0,192,72],
-        ['mirage','mirage.png',32,32,0,0,128,32]
+        ['mirage','mirage.png',32,32,0,0,128,32],
+        ['ground','ground.png',32,32,0,0,320,32]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -112,6 +113,9 @@ Q.setUpAnimations=function(){
     
     Q.animations("mirage",{
         doingItsThing:{frames:[0,0,0,0,1,2,3,3,2,1],rate:standRate}
+    });
+    Q.animations("ground",{
+        stability:{frames:[0,1],rate:standRate}
     });
 };
     
