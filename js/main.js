@@ -174,6 +174,7 @@ var files = [
     "animations/SonicBoom.png",
     "animations/Whirlwind.png",
     "animations/Piercing.png",
+    "animations/FrostRay.png",
     //AUDIO SFX
     "sfx/cannot_do.mp3",
     "sfx/coin.mp3",
@@ -188,6 +189,7 @@ var files = [
     "sfx/slashing.mp3",
     "sfx/text_stream.mp3",
     "sfx/whirlwind.mp3",
+    "sfx/frosty.mp3",
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA

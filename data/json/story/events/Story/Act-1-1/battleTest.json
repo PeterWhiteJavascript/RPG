@@ -18,7 +18,7 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Skirmisher",
+            "handle": "Berserker",
             "uniqueId": 0,
             "loc": [
                 13,
@@ -37,41 +37,7 @@
                 10
             ],
             "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Assassin",
-            "uniqueId": 0,
-            "loc": [
-                16,
-                10
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Healer",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                8
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Illusionist",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                7
-            ],
-            "dir": "down"
         }
+        
     ]
 }

@@ -432,9 +432,9 @@
             "name":"Frost Ray",
             "desc":" Deals 10-50 + Skill damage to all characters within spell’s Target Type, plus  target characters who failed their Physical Resistance are Frozen for 2 Rounds (Character cannot move or take any action, but also gains 50 Damage Reduction). All spaces touched by the attack are made Icy. Icy Spaces cost 2 Spaces of movement to cross, and any character Pushed on them will continue moving until they reach a non Icy Space or collide with an object, however if they collide with another character, that character will be Pushed along too.",
             "type":"Damage",
-            "range":[1,"normal"],
-            "aoe":["custom","line"],
-            "cost":150,
+            "range":[1,"normal","all"],
+            "aoe":["customRadius","straight"],
+            "cost":100,
             "resist":["none"]
         },
         {
@@ -451,7 +451,7 @@
             "name":"Lightning Storm",
             "desc":"Three different random spaces in the spell’s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
             "type":"Damage",
-            "range":[6,"normal"],
+            "range":[6,"normal","all"],
             "aoe":[2,"corners"],
             "cost":500,
             "resist":["none"]

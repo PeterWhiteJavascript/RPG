@@ -200,12 +200,12 @@ Quintus.HUD=function(Q){
             var area = aoe[1];
             var special = aoe[2];
             var aoeTiles = this.aoeTiles = [];
-            if(aoe[0]==="custom"){ 
+            if(radius==="custom"){ 
                 var locs = this.getCustomAOE(loc,this.entity.p.skill,this.entity.p.user.p.dir);
                 for(var i=0;i<locs.length;i++){
                     aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:locs[i]})));
                 }
-            } else if(aoe[0]==="customRadius"){
+            } else if(radius==="customRadius"){
                 switch(this.entity.p.skill.name){
                     case "Unnerve":
                         radius = Math.floor(this.entity.p.user.p.combatStats.skill/20);
@@ -218,6 +218,9 @@ Quintus.HUD=function(Q){
                         break;
                     case "Cure":
                         radius = Math.floor(this.entity.p.user.p.combatStats.skill/35);
+                        break;
+                    case "Frost Ray":
+                        var radius = Math.floor(this.entity.p.user.p.combatStats.skill/10);
                         break;
                 }
             }
@@ -244,7 +247,7 @@ Quintus.HUD=function(Q){
                     var dir = this.entity.p.user.p.dir;
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(dir);
-                    for(var i=0;i<radius;i++){
+                    for(var i=1;i<radius+1;i++){
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
@@ -1051,7 +1054,7 @@ Quintus.HUD=function(Q){
                 if(Q.pointer.p.skill){
                     var skill = Q.pointer.p.skill;
                     //Make sure there's a target
-                    var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles)
+                    var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles);
                     if(skill.range[2]!=="dead"){
                         targets = Q.BattleGrid.removeDead(targets);
                     }
@@ -1066,6 +1069,7 @@ Quintus.HUD=function(Q){
                             targets = [];
                         } else targets.push(true);
                     }
+                    if(skill.range[2]==="all"&&!targets.length) targets.push(true);
                     //If there is at least one target
                     if(targets.length){
                         Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
@@ -1258,6 +1262,8 @@ Quintus.HUD=function(Q){
                 Q.inputs['confirm']=false;
             } else if(Q.inputs['esc']||Q.inputs['back']){
                 this.destroy();
+                Q.inputs['esc']=false;
+                Q.inputs['back']=false;
                 if(this.p.skill){
                     if(this.p.skill.kind==="consumable"){
                         this.stage.ActionMenu.loadItem();
@@ -1268,8 +1274,6 @@ Quintus.HUD=function(Q){
                 else {
                     this.stage.ActionMenu.loadAttack();
                 }
-                Q.inputs['esc']=false;
-                Q.inputs['back']=false;
             }
         },
         inserted:function(){

@@ -47,7 +47,9 @@ Q.playMusic=function(music,callback){
 
 Q.playSound=function(sound,callback){
     if(Q.state.get("options").soundEnabled){
-        Q.audio.play("sfx/"+sound);
+        if(sound.length){
+            Q.audio.play("sfx/"+sound);
+        }
     }
     if(callback){callback();}
 };

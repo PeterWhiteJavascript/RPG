@@ -107,14 +107,17 @@ Quintus.GameObjects=function(Q){
             //Set up an aoe guide
             if(this.entity.p.skill){
                 var skill = this.entity.p.skill;
-                if(skill.range[1]==="straight"){
+                if(skill.aoe[1]==="straight"){
                     this.entity.p.movingStraight = true;
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     //The pointer is hidden
                     this.entity.hide();
-                    //Force the first direction
-                    Q.inputs[this.entity.p.user.p.dir]=true;
                     this.entity.on("inputMoved",this.entity.AOEGuide,"moveStraightTiles");
+                    //Force the first direction
+                    var dir = this.entity.p.user.p.dir;
+                    setTimeout(function(){
+                        Q.inputs[dir]=true;
+                    });
                 } else if(skill.aoe[1]==="hLine"){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineTiles");
@@ -388,7 +391,9 @@ Quintus.GameObjects=function(Q){
                 if(this.p.movingStraight) newLoc[1]+=1;
                 dir = "down";
                 input['down']=false;
-            } else if(input['right']){
+            } 
+            
+            if(input['right']){
                 if(this.p.movingStraight) newLoc[0]+=1;
                 dir = "right";
                 input['right']=false;
@@ -953,6 +958,21 @@ Quintus.GameObjects=function(Q){
             //Tween the pointer to the AI
             Q.pointer.tweenTo(obj);
         },
+        checkIcyStatus:function(){
+            if(Q.BattleGrid.icyStatus){
+                //Check if any of the icy is expired
+                for(var i=Q.BattleGrid.icyStatus.length-1;i>=0;i--){
+                    var st = Q.BattleGrid.icyStatus[i];
+                    st.turns--;
+                    if(!st.turns){
+                        st.locs.forEach(function(l){
+                            Q.BattleGrid.icy.setTile(l[0],l[1],0);
+                        });
+                    }
+                    Q.BattleGrid.icyStatus.splice(i,0);
+                }
+            }
+        },
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
             //Move the first character to the back (Maybe do some speed calculations to place them somewhere else)
@@ -965,7 +985,10 @@ Quintus.GameObjects=function(Q){
                 this.turnOrder.push(lastTurn);
             }*/
             
-            if(!this.turnOrder.length) this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+            if(!this.turnOrder.length){
+                this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+                this.checkIcyStatus();
+            }
             
             //Remove any dead characters
            // this.removeMarked();
@@ -1083,6 +1106,7 @@ Quintus.GameObjects=function(Q){
                 var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type; 
                 return type || "impassable";
             }
+            
             //If there's nothing on top, check the ground
             var tileLayer = this.stage.lists.TileLayer[0];
             if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
@@ -1345,7 +1369,7 @@ Quintus.GameObjects=function(Q){
                     result = "Miss";
                 }
             };
-            return result;
+            return {atkResult:attackResult,defResult:defenseResult,finalResult:result};
         },
         //Forces the damage to be at least 1
         getDamage:function(dmg){
@@ -1623,7 +1647,7 @@ Quintus.GameObjects=function(Q){
                     atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
                     atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps);
+                    atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
                         this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("painToleranceDown",100,"debuff",defender,attacker,{name:"painTolerance",amount:-Math.floor(props.damage/2)}));
@@ -1634,7 +1658,7 @@ Quintus.GameObjects=function(Q){
                     atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
                     atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps);
+                    atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
                         this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("strengthDown",2,"debuff",defender,attacker,{name:"strength",amount:-Math.floor(props.damage/10)}));
@@ -1645,7 +1669,7 @@ Quintus.GameObjects=function(Q){
                     atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
                     atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps);
+                    atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
                         this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("physicalResistanceDown",100,"debuff",defender,attacker,{name:"physicalResistance",amount:-Math.floor(props.damage/10)}));
@@ -1666,7 +1690,7 @@ Quintus.GameObjects=function(Q){
                     atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
                     atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps);
+                    atkProps.result = this.getBlow(atkProps).finalResult;
                     result = this.processResult(atkProps);
                     if(result.damage>0){
                         this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("poisoned",2,"debuff",defender,attacker));
@@ -1695,9 +1719,13 @@ Quintus.GameObjects=function(Q){
                     };
                     break;
                 case "Frost Ray":
+                    var blow = this.getBlow(atkProps);
+                    if(blow.defResult.fail){
+                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("frozen",2,"debuff",defender,attacker));
+                    }
                     props = {
                         damage:Math.ceil(Math.random()*40)+10+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
+                        sound:""
                     };
                     break;
                 case "Choke":
@@ -1716,7 +1744,7 @@ Quintus.GameObjects=function(Q){
                     break;
             }
             if(!result){
-                atkProps.result = this.getBlow(atkProps);
+                atkProps.result = this.getBlow(atkProps).finalResult;
             }
             if(!props){
                 props = this.processResult(atkProps);
@@ -1734,12 +1762,6 @@ Quintus.GameObjects=function(Q){
                     break;
                 case "Caltrops":
                     this.text.push({func:"createCaltrops",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-                case "Lightning Storm":
-                    this.text.push({func:"doLightningStorm",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-                case "Frost Ray":
-                    this.text.push({func:"doFrostRay",obj:this.entity.skillFuncs,props:[targetLoc,user]});
                     break;
             }
         },
@@ -1815,7 +1837,7 @@ Quintus.GameObjects=function(Q){
                     defenderFainted:defender.p.fainted,
                     attacker:attacker,
                     defender:defender
-                });
+                }).finalResult;
                 var props = this.processResult({
                     result:blow,
                     attackerFainted:attacker.p.fainted,
@@ -1858,6 +1880,35 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
+        processAdditionalEffects:function(attacker,target,skill){
+            switch(skill.name){
+                //Make all spaces touched icy.
+                case "Frost Ray":
+                    if(!Q.BattleGrid.icy){
+                        var tiles = Q.BattleGrid.emptyGrid();
+                        Q.BattleGrid.icy = Q.stage(0).insert(new Q.TileLayer({
+                            tileW:Q.tileW,
+                            tileH:Q.tileH,
+                            sheet:"ground",
+                            tiles:tiles,
+                            type:Q.SPRITE_NONE
+                        }));
+                        Q.BattleGrid.icyStatus = [];
+                    }
+                    var radius = Math.floor(attacker.p.combatStats.skill/10);
+                    var dir = attacker.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(dir);
+                    var locs = [];
+                    for(var i=1;i<radius+1;i++){
+                        locs.push([i*arr[0]+attacker.p.loc[0],i*arr[1]+attacker.p.loc[1]]);
+                    }
+                    Q.BattleGrid.icyStatus.push({locs:locs,turns:2});
+                    //Wait for as long as the animation plays
+                    this.text.unshift({func:"makeIcy",obj:this.entity.skillFuncs,props:[locs]});
+                    break;
+            }
+        },
         doAttack:function(attacker,targets,skill){
             this.text = [];
             var anim = "Attack";
@@ -1881,7 +1932,7 @@ Quintus.GameObjects=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
                 this.previousDamage = 0;
             }
-            
+            this.processAdditionalEffects(attacker,targets,skill);
             var text = this.text;
             //If a defender died, there will be an exp gain
             if(this.expText.length){
@@ -1990,30 +2041,21 @@ Quintus.GameObjects=function(Q){
         },
         //pushes a target
         push:function(tiles,target,user){
+            //While icy and no obj on it, go further.
+            var getIcyRange = function(tileTo,arr){
+                if(Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]]&&Q.getWalkableOn(tileTo[0]+arr[0],tileTo[1]+arr[1],target.p.canMoveOn)<=1000){
+                    return getIcyRange([tileTo[0]+arr[0],tileTo[1]+arr[1]],arr);
+                } else {
+                    return tileTo;
+                }
+            };
             var text = [];
             var tileTo = [];
             //Pushing in the y direction
-            if(user.p.loc[0]===target.p.loc[0]){
-                //Pushing up
-                if(user.p.loc[1]-target.p.loc[1]>0){
-                    tileTo = [target.p.loc[0],target.p.loc[1]-tiles];
-                } 
-                //Pushing down
-                else {
-                    tileTo = [target.p.loc[0],target.p.loc[1]+tiles];
-                }
-            }
-            //Pushing in the x direction
-            else if(user.p.loc[1]===target.p.loc[1]){
-                //Pushing left
-                if(user.p.loc[0]-target.p.loc[0]>0){
-                    tileTo = [target.p.loc[0]-tiles,target.p.loc[1]];
-                } 
-                //Pushing right
-                else {
-                    tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
-                }
-            }
+            var dir = Q.compareLocsForDirection(user.p.loc,target.p.loc);
+            var arr = Q.getDirArray(dir);
+            tileTo = [target.p.loc[0]+(arr[0]*tiles),target.p.loc[1]+(arr[1]*tiles)];
+            tileTo = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]] ? getIcyRange(tileTo,arr) : tileTo;
             //Make sure there's no object or impassable tile where the target will be pushed to.
             //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
             if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target)!=="impassable"){
@@ -2162,6 +2204,56 @@ Quintus.GameObjects=function(Q){
                     }
                 }
             }
+        },
+        makeIcy:function(locs){
+            var dirAngles = {
+                right:0,
+                down:90,
+                left:180,
+                up:270
+            };
+            var angle = dirAngles[Q.compareLocsForDirection(locs[0],locs[1])];
+            var anims = [];
+            //Move on to the next anim, or finish
+            var num = 0;
+            var makeIce = function(){
+                var loc = locs[num];
+                var pos = Q.BatCon.getXY(loc);
+                var iceAnim = Q.stage(0).insert(new Q.Sprite({
+                    x:pos.x,
+                    y:pos.y,
+                    loc:loc,
+                    angle:angle,
+                    sprite:"FrostRay",
+                    sheet:"FrostRay",
+                    type:Q.SPRITE_NONE,
+                    z:-1
+                }));
+                iceAnim.add("animation");
+                iceAnim.on("doneOut",function(){
+                    num++;
+                    if(num!==locs.length){
+                        makeIce();
+                    } else {
+                        anims.forEach(function(a){
+                            a.on("finished",function(){
+                                a.destroy();
+                            });
+                            a.play("frostExploding");
+                            var tileType = Q.BatCon.getTileType(a.p.loc);
+                            if(tileType!=="impassable"){
+                                Q.BattleGrid.icy.setTile(a.p.loc[0],a.p.loc[1],6);
+                            }
+                        });
+                        Q.playSound("confirm.mp3");
+                    }
+                });
+                iceAnim.play("frostGoingOut");
+                Q.playSound("frosty.mp3");
+                anims.push(iceAnim);
+            };    
+            makeIce();
+            return 300*locs.length+500;
         }
     });
     //Used for searching by

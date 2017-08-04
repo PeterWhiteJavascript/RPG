@@ -34,7 +34,8 @@ Q.setUpAnimations=function(){
     var toSheet= [
         ['SonicBoom','SonicBoom.png',96,96,0,0,288,288],
         ['Whirlwind','Whirlwind.png',32,32,0,0,96,32],
-        ['Piercing','Piercing.png',64,32,0,0,320,32]
+        ['Piercing','Piercing.png',64,32,0,0,320,32],
+        ['FrostRay','FrostRay.png',32,32,0,0,320,32]
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -109,6 +110,10 @@ Q.setUpAnimations=function(){
     Q.animations("Piercing",{
         piercingStart:{frames:[0,1],rate:1/6,loop:false,next:"piercingEnd",trigger:"doneAttack"},
         piercingEnd:{frames:[2,3],rate:1/6,loop:false,trigger:"finished"}
+    });
+    Q.animations("FrostRay",{
+        frostGoingOut:{frames:[0,1,2,3,4,5],rate:1/16,loop:false,trigger:"doneOut"},
+        frostExploding:{frames:[6,7,6,7],rate:1/6,loop:false,trigger:"finished"}
     });
     
     Q.animations("mirage",{

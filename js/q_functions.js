@@ -152,18 +152,19 @@ Quintus.QFunctions=function(Q){
                 return "right";
         }
     };
-    Q.getMatrix = function(type,team,required){
+    Q.getWalkableOn = function(i,j,required){
         var tileTypes = Q.state.get("tileTypes");
+        var tile = tileTypes[Q.BatCon.getTileType([i,j])];
+        var move = tile.move;
+        var icy = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[j][i] ?1:0;
+        //If there is something required for standing on this tile and the character does not have it
+        if(tile.required&&(!required||!required[tile.required])) move = 1000000;
+        return move?(move+icy):1000000;
+    };
+    Q.getMatrix = function(type,team,required){
         var cM=[];
         var stage = Q.stage(0);
         //var otherTeam = team==="enemy"?"ally":"enemy";
-        function getWalkable(){
-            var tile = tileTypes[Q.BatCon.getTileType([i_walk,j_walk])];
-            var move = tile.move;
-            //If there is something required for standing on this tile and the character does not have it
-            if(tile.required&&(!required||!required[tile.required])) move = 1000000;
-            return move?move:1000000;
-        }
         function getTarget(){
             return Q.BattleGrid.getObject([i_walk,j_walk]);
         }/*
@@ -182,7 +183,7 @@ Quintus.QFunctions=function(Q){
                 var caltropsOn = false;
                 //If we're walking, enemies are impassable
                 if(type==="walk"){
-                    cost = getWalkable();
+                    cost = Q.getWalkableOn(i_walk,j_walk,required);
                     //Don't check for other objects and ZOC in the story
                     if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
