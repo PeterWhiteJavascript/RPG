@@ -141,7 +141,7 @@ Quintus.Objects=function(Q){
             },
             playDying:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
-                this.play("dying"+this.p.dir);
+                this.chain("dying"+this.p.dir);
                 this.on("doneDying",function(){
                     if(callback) callback();
                     this.off("doneDying");
@@ -161,66 +161,15 @@ Quintus.Objects=function(Q){
                     this.play("dead"+this.p.dir);
                 });
             },
-            playSonicBoom:function(dir,callback,targets){
-                this.playAttack(dir);
-                var boom = Q.stage(0).insert(new Q.DynamicAnim({sheet:"SonicBoom",sprite:"SonicBoom",frame:0,loc:Q.pointer.p.loc,z:this.p.z}));
-                boom.on("doneAttack",function(){
-                    if(callback) callback();
-                    boom.destroy();
+            playFlamethrower:function(dir,callback){
+                this.p.dir = this.checkPlayDir(dir);
+                this.animate({angle:360}, .2, Q.Easing.Quadratic.Out)
+                        .chain({angle:0},.2,Q.Easing.Quadratic.Out);
+                this.play("countering"+this.p.dir);
+                this.on("doneCounter",function(){
+                    this.off("doneCounter");
+                    this.playAttack(dir,callback);
                 });
-                boom.play("booming");
-            },
-            playWhirlwind:function(dir,callback,targets){
-                this.playAttack(dir);
-                var locs = [];
-                targets.forEach(function(target){
-                    locs.push(target.p.loc);
-                });
-                var z = this.p.z;
-                locs.forEach(function(loc,idx){
-                    var wind = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Whirlwind",sprite:"Whirlwind",frame:0,loc:loc,z:z}));
-                    wind.on("doneAttack",function(){
-                        if(idx===0){
-                            if(callback) callback();
-                        }
-                        wind.destroy();
-                    });
-                    wind.play("winding");
-                });
-            },
-            playPiercing:function(dir,callback,targets){
-                this.playAttack(dir);
-                var loc = [this.p.loc[0],this.p.loc[1]];
-                //Rotation of weapon
-                var rot = 0;
-                //Flip of weapon
-                var flip = false;
-                //Change the location slightly
-                switch(dir){
-                    case "up":
-                        loc[1]-=1;
-                        rot = 270;
-                        break;
-                    case "right":
-                        loc[0]+=1;
-                        break;
-                    case "down":
-                        loc[1]+=1;
-                        rot=90;
-                        break;
-                    case "left":
-                        loc[0]-=1;
-                        flip = 'x';
-                        break;
-                }
-                var weapon = Q.stage(0).insert(new Q.DynamicAnim({sheet:"Piercing",sprite:"Piercing",frame:0,loc:loc,z:this.p.z,angle:rot,flip:flip}));
-                weapon.on("doneAttack",function(){
-                    if(callback) callback();
-                });
-                weapon.on("finished",function(){
-                    weapon.destroy();
-                });
-                weapon.play("piercingStart");
             }
         }
     });

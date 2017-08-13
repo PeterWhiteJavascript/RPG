@@ -190,6 +190,7 @@ var files = [
     "sfx/text_stream.mp3",
     "sfx/whirlwind.mp3",
     "sfx/frosty.mp3",
+    "sfx/fireball.mp3",
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA

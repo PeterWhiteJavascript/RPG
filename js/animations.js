@@ -102,10 +102,10 @@ Q.setUpAnimations=function(){
         levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"playStand"}
     });
     Q.animations("SonicBoom",{
-        booming:{frames:[0,0,1,1,0,0,1,1,2,2,1,1,2,2,3,3,4,4,3,3,4,4,5,5,4,4,5,5,6,7,6,7,8,7,8,7,6,0,0],rate:1/10, loop:false,trigger:"doneAttack"}
+        booming:{frames:[0,0,1,1,0,0,1,1,2,2,1,1,2,2,3,3,4,4,3,3,4,4,5,5,4,4,5,5,6,7,6,7,8,7,8,7,6,0,0],rate:1/20, loop:false,trigger:"doneAttack"}
     });
     Q.animations("Whirlwind",{
-        winding:{frames:[0,0,1,1,2,2,1,2,1,2,1,2,1,2],rate:1/6, loop:false,trigger:"doneAttack"}
+        winding:{frames:[0,0,1,1,2,2,1,2,1,2,1,2,1,2],rate:1/12, loop:false,trigger:"doneAttack"}
     });
     Q.animations("Piercing",{
         piercingStart:{frames:[0,1],rate:1/6,loop:false,next:"piercingEnd",trigger:"doneAttack"},

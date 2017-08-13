@@ -26,6 +26,50 @@
             ],
             "dir": "down"
         },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                10
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                10
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                11
+            ],
+            "dir": "down"
+        },
         
         {
             "file": "Proto.json",

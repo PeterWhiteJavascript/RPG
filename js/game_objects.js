@@ -128,6 +128,11 @@ Quintus.GameObjects=function(Q){
                     this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineForwardTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
+                } else if(skill.aoe[1]==="T"){
+                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveTTiles");
+                    this.entity.hide();
+                    Q.inputs[this.entity.p.user.p.dir]=true;
                 } else if(skill.range[1]==="self"&&skill.range[0]===0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.hide();
@@ -1141,7 +1146,7 @@ Quintus.GameObjects=function(Q){
         //Previews a skill
         previewDoSkill:function(user,loc,skill){
             var targets = [];
-            if(skill.range[2]==="ground"){
+            if(skill.range[2]==="ground"||skill.range[2]==="allGround"){
                
             } else if((Q._isNumber(skill.aoe[0])&&skill.aoe[0]>0)||skill.aoe[0]==="custom"||skill.aoe[0]==="customRadius"){
                 targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
@@ -1383,14 +1388,14 @@ Quintus.GameObjects=function(Q){
             if(props.attackerHP<=0||props.attackerFainted||props.defenderHP<=0){return {damage:damage,sound:sound};};
             switch(props.result){
                 case "Critical":
-                    damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.attacker,props.defender,props.skill);
+                    damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.attacker,props.defender,props.skill)*props.finalMultiplier;
                     sound = "critical_hit.mp3";
                     break;
                 case "Solid":
-                    damage = this.solidBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDamageReduction);
+                    damage = this.solidBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDamageReduction)*props.finalMultiplier;
                     break;
                 case "Glancing":
-                    damage = this.glancingBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDefensiveAbility);
+                    damage = this.glancingBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDefensiveAbility)*props.finalMultiplier;
                     sound = "glancing_blow.mp3";
                     break;
                 case "Miss":
@@ -1405,7 +1410,7 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
             }
-            return {damage:damage,sound:sound};
+            return {damage:Math.floor(damage),sound:sound,time:100};
         },
         processSelfTarget:function(attacker,result){
             var damage = 0;
@@ -1574,6 +1579,7 @@ Quintus.GameObjects=function(Q){
             var sound;
             var result;
             var props;
+            var time;
             var atkProps = {
                 attackNum:Math.ceil(Math.random()*100),
                 defendNum:Math.ceil(Math.random()*100),
@@ -1596,7 +1602,9 @@ Quintus.GameObjects=function(Q){
                 defenderDamageReduction:defender.p.combatStats.damageReduction,
                 defenderAtkRange:defender.p.combatStats.atkRange,
                 attacker:attacker,
-                defender:defender
+                defender:defender,
+                
+                finalMultiplier:1
             };
             switch(skill.name){
                 case "Long Shot":
@@ -1637,16 +1645,16 @@ Quintus.GameObjects=function(Q){
                     atkProps.defenderPainTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
                     break;
                 case "Whirlwind Strike":
-                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     break;
                 case "Bleeding Strike":
-                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
@@ -1654,10 +1662,10 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
                 case "Weakening Strike":
-                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
@@ -1665,10 +1673,10 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
                 case "Nerve Strike":
-                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.result = this.getBlow(atkProps).finalResult;
                     props = this.processResult(atkProps);
                     if(props.damage>0){
@@ -1686,10 +1694,10 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
                 case "Poison Strike":
-                    atkProps.minAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.minSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.maxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
+                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
                     atkProps.result = this.getBlow(atkProps).finalResult;
                     result = this.processResult(atkProps);
                     if(result.damage>0){
@@ -1707,16 +1715,32 @@ Quintus.GameObjects=function(Q){
                     };
                     break;
                 case "Flamethrower":
-                    props = {
-                        damage:Math.ceil(Math.random()*30)+50+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
+                    var tileDist = Q.BattleGrid.getTileDistance(attacker.p.loc,defender.p.loc);
+                    if(tileDist===1){
+                        this.closeTileOccupied = true;
+                    }
+                    atkProps.attackerMinAtkDmg = 50+attacker.p.combatStats.skill;
+                    atkProps.attackerMaxAtkDmg = 80+attacker.p.combatStats.skill;
+                    atkProps.result = "Solid";
+                    if(this.closeTileOccupied){
+                        //This is the close tile
+                        if(tileDist===1){
+                            atkProps.defenderDamageReduction = 0;
+                        } else {
+                            atkProps.finalMultiplier = 0.5;
+                        }
+                        sound = "fireball.mp3";
+                    }
+                    time = 50;
                     break;
                 case "Fireball":
-                    props = {
-                        damage:Math.ceil(Math.random()*30)+50+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
+                    if(defender.p.loc[0]===Q.pointer.p.loc[0]&&defender.p.loc[1]===Q.pointer.p.loc[1]){
+                        atkProps.defenderDamageReduction = 0;
+                    }
+                    atkProps.attackerMinAtkDmg = 50+attacker.p.combatStats.skill;
+                    atkProps.attackerMaxAtkDmg = 80+attacker.p.combatStats.skill;
+                    atkProps.result = "Solid";
+                    sound = "fireball.mp3";
                     break;
                 case "Frost Ray":
                     var blow = this.getBlow(atkProps);
@@ -1735,22 +1759,16 @@ Quintus.GameObjects=function(Q){
                         sound:"hit1.mp3"
                     };
                     break;
-                case "Lightning Storm":
-                    atkProps.defenderDamageReduction = 0;
-                    props = {
-                        damage:Math.ceil(Math.random()*50)+150+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
-                    break;
             }
-            if(!result){
+            if(!result&&!atkProps.result){
                 atkProps.result = this.getBlow(atkProps).finalResult;
             }
             if(!props){
                 props = this.processResult(atkProps);
             }
             props.sound = sound || props.sound;
-            return {damage:props.damage,sound:props.sound};
+            props.time = time || props.time;
+            return {damage:props.damage,sound:props.sound,time:props.time};
         },
         useGroundSkill:function(targetLoc,user,skill){
             switch(skill.name){
@@ -1762,6 +1780,20 @@ Quintus.GameObjects=function(Q){
                     break;
                 case "Caltrops":
                     this.text.push({func:"createCaltrops",obj:this.entity.skillFuncs,props:[targetLoc,user]});
+                    break;
+                case "Lightning Storm":
+                    //Get three random locations within the storm and do a 1 aoe + at each location for damage
+                    var radius = skill.aoe[0];
+                    var x = targetLoc[0]-radius;
+                    var y = targetLoc[1]-radius;
+                    var range = radius*2+1;
+                    //Hit 3 locations
+                    for(var i=0;i<3;i++){
+                        var xRand = Math.floor(Math.random()*range)+x;
+                        var yRand = Math.floor(Math.random()*range)+y;
+                        this.text.push({func:"spawnMainLightning",obj:this.entity.skillFuncs,props:[[xRand,yRand],user]});
+                    }
+                    this.text.push({func:"waitTime",obj:this,props:[4000]});
                     break;
             }
         },
@@ -1818,6 +1850,7 @@ Quintus.GameObjects=function(Q){
                         props = this.useDamageSkill(attacker,defender,skill);
                         damage = Math.max(0,props.damage);
                         sound = props.sound;
+                        time = props.time || time;
                         break;
                     case "Item":
                         this.useItem(attacker,defender,skill);
@@ -1849,7 +1882,8 @@ Quintus.GameObjects=function(Q){
                     defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
                     defenderAtkRange:defender.p.combatStats.atkRange,
                     attacker:attacker,
-                    defender:defender
+                    defender:defender,
+                    finalMultiplier:1
                 });
                 damage = props.damage;
                 sound = props.sound;
@@ -1861,7 +1895,6 @@ Quintus.GameObjects=function(Q){
                     defender.p.fainted = true;
                     this.text.splice(this.text.length-2,0,{func:"showFainted",obj:defender,props:[attacker]});
                 }
-                this.text.push({func:"playAttack",obj:attacker,props:[attacker.p.dir]});
                 this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker]});
                 this.text.push({func:"showDamage",obj:defender,props:[damage,time,sound]});
             } 
@@ -1907,6 +1940,9 @@ Quintus.GameObjects=function(Q){
                     //Wait for as long as the animation plays
                     this.text.unshift({func:"makeIcy",obj:this.entity.skillFuncs,props:[locs]});
                     break;
+                case "Flamethrower":
+                    this.closeTileOccupied = false;
+                    break
             }
         },
         doAttack:function(attacker,targets,skill){
@@ -1932,7 +1968,9 @@ Quintus.GameObjects=function(Q){
                 this.calcAttack(attacker,targets[i],skill);
                 this.previousDamage = 0;
             }
-            this.processAdditionalEffects(attacker,targets,skill);
+            if(skill){
+                this.processAdditionalEffects(attacker,targets,skill);
+            }
             var text = this.text;
             //If a defender died, there will be an exp gain
             if(this.expText.length){
@@ -1949,15 +1987,12 @@ Quintus.GameObjects=function(Q){
         },
         //Play the defensive animation for each targetted character
         doDefensiveAnim:function(text){
+            var obj = this;
+            if(!text.length) return obj.entity.attackFuncs.finishAttack();
             var t = text.shift();
             var time = t.obj[t.func].apply(t.obj,t.props);
-            var obj = this;
             setTimeout(function(){
-                if(text.length){
-                    obj.doDefensiveAnim(text);
-                } else {
-                    obj.entity.attackFuncs.finishAttack();
-                }
+                obj.doDefensiveAnim(text);
             },time);
         },
         finishAttack:function(){
@@ -2254,6 +2289,61 @@ Quintus.GameObjects=function(Q){
             };    
             makeIce();
             return 300*locs.length+500;
+        },
+        //Spawns one of the three random locations
+        spawnMainLightning:function(loc,user){
+            var pos = Q.BatCon.getXY(loc);
+            var lightning = Q.stage(0).insert(new Q.Sprite({
+                x:pos.x,
+                y:pos.y,
+                loc:loc,
+                sprite:"SonicBoom",
+                sheet:"SonicBoom",
+                type:Q.SPRITE_NONE,
+                z:-1
+            }));
+            lightning.add("animation");
+            lightning.play("booming");
+            Q.playSound("fireball.mp3");
+            var obj = this;
+            lightning.on("doneAttack",function(){
+                var target = Q.BattleGrid.getObject(this.p.loc);
+                if(target){
+                    var damage = Math.floor(Math.random()*50)+150+user.p.combatStats.skill;
+                    obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
+                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,333,"hit1.mp3"]});
+                }
+                obj.spawnChainLightning([this.p.loc[0]-1,this.p.loc[1]],user);
+                obj.spawnChainLightning([this.p.loc[0],this.p.loc[1]-1],user);
+                obj.spawnChainLightning([this.p.loc[0]+1,this.p.loc[1]],user);
+                obj.spawnChainLightning([this.p.loc[0],this.p.loc[1]+1],user);
+                this.destroy();
+            });
+        },
+        spawnChainLightning:function(loc,user){
+            var pos = Q.BatCon.getXY(loc);
+            var lightning = Q.stage(0).insert(new Q.Sprite({
+                x:pos.x,
+                y:pos.y,
+                loc:loc,
+                sprite:"Whirlwind",
+                sheet:"Whirlwind",
+                type:Q.SPRITE_NONE,
+                z:-1
+            }));
+            lightning.add("animation");
+            lightning.play("winding");
+            Q.playSound("fireball.mp3");
+            var obj = this;
+            lightning.on("doneAttack",function(){
+                var target = Q.BattleGrid.getObject(this.p.loc);
+                if(target){
+                    var damage = Math.floor(Math.random()*25)+25+user.p.combatStats.skill;
+                    obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
+                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,333,"hit1.mp3"]});
+                }
+                this.destroy();
+            });
         }
     });
     //Used for searching by

@@ -153,6 +153,29 @@ Quintus.HUD=function(Q){
                 idx++;
             }
         },
+        moveTTiles:function(pointer){
+            var dir = this.entity.p.user.p.dir;
+            //Gets the array multiplier for the direction
+            var arr = Q.getDirArray(dir);
+            var radius = pointer.p.skill.aoe[0];
+            var special = pointer.p.skill.aoe[2];
+            var locs = [];
+            var loc = this.aoeTiles[0].p.center;
+            //Start at 1 to not include the caster
+            for(var i=1;i<special;i++){
+                locs.push([i*arr[0]+loc[0],i*arr[1]+loc[1]]);
+            }
+            var arr = Q.getDirArray(Q.getRotatedDir(dir));
+            //The end line part
+            for(var i=-radius;i<radius+1;i++){
+                //Multiply by special to make the line move forward
+                locs.push([i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)]);
+            }
+            this.aoeTiles.forEach(function(tile,i){
+                tile.p.loc = locs[i];
+                Q.BatCon.setXY(tile);
+            });
+        },
         movePhalanxTiles:function(pointer){
             var locs = this.getCustomAOE(pointer.p.loc,pointer.p.skill,pointer.p.user.p.dir);
             this.aoeTiles.forEach(function(tile,i){
@@ -279,6 +302,23 @@ Quintus.HUD=function(Q){
                             if(i===0&&j===radius) j++;
                             aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
                         }
+                    }
+                    break;
+                case "T":
+                    var dir = this.entity.p.user.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(dir);
+                    //Start at 1 to not include the caster
+                    for(var i=1;i<special;i++){
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
+                    }
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    //The end line part
+                    for(var i=-radius;i<radius+1;i++){
+                        //Multiply by special to make the line move forward
+                        var spot = [i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)];
+                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
                     }
                     break;
             }
@@ -1069,6 +1109,9 @@ Quintus.HUD=function(Q){
                             targets = [];
                         } else targets.push(true);
                     }
+                    if(skill.range[2]==="allGround"){
+                        targets = [true];
+                    }
                     if(skill.range[2]==="all"&&!targets.length) targets.push(true);
                     //If there is at least one target
                     if(targets.length){
@@ -1442,6 +1485,8 @@ Quintus.HUD=function(Q){
                 fill:"white"
             });
             Q.BatCon.setXY(this);
+            this.p.x+=Q.tileW/2;
+            this.p.y-=Q.tileH/2;
             this.add("tween");
             this.animate({ y:this.p.y-Q.tileH, opacity: 0 }, 2, Q.Easing.Quadratic.Out, { callback: function() { this.destroy(); }});
         },

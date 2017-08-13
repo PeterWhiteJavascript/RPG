@@ -414,10 +414,11 @@
             "name":"Flamethrower",
             "desc":"Deals 50-80 + Skill damage to all characters within spell’s area of effect. Character in first space of area of effect gains no Damage Reduction from armour against this damage. Damage halved for back spaces if first space is occupied.",
             "type":"Damage",
-            "range":[1,"normal"],
-            "aoe":[1,"T"],
+            "range":[0,"self"],
+            "aoe":[1,"T",2],
             "cost":100,
-            "resist":["none"]
+            "resist":["none"],
+            "anim":"Flamethrower"
         },
         {
             "name":"Fireball",
@@ -425,7 +426,7 @@
             "type":"Damage",
             "range":[5,"normal"],
             "aoe":[1,"normal"],
-            "cost":150,
+            "cost":100,
             "resist":["none"]
         },
         {
@@ -443,17 +444,16 @@
             "type":"Damage",
             "range":[3,"normal"],
             "aoe":[0,"normal"],
-            "cost":300,
-            "damage":[100,200,"skl"],
+            "cost":100,
             "resist":["none"]
         },
         {
             "name":"Lightning Storm",
             "desc":"Three different random spaces in the spell’s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
             "type":"Damage",
-            "range":[6,"normal","all"],
+            "range":[6,"self","allGround"],
             "aoe":[2,"corners"],
-            "cost":500,
+            "cost":100,
             "resist":["none"]
         }
     ],
