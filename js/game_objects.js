@@ -1444,12 +1444,11 @@ Quintus.GameObjects=function(Q){
         criticalBlow:function(attackerAtkSpeed,attackerMaxAtkDmg,defenderHP,attacker,defender,skill){
             //Maybe attack again!
             //BUG: If a character attacks 3 times, it doesn't take into account all of the damage for less than 0.
-            var rand = Math.ceil(Math.random()*100)
-            console.log(this.previousDamage)
+            //TO FIX: make a 'what the hp will be' after each attack and check it.
+            var rand = Math.ceil(Math.random()*100);
             if(rand<=attackerAtkSpeed&&defenderHP-attackerMaxAtkDmg-this.previousDamage>0){
                 this.previousDamage += attackerMaxAtkDmg;
-                console.log(this.previousDamage)
-                console.log("Attacking Again!");
+                this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing"]});
                 this.calcAttack(attacker,defender,skill);
             }
             return attackerMaxAtkDmg;
@@ -1706,7 +1705,27 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
                 case "Coordinated Attack":
-                    
+                    //Attack like normal
+                    atkProps.result = this.getBlow(atkProps).finalResult;
+                    props = this.processResult(atkProps);
+                    //If we get a second attack, all allies within the zone attack as well. (For now, always do it)
+                    if(!this.attackedAgain){
+                        var dir = attacker.p.dir;
+                        var radius = 1;
+                        //Gets the array multiplier for the direction
+                        var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                        var loc = attacker.p.loc;
+                        for(var i=-radius;i<radius+1;i++){
+                            if(i===0) i++;
+                            var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
+                            var target = Q.BattleGrid.getObject(spot);
+                            if(target&&target.p.team===attacker.p.team){
+                                this.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing"]});
+                                this.calcAttack(target,defender);
+                            }
+                        }
+                    }
+                    this.attackedAgain = true;
                     break;
                 case "Stone":
                     props = {
@@ -1913,6 +1932,7 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
+        //After the attack has happened, do this
         processAdditionalEffects:function(attacker,target,skill){
             switch(skill.name){
                 //Make all spaces touched icy.
@@ -1943,6 +1963,9 @@ Quintus.GameObjects=function(Q){
                 case "Flamethrower":
                     this.closeTileOccupied = false;
                     break
+                case "Coordinated Attack":
+                    this.attackedAgain = false;
+                    break;
             }
         },
         doAttack:function(attacker,targets,skill){
@@ -1981,7 +2004,7 @@ Quintus.GameObjects=function(Q){
                 this.expText = [];
             }
             var obj = this;
-            attacker.doAttackAnim(targets,anim,sound,function(){
+            attacker.doAttackAnim(targets[0],anim,sound,function(){
                 obj.doDefensiveAnim(text);
             });
         },

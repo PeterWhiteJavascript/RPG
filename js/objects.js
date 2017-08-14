@@ -433,8 +433,9 @@ Quintus.Objects=function(Q){
                     }
                 }
             },
-            doAttackAnim:function(targets,animation,sound,callback){
-                this["play"+animation](this.p.dir,callback,targets);
+            doAttackAnim:function(target,animation,sound,callback){
+                console.log(target)
+                this["play"+animation](target ? Q.compareLocsForDirection(this.p.loc,target.p.loc,this.p.dir) : this.p.dir,callback);
                 Q.playSound(sound+".mp3");
             },
             

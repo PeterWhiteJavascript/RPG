@@ -276,7 +276,7 @@
             "desc":"The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
             "type":"Damage",
             "range":["meleeWeapon","normal"],
-            "aoe":[1,"custom"],
+            "aoe":[0,"normal"],
             "cost":80,
             "resist":["none"]
         }
