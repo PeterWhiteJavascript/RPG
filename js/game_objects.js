@@ -903,6 +903,13 @@ Quintus.GameObjects=function(Q){
         valid:function(obj){
             if(obj.p.combatStats.hp>0&&!obj.p.fainted){
                 return true;
+            } else if(obj.p.fainted){ 
+                obj.advanceStatus();
+                if(!obj.p.status.fainted){
+                    obj.playStand();
+                    obj.p.fainted = false;
+                }
+                return false;
             } else {
                 var stabilityFields = Q(".stability").items;
                 var onField = false;
@@ -911,8 +918,8 @@ Quintus.GameObjects=function(Q){
                     if(tile) onField = true;
                 });
                 if(!onField){
-                    obj.p.status.bleedingOut.turns--;
-                    if(obj.p.status.bleedingOut.turns===0){
+                    obj.advanceStatus();
+                    if(!obj.p.status.bleedingOut){
                         obj.p.angle = 90;
                         obj.removeStatus("bleedingOut");
                         obj.addStatus("dead",99,"debuff",obj);
@@ -1374,7 +1381,11 @@ Quintus.GameObjects=function(Q){
                     result = "Miss";
                 }
             };
-            return {atkResult:attackResult,defResult:defenseResult,finalResult:result};
+            var attackingAgain = false;
+            if(props.attackNum<props.attackerAtkSpeed){
+                attackingAgain = true;
+            }
+            return {atkResult:attackResult,defResult:defenseResult,finalResult:result,attackingAgain:attackingAgain};
         },
         //Forces the damage to be at least 1
         getDamage:function(dmg){
@@ -1410,7 +1421,10 @@ Quintus.GameObjects=function(Q){
                     }
                     break;
             }
-            return {damage:Math.floor(damage),sound:sound,time:100};
+            props.damage = Math.floor(damage);
+            props.sound = sound;
+            props.time = 100;
+            return props;
         },
         processSelfTarget:function(attacker,result){
             var damage = 0;
@@ -1442,15 +1456,6 @@ Quintus.GameObjects=function(Q){
             return this.getDamage(this.calcBlowDamage(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDamageReduction, Math.random()));
         },
         criticalBlow:function(attackerAtkSpeed,attackerMaxAtkDmg,defenderHP,attacker,defender,skill){
-            //Maybe attack again!
-            //BUG: If a character attacks 3 times, it doesn't take into account all of the damage for less than 0.
-            //TO FIX: make a 'what the hp will be' after each attack and check it.
-            var rand = Math.ceil(Math.random()*100);
-            if(rand<=attackerAtkSpeed&&defenderHP-attackerMaxAtkDmg-this.previousDamage>0){
-                this.previousDamage += attackerMaxAtkDmg;
-                this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing"]});
-                this.calcAttack(attacker,defender,skill);
-            }
             return attackerMaxAtkDmg;
         },
         glancingBlow:function(attackerMinAtkDmg,attackerMaxAtkDmg,defenderDefensiveAbility){
@@ -1719,9 +1724,16 @@ Quintus.GameObjects=function(Q){
                             if(i===0) i++;
                             var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
                             var target = Q.BattleGrid.getObject(spot);
-                            if(target&&target.p.team===attacker.p.team){
-                                this.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing"]});
-                                this.calcAttack(target,defender);
+                            if(target&&!target.p.fainted&&target.p.combatStats.hp&&target.p.team===attacker.p.team){
+                                target.p.tempHp = target.p.combatStats.hp;
+                                if(defender.p.tempHp-props.damage>0){
+                                    var t = this;
+                                    props.afterAttack = function(){
+                                        t.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing"]});
+                                        t.calcAttack(target,defender);
+                                    }
+                                    
+                                }
                             }
                         }
                     }
@@ -1787,7 +1799,7 @@ Quintus.GameObjects=function(Q){
             }
             props.sound = sound || props.sound;
             props.time = time || props.time;
-            return {damage:props.damage,sound:props.sound,time:props.time};
+            return props;
         },
         useGroundSkill:function(targetLoc,user,skill){
             switch(skill.name){
@@ -1842,7 +1854,7 @@ Quintus.GameObjects=function(Q){
             return false;
         },
         calcAttack:function(attacker,defender,skill){
-            if(attacker.p.combatStats.hp<=0) return;
+            if(attacker.p.tempHp<=0||defender.p.tempHp<=0) return;
             //The time it takes between defensive animations
             //This sometimes is different depending on the skill
             var time;
@@ -1883,15 +1895,17 @@ Quintus.GameObjects=function(Q){
                     defendNum:Math.ceil(Math.random()*100),
                     attackerCritChance:attacker.p.combatStats.critChance,
                     attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
+                    attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
                     defenderCounterChance:defender.p.combatStats.counterChance,
                     defenderReflexes:defender.p.combatStats.reflexes,
                     defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
                     defenderFainted:defender.p.fainted,
                     attacker:attacker,
                     defender:defender
-                }).finalResult;
+                });
                 var props = this.processResult({
-                    result:blow,
+                    attackingAgain:blow.attackingAgain,
+                    result:blow.finalResult,
                     attackerFainted:attacker.p.fainted,
                     attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
                     attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
@@ -1909,25 +1923,33 @@ Quintus.GameObjects=function(Q){
             }
             //After the damage has been calculated, come up with the text to show the user
             if(damage>0){
-                //Only faint if the defender does not die
-                if(damage<defender.p.combatStats.hp&&damage>defender.p.combatStats.painTolerance){
-                    defender.p.fainted = true;
-                    this.text.splice(this.text.length-2,0,{func:"showFainted",obj:defender,props:[attacker]});
-                }
                 this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker]});
-                this.text.push({func:"showDamage",obj:defender,props:[damage,time,sound]});
+                this.text.push({func:"showDamage",obj:defender,props:[damage,sound]});
+                defender.p.tempHp = defender.p.tempHp-damage;
+                if(defender.p.tempHp<=0){
+                    props.attackingAgain = false;
+                } else if(damage>defender.p.combatStats.painTolerance){
+                    defender.p.fainted = true;
+                    this.text.push({func:"showFainted",obj:defender,props:[attacker]});
+                }
+                if(props.attackingAgain){
+                    this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing"]});
+                    this.calcAttack(attacker,defender,skill);
+                } else if(props.afterAttack){
+                    props.afterAttack();
+                }
             } 
             //Miss
             else if(damage===0){
-                this.text.push({func:"showMiss",obj:defender,props:[attacker,time]});
+                this.text.push({func:"showMiss",obj:defender,props:[attacker]});
             } 
             //Counter chance
             else if(damage===-1){
                 this.previousDamage = 0;
                 if(skill){
-                    this.text.push({func:"showMiss",obj:defender,props:[attacker,time]});
+                    this.text.push({func:"showMiss",obj:defender,props:[attacker]});
                 } else {
-                    this.text.push({func:"showCounter",obj:defender,props:[attacker,time]});
+                    this.text.push({func:"showCounter",obj:defender,props:[attacker]});
                     this.calcAttack(defender,attacker);
                 }
             }
@@ -1973,6 +1995,7 @@ Quintus.GameObjects=function(Q){
             var anim = "Attack";
             var sound = "slashing";
             attacker.p.didAction = true;
+            attacker.p.tempHp = attacker.p.combatStats.hp;
             if(skill){
                 if(skill.cost) {
                     attacker.p.combatStats.tp-=(skill.cost-attacker.p.combatStats.efficiency);
@@ -1982,12 +2005,14 @@ Quintus.GameObjects=function(Q){
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
             }
+            this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound]});
             //If we have targetted the ground.
             if(!targets.length){
                 this.useGroundSkill(Q.pointer.p.loc,attacker,skill);
             }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
+                targets[i].p.tempHp = targets[i].p.combatStats.hp;
                 this.calcAttack(attacker,targets[i],skill);
                 this.previousDamage = 0;
             }
@@ -2003,20 +2028,18 @@ Quintus.GameObjects=function(Q){
                 //Empty the expText array for next time
                 this.expText = [];
             }
-            var obj = this;
-            attacker.doAttackAnim(targets[0],anim,sound,function(){
-                obj.doDefensiveAnim(text);
-            });
+            this.processText(text);
         },
-        //Play the defensive animation for each targetted character
-        doDefensiveAnim:function(text){
+        processText:function(text){
             var obj = this;
+            //If the process is over, finish the end the turn
             if(!text.length) return obj.entity.attackFuncs.finishAttack();
+            //Get the first function
             var t = text.shift();
-            var time = t.obj[t.func].apply(t.obj,t.props);
-            setTimeout(function(){
-                obj.doDefensiveAnim(text);
-            },time);
+            //Push this function as a callback so everything is timed well.
+            t.props.push(function(){obj.processText(text);});
+            //Do the function
+            t.obj[t.func].apply(t.obj,t.props);
         },
         finishAttack:function(){
             var active = Q.BatCon.turnOrder[0];
@@ -2060,8 +2083,10 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
-        waitTime:function(time){
-            return time?time:1000;
+        waitTime:function(time,callback){
+            setTimeout(function(){
+                callback();
+            },time);
         }
     });
     Q.component("skillFuncs",{
@@ -2334,7 +2359,7 @@ Quintus.GameObjects=function(Q){
                 if(target){
                     var damage = Math.floor(Math.random()*50)+150+user.p.combatStats.skill;
                     obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
-                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,333,"hit1.mp3"]});
+                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
                 }
                 obj.spawnChainLightning([this.p.loc[0]-1,this.p.loc[1]],user);
                 obj.spawnChainLightning([this.p.loc[0],this.p.loc[1]-1],user);
@@ -2363,7 +2388,7 @@ Quintus.GameObjects=function(Q){
                 if(target){
                     var damage = Math.floor(Math.random()*25)+25+user.p.combatStats.skill;
                     obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
-                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,333,"hit1.mp3"]});
+                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
                 }
                 this.destroy();
             });
@@ -2964,7 +2989,13 @@ Quintus.GameObjects=function(Q){
         get_atkSpeed:function(p){
             var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment.righthand),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
             var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
-            return Math.min(99,Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)+encPenalty+(level*d)));
+            var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d));
+            var threshold = 50;
+            var amountAboveThreshold = Math.max(0,amount-threshold);
+            var max = 80;
+            var aboveWorth = 3;
+            var finalAmount = Math.min(max,amount-amountAboveThreshold+Math.floor(amountAboveThreshold/aboveWorth));
+            return finalAmount;
         },
         get_atkRange:function(p){
             var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
