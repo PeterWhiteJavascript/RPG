@@ -150,6 +150,7 @@ Quintus.Objects=function(Q){
                 this.play("hurt"+this.p.dir);
             },
             playDying:function(dir,callback){
+                if(this.p.animation==="dying"+this.p.dir) return;
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("dying"+this.p.dir);
                 this.on("doneDying",function(){
@@ -165,7 +166,7 @@ Quintus.Objects=function(Q){
                     this.off("doneLevelingUp");
                     if(callback) callback();
                     this.play("stand"+this.p.dir);
-                })
+                });
             },
             playFainted:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
@@ -308,9 +309,11 @@ Quintus.Objects=function(Q){
                 if(!this.p.fainted&&this.p.combatStats.hp){
                     this.playStand(this.p.dir);
                 }
-                setTimeout(function(){
-                    callback();
-                },500);
+                if(callback){
+                    setTimeout(function(){
+                        callback();
+                    },500);
+                }
             },
             showFainted:function(attacker,callback){
                 var t = this;
@@ -327,7 +330,18 @@ Quintus.Objects=function(Q){
                 Q.setAward(attacker,"damageDealt",dmg);
                 Q.setAward(this,"damageTaken",dmg);
                 //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
-                if(attacker) this.addToHitBy(attacker);
+                if(attacker){
+                    this.addToHitBy(attacker);
+                    if(attacker.p.talents.includes("Frenzy")){
+                        if(this.p.fainted||this.p.combatStats.hp<=0){
+                            Q.BatCon.removeFromTurnOrder(attacker);
+                            Q.BatCon.addToStartOfTurnOrder(attacker);
+                        }
+                    }
+                    if(attacker.p.talents.includes("Draining Strike")){
+                        this.p.combatStats.tp-=dmg;
+                    }
+                }
                 if(this.p.combatStats.hp<=0){
                     //If this character that is dying is lifting another object
                     if(this.p.lifting){
@@ -372,6 +386,10 @@ Quintus.Objects=function(Q){
                     }
                     return text;//If this is returned, the character is dead and it executes
                 } else {
+                    if(this.p.talents.includes("Second Wind")&&this.p.tempHp<=Math.floor(this.p.combatStats.maxHp/10)){
+                        Q.BatCon.removeFromTurnOrder(this);
+                        Q.BatCon.addToStartOfTurnOrder(this);
+                    } 
                     if(!this.p.fainted){
                         this.playStand(this.p.dir);
                     }
@@ -434,7 +452,7 @@ Quintus.Objects=function(Q){
                 Q.playSound("inflict_status.mp3");
                 if(callback) callback();
             },
-            refreshStatus:function(name,turns,user,props){
+            refreshStatus:function(name,turns,user,props,callback){
                 if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
                 if(props){
@@ -448,6 +466,7 @@ Quintus.Objects=function(Q){
                     this.p.status[name].turns = turns;
                 }
                 Q.playSound("coin.mp3");
+                if(callback) callback();
             },
             addToHitBy:function(obj){
                 //Don't add team attackers for exp
@@ -461,8 +480,10 @@ Quintus.Objects=function(Q){
                     }
                 }
             },
-            doAttackAnim:function(target,animation,sound,callback){
-                this["play"+animation](target ? Q.compareLocsForDirection(this.p.loc,target.p.loc,this.p.dir) : this.p.dir,callback);
+            doAttackAnim:function(target,animation,sound,dir,callback){
+                //If there's a dir, use that, else if there's a target, face it, else default
+                var dir = dir ? dir : target ? Q.compareLocsForDirection(this.p.loc,target.p.loc,this.p.dir) : this.p.dir;
+                this["play"+animation](dir,callback);
                 Q.playSound(sound+".mp3");
             },
             
@@ -474,8 +495,7 @@ Quintus.Objects=function(Q){
                     if(st){
                         st.turns--;
                         if(st.turns===0){
-                            status[keys[i]]=false;
-                            this.p.statusDisplay.removeStatus(st.name);
+                            this.removeStatus(st.name);
                         }
                     }
                 }
@@ -487,9 +507,14 @@ Quintus.Objects=function(Q){
                 if(!this.p.status[name]) return;
                 this.p.status[name].user.removeGaveStatus(this);
                 this.removeGaveStatus(this.p.status[name]);
+                //this.p.combatStats[props.name] += props.amount;
+                if(this.p.status[name].props&&this.p.combatStats[this.p.status[name].props.name]){
+                    this.p.combatStats[this.p.status[name].props.name]-= this.p.status[name].props.amount;
+                }
                 delete this.p.status[name];
                 this.p.statusDisplay.removeStatus(name);
                 this.generateRelevantStats(name);
+                
                 if(name==="fainted"){
                     this.p.fainted = false;
                     this.playStand(this.p.dir);
@@ -533,6 +558,15 @@ Quintus.Objects=function(Q){
             },
             revealStatusDisplay:function(){
                 if(this.p.statusDisplay) this.p.statusDisplay.reveal();
+            },
+            checkRegeneratingAura:function(){
+                var alliesAround = Q.BattleGrid.removeEnemies(Q.BattleGrid.getObjectsWithin(this.p.loc,1),this.p.team);
+                for(var i=0;i<alliesAround.length;i++){
+                    var ally = alliesAround[i];
+                    if(ally.p.talents.includes("Regenerating Aura")){
+                        this.showHealed(5);
+                    }
+                }
             }
         }
     });
@@ -724,7 +758,8 @@ Quintus.Objects=function(Q){
                     text.push.apply(text,dead);
                     text.push({func:"waitTime",obj:Q.BatCon.attackFuncs,props:[1000]});
                     text.push({func:"endTurn",obj:Q.BatCon,props:[]});
-                    Q.BatCon.attackFuncs.doDefensiveAnim(text);
+                    
+                    Q.BatCon.attackFuncs.processText(text);
                     return;
                 }
             }
@@ -733,7 +768,7 @@ Quintus.Objects=function(Q){
                 this.p.didMove = true;
                 var text = [];
                 text.push({func:"waitTime",obj:Q.BatCon.attackFuncs,props:[1000]});
-                Q.BatCon.attackFuncs.doDefensiveAnim(text);
+                Q.BatCon.attackFuncs.processText(text);
                 return;
             }
             //If the character is drawn to the mirage, refresh the status if the mirage still exists and move towards it.
@@ -772,7 +807,7 @@ Quintus.Objects=function(Q){
             }
             
             //Get the grid for walking from this position
-            this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn));
+            this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn,this));
             //Get the grid for attacking from this position
             this.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
             //Set to true when the character moves
@@ -805,7 +840,7 @@ Quintus.Objects=function(Q){
         moveTowardsMirage:function(mirage){
             var toLoc = mirage.p.loc;
             var loc = this.p.loc;
-            var path = Q.getPath(loc,toLoc,new Q.Graph(Q.getMatrix("walk",false,this.p.canMoveOn)),1000);
+            var path = Q.getPath(loc,toLoc,new Q.Graph(Q.getMatrix("walk",false,this.p.canMoveOn,this)),1000);
             //The object that is at the spot we're going (it may move there this turn)
             if(toLoc[0]===path[0].x&&toLoc[1]===path[0].y){
                 mirage.dispellMirage();

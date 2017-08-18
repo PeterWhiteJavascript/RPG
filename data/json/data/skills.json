@@ -7,7 +7,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Fortify",
@@ -16,7 +17,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":30,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Embolden",
@@ -25,7 +27,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Fervour",
@@ -34,7 +37,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Direct",
@@ -43,7 +47,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLine","excludeCenter"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Phalanx",
@@ -52,7 +57,8 @@
             "range":[0,"self"],
             "aoe":["custom"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         }
     ],
     "Berserker":[
@@ -233,7 +239,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLineForward","excludeCenter"],
             "cost":25,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Forewarn",
@@ -242,7 +249,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLineForward","excludeCenter"],
             "cost":40,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Sharpen",
@@ -251,7 +259,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLineForward","excludeCenter"],
             "cost":30,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Vitalize",
@@ -260,7 +269,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLineForward","excludeCenter"],
             "cost":40,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Vivify",
@@ -269,7 +279,8 @@
             "range":[0,"self"],
             "aoe":[1,"hLineForward","excludeCenter"],
             "cost":35,
-            "resist":["none"]
+            "resist":["none"],
+            "dir":"Forward"
         },
         {
             "name":"Coordinated Attack",

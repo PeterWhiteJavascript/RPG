@@ -161,7 +161,7 @@ Quintus.QFunctions=function(Q){
         if(tile.required&&(!required||!required[tile.required])) move = 1000000;
         return move?(move+icy):1000000;
     };
-    Q.getMatrix = function(type,team,required){
+    Q.getMatrix = function(type,team,required,obj){
         var cM=[];
         var stage = Q.stage(0);
         //var otherTeam = team==="enemy"?"ally":"enemy";
@@ -174,6 +174,7 @@ Quintus.QFunctions=function(Q){
         function getCaltrops(){
             return Q.BattleGrid.caltrops?Q.BattleGrid.caltrops.getTile(i_walk,j_walk):false;
         }
+        var windWalking = obj?obj.p.talents.includes("Wind Walking"):false;
         for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
             var costRow = [];
             for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
@@ -192,7 +193,7 @@ Quintus.QFunctions=function(Q){
                     }
                     
                     //Allow walking over allies and dead people as long as there's no zoc tile
-                    if(objOn&&(objOn.p.team===team||objOn.p.hp<=0)/*&&!zocOn*/){objOn=false;};
+                    if(objOn&&(objOn.p.team===team||objOn.p.hp<=0||windWalking)/*&&!zocOn*/){objOn=false;};
                 }
                 //If there's still no enemy on the square, get the tileCost
                 if(objOn){
@@ -203,6 +204,7 @@ Quintus.QFunctions=function(Q){
                 else if(caltropsOn){
                     costRow.push(1000);
                 } else {
+                    if(windWalking) cost = 1;
                     costRow.push(cost);
                 }
             }

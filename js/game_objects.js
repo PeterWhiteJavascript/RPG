@@ -118,6 +118,11 @@ Quintus.GameObjects=function(Q){
                     setTimeout(function(){
                         Q.inputs[dir]=true;
                     });
+                } else if(skill.name==="Phalanx"){ 
+                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                    this.entity.on("inputMoved",this.entity.AOEGuide,"movePhalanxTiles");
+                    this.entity.hide();
+                    Q.inputs[this.entity.p.user.p.dir]=true;
                 } else if(skill.aoe[1]==="hLine"){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineTiles");
@@ -135,11 +140,6 @@ Quintus.GameObjects=function(Q){
                     Q.inputs[this.entity.p.user.p.dir]=true;
                 } else if(skill.range[1]==="self"&&skill.range[0]===0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.name==="Phalanx"){ 
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"movePhalanxTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
                 } else {
@@ -623,6 +623,17 @@ Quintus.GameObjects=function(Q){
             if(obj.p.zoc) this.removeZOC(obj);
             this.removeObject(obj.p.loc);
         },
+        getObjectsWithin:function(centerLoc,radius){
+            var objects = [];
+            for(var i=-radius;i<radius+1;i++){
+                for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                    if(i===0&&j===radius) j++;
+                    var object = this.getObject([centerLoc[0]+i,centerLoc[1]+j-(radius-Math.abs(i))]);
+                    if(object) objects.push(object);
+                }
+            }
+            return objects;
+        },
         getObjectsAround:function(tiles){
             var objects = [];/*
             var radius = aoe[0];
@@ -692,10 +703,25 @@ Quintus.GameObjects=function(Q){
             }
             return tiles;
         },
+        removeAllies:function(arr,allyTeam){
+            return arr.filter(function(itm){
+                return itm.p.team!==allyTeam;
+            });
+        },
+        removeEnemies:function(arr,allyTeam){
+            return arr.filter(function(itm){
+                return itm.p.team===allyTeam;
+            });
+        },
         //Removes any objects that are dead
         removeDead:function(arr){
             return arr.filter(function(itm){
                 return itm.p.combatStats.hp>0;
+            });
+        },
+        removeDebilitateResisted:function(arr){
+            return arr.filter(function(itm){
+                return !itm.p.talents.includes("Self Empowerment");
             });
         },
         //Gets the bounds of the level
@@ -991,6 +1017,7 @@ Quintus.GameObjects=function(Q){
             var lastTurn = this.turnOrder.shift();
             //Advance the last character's status effects.
             lastTurn.advanceStatus();
+            lastTurn.checkRegeneratingAura();
             /*this.turnOrder.push(lastTurn);
             while(this.turnOrder[0].p.fainted){
                 var lastTurn = this.turnOrder.shift();
@@ -1057,6 +1084,9 @@ Quintus.GameObjects=function(Q){
         },*/
         addToTurnOrder:function(obj){
             this.turnOrder.push(obj);
+        },
+        addToStartOfTurnOrder:function(obj){
+            this.turnOrder.unshift(obj);
         },
         //Removes an object from the turn order
         removeFromTurnOrder:function(obj){
@@ -1298,11 +1328,6 @@ Quintus.GameObjects=function(Q){
             var side = "side";
             var front = "front";
             
-            //If the characters are diagonal to each other, we're attacking from the side, regardless of which direction either participants are facing
-            if(Math.abs(attacker.p.loc[0]-defender.p.loc[0])===Math.abs(attacker.p.loc[1]-defender.p.loc[1])){
-                attacker.p.canSetDir = this.getDiagDirs(attacker.p.loc,defender.p.loc);
-                return side;
-            }
             //Array of possible directions clockwise from 12 o'clock
             var dirs = ["up", "right", "down", "left"];
             //Get the number for the user dir
@@ -1316,6 +1341,12 @@ Quintus.GameObjects=function(Q){
             for(var j=0;j<values.length;j++){
                 //Make sure we are in bounds, else loop around to the start of the array
                 if(checkBounds(userDir+j)===targetDir){
+                    var dir = values[j];
+                    //If the characters are diagonal to each other and the characters are behind, we're attacking from the side.
+                    if(dir==="back"&&Math.abs(attacker.p.loc[0]-defender.p.loc[0])===Math.abs(attacker.p.loc[1]-defender.p.loc[1])){
+                        attacker.p.canSetDir = this.getDiagDirs(attacker.p.loc,defender.p.loc);
+                        return side;
+                    }
                     //If we've found the proper value, return it
                     return values[j];
                 }
@@ -1332,6 +1363,69 @@ Quintus.GameObjects=function(Q){
                 block:false,
                 fail:false
             };
+            //Look at the attacker if whirlwind defense
+            if(props.defender.p.talents.includes("Whirlwind Defense")){
+                props.defender.playStand(Q.compareLocsForDirection(props.defender.p.loc,props.attacker.p.loc,props.defender.p.dir));
+            }
+            var dir = this.compareDirection(props.attacker,props.defender);
+            if(dir==="front"){
+                if(props.attacker.p.talents.includes("Aggressive Formation")){
+                    var arr = Q.getDirArray(props.attacker.p.dir);
+                    var ally1 = Q.BattleGrid.getObject([props.attacker.p.loc[0]+arr[1],props.attacker.p.loc[1]+arr[0]]);
+                    if(ally1&&ally1.p.dir===props.attacker.p.dir){
+                        props.attackerAtkAccuracy+=5;
+                    }
+                    var ally2 = Q.BattleGrid.getObject([props.attacker.p.loc[0]-arr[1],props.attacker.p.loc[1]-arr[0]]);
+                    if(ally2&&ally2.p.dir===props.attacker.p.dir){
+                        props.attackerAtkAccuracy+=5;
+                    }
+                }
+                if(props.defender.p.talents.includes("Defensive Formation")){
+                    var arr = Q.getDirArray(props.defender.p.dir);
+                    var ally1 = Q.BattleGrid.getObject([props.defender.p.loc[0]+arr[1],props.defender.p.loc[1]+arr[0]]);
+                    if(ally1&&ally1.p.dir===props.defender.p.dir){
+                        props.defenderDamageReduction+=5;
+                    }
+                    var ally2 = Q.BattleGrid.getObject([props.defender.p.loc[0]-arr[1],props.defender.p.loc[1]-arr[0]]);
+                    if(ally2&&ally2.p.dir===props.defender.p.dir){
+                        props.defenderDamageReduction+=5;
+                    }
+                }
+            } else if(dir==="side"){
+                if(props.attacker.p.talents.includes("Flanking Strike")){
+                    props.attackerAtkSpeed = Math.min(80,props.attackerAtkSpeed+30);
+                }
+            } else if(dir==="back"){
+                if(props.attacker.p.talents.includes("Backstab")){
+                    props.attackerCritChance*=3;
+                }
+            }
+            //Shieldwall
+            var alliesAroundDefender = Q.BattleGrid.removeEnemies(Q.BattleGrid.getObjectsWithin(props.defender.p.loc,1),props.defender.p.team);
+            //Check if any of the allies have shieldwall
+            for(var i=0;i<alliesAroundDefender.length;i++){
+                var ally = alliesAroundDefender[i];
+                if(ally.p.talents.includes("Shieldwall")){
+                    //Check if the attack is coming from this character's direction
+                    var defDir = this.compareDirection(props.attacker,ally);
+                    if(defDir==="front"){
+                        props.defenderDefensiveAbility+=Q.charGen.getEquipmentProp("block",ally.p.equipment.righthand)+Q.charGen.getEquipmentProp("block",ally.p.equipment.lefthand);
+                    }
+                }
+            }
+            //Deflecting Whirlwind
+            if(props.defender.p.talents.includes("Deflecting Whirlwind")){
+                if(Q.BattleGrid.getTileDistance(props.attacker.p.loc,props.defender.p.loc)>1){
+                    props.attackerAtkAccuracy-=props.defender.p.combatStats.skill;
+                };
+            }
+            //Illusionary Attack
+            if(props.attacker.p.talents.includes("Illusionary Attack")){
+                props.defenderDefensiveAbility-=Math.floor(props.attacker.p.combatStats.tp/10);
+            }
+            if(props.defender.p.talents.includes("Illusionary Defense")){
+                props.defenderDefensiveAbility+=Math.floor(props.attacker.p.combatStats.tp/10);
+            }
             if(props.defenderFainted){
                 attackResult.hit = true;
             } else if(props.attackNum<props.attackerCritChance){
@@ -1341,7 +1435,6 @@ Quintus.GameObjects=function(Q){
             } else {
                 attackResult.miss = true;
             }
-            var dir = this.compareDirection(props.attacker,props.defender);
             if(props.defenderFainted){
                 defenseResult.fail = true;
             } else if(dir==="back"){
@@ -1381,11 +1474,7 @@ Quintus.GameObjects=function(Q){
                     result = "Miss";
                 }
             };
-            var attackingAgain = false;
-            if(props.attackNum<props.attackerAtkSpeed){
-                attackingAgain = true;
-            }
-            return {atkResult:attackResult,defResult:defenseResult,finalResult:result,attackingAgain:attackingAgain};
+            return {atkResult:attackResult,defResult:defenseResult,finalResult:result,dir:dir,attackingAgain:props.attackNum<props.attackerAtkSpeed};
         },
         //Forces the damage to be at least 1
         getDamage:function(dmg){
@@ -1397,9 +1486,29 @@ Quintus.GameObjects=function(Q){
             var damage = 0;
             var sound = "hit1.mp3";
             if(props.attackerHP<=0||props.attackerFainted||props.defenderHP<=0){return {damage:damage,sound:sound};};
+            if(props.dir==="front"){
+                if(props.defender.p.talents.includes("Defensive Formation")){
+                    var arr = Q.getDirArray(props.defender.p.dir);
+                    var ally1 = Q.BattleGrid.getObject([props.defender.p.loc[0]+arr[1],props.defender.p.loc[1]+arr[0]]);
+                    if(ally1&&ally1.p.dir===props.defender.p.dir){
+                        props.defenderDamageReduction+=5;
+                    }
+                    var ally2 = Q.BattleGrid.getObject([props.defender.p.loc[0]-arr[1],props.defender.p.loc[1]-arr[0]]);
+                    if(ally2&&ally2.p.dir===props.defender.p.dir){
+                        props.defenderDamageReduction+=5;
+                    }
+                }
+            }
+            if(props.attacker.p.talents.includes("Illusionary Attack")){
+                props.defenderDefensiveAbility-=Math.floor(props.attacker.p.combatStats.tp/10);
+            }
+            if(props.defender.p.talents.includes("Illusionary Defense")){
+                props.defenderDefensiveAbility+=Math.floor(props.attacker.p.combatStats.tp/10);
+            }
             switch(props.result){
                 case "Critical":
                     damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.attacker,props.defender,props.skill)*props.finalMultiplier;
+                    if(props.attacker.p.talents.includes("Critical Mastery")) damage+=props.attacker.p.combatStats.skill+props.attacker.p.level;
                     sound = "critical_hit.mp3";
                     break;
                 case "Solid":
@@ -1422,6 +1531,7 @@ Quintus.GameObjects=function(Q){
                     break;
             }
             props.damage = Math.floor(damage);
+            if(props.attacker.p.talents.includes("Fire Strike")&&damage>0) props.damage+=props.attacker.p.combatStats.skill;
             props.sound = sound;
             props.time = 100;
             return props;
@@ -1566,7 +1676,7 @@ Quintus.GameObjects=function(Q){
                     attacker.p.canSetDir = [];
                     break;
                 case "Headbutt":
-                    newText = this.entity.skillFuncs["addStatus"]("initiativeDown",3,"debuff",defender,attacker,{name:"initiative",amount:-(attacker.p.combatStats.skill*2)});
+                    newText = this.entity.skillFuncs["addStatus"]("initiativeDown",1,"debuff",defender,attacker,{name:"initiative",amount:-(attacker.p.combatStats.skill*2)});
                     break;
                 case "Pull":
                     newText = this.entity.skillFuncs.pull(defender,attacker);
@@ -1729,7 +1839,7 @@ Quintus.GameObjects=function(Q){
                                 if(defender.p.tempHp-props.damage>0){
                                     var t = this;
                                     props.afterAttack = function(){
-                                        t.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing"]});
+                                        t.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing",false]});
                                         t.calcAttack(target,defender);
                                     }
                                     
@@ -1813,18 +1923,8 @@ Quintus.GameObjects=function(Q){
                     this.text.push({func:"createCaltrops",obj:this.entity.skillFuncs,props:[targetLoc,user]});
                     break;
                 case "Lightning Storm":
-                    //Get three random locations within the storm and do a 1 aoe + at each location for damage
-                    var radius = skill.aoe[0];
-                    var x = targetLoc[0]-radius;
-                    var y = targetLoc[1]-radius;
-                    var range = radius*2+1;
                     //Hit 3 locations
-                    for(var i=0;i<3;i++){
-                        var xRand = Math.floor(Math.random()*range)+x;
-                        var yRand = Math.floor(Math.random()*range)+y;
-                        this.text.push({func:"spawnMainLightning",obj:this.entity.skillFuncs,props:[[xRand,yRand],user]});
-                    }
-                    this.text.push({func:"waitTime",obj:this,props:[4000]});
+                    this.text.push({func:"spawnLightning",obj:this.entity.skillFuncs,props:[targetLoc,user]});
                     break;
             }
         },
@@ -1853,7 +1953,7 @@ Quintus.GameObjects=function(Q){
             }
             return false;
         },
-        calcAttack:function(attacker,defender,skill){
+        calcAttack:function(attacker,defender,skill,extraAttack){
             if(attacker.p.tempHp<=0||defender.p.tempHp<=0) return;
             //The time it takes between defensive animations
             //This sometimes is different depending on the skill
@@ -1893,7 +1993,7 @@ Quintus.GameObjects=function(Q){
                 var blow = this.getBlow({
                     attackNum:Math.ceil(Math.random()*100),
                     defendNum:Math.ceil(Math.random()*100),
-                    attackerCritChance:attacker.p.combatStats.critChance,
+                    attackerCritChance:attacker.p.combatStats.critChance+(extraAttack&&attacker.p.talents.includes("Critical Flurry"))?20:0,
                     attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
                     attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
                     defenderCounterChance:defender.p.combatStats.counterChance,
@@ -1906,6 +2006,7 @@ Quintus.GameObjects=function(Q){
                 var props = this.processResult({
                     attackingAgain:blow.attackingAgain,
                     result:blow.finalResult,
+                    dir:blow.dir,
                     attackerFainted:attacker.p.fainted,
                     attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
                     attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
@@ -1925,6 +2026,9 @@ Quintus.GameObjects=function(Q){
             if(damage>0){
                 this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker]});
                 this.text.push({func:"showDamage",obj:defender,props:[damage,sound]});
+                if(props.result==="Critical"&&attacker.p.talents.includes("Bloodlust")){
+                    this.text.push(this.entity.skillFuncs.healTp(Math.floor(damage/2),attacker)[0]);
+                }
                 defender.p.tempHp = defender.p.tempHp-damage;
                 if(defender.p.tempHp<=0){
                     props.attackingAgain = false;
@@ -1933,8 +2037,8 @@ Quintus.GameObjects=function(Q){
                     this.text.push({func:"showFainted",obj:defender,props:[attacker]});
                 }
                 if(props.attackingAgain){
-                    this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing"]});
-                    this.calcAttack(attacker,defender,skill);
+                    this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing",false]});
+                    this.calcAttack(attacker,defender,skill,true);
                 } else if(props.afterAttack){
                     props.afterAttack();
                 }
@@ -1994,6 +2098,7 @@ Quintus.GameObjects=function(Q){
             this.text = [];
             var anim = "Attack";
             var sound = "slashing";
+            var dir;
             attacker.p.didAction = true;
             attacker.p.tempHp = attacker.p.combatStats.hp;
             if(skill){
@@ -2004,8 +2109,9 @@ Quintus.GameObjects=function(Q){
                 }
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
+                if(skill.dir==="Forward") dir=attacker.p.dir;
             }
-            this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound]});
+            this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound,dir]});
             //If we have targetted the ground.
             if(!targets.length){
                 this.useGroundSkill(Q.pointer.p.loc,attacker,skill);
@@ -2032,6 +2138,7 @@ Quintus.GameObjects=function(Q){
         },
         processText:function(text){
             var obj = this;
+            if(!text) text = this.text;
             //If the process is over, finish the end the turn
             if(!text.length) return obj.entity.attackFuncs.finishAttack();
             //Get the first function
@@ -2190,42 +2297,40 @@ Quintus.GameObjects=function(Q){
             } else {
                 text.push({func:"addStatus",obj:target,props:[status,num,type,user,props]});
             }
-            //text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[100]});
             return text;
         },
-        removeDebuff:function(name,target,user){
+        removeDebuff:function(name,target,user,callback){
             if(name==="all"){
-                return [{func:"removeAllBadStatus",obj:target,props:[]}];
+                Q.BatCon.attackFuncs.text.unshift({func:"removeAllBadStatus",obj:target,props:[]});
             } else {
-                return [{func:"removeStatus",obj:target,props:[name]}];
+                Q.BatCon.attackFuncs.text.unshift({func:"removeStatus",obj:target,props:[name]});
             }
+            callback();
         },
-        healTp:function(amount,target,user){
-            var text = [];
+        healTp:function(amount,target,user,callback){
             if(target.p.combatStats.tp+amount>target.p.combatStats.maxTp) amount=target.p.combatStats.maxTp-target.p.combatStats.tp;
             target.p.combatStats.tp+=amount;
-            text.push({func:"showHealed",obj:target,props:[amount]});
-            return text;
+            Q.BatCon.attackFuncs.text.unshift({func:"showHealed",obj:target,props:[amount]});
+            callback();
         },
-        healHp:function(amount,target,user){
-            var text = [];
+        healHp:function(amount,target,user,callback){
             if(target.p.combatStats.hp+amount>target.p.combatStats.maxHp) amount=target.p.combatStats.maxHp-target.p.combatStats.hp;
             target.p.combatStats.hp+=amount;
-            text.push({func:"showHealed",obj:target,props:[amount]});
-            return text;
+            Q.BatCon.attackFuncs.text.unshift({func:"showHealed",obj:target,props:[amount]});
+            callback();
         },
         
-        changeCombatStat:function(amount,stat,target,user){
-            var text = [];
+        changeCombatStat:function(amount,stat,target,user,callback){
             target.p.combatStats[stat]+=amount;
-            text.push({func:"showStatUp",obj:target,props:[amount,stat]});
-            return text;
+            Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
+            callback();
         },
-        createMirage:function(loc,user){
+        createMirage:function(loc,user,callback){
             if(user.p.mirage) user.p.mirage.dispellMirage();
             user.p.mirage = user.stage.insert(new Q.Mirage({loc:loc,user:user}));
+            callback();
         },
-        createStabilityField:function(loc,user){
+        createStabilityField:function(loc,user,callback){
             if(user.p.stabilityField) user.p.stabilityField.destroy();
             var tiles = Q.BattleGrid.emptyGrid();
             var field = user.p.stabilityField = user.stage.insert(new Q.TileLayer({
@@ -2257,13 +2362,13 @@ Quintus.GameObjects=function(Q){
             };
             field.add("tween");
             var flash = function(obj){
-                obj.animate({opacity:0.5},2, Q.Easing.Quadratic.InOut).chain({opacity:1},1, Q.Easing.Quadratic.InOut,{callback:function(){flash(obj);}});
+                obj.animate({opacity:0.5},2, Q.Easing.Quadratic.InOut).chain({opacity:1},1, Q.Easing.Quadratic.InOut,{callback:function(){flash(obj);callback();}});
             };
             field.animateTo(1);
             flash(field);
             field.add("stability");
         },
-        createCaltrops:function(loc,user){
+        createCaltrops:function(loc,user,callback){
             if(!Q.BattleGrid.caltrops){
                 var tiles = Q.BattleGrid.emptyGrid();
                 Q.BattleGrid.caltrops = user.stage.insert(new Q.TileLayer({
@@ -2287,6 +2392,7 @@ Quintus.GameObjects=function(Q){
                     }
                 }
             }
+            callback();
         },
         makeIcy:function(locs){
             var dirAngles = {
@@ -2339,59 +2445,75 @@ Quintus.GameObjects=function(Q){
             return 300*locs.length+500;
         },
         //Spawns one of the three random locations
-        spawnMainLightning:function(loc,user){
-            var pos = Q.BatCon.getXY(loc);
-            var lightning = Q.stage(0).insert(new Q.Sprite({
-                x:pos.x,
-                y:pos.y,
-                loc:loc,
-                sprite:"SonicBoom",
-                sheet:"SonicBoom",
-                type:Q.SPRITE_NONE,
-                z:-1
-            }));
-            lightning.add("animation");
-            lightning.play("booming");
-            Q.playSound("fireball.mp3");
-            var obj = this;
-            lightning.on("doneAttack",function(){
-                var target = Q.BattleGrid.getObject(this.p.loc);
-                if(target){
-                    var damage = Math.floor(Math.random()*50)+150+user.p.combatStats.skill;
-                    obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
-                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
+        spawnLightning:function(loc,user){
+            //Get three random locations within the storm and do a 1 aoe + at each location for damage
+            var radius = Q.state.get("allSkills")["Lightning Storm"].aoe[0];
+            var x = loc[0]-radius;
+            var y = loc[1]-radius;
+            var range = radius*2+1;
+            for(var i=0;i<3;i++){
+                var xRand = Math.floor(Math.random()*range)+x;
+                var yRand = Math.floor(Math.random()*range)+y;
+                var tLoc = [xRand,yRand];
+                var pos = Q.BatCon.getXY(tLoc);
+                var lightning = Q.stage(0).insert(new Q.Sprite({
+                    x:pos.x,
+                    y:pos.y,
+                    loc:tLoc,
+                    sprite:"SonicBoom",
+                    sheet:"SonicBoom",
+                    type:Q.SPRITE_NONE,
+                    z:-1
+                }));
+                lightning.add("animation");
+                lightning.play("booming");
+                if(i===0){
+                    Q.playSound("fireball.mp3");
                 }
-                obj.spawnChainLightning([this.p.loc[0]-1,this.p.loc[1]],user);
-                obj.spawnChainLightning([this.p.loc[0],this.p.loc[1]-1],user);
-                obj.spawnChainLightning([this.p.loc[0]+1,this.p.loc[1]],user);
-                obj.spawnChainLightning([this.p.loc[0],this.p.loc[1]+1],user);
-                this.destroy();
-            });
-        },
-        spawnChainLightning:function(loc,user){
-            var pos = Q.BatCon.getXY(loc);
-            var lightning = Q.stage(0).insert(new Q.Sprite({
-                x:pos.x,
-                y:pos.y,
-                loc:loc,
-                sprite:"Whirlwind",
-                sheet:"Whirlwind",
-                type:Q.SPRITE_NONE,
-                z:-1
-            }));
-            lightning.add("animation");
-            lightning.play("winding");
-            Q.playSound("fireball.mp3");
-            var obj = this;
-            lightning.on("doneAttack",function(){
-                var target = Q.BattleGrid.getObject(this.p.loc);
-                if(target){
-                    var damage = Math.floor(Math.random()*25)+25+user.p.combatStats.skill;
-                    obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
-                    obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
-                }
-                this.destroy();
-            });
+                var obj = this;
+                obj.entity.attackFuncs.text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[300]});
+                lightning.on("doneAttack",function(){
+                    var target = Q.BattleGrid.getObject(this.p.loc);
+                    if(target){
+                        var damage = Math.floor(Math.random()*50)+150+user.p.combatStats.skill;
+                        obj.entity.attackFuncs.text.push({func:"waitTime",obj:obj.entity.attackFuncs,props:[300]});
+                        obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
+                        obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
+                    }
+                    var locs = [[this.p.loc[0]-1,this.p.loc[1]],[this.p.loc[0],this.p.loc[1]-1],[this.p.loc[0]+1,this.p.loc[1]],[this.p.loc[0],this.p.loc[1]+1]];
+                    for(var j=0;j<locs.length;j++){
+                        var pos = Q.BatCon.getXY(locs[j]);
+                        var chainLightning = Q.stage(0).insert(new Q.Sprite({
+                            x:pos.x,
+                            y:pos.y,
+                            loc:locs[j],
+                            sprite:"Whirlwind",
+                            sheet:"Whirlwind",
+                            type:Q.SPRITE_NONE,
+                            z:-1
+                        }));
+                        chainLightning.add("animation");
+                        chainLightning.play("winding");
+                        
+                        chainLightning.on("doneAttack",function(){
+                            var target = Q.BattleGrid.getObject(this.p.loc);
+                            if(target){
+                                var damage = Math.floor(Math.random()*25)+25+user.p.combatStats.skill;
+                                obj.entity.attackFuncs.text.push({func:"waitTime",obj:obj.entity.attackFuncs,props:[300]});
+                                obj.entity.attackFuncs.text.push({func:"takeDamage",obj:target,props:[damage,user]});
+                                obj.entity.attackFuncs.text.push({func:"showDamage",obj:target,props:[damage,"hit1.mp3"]});
+                            }
+                            this.destroy();
+                        });
+                        if(j===locs.length-1){
+                            Q.playSound("fireball.mp3");
+                            obj.entity.attackFuncs.text.push({func:"waitTime",obj:obj.entity.attackFuncs,props:[300]});
+                            chainLightning.on("doneAttack",obj.entity.attackFuncs,"processText");
+                        }
+                    }
+                    this.destroy();
+                });
+            }
         }
     });
     //Used for searching by
@@ -2674,17 +2796,18 @@ Quintus.GameObjects=function(Q){
             if(gear.damageReduction) gear.damageReduction = Math.ceil(gear.damageReduction*materialData[1]*qualityData[0]);
             return gear;
         },
-        //TODO: promotions
         getTalents:function(charClass,charGroup,promo){
             promo = promo || 0;
             var talents = Q.state.get("talents");
             //Each character gets at least two talents.
-            var t = [talents.General[charGroup][0],talents.CharClass[charClass][0]];
+            var t = [talents.General[charGroup][0].name,talents.CharClass[charClass][0].name];
+                t.push(talents.CharClass[charClass][1].name);
+                t.push(talents.CharClass[charClass][2].name);
             if(promo===1){
-                t.push(talents.CharClass[charClass][1]);
+                t.push(talents.CharClass[charClass][1].name);
             } else if(promo===2){
-                t.push(talents.CharClass[charClass][1]);
-                t.push(talents.CharClass[charClass][2]);
+                t.push(talents.CharClass[charClass][1].name);
+                t.push(talents.CharClass[charClass][2].name);
             }
             return t;
         },
@@ -2951,8 +3074,12 @@ Quintus.GameObjects=function(Q){
             return Math.floor(end*z+level);
         },
         get_defensiveAbility:function(p){
-            var rfl = p.combatStats.reflexes, encPenalty = p.combatStats.encumbrancePenalty,level = p.level,block = this.getEquipmentProp("block",p.equipment.lefthand);
-            return rfl+encPenalty+level+block;
+            var rfl = p.combatStats.reflexes, 
+                encPenalty = p.talents.includes("Armoured Defense")?0:p.combatStats.encumbrancePenalty,
+                level = p.level,
+                block = this.getEquipmentProp("block",p.equipment.lefthand);
+            var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
+            return rfl+encPenalty+level+block+dualWield;
         },
         get_damageReduction:function(p){
             return this.getEquipmentProp("damageReduction",p.equipment.armour);
@@ -2972,7 +3099,7 @@ Quintus.GameObjects=function(Q){
         get_atkAccuracy:function(p){
             var wsk = p.combatStats.weaponSkill,
                 wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/2), 
-                encPenalty = p.combatStats.encumbrancePenalty,
+                encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
                 level = p.level;
             return Math.min(99,Math.floor(wsk+wield+encPenalty+level));
         },
@@ -2989,7 +3116,8 @@ Quintus.GameObjects=function(Q){
         get_atkSpeed:function(p){
             var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment.righthand),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
             var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
-            var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d));
+            var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
+            var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
             var threshold = 50;
             var amountAboveThreshold = Math.max(0,amount-threshold);
             var max = 80;
@@ -2999,7 +3127,9 @@ Quintus.GameObjects=function(Q){
         },
         get_atkRange:function(p){
             var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
-            return attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
+            var range = attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
+            if(range>1&&p.talents.includes("Sniper")) range+=2;
+            return range;
         },
         get_maxAtkDmg:function(p){
             var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
@@ -3030,7 +3160,8 @@ Quintus.GameObjects=function(Q){
             return Math.floor((enr*f)+level);
         },
         get_moveSpeed:function(p){
-            var encPenalty = p.combatStats.encumbrancePenalty,charGroup = p.charGroup;
+            var encPenalty = p.talents.includes("Armoured March")?0:p.combatStats.encumbrancePenalty,
+                charGroup = p.charGroup;
             var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
             return m + Math.floor(encPenalty/10);
         },
@@ -3075,276 +3206,5 @@ Quintus.GameObjects=function(Q){
         get_efficiency:function(p){
             return p.baseStats.eff;
         }
-        //Generates a character by filling in the blanks for data that is not set
-        /*generateCharacter:function(data){
-            function getSkills(skillsData){
-                var skills = Q.state.get("skills");
-                var keys = Object.keys(skillsData);
-                
-                var sk = {};
-                keys.forEach(function(key){
-                    sk[key] = [];
-                    for(var i=0;i<skillsData[key].length;i++){
-                        sk[key].push(skills[key][skillsData[key][i]]);
-                    }
-                });
-                return sk; 
-            }
-            var char = {};
-            
-            char.officer = data.officer;
-            char.awards = data.awards?data.awards:this.setUpAwards();
-            
-            char.nationality = data.nationality?data.nationality:this.generateProp("nationality",char);
-            char.natNum = Q.getNationalityNum(char.nationality);
-            
-            char.charClass = data.charClass?data.charClass:this.generateProp("charClass",char);
-            char.classNum = Q.getCharClassNum(char.charClass);
-            
-            char.level = data.level?data.level:this.generateProp("level",char);
-            
-            char.skills = data.skills?getSkills(data.skills):this.generateSkills(char);
-            
-            char.gender = data.gender?data.gender:this.generateProp("gender",char);
-            char.exp = data.exp?data.exp:0;
-            char.baseStats = data.baseStats?data.baseStats:this.getStats(char.level,char.classNum);
-            //No equipment is set
-            if(!data.equipment){
-                char.equipment = this.generateAllEquipment(char);
-            } 
-            //Some equipment is set
-            else {
-                char.equipment = {};
-                char.equipment.righthand = data.equipment.righthand?data.equipment.righthand:this.randomizeEquipment("Weapon");
-                char.equipment.lefthand = false;//data.equipment.lefthand?data.equipment.lefthand:this.randomizeEquipment("Weapon");
-                char.equipment.armour = data.equipment.armour?data.equipment.armour:this.randomizeEquipment("Armour");
-                char.equipment.footwear = data.equipment.footwear?data.equipment.footwear:this.randomizeEquipment("Footwear");
-                char.equipment.accessory = false;//data.equipment.accessory?data.equipment.accessory:this.randomizeEquipment("Accessory");
-            }
-            
-            
-            char.value = data.value?data.value:this.generateProp("value",char);
-            char.methodology = data.methodology?data.methodology:this.generateProp("methodology",char);
-            char.loyalty = data.loyalty?data.loyalty:50;
-            char.morale = data.morale?data.morale:50;
-            char.name = data.name?data.name:this.generateProp("name",char);
-            //TODO: make sure that if a character has the same name as another character, they have a different uniqueId
-            char.uniqueId = data.uniqueId?data.uniqueId:0;
-            char.combatStats = this.generateStats(char);
-            
-            //For now, there is only one personality generated
-            char.personality = data.personality?data.personality:[this.generateProp("personality")];
-            
-            //Clone the scenesList. When an event is shown from this character, remove it.
-            char.events =  JSON.parse(JSON.stringify(Q.state.get("scenesList").Character));
-            
-            //Checks if this character should trigger an event
-            char.checkEvents = function(prop){
-                //Step 1: Check if any conditions are met to do an event
-                //Step 2: Make sure the event hasn't been completed yet
-                //Step 3: Add the event to the potentialEvents in Q.state
-                var scene = "";
-                var event = "";
-                //Only do events based on what property has changed (So we don't get unrelated events triggering).
-                switch(prop){
-                    case "feasted":
-                        scene = "Feasts";
-                        //If the character is Hedonistic
-                        if(this.hasPersonality("Hedonistic")){
-                            event = this.findEvent(scene,"HedonisticFeast");
-                        }
-                        //The character has never been to a feast and is the guest of honour.
-                        else if(this.awards.feasted===1&&this.awards.guestOfHonour===1){
-                            event = this.findEvent(scene,"Feast1");
-                        } 
-                        //The character has been to a feast before and is now the guest of honour.
-                        else if(this.awards.feasted>2&this.awards.guestOfHonour===1){
-                            event = this.findEvent(scene,"Feast2");
-                        }
-                        //If the character has been the guest of honour 5 times
-                        else if(this.awards.guestOfHonour>=5){
-                            event = this.findEvent(scene,"Feast3");
-                        }
-                        break;
-                    case "enemiesDefeated":
-                        scene = "EnemiesDefeated";
-                        //Enemies defeated is at least 200
-                        if(this.awards.enemiesDefeated>=200){
-                            event = this.findEvent(scene,"EnemiesDefeated200");
-                        }
-                        //Enemies defeated is at least 100
-                        else if(this.awards.enemiesDefeated>=100){
-                            event = this.findEvent(scene,"EnemiesDefeated100");
-                        } 
-                        //Enemies defeated is at least 50
-                        else if(this.awards.enemiesDefeated>=50){
-                            event = this.findEvent(scene,"EnemiesDefeated50");
-                        }
-                        break;
-                    case "assisted":
-                        scene = "Assisted";
-                        //Assisted is at least 500
-                        if(this.awards.assisted>=500){
-                            event = this.findEvent(scene,"Assisted500");
-                        }
-                        //Assisted is at least 250
-                        else if(this.awards.assisted>=250){
-                            event = this.findEvent(scene,"Assisted250");
-                        } 
-                        //Assisted is at least 100
-                        else if(this.awards.assisted>=100){
-                            event = this.findEvent(scene,"Assisted100");
-                        }
-                        break;
-                    case "battlesParticipated":
-                        scene = "BattlesParticipated";
-                        if(this.awards.battlesParticipated>=20){
-                            event = this.findEvent(scene,"BattlesParticipated20");
-                        }
-                        else if(this.awards.battlesParticipated>=10){
-                            event = this.findEvent(scene,"BattlesParticipated10");
-                        } 
-                        else if(this.awards.battlesParticipated>=5){
-                            event = this.findEvent(scene,"BattlesParticipated5");
-                        }
-                        break;
-                    case "damageDealt":
-                        scene = "DamageDealt";
-                        if(this.awards.damageDealt>=500){
-                            event = this.findEvent(scene,"DamageDealt5000");
-                        }
-                        else if(this.awards.damageDealt>=2500){
-                            event = this.findEvent(scene,"DamageDealt2500");
-                        } 
-                        else if(this.awards.damageDealt>=500){
-                            event = this.findEvent(scene,"DamageDealt500");
-                        }
-                        break;
-                    case "damageTaken":
-                        scene = "DamageTaken";
-                        if(this.awards.damageTaken>=10000){
-                            event = this.findEvent(scene,"DamageTaken10000");
-                        }
-                        else if(this.awards.damageTaken>=5000){
-                            event = this.findEvent(scene,"DamageTaken5000");
-                        } 
-                        else if(this.awards.damageTaken>=1000){
-                            event = this.findEvent(scene,"DamageTaken1000");
-                        }
-                        break;
-                    case "selfHealed":
-                        scene = "SelfHealed";
-                        if(this.awards.selfHealed>=5000){
-                            event = this.findEvent(scene,"SelfHealed5000");
-                        }
-                        else if(this.awards.damageDealt>=2500){
-                            event = this.findEvent(scene,"SelfHealed2500");
-                        } 
-                        else if(this.awards.damageDealt>=500){
-                            event = this.findEvent(scene,"SelfHealed500");
-                        }
-                        break;
-                    case "targetHealed":
-                        scene = "TargetHealed";
-                        if(this.awards.targetHealed>=10000){
-                            event = this.findEvent(scene,"TargetHealed10000");
-                        }
-                        else if(this.awards.targetHealed>=5000){
-                            event = this.findEvent(scene,"TargetHealed5000");
-                        } 
-                        else if(this.awards.targetHealed>=1000){
-                            event = this.findEvent(scene,"TargetHealed1000");
-                        }
-                        break;
-                    case "wounded":
-                        scene = "Wounded";
-                        if(this.awards.timesWounded>=20){
-                            event = this.findEvent(scene,"Wounded20");
-                        }
-                        else if(this.awards.timesWounded>=10){
-                            event = this.findEvent(scene,"Wounded10");
-                        } 
-                        else if(this.awards.timesWounded>=5){
-                            event = this.findEvent(scene,"Wounded5");
-                        }
-                        break;
-                    case "rested":
-                        scene = "Rested";
-                        if(this.awards.timesRested>=20){
-                            event = this.findEvent(scene,"Rested20");
-                        }
-                        else if(this.awards.timesRested>=10){
-                            event = this.findEvent(scene,"Rested10");
-                        } 
-                        else if(this.awards.timesRested>=5){
-                            event = this.findEvent(scene,"Rested5");
-                        }
-                        break;
-                    //Each time the character is mentored, they get a scene
-                    case "mentored":
-                        scene = "Mentored";
-                        if(this.awards.mentored>=3){
-                            event = this.findEvent(scene,"Mentored3");
-                        }
-                        else if(this.awards.mentored>=2){
-                            event = this.findEvent(scene,"Mentored2");
-                        } 
-                        else if(this.awards.mentored>=1){
-                            event = this.findEvent(scene,"Mentored1");
-                        }
-                        break;
-                    case "hunted":
-                        scene = "Hunted";
-                        if(this.awards.timesHunted>=3){
-                            event = this.findEvent(scene,"Hunted3");
-                        }
-                        else if(this.awards.timesHunted>=2){
-                            event = this.findEvent(scene,"Hunted2");
-                        } 
-                        else if(this.awards.timesHunted>=1){
-                            event = this.findEvent(scene,"Hunted1");
-                        }
-                        break;
-                    //Any custom events that require unique conditions
-                    case "custom":
-                        scene = "Custom";
-                        //Nomadic Legionnaire's backstory is triggered when the reputation with Venoriae is low and loyalty of the character is high.
-                        if(Q.state.get("saveData").relations.Venoriae[0]<=30&&this.loyalty>=70){
-                            event = this.findEvent(scene,"NomadicLegionnaireBackstory");
-                        }
-                        break;
-                }
-                if(scene.length&&event.length) Q.state.get("potentialEvents").push([char,scene,event]);
-            };
-            //Search to see if the character has triggered this event already.
-            char.findEvent = function(scene,event){
-                return this.events[scene].filter(function(ev){
-                    return ev===event;
-                })[0];
-            };
-            //Check through the character's personality array to see if they have a certain personality.
-            char.hasPersonality = function(per){
-                var hasPersonality = false;
-                this.personality.forEach(function(p){
-                    if(p===per) hasPersonality = true;
-                });
-                return hasPersonality;
-            };
-            return char;
-        },
-        setUpAwards:function(){
-            var awards = Q.state.get("awards");
-            var keys = Object.keys(awards);
-            var obj = {};
-            //The default value for all awards is 0
-            keys.forEach(function(key){
-                obj[key] = 0;
-            });
-            return obj;
-        },
-        setAward:function(obj,prop,value){
-            if(!obj) return;
-            obj.p.awards[prop]+=value;
-        }*/
     });
 };

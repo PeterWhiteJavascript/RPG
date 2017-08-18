@@ -331,12 +331,14 @@ Quintus.HUD=function(Q){
         added:function(){
             //Set the defaults
             this.changeMenuOpts();
-        },
-        turnOnInputs:function(){
+            this.entity.p.disabled = false;
             this.entity.on("step",this,"checkInputs");
         },
+        turnOnInputs:function(){
+            this.entity.p.disabled = false;
+        },
         turnOffInputs:function(){
-            this.entity.off("step",this,"checkInputs");
+            this.entity.p.disabled = true;
         },
         changeMenuOpts:function(selected,menuNum){
             this.menuNum = menuNum?menuNum:0;
@@ -376,6 +378,7 @@ Quintus.HUD=function(Q){
             return to;
         },
         checkInputs:function(){
+            if(this.entity.p.disabled) return;
             if(Q.inputs['up']){
                 var to = this.checkInBoundsUp(this.selected-1);
                 to = this.skipGray(to,-1);
@@ -836,8 +839,8 @@ Quintus.HUD=function(Q){
             this.insert(new Q.UI.Text({label:"HP: "+stats.hp+"/"+stats.maxHp,x:5+this.p.w/4,y:5,size:20,cx:0,cy:0,family:"Consolas"}));
             this.insert(new Q.UI.Text({label:"TP: "+stats.tp+"/"+stats.maxTp,x:5+this.p.w/4+this.p.w/2,y:5,size:20,cx:0,cy:0,family:"Consolas"}));
             var leftCont = this.insert(new Q.UI.Container({h:this.p.h-50,w:this.p.w/2-7.5,x:5,y:45,fill:"green",cx:0,cy:0}));
-            var leftStats = [stats.maxAtkDmg,stats.minAtkDmg,stats.maxSecondaryDmg,stats.minSecondaryDmg,stats.critChance,stats.atkSpeed,stats.atkRange,stats.moveSpeed];
-            var leftLabels = ["Maximum Attack Damage","Minimum Attack Damage","Maximum Secondary Damage","Minimum Secondary Damage","Critical Chance","Attack Speed","Attack Range","Move Speed"];
+            var leftStats = [stats.maxAtkDmg,stats.minAtkDmg,stats.maxSecondaryDmg,stats.minSecondaryDmg,stats.critChance,stats.atkSpeed,stats.atkRange,stats.atkAccuracy,stats.moveSpeed];
+            var leftLabels = ["Maximum Attack Damage","Minimum Attack Damage","Maximum Secondary Damage","Minimum Secondary Damage","Critical Chance","Attack Speed","Attack Range","Attack Accuracy","Move Speed"];
             for(var i=0;i<leftStats.length;i++){
                 leftCont.insert(new Q.UI.Text({label:leftLabels[i],x:5,y:5+i*26,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
                 leftCont.insert(new Q.UI.Text({label:""+leftStats[i],x:leftCont.p.w-5,y:5+i*26,align:"right",size:16,cx:0,cy:0,family:"Consolas"}));
@@ -865,7 +868,7 @@ Quintus.HUD=function(Q){
             var talents = this.p.target.p.talents;
             var prevHeight = 0;
             for(var i=0;i<talents.length;i++){
-                var text = this.insert(new Q.UI.Text({label:talents[i].name+": "+talents[i].desc,x:5,y:5+i*prevHeight,size:12,cx:0,cy:0,align:"left",family:"Consolas"}));
+                var text = this.insert(new Q.UI.Text({label:talents[i],x:5,y:5+i*prevHeight,size:12,cx:0,cy:0,align:"left",family:"Consolas"}));
                 text.calcSize();
                 prevHeight = text.p.h;
             }
@@ -1097,6 +1100,9 @@ Quintus.HUD=function(Q){
                     var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles);
                     if(skill.range[2]!=="dead"){
                         targets = Q.BattleGrid.removeDead(targets);
+                    }
+                    if(skill.type==="Debilitate"){
+                        targets = Q.BattleGrid.removeDebilitateResisted(targets);
                     }
                     //Remove any characters that are not affected.
                     if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));

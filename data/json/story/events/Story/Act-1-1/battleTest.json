@@ -18,7 +18,7 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Skirmisher",
+            "handle": "Elementalist",
             "uniqueId": 0,
             "loc": [
                 12,
@@ -29,7 +29,7 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Skirmisher",
+            "handle": "Legionnaire",
             "uniqueId": 0,
             "loc": [
                 13,
@@ -52,11 +52,59 @@
         {
             "file": "Proto.json",
             "group": "Low",
-            "handle": "Skirmisher",
+            "handle": "Archer",
             "uniqueId": 0,
             "loc": [
                 12,
                 12
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                13
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                14
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                12
+            ],
+            "dir": "down"
+        },
+        
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                13
             ],
             "dir": "down"
         }
