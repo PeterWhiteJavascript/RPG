@@ -1,7 +1,7 @@
 {
     "startSceneName":"Act-1-1",
-    "startSceneType":"Story",
-    "startEventName":"battleTest",
+    "startSceneType":"Battle",
+    "startEventName":"fullbattletest",
     "day":10,
     "gold":1000,
     "allies":[
