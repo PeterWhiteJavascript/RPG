@@ -103,9 +103,11 @@ Q.newGame=function(options){
         var storyAlex = Q.charGen.generateCharacter(alex,"alex");
         //For now, alex is the only character
         var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
-        
+        var random1 = Q.charGen.generateCharacter({},"roster");
+        var random2 = Q.charGen.generateCharacter({},"roster");
+        console.log(random1,random2)
         //console.log(legion)
-        Q.state.set("allies",[storyAlex,astraea]);
+        Q.state.set("allies",[storyAlex,astraea,random1,random2]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             consumable:[

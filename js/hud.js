@@ -425,7 +425,7 @@ Quintus.HUD=function(Q){
                 fill:"blue",
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
-                options:[["Move","Attack","Skill","Lift","Item","Status","Wait"],["Status","Exit Menu"],[]],
+                options:[["Move","Attack","Skill","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[]
             });
@@ -1578,8 +1578,8 @@ Quintus.HUD=function(Q){
             this.entity.off("pressedConfirm");
             this.entity.off("pressedBack");
             this.entity.off("step",this,"step");
-            this.entity.del("directionControls");
             this.entity.stage.remove(this.dirTri);
+            this.entity.del("directionControls");
         },
         step:function(dt){
             var dir;

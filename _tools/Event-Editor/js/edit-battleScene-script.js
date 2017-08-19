@@ -23,6 +23,47 @@ Q.state.set("options",{
     soundEnabled:true
 });
 
+
+//Wraps the text to fit inside a container.
+//Really useful for long descriptions
+//Automatically run when the label is changed and the text is inside a container
+//label is the new incoming label
+//maxWidth is either the textWidth property of the container that the text is in, or it is the container's w
+//I might delete this if we only use css for this display.
+Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
+    var ctx = Q.ctx;
+    var split = label.split(' ');
+    var newLabel = '';
+    var tempLabel = '';
+    var spaceWidth = ctx.measureText(" ").width;
+    var spaces = 0;
+    //Loop through the array of the split label
+    for(var i=0;i<split.length;i++){
+        //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
+        //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
+        split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
+        //The upcoming width for this word
+        var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
+        for(var j=0;j<split[i].length;j++){
+            var measured = ctx.measureText(tempLabel);
+            //Move to a new line
+            if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
+                newLabel+="\n";
+                tempLabel = '';
+                spaces = 0;
+            } else {
+                tempLabel+=split[i][j];
+            }
+        }
+        newLabel+=split[i];
+        if(i!==split.length-1){
+            newLabel+=" ";
+        }
+        spaces++;
+    }
+    return newLabel;
+};
+
 var allowSpriteSelecting = true;
 var creatingScriptItem = false;
 
@@ -36,15 +77,15 @@ $("#images-holder").children("option").each(function(i,itm){
 Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
     //Sprites
     var toSheet= [
-        ['archer','archer.png',24,48,6,6,288,338],
-        ['assassin','assassin.png',24,48,6,6,288,338],
-        ['berserker','berserker.png',24,48,6,6,288,338],
-        ['elementalist','elementalist.png',24,48,6,6,288,338],
-        ['healer','healer.png',24,48,6,6,288,338],
-        ['illusionist','illusionist.png',24,48,6,6,288,338],
-        ['legionnaire','legionnaire.png',24,48,6,14,288,338],
-        ['skirmisher','skirmisher.png',24,48,6,6,288,338],
-        ['vanguard','vanguard.png',24,48,6,6,288,338]
+        ['archer','archer.png',24,24,0,0,192,72],
+        ['assassin','assassin.png',24,24,0,0,192,72],
+        ['berserker','berserker.png',24,24,0,0,192,72],
+        ['elementalist','elementalist.png',24,24,0,0,192,72],
+        ['healer','healer.png',24,24,0,0,192,72],
+        ['illusionist','illusionist.png',24,24,0,0,192,72],
+        ['legionnaire','legionnaire.png',24,24,0,0,192,72],
+        ['skirmisher','skirmisher.png',24,24,0,0,192,72],
+        ['vanguard','vanguard.png',24,24,0,0,192,72],
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
@@ -60,52 +101,58 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
     };
     var standRate = 1/3;
     var walkRate = 1/6;
+    var supafAst = 1/12;
+    var tooFast = 1/24;
     Q.animations("Character", {
-        standingleft:{ frames: [1,2], rate:standRate},
-        walkingleft:{ frames: [1,2,3], rate:walkRate},
-        attackingleft:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
-        missedleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
-        counteringleft:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
-        liftleft:{frames:[8,8,8],rate:standRate},
-        liftedleft:{frames:[50],rate:standRate},
-        hurtleft:{frames:[48],rate:standRate},
-        dyingleft:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
-        deadleft:{frames:[50],rate:standRate},
+        standingup:{ frames: [0,1], rate:standRate},
+        walkingup:{ frames: [0,1], rate:walkRate},
+        attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+        missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneMissed"},
+        counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
+        liftup:{frames:[0,0,0],rate:standRate},
+        liftedup:{frames:[6],rate:standRate},
+        hurtup:{frames:[1],rate:standRate},
+        dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
+        faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+        deadup:{frames:[0],rate:standRate},
         
-        standingright:{ frames: [5,6], rate:standRate},
-        walkingright:{ frames: [5,6,7], rate:walkRate},
-        attackingright:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
-        missedright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
-        counteringright:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
-        liftright:{frames:[9,9,9],rate:standRate},
-        liftedright:{frames:[51],rate:standRate},
-        hurtright:{frames:[49],rate:standRate},
-        dyingright:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
-        deadright:{frames:[51],rate:standRate},
+        standingright:{ frames: [2,3], rate:standRate},
+        walkingright:{ frames: [2,3], rate:walkRate},
+        attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+        missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneMissed"},
+        counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
+        liftright:{frames:[2,2,2],rate:standRate},
+        liftedright:{frames:[6],rate:standRate},
+        hurtright:{frames:[3],rate:standRate},
+        dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
+        faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+        deadright:{frames:[2],rate:standRate},
         
-        standingup:{ frames: [5,6], rate:standRate},
-        walkingup:{ frames: [5,6,7], rate:walkRate},
-        attackingup:{ frames: [5,6,7,7,6,5], rate:walkRate, loop:false,trigger:"doneAttack"},
-        missedup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"playStand"},
-        counteringup:{frames:[9,9,9],rate:standRate,loop:false,trigger:"doneCounter"},
-        liftup:{frames:[9,9,9],rate:standRate},
-        liftedup:{frames:[51],rate:standRate},
-        hurtup:{frames:[49],rate:standRate},
-        dyingup:{frames:[49,51],rate:standRate,loop:false,trigger:"doneDying"},
-        deadup:{frames:[51],rate:standRate},
+        standingleft:{ frames: [4,5], rate:standRate},
+        walkingleft:{ frames: [4,5], rate:walkRate},
+        attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+        missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneMissed"},
+        counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
+        liftleft:{frames:[4,4,4],rate:standRate},
+        liftedleft:{frames:[6],rate:standRate},
+        hurtleft:{frames:[5],rate:standRate},
+        dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
+        faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+        deadleft:{frames:[4],rate:standRate},
         
-        standingdown:{ frames: [1,2], rate:standRate},
-        walkingdown:{ frames: [1,2,3], rate:walkRate},
-        attackingdown:{ frames: [1,2,3,3,2,1], rate:walkRate, loop:false,trigger:"doneAttack"},
-        misseddown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"playStand"},
-        counteringdown:{frames:[8,8,8],rate:standRate,loop:false,trigger:"doneCounter"},
-        liftdown:{frames:[8,8,8],rate:standRate},
-        lifteddown:{frames:[50],rate:standRate},
-        hurtdown:{frames:[48],rate:standRate},
-        dyingdown:{frames:[48,50],rate:standRate,loop:false,trigger:"doneDying"},
-        deaddown:{frames:[50],rate:standRate},
+        standingdown:{ frames: [6,7], rate:standRate},
+        walkingdown:{ frames: [6,7], rate:walkRate},
+        attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+        misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneMissed"},
+        counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
+        liftdown:{frames:[6,6,6],rate:standRate},
+        lifteddown:{frames:[6],rate:standRate},
+        hurtdown:{frames:[7],rate:standRate},
+        dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
+        faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+        deaddown:{frames:[6],rate:standRate},
         
-        levelingUp:{frames:[12,12],rate:standRate,loop:false,trigger:"playStand"}
+        levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
     });
     //Load the json data
     Q.load("../../data/json/data/character-generation.json",function(){
@@ -166,20 +213,12 @@ Q.Sprite.extend("CharacterSprite",{
     setDir:function(){
         if(Q.inputs['left']){
             this.p.dir = 'left';
-            //TEMP
-            this.p.flip = false;
         } else if(Q.inputs['right']){
             this.p.dir = 'right';
-            //TEMP
-            this.p.flip = 'x';
         } else if(Q.inputs['down']){
             this.p.dir = 'down';
-            //TEMP
-            this.p.flip = 'x';
         } else if(Q.inputs['up']){
             this.p.dir = 'up';
-            //TEMP
-            this.p.flip = false;
         }
         this.play("standing"+this.p.dir);
     },
@@ -324,7 +363,7 @@ var DC = {
                     //The script item is text
                     if(itm.text){
                         var text = itm.text[0].slice(0,20);
-                        $(group).children(".script-items").append('<div class="script-item text" props='+JSON.stringify({text:itm.text,asset1:itm.asset1,asset2:itm.asset2,pos:itm.pos,autoCycle:itm.autoCycle,noCycle:itm.noCycle})+'><div class="script-item-name">'+text+'</div><div class="btn btn-group remove-script-item remove-choice">x</div></div>');
+                        $(group).children(".script-items").append("<div class='script-item text' props='"+JSON.stringify(itm)+"'><div class='script-item-name'>"+text+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
                     } 
                     //Otherwise it is a func
                     else if(itm.func){
@@ -1569,8 +1608,8 @@ var createSaveForm = function(form){
         });
     });
     var json = JSON.stringify(data);
-    
-    form.append("<input type='text' name='data' value="+json+">");
+    //Won't do single quotes
+    form.append("<input type='text' name='data' value='"+json+"'>");
     return form;
 };
 $(document).on("click","#menu-save-file",function(e){

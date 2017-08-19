@@ -1,10 +1,10 @@
 {
     "name": "battleTest",
-    "desc": "Test for battles. Not made in editor",
+    "desc": "Test for battles. Not made in editor for now",
     "kind": "battle",
     "map": "battle_balance1.tmx",
     "music":"demo.mp3",
-    "placementSquares":[[5,10],[5,11],[5,12]],
+    "placementSquares":[[11,12],[12,12],[11,13],[12,13]],
     "maxAllies":3,
     "events":[
         {
@@ -16,95 +16,57 @@
     ],
     "characters": [
         {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Elementalist",
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                10,
+                8
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                9,
+                8
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                11,
+                16
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 1,
+            "loc": [
+                12,
+                16
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
             "uniqueId": 0,
             "loc": [
                 12,
-                10
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Legionnaire",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                11
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Berserker",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                11
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                12
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                13
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                12,
-                14
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                12
-            ],
-            "dir": "down"
-        },
-        
-        {
-            "file": "Proto.json",
-            "group": "Low",
-            "handle": "Archer",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                13
+                9
             ],
             "dir": "down"
         }

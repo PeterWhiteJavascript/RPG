@@ -1,0 +1,136 @@
+{
+    "Main": {
+        "Bandit-Legionnaire": {
+            "handle": "Bandit-Legionnaire",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 2,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Legionnaire"
+        },
+        "Bandit-Archer": {
+            "handle": "Bandit-Archer",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 2,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Long Shot",
+                "Armour Piercing Shot",
+                "Rapid Shot",
+                "Critical Shot",
+                "Painful Shot",
+                "Sniper Shot"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Archer"
+        },
+        "Bandit-Leader": {
+            "handle": "Bandit-Leader",
+            "name": "Bandit Guy",
+            "levelmin": 3,
+            "levelmax": 3,
+            "gender": "Male",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Brass",
+                    "Ax"
+                ],
+                "lefthand": [
+                    "Default",
+                    "None",
+                    "None"
+                ],
+                "armour": [
+                    "Average",
+                    "Brass",
+                    "Outfit"
+                ],
+                "footwear": [
+                    "Average",
+                    "Soft Leather",
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "High"
+            ],
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Berserker"
+        }
+    }
+}

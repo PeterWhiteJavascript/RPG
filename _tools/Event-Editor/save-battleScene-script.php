@@ -8,7 +8,6 @@ if(isset($_POST['data'])){
     $event['script'] = json_decode($_POST['data'])->scriptData;
 }
 file_put_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json', json_encode($event,JSON_PRETTY_PRINT));
-
 ?>
 <!DOCTYPE html>
 <html>

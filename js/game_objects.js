@@ -97,6 +97,105 @@ Quintus.GameObjects=function(Q){
             }
         }
     });
+    Q.component("pointerDropControls",{
+        added:function(){
+            this.entity.show();
+            this.entity.on("pressedConfirm",this,"checkValidToDrop");
+            this.entity.on("pressedBack",this,"pressedBack");
+            this.entity.on("checkConfirm");
+            this.entity.on("checkInputs");
+        },
+        
+        remove:function(){
+            this.entity.hide();
+            this.entity.off("pressedConfirm",this,"checkValidToDrop");
+            this.entity.off("pressedBack",this,"pressedBack");
+            this.entity.off("checkInputs");
+            this.entity.off("checkConfirm");
+            this.entity.del("pointerDropControls");
+        },
+        checkValidToDrop:function(){
+            var user = Q.BatCon.turnOrder[0];
+            var loc = this.entity.p.loc;
+            var objAt = user.p.lifting;
+            if(!Q.BattleGrid.getObject(loc)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),objAt)!=="impassable"){
+                if(Q.BattleGrid.getTileDistance(user.p.loc,loc)>1) return Q.playSound("cannot_do.mp3");
+                Q.BatCon.dropObject(user,objAt,loc);
+                user.p.didAction = true;
+                objAt.hideStatusDisplay();
+                if(user.p.didMove){
+                    Q.RangeGridObj.fullDestroy();
+                    this.remove();
+                    Q.BatCon.endTurn();
+                } else {
+                    this.pressedBack();
+                    Q.stage(2).ActionMenu.displayMenu(0,0);
+                }
+            } else {
+                Q.playSound("cannot_do.mp3");
+            }
+        },
+        showMenu:function(){
+            Q.stage(2).ActionMenu.show();
+            Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+        },
+        pressedBack:function(){
+            this.entity.snapTo(Q.BatCon.turnOrder[0]);
+            Q.RangeGridObj.fullDestroy();
+            this.remove();
+            this.showMenu();
+        }
+    });
+    Q.component("pointerLiftControls",{
+        added:function(){
+            this.entity.show();
+            this.entity.on("pressedConfirm",this,"checkValidToCarry");
+            this.entity.on("pressedBack",this,"pressedBack");
+            this.entity.on("checkConfirm");
+            this.entity.on("checkInputs");
+        },
+        remove:function(){
+            this.entity.hide();
+            this.entity.off("pressedConfirm",this,"checkValidToCarry");
+            this.entity.off("pressedBack",this,"pressedBack");
+            this.entity.off("checkInputs");
+            this.entity.off("checkConfirm");
+            this.entity.del("pointerLiftControls");
+        },
+        checkValidToCarry:function(){
+            var user = Q.BatCon.turnOrder[0];
+            var loc = this.entity.p.loc;
+            var objAt = Q.BattleGrid.getObject(loc);
+            if(objAt&&objAt.validToCarry()){
+                if(Q.BattleGrid.getTileDistance(user.p.loc,objAt.p.loc)>1) return Q.playSound("cannot_do.mp3");
+                Q.BatCon.liftObject(user,objAt);
+                user.p.didAction = true;
+                user.p.lifting = objAt;
+                objAt.p.lifted = user;
+                objAt.hideStatusDisplay();
+                if(user.p.didMove){
+                    Q.RangeGridObj.fullDestroy();
+                    this.remove();
+                    Q.BatCon.endTurn();
+                } else {
+                    this.pressedBack();
+                    Q.stage(2).ActionMenu.displayMenu(0,0);
+                }
+            } else {
+                Q.playSound("cannot_do.mp3");
+            }
+        },
+        showMenu:function(){
+            Q.stage(2).ActionMenu.show();
+            Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+        },
+        pressedBack:function(){
+            this.entity.snapTo(Q.BatCon.turnOrder[0]);
+            Q.RangeGridObj.fullDestroy();
+            this.remove();
+            this.showMenu();
+        }
+    });
     
     Q.component("pointerAttackControls",{
         added:function(){
@@ -173,12 +272,13 @@ Quintus.GameObjects=function(Q){
                 }
             } else {
                 this.entity.off("checkInputs");
-                this.entity.off("inputMoved");
+                this.entity.off("inputMoved",this,"inputMoved");
             }
             if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
             this.entity.off("checkConfirm");
             this.entity.p.skill = false;
             this.entity.del("pointerAttackControls");
+            this.entity.p.user = false;
         },
         moveTiles:function(){
             Q.pointer.AOEGuide.moveTiles(this.entity);
@@ -840,10 +940,10 @@ Quintus.GameObjects=function(Q){
         },
         //Start placing allies at the start of a battle
         startPlacingAllies:function(){
-            var t = this;
+            /*var t = this;
                 t.startBattle();
                 
-            return;
+            return;*/
             this.genPlaceableAllies();
             Q.pointer.add("pointerPlaceAllies");
         },
@@ -927,9 +1027,9 @@ Quintus.GameObjects=function(Q){
             }
         },
         valid:function(obj){
-            if(obj.p.combatStats.hp>0&&!obj.p.fainted){
+            if(!obj.hasStatus("dead")&&!obj.hasStatus("bleedingOut")&&!obj.hasStatus("fainted")&&!obj.p.lifted){
                 return true;
-            } else if(obj.p.fainted){ 
+            } else if(obj.hasStatus("fainted")){ 
                 obj.advanceStatus();
                 if(!obj.p.status.fainted){
                     obj.playStand();
@@ -947,8 +1047,8 @@ Quintus.GameObjects=function(Q){
                     obj.advanceStatus();
                     if(!obj.p.status.bleedingOut){
                         obj.p.angle = 90;
-                        obj.removeStatus("bleedingOut");
-                        obj.addStatus("dead",99,"debuff",obj);
+                        //obj.removeStatus("bleedingOut");
+                        obj.addStatus("dead",999,"debuff",obj);
                     }
                 }
             }
@@ -1110,7 +1210,7 @@ Quintus.GameObjects=function(Q){
         },
         //Adds an object to battle (currently used when dropping a lifted object)
         addToBattle:function(obj){
-            this.addToTurnOrder(obj);
+            //this.addToTurnOrder(obj);
             this.addToTeam(obj);
         },
         //Removes the object from battle (at end of turn)
@@ -1260,15 +1360,19 @@ Quintus.GameObjects=function(Q){
             //Remove the obj from battle (lifted units cannot be targetted nor take up space)
             Q.BattleGrid.removeObjectFromBattle(obj);
             //The lifts object doesn't get a turn
-            this.removeFromTurnOrder(obj);
-            obj.p.loc = [user.p.loc[0],user.p.loc[1]-1];
+            //this.removeFromTurnOrder(obj);
+            obj.p.loc = [user.p.loc[0],user.p.loc[1]-0.5];
             this.setXY(obj);
             obj.p.z = user.p.y+Q.tileH;
             obj.playLifted(obj.p.dir);
+            obj.p.angle = 90;
             user.playLift(user.p.dir);
         },
         dropObject:function(user,obj,locTo){
             user.p.lifting = false;
+            obj.p.lifted = false;
+            obj.p.angle = 0;
+            obj.revealStatusDisplay();
             obj.p.loc = locTo;
             Q.BatCon.setXY(obj);
             obj.p.z = obj.p.y;
@@ -1283,15 +1387,7 @@ Quintus.GameObjects=function(Q){
                 //Add the object to allies/enemies and the turnorder
                 this.addToBattle(obj);
             }
-        },
-        //Returns true if the object is liftable
-        isLiftable:function(user,obj){
-            if(!obj.p.lifting&&(obj.p.interactable||obj.p.team===user.p.team||obj.p.combatStats.hp<=0)){
-                return true;
-            }
-            return false;
         }
-
     });
     
     Q.component("attackFuncs",{
@@ -2766,7 +2862,7 @@ Quintus.GameObjects=function(Q){
                 case "None":
                     return false;
                 default:
-                    return [gear,material];
+                    return [gearName,material];
             }
         },
         //Changes the equipment from an array to an object containing all of the stats from equipment.json
@@ -2786,6 +2882,7 @@ Quintus.GameObjects=function(Q){
             });
             var materialData = this.equipment.Materials[gear.material];
             var qualityData = this.equipment.Quality[gear.quality];
+            
             gear.weight = Math.ceil(gear.weight+materialData[0]);
             gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]);
             if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
@@ -2801,8 +2898,8 @@ Quintus.GameObjects=function(Q){
             var talents = Q.state.get("talents");
             //Each character gets at least two talents.
             var t = [talents.General[charGroup][0].name,talents.CharClass[charClass][0].name];
-                t.push(talents.CharClass[charClass][1].name);
-                t.push(talents.CharClass[charClass][2].name);
+                /*t.push(talents.CharClass[charClass][1].name);
+                t.push(talents.CharClass[charClass][2].name);*/
             if(promo===1){
                 t.push(talents.CharClass[charClass][1].name);
             } else if(promo===2){

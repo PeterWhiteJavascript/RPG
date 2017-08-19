@@ -971,7 +971,6 @@ Quintus.UIObjects=function(Q){
             $(this.p.container).append(this.p.rightImage);
             $(this.p.container).append(this.p.textBox);
             $(document.body).append(this.p.container);
-            
             $(this.p.leftImage).on("error",function(){$(this).attr("src","images/story/empty.png");});
             $(this.p.rightImage).on("error",function(){$(this).attr("src","images/story/empty.png");});
             
@@ -1181,7 +1180,6 @@ Quintus.UIObjects=function(Q){
                 spr.animate({x:to.p.x,y:to.p.y},speed?speed:1,Q.Easing.Quadratic.InOut,{callback:function(){
                     spr.followObj(to);
                     t.forceCycle();
-                    t.showDialogueBox();
                 }});
             } 
             //Go to location

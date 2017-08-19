@@ -63,7 +63,7 @@ Quintus.SceneFuncs=function(Q){
     Q.placeCharacters = function(characters,stage){
         var charData = [];
         //Find the character in the files
-        /*
+        
         var files = Q.state.get("characterFiles");
         characters.forEach(function(char){
             var ref = files[char.file][char.group][char.handle];
@@ -85,7 +85,8 @@ Quintus.SceneFuncs=function(Q){
                 uniqueId:char.uniqueId
             };
             charData.push(newChar);
-        });
+             stage.insert(new Q.StoryCharacter(newChar));
+        });/*
         var chars = [];
         charData.forEach(function(char){
             var character;
@@ -96,12 +97,6 @@ Quintus.SceneFuncs=function(Q){
             if(char.charClass){
                 char.classNum = Q.charGen.getClassNum(char.charClass);
             }
-            //Set values that are empty as random
-            ["level","nationality","charClass","gender","name","value","methodology","personality"].forEach(function(key){
-                if(!char[key]||char[key].length===0){
-                    char[key] = Q.charGen.generateProp(key,char);
-                }
-            });
             //If the character is an ally, get the data from the allies array
             if(char.team==="ally"){
                 //Find the data in the allies array
@@ -109,13 +104,13 @@ Quintus.SceneFuncs=function(Q){
                     return ally.name===char.name;
                 })[0];
                 if(data){
-                    character = new Q.StoryCharacter({charClass:data.charClass,uniqueId:char.uniqueId,level:data.level,exp:data.exp,name:data.name,skills:data.skills,equipment:data.equipment,gender:data.gender,stats:data.stats,team:char.team,awards:char.awards});
+                    character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"ally"));
 
                 } else {
-                    character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",uniqueId:char.uniqueId,team:char.team,awards:char.awards,handle:char.handle});
+                    character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"ally"));
                 }
             } else {
-                character = new Q.StoryCharacter({charClass:char.charClass,dir:char.dir?char.dir:"left",uniqueId:char.uniqueId,team:"enemy",handle:char.handle});
+                character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"enemy"));
             }
             chars.push(character);
             character.p.loc = char.loc;

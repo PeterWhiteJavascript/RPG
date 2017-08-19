@@ -88,10 +88,10 @@ Quintus.Objects=function(Q){
             },
             playStand:function(dir){
                 this.p.dir = this.checkPlayDir(dir);
-                if(this.p.lifting){
+                /*if(this.p.lifting){
                     this.play("countering"+this.p.dir);
                 }
-                else if(this.p.combatStats.hp<=this.p.combatStats.maxHp/5){
+                else*/ if(this.p.combatStats.hp<=this.p.combatStats.maxHp/5){
                     this.play("hurt"+this.p.dir);
                 } 
                 else {
@@ -567,6 +567,13 @@ Quintus.Objects=function(Q){
                         this.showHealed(5);
                     }
                 }
+            },
+            validToCarry:function(){
+                if(!this.p.lifting&&!this.p.lifted){
+                    if(this.hasStatus("bleedingOut")||this.hasStatus("dead")){
+                        return true;
+                    }
+                }
             }
         }
     });
@@ -909,7 +916,8 @@ Quintus.Objects=function(Q){
                 w:20,h:30,
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
-                dir:"left"
+                dir:"left",
+                combatStats:{hp:100}
             });
             this.p.sheet = this.p.charClass.toLowerCase();
             //Quintus components
