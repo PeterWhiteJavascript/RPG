@@ -3097,7 +3097,7 @@ Quintus.GameObjects=function(Q){
             for(var i=0;i<len;i++){
                 techs.push(skills[charClass][i]);
             }
-            return this.getTechniques(techs);
+            return this.setLevelTechniques(techs,level);
         },
         //Generates a random piece of equipment by filling in the vars that are to be randomized.
         randomizeEquipment:function(quality,material,gear){
