@@ -812,7 +812,7 @@ Quintus.Objects=function(Q){
                     this.p.stabilityField = false;
                 }
             }
-            
+            this.p.cannotRecallMove = Q.state.get("options").cannotRecallMove;
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn,this));
             //Get the grid for attacking from this position
@@ -871,9 +871,11 @@ Quintus.Objects=function(Q){
                 this.revealStatusDisplay();
                 //If the character landed on caltrops, do some damage
                 if(Q.BattleGrid.caltrops&&Q.BattleGrid.caltrops.getTile(this.p.loc[0],this.p.loc[1])){
-                    var dmg = Math.ceil(Math.random()*10)
+                    var dmg = Math.ceil(Math.random()*10);
                     this.showDamage(dmg);
                     this.takeDamage(dmg);
+                    //Also disallow for recalling move
+                    this.p.cannotRecallMove = true;
                 }
                 if(this!==Q.BatCon.turnOrder[0]){
                     return;

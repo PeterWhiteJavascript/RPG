@@ -78,6 +78,8 @@ Q.state.set({
         "damageIndicators":true,
         "factionHighlighting":true,
         
+        "cannotRecallMove":false,
+        
         "tooltips":true
     },
     //Which tunes have been loaded (so that we don't load music twice)
@@ -379,6 +381,12 @@ Q.load(files.join(','),function(){
     //Make it so that you can open the options menu at all times
     //For now, press space or z to load
     Q.input.on("fire",Q,"loadOptions");
+},{
+    progressCallback:function(loaded,total){
+        if(loaded===total){
+            $("#loading-screen").remove();
+        }
+    }
 });
 //Checks if the user wants to go to the options menu
 Q.loadOptions = function(){

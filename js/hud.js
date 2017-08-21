@@ -467,11 +467,12 @@ Quintus.HUD=function(Q){
             //We're in the main menu
             else {
                 //Reset the move
-                if(this.p.target.p.didMove){
+                if(this.p.target.p.didMove&&!this.p.target.p.cannotRecallMove){
                     this.p.target.resetMove();
                     Q.pointer.snapTo(this.p.target);
                     this.displayMenu(0,0);
                 } else {
+                    Q.pointer.del("pointerMoveControls");
                     Q.pointer.add("pointerRoamingControls");
                     //Make sure the characterMenu is gone
                     this.hide();

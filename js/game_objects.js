@@ -40,6 +40,7 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).ActionMenu.menuControls.turnOnInputs();
             Q.stage(2).ActionMenu.displayMenu(Q.stage(2).ActionMenu.menuControls.menuNum,0);
             this.entity.del("pointerMoveControls");
+            this.entity.p.user = false;
         },
         pressedBack:function(){
             this.entity.snapTo(Q.RangeGridObj.p.user);
@@ -68,6 +69,7 @@ Quintus.GameObjects=function(Q){
             this.entity.del("pointerRoamingControls");
             Q.stage(2).ActionMenu.show();
             Q.stage(2).ActionMenu.menuControls.turnOnInputs();
+            this.entity.p.user = false;
         },
         disable:function(){
             this.entity.off("pressedConfirm",this,"checkOnCharacter");
@@ -113,6 +115,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkInputs");
             this.entity.off("checkConfirm");
             this.entity.del("pointerDropControls");
+            this.entity.p.user = false;
         },
         checkValidToDrop:function(){
             var user = Q.BatCon.turnOrder[0];
@@ -161,6 +164,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkInputs");
             this.entity.off("checkConfirm");
             this.entity.del("pointerLiftControls");
+            this.entity.p.user = false;
         },
         checkValidToCarry:function(){
             var user = Q.BatCon.turnOrder[0];
