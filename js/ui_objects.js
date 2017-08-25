@@ -15,7 +15,11 @@ Quintus.UIObjects=function(Q){
             var choice = Q.storyController.p.choice;
             var page = choice.page;
             var desc = choice.desc;
-            Q.storyController.insertChoiceDesc(desc);
+            Q.storyController.removeChoices();
+            //Don't insert anything if there's no feedback
+            if(desc.length){
+                Q.storyController.insertChoiceDesc(desc);
+            }
             Q.storyController.changePage(page);
             /*
             setTimeout(function(){
@@ -400,13 +404,13 @@ Quintus.UIObjects=function(Q){
                 for(var j=0;j<checks.length;j++){
                     var varValue;
                     switch(checks[j][0]){
-                        case "event":
+                        case "Event":
                             varValue = Q.storyController.p.vrs[checks[j][1]];
                             break;
-                        case "scene":
+                        case "Scene":
                             varValue = Q.state.get("sceneVars")[checks[j][1]];
                             break;
-                        case "global":
+                        case "Global":
                             varValue = Q.state.get("globalVars")[checks[j][1]];
                             break;
                     }
@@ -858,13 +862,13 @@ Quintus.UIObjects=function(Q){
             checkVar:function(t,obj){
                 var vars;
                 switch(obj.scope){
-                    case "event":
+                    case "Event":
                         vars = t.p.vrs;
                         break;
-                    case "scene":
+                    case "Scene":
                         vars = Q.state.get("sceneVars");
                         break;
-                    case "global":
+                    case "Global":
                         vars = Q.state.get("globalVars");
                         break;
                 }
@@ -884,13 +888,13 @@ Quintus.UIObjects=function(Q){
             setVar:function(t,obj){
                 var vars;
                 switch(obj.scope){
-                    case "event":
+                    case "Event":
                         vars = t.p.vrs;
                         break;
-                    case "scene":
+                    case "Scene":
                         vars = Q.state.get("sceneVars");
                         break;
-                    case "global":
+                    case "Global":
                         vars = Q.state.get("globalVars");
                         break;
                 }
@@ -966,6 +970,18 @@ Quintus.UIObjects=function(Q){
                         break;
                 }
                 char.combatStats = Q.charGen.getCombatStats(char);
+            },
+            unequipItem:function(t,obj){
+                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                if(obj.from==="all"){
+                    var keys = Object.keys(char.equipment);
+                    keys.forEach(function(k){
+                        char.equipment[k] = false;
+                    });
+                }
+                else {
+                    Q.state.get("Bag").unequipItem(char,obj.from,obj.options);
+                }
             }
             
         }
@@ -1229,7 +1245,7 @@ Quintus.UIObjects=function(Q){
             obj.playStand(dir);
         },
         playAnim:function(id,anim,dir,sound){
-            Q.playSound(sound+".mp3");
+            Q.playSound(sound);
             this.getStoryCharacter(id[0],id[1])["play"+anim](dir);
         },
         changeMoveSpeed:function(id,speed){

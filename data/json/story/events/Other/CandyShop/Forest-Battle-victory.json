@@ -1,6 +1,6 @@
 {
-    "name": "Forest-to-Candy-Store",
-    "desc": "A little battle scene on the way to the candy store.",
+    "name": "Forest-Battle-victory",
+    "desc": "Alex has won the battle vs the bandit archer.",
     "kind": "battleScene",
     "script": [
         [
@@ -15,26 +15,52 @@
                 "func": "centerView",
                 "props": [
                     [
-                        2,
-                        7
+                        "Alex",
+                        0
                     ]
                 ]
             },
             {
                 "func": "changeMusic",
                 "props": [
-                    "the_usual.mp3"
+                    "demo.mp3"
                 ]
             }
         ],
         [
-            "Move",
+            "Do Stuff",
             {
-                "func": "changeEvent",
+                "func": "playAnim",
                 "props": [
-                    "Other",
-                    "CandyShop",
-                    "Forest-Battle"
+                    [
+                        "Bandit-Archer",
+                        0
+                    ],
+                    "Hurt",
+                    "left",
+                    "dying.mp3"
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "I am no match for you..."
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/knight.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
                 ]
             },
             {
@@ -46,12 +72,26 @@
                     ],
                     [
                         [
-                            11,
+                            13,
                             7
+                        ],
+                        [
+                            13,
+                            0
                         ]
                     ],
-                    "right",
+                    "up",
                     true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "out"
                 ]
             },
             {
@@ -64,6 +104,18 @@
                 ]
             },
             {
+                "func": "playAnim",
+                "props": [
+                    [
+                        "Bandit-Archer",
+                        0
+                    ],
+                    "Counter",
+                    "up",
+                    "inflict_status.mp3"
+                ]
+            },
+            {
                 "func": "modDialogueBox",
                 "props": [
                     "show"
@@ -71,14 +123,21 @@
             },
             {
                 "text": [
-                    "HEY! I WILL NOT LET YOU GO TO THE CANDY STORE!!?!",
-                    "FIGHTING GO!"
+                    "Nihihi, they have no clue what is ahead..."
                 ],
                 "asset1": "story\/empty.png",
                 "asset2": "story\/knight.png",
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Forest-Battle-victory"
+                ]
             }
         ]
     ],
@@ -89,7 +148,7 @@
             "handle": "Alex",
             "uniqueId": 0,
             "loc": [
-                0,
+                12,
                 7
             ],
             "dir": "right"
@@ -100,7 +159,7 @@
             "handle": "Bandit-Archer",
             "uniqueId": 0,
             "loc": [
-                15,
+                14,
                 7
             ],
             "dir": "left"

@@ -3,78 +3,116 @@ Quintus.Objects=function(Q){
     //The save file does not include items in the bag that are equipped by characters.
     Q.GameObject.extend("Bag",{
         init:function(data){
-            this.fillBag(data.items);
+            this.items = this.convertItemData(data.items);
         },
-        //When the bag is created, fill it with the given items
-        fillBag:function(data){
-            var bagItems = {};
+        convertConsumable:function(k){
             var items = Q.state.get("items");
-            var equipment = Q.state.get("equipment");
+            var id = k[1];
+            var itemKeys = Object.keys(items[id]);
+            var newItem = {amount:k[0]};
+            itemKeys.forEach(function(ik){
+                newItem[ik] = items[id][ik];
+            });
+            return newItem;
+        },
+        convertItemData:function(data){
+            var bagItems = {};
             var keys = Object.keys(data);
+            var t = this;
             keys.forEach(function(key){
-                if(key === "consumable" || key === "key"){
+                if(key === "Consumables" || key === "Key"){
                     bagItems[key]=[];
                     //Loop through the category
                     data[key].forEach(function(k){
-                        var id = k[0];
-                        var itemKeys = Object.keys(items[id]);
-                        var newItem = {amount:k[1]};
-                        itemKeys.forEach(function(ik){
-                            newItem[ik] = items[id][ik];
-                        });
-                        bagItems[key].push(newItem);
+                        bagItems[key].push(t.convertConsumable(k));
                     });
                     
                 } else {
                     bagItems[key]=[];
                     //Loop through the category
                     data[key].forEach(function(k){
-                        var id = k[0];
-                        var equipKeys = Object.keys(equipment[key][id]);
-                        var newEquipment = {amount:k[1]};
-                        equipKeys.forEach(function(ek){
-                            newEquipment[ek] = equipment[key][id][ek];
-                        });
-                        bagItems[key].push(newEquipment);
+                        var eq = Q.charGen.convertEquipment([k[3],k[1]],k[2]);
+                        eq.amount = k[0];
+                        bagItems[key].push(eq);
                     });
                 }
             });
-            this.items = bagItems;
+            return bagItems;
         },
-        getBagItem:function(type,name){
-            for(var i=0;i<this.items[type].length;i++){
-                var item = this.items[type][i];
-                if(item.name===name){
-                    return item;
-                }
+        getItem:function(type,props){
+            var items = this.items[type];
+            switch(type){
+                case "Consumable":
+                    for(var i=0;i<items.length;i++){
+                        var item = items[i];
+                        if(item.name===props.gear){
+                            return item;
+                        }
+                    }
+                    break;
+                case "Key":
+                    
+                    break;
+                default:
+                    for(var i=0;i<items.length;i++){
+                        var item = items[i];
+                        if(item.name===props.gear&&item.quality===props.quality&&item.material===props.material){
+                            return item;
+                        }
+                    }
+                    break;
             }
         },
-        addItem:function(itm,type){
+        addItem:function(type,props){
             //Check if the item is contained in the bag already
-            var item = this.getBagItem(type,itm.name);
+            var item = this.getItem(type,props);
             //If the item wasn't found, add it
             if(!item){
-                this.items[type].push(itm);
+                switch(type){
+                    case "Consumable":
+                        this.items[type].push(this.convertConsumable([props.amount || 1, props.gear]));
+                        break;
+                    case "Key":
+                        this.items[type].push(this.convertConsumable([props.amount || 1, props.gear]));
+                        break;
+                    default:
+                        item = Q.charGen.convertEquipment([props.material,props.gear],props.quality);
+                        item.amount = props.amount || 1;
+                        this.items[type].push(item);
+                        break;
+                }
             } else {
-                item.amount+=itm.amount;
+                item.amount += props.amount || 1;
             }
         },
-        removeItem:function(itm,type){
-            for(var i=0;i<this.items[type].length;i++){
-                var item = this.items[type][i];
-                if(item.name===itm.name){
-                    this.items[type].splice(i,1);
-                    return;
-                }
-            }
+        removeItem:function(type,props){
+            this.items[type].splice(this.items[type].indexOf(this.getItem(type,props)),1);
         },
         increaseItem:function(itm,amount){
-            itm.amount+=amount;
+            itm.amount += amount || 1;
         },
-        decreaseItem:function(itm,type,amount){
-            var item = this.getBagItem(type,itm.name);
-            item.amount-=amount?amount:1;
-            if(item.amount<=0) this.removeItem(item,type);
+        decreaseItem:function(type,itm,amount){
+            itm.amount -= amount || 1;
+            if(itm.amount<=0) this.removeItem(type,{gear:itm.name,quality:itm.quality,material:itm.material});
+        },
+        
+        //TO DO once we get to the menus
+        equipItem:function(char,type,from,options){
+            
+            
+        },
+        unequipItem:function(char,from,options){
+            if(!char.equipment[from]) return;
+            var eq = char.equipment[from];
+            switch(options){
+                case "toBag":
+                    this.addItem(eq.kind,{gear:eq.name,material:eq.material,quality:eq.quality});
+                    char.equipment[from] = false;
+                    break;
+                case "delete":
+                    char.equipment[from] = false;
+                    break;
+            }
         }
     });
     //Adds more control over what animations are playing.

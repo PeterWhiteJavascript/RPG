@@ -874,6 +874,27 @@ Quintus.GameObjects=function(Q){
             this.markedForRemoval = [];
             this.add("attackFuncs,skillFuncs");
         },
+        setUpTriggers:function(events){
+            function battleEvent(conds,effects,required){
+                this.conds = conds;
+                this.effects = effects;
+                this.required = required;
+                this.completed = [];
+            }
+            //Each type of event goes in its own array and is all checked at once. An event will be in more than one array if it has multiple conditions.
+            this.triggers = {
+                rounds:[]
+            };
+            //For each event
+            for(var i=0;i<events.length;i++){
+                var event = events[i];
+                var obj = new battleEvent(event.conds,event.effects,event.required);
+                //Loop through each condition and set up listeners
+                for(var j=0;j<event.conds.length;j++){
+                    this.triggers[event.conds[j].name].push(obj);
+                }
+            }
+        },
         checkPlacement:function(pointer){
             //If there's a character there, select it and go to the directional phase
             var allies = Q.state.get("allies");
@@ -992,8 +1013,10 @@ Quintus.GameObjects=function(Q){
             this.startTurn();
         },
         finishBattle:function(props){
+            //Do anything that happens after each battle (TO DO)
+            
+            //Start the next scene
             Q.startScene(props.next.type,props.next.scene,props.next.event);
-            //Q.clearStages();
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
@@ -1039,6 +1062,53 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
+        effectsFuncs:{
+            setVar:function(type,vr,vl){
+                switch(type){
+                    case "Event":
+                        
+                        break;
+                    case "Scene":
+                        Q.state.get("sceneVars")[vr] = vl;
+                        break;
+                    case "Global":
+                        Q.state.get("globalVars")[vr] = vl;
+                        break;
+                }
+            },
+            spawnEnemy:function(file,group,id,loc,dir){
+                
+            }
+        },
+        triggerEffects:function(effects){
+            for(var i=0;i<effects.length;i++){
+                this.effectsFuncs[effects[i].func].apply(this.effectFuncs,effects[i].props);
+            }
+        },
+        completedCond:function(obj,num){
+            obj.completed.push(obj.conds.splice(num,1));
+            if((obj.required==="all"&&obj.conds.length===0)||(obj.required===obj.completed.length)){
+                this.triggerEffects(obj.effects);
+            }
+        },
+        advanceRound:function(){
+            this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+            this.checkIcyStatus();
+            //Loop thorugh the triggers that change on round.
+            for(var i=0;i<this.triggers.rounds.length;i++){
+                //Find the round cond
+                var obj = this.triggers.rounds[i];
+                for(var j=obj.conds.length-1;j>=0;j--){
+                    if(obj.conds[j].name==="rounds"){
+                        obj.conds[j].props[0]--;
+                        if(obj.conds[j].props[0]===0){
+                            this.completedCond(obj,j);
+                            this.triggers.rounds.splice(j,1);
+                        }
+                    }
+                }
+            }
+        },
         //Starts the character that is first in turn order
         startTurn:function(){
             var obj = this.turnOrder[0];
@@ -1046,7 +1116,7 @@ Quintus.GameObjects=function(Q){
             while(!this.valid(obj)){
                 this.turnOrder.shift();
                 if(!this.turnOrder[0]){
-                    this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+                    this.advanceRound();
                 }
                 obj = this.turnOrder[0];
             }
@@ -1099,20 +1169,13 @@ Quintus.GameObjects=function(Q){
         },
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
-            //Move the first character to the back (Maybe do some speed calculations to place them somewhere else)
             var lastTurn = this.turnOrder.shift();
             //Advance the last character's status effects.
             lastTurn.advanceStatus();
             lastTurn.checkRegeneratingAura();
-            /*this.turnOrder.push(lastTurn);
-            while(this.turnOrder[0].p.fainted){
-                var lastTurn = this.turnOrder.shift();
-                this.turnOrder.push(lastTurn);
-            }*/
-            
             if(!this.turnOrder.length){
+                this.advanceRound();
                 this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
-                this.checkIcyStatus();
             }
             
             //Remove any dead characters
@@ -2880,7 +2943,6 @@ Quintus.GameObjects=function(Q){
             });
             var materialData = this.equipment.Materials[gear.material];
             var qualityData = this.equipment.Quality[gear.quality];
-            
             gear.weight = Math.ceil(gear.weight+materialData[0]);
             gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]);
             if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
@@ -3196,7 +3258,7 @@ Quintus.GameObjects=function(Q){
                 wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/2), 
                 encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
                 level = p.level;
-            return Math.min(99,Math.floor(wsk+wield+encPenalty+level));
+            return 99;//Math.min(99,Math.floor(wsk+wield+encPenalty+level));
         },
         get_critChance:function(p){
             var attackAccuracy = p.combatStats.atkAccuracy,charGroup = p.charGroup;
@@ -3236,7 +3298,7 @@ Quintus.GameObjects=function(Q){
             var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
             var t = handed===1?1:1.5;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-            return Math.floor((str*t)+(level*h)+minDamageRight);
+            return 100//Math.floor((str*t)+(level*h)+minDamageRight);
         },
         get_maxSecondaryDmg:function(p){
             var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment.lefthand), charGroup = p.charGroup;

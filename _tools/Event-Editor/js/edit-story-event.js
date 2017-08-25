@@ -253,7 +253,7 @@ $(function(){
                 <div class="module-check">\n\
                     <div class="choice-group-top">\n\
                         <div class="btn btn-group center minimize-choice thirty-height">-</div>\n\
-                        <select class="module-var-scope inline-select" initial-value="'+s+'"><option>event</option><option>scene</option><option>global</option></select>\n\
+                        <select class="module-var-scope inline-select" initial-value="'+s+'"><option>Event</option><option>Scene</option><option>Global</option></select>\n\
                         <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
                     </div>\n\
                     <div class="var-props"></div>\n\
@@ -641,17 +641,16 @@ $(function(){
             switch(effect[0]){
                 case "setVar":
                     if(!props){props = {};
-                        props.scope = "event";
                         var varProps = this.getVars();
+                        console.log(varProps)
                         props.scope = varProps.scope;
                         var firstVar = Object.keys(varProps.vars)[0];
                         props.vr = firstVar;
                         props.vl = varProps.vars[firstVar];
                     }
-                    var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="effect-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
-                    var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="effect-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
-                    var vl = '<p class="editor-descriptor light-gradient">Set Variable To</p><input class="effect-prop vl full-line" value="'+props.vl+'">';
-                    content = scope+vr+vl;
+                    content = this.setUpEffectProp("select","Scope","scope",{opts:this.scopeOptions(),scope:props.scope});
+                    content += this.setUpEffectProp("select","Variable","vr",{opts:this.varOptions(props.scope),vr:props.vr});
+                    content += this.setUpEffectProp("input","Set Variable to","vl",{vl:props.vl});
                     break;
                 case "changePage":
                     if(!props){props = {};
@@ -659,9 +658,8 @@ $(function(){
                         props.page = $(page).text();
                         props.desc = "";
                     }
-                    var page = '<p class="editor-descriptor-half light-gradient">Select a Page</p><select class="effect-prop page inline-select" initial-value="'+props.page+'">'+this.pageOptions()+'</select>';
-                    var desc = '<p class="editor-descriptor light-gradient">Feedback</p><textarea class="effect-prop desc">'+props.desc+'</textarea>';
-                    content = page+desc;
+                    content = this.setUpEffectProp("select","Select a Page","page",{opts:this.pageOptions(),page:props.page});
+                    content += this.setUpEffectProp("textarea","Feedback","desc",{desc:props.desc});
                     break;
                 case "enableChoice":
                     if(!props){props = {};
@@ -670,8 +668,8 @@ $(function(){
                         if(choice) props.choice = choice.displayText;
                         props.toggle = "Enabled";
                     }
-                    var choice = '<p class="editor-descriptor-half light-gradient">Toggle Choice</p><div class="effect-prop toggle btn btn-quarter fifty-width disable">'+props.toggle+'</div><select class="effect-prop choice inline-select full-line" initial-value="'+props.choice+'">'+this.choiceOptions()+'</select>'; 
-                    content = choice;
+                    content = this.setUpEffectProp("toggle","Toggle Choice","toggle",{toggle:props.toggle,toggleHandle:"disable"});
+                    content += this.setUpEffectProp("select","Choices","choice",{opts:this.choiceOptions(),choice:props.choice});
                     break;
                 case "changeEvent":
                     if(!props){props = {};
@@ -679,22 +677,16 @@ $(function(){
                         props.scene = Object.keys(this.p.events)[0];
                         props.event = this.p.events[props.scene];
                     }
-                    var type = '<p class="editor-descriptor-half light-gradient">Select a Type</p><select class="effect-prop type inline-select" initial-value="'+props.type+'">'+this.typeOptions()+'</select>'; 
-                    var scene = '<p class="editor-descriptor-half light-gradient">Select a Scene</p><select class="effect-prop scene inline-select" initial-value="'+props.scene+'">'+this.sceneOptions(props.type)+'</select>'; 
-                    var event = '<p class="editor-descriptor-half light-gradient">Select an Event</p><select class="effect-prop event inline-select" initial-value="'+props.event+'">'+this.eventOptions(props.scene)+'</select>';
-                    content = type+scene+event;
+                    content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.typeOptions(),type:props.type});
+                    content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.sceneOptions(props.type),scene:props.scene});
+                    content += this.setUpEffectProp("select","Select an Event","event",{opts:this.eventOptions(props.scene),event:props.event});
                     break;
                 case "recruitChar":
                     var chars = Object.keys(this.p.characters).splice(1,Object.keys(this.p.characters).length);
                     if(!props){props = {};
                         props.name = chars[0];
                     }
-                    var char = '<p class="editor-descriptor-half light-gradient">Recruit</p><select class="effect-prop name inline-select" initial-value="'+props.name+'">';
-                    chars.forEach(function(c){
-                        char+='<option>'+c+'</option>';
-                    });
-                    char+='</select>';
-                    content = char;
+                    content = this.setUpEffectProp("select","Recruit","name",{opts:chars,name:props.name});
                     break;
                 case "changeStat":
                     var stats = ["Morale","Pragmatic","Kind","Intuitive","Egoist","Altruist","Nepotist","Money","Reputation-Venoriae","Reputation-Dardoine","Reputation-Aljudramil","Reputation-Talumpatua","Reputation-Nomad","Stability-Venoriae","Stability-Dardoine","Stability-Aljudramil","Stability-Talumpatua","Stability-Nomad"];
@@ -702,13 +694,8 @@ $(function(){
                         props.stat = stats[0];
                         props.val = 0;
                     }
-                    content = '<p class="editor-descriptor-half light-gradient">Stat</p><select class="effect-prop stat inline-select" initial-value="'+props.stat+'">';
-                    stats.forEach(function(s){
-                        if(s===props.stat) content+='<option selected>'+s+'</option>';
-                        else content+='<option>'+s+'</option>';
-                    });
-                    content +='</select>';
-                    content +='<input type="number" value='+props.val+' class="effect-prop val full-line">';
+                    content = this.setUpEffectProp("select","Stat","stat",{opts:stats,stat:props.stat});
+                    content += this.setUpEffectProp("input","Amount","val",{inputType:"number",val:props.val});
                     break;
                 case "tempStatChange":
                     var stats = ["str","end","dex","wsk","rfl","ini","enr","skl","eff"];
@@ -719,20 +706,10 @@ $(function(){
                         props.turns = 1;
                         props.val = 0;
                     }
-                    content = '<p class="editor-descriptor-half light-gradient">Stat</p><select class="effect-prop stat inline-select" initial-value="'+props.stat+'">';
-                    stats.forEach(function(s){
-                        if(s===props.stat) content+='<option selected>'+s+'</option>';
-                        else content+='<option>'+s+'</option>';
-                    });
-                    content +='</select>';
-                    content += '<p class="editor-descriptor-half light-gradient">Char</p><select class="effect-prop char inline-select" initial-value="'+props.chars+'">';
-                    chars.forEach(function(c){
-                        if(c===props.stat) content+='<option selected>'+c+'</option>';
-                        else content+='<option>'+c+'</option>';
-                    });
-                    content +='</select>';
-                    content +='<p class="editor-descriptor light-gradient">Amount</p><input type="number" value='+props.val+' class="effect-prop val">';
-                    content +='<p class="editor-descriptor light-gradient">Turns</p><input type="number" min="1" value='+props.turns+' class="effect-prop turns">';
+                    content = this.setUpEffectProp("select","Stat","stat",{opts:stats,stat:props.stat});
+                    content += this.setUpEffectProp("select","Char","char",{opts:chars,char:props.char});
+                    content += this.setUpEffectProp("input","Amount","val",{inputType:"number",val:props.val});
+                    content += this.setUpEffectProp("input","Turns","turns",{inputType:"number",turns:props.turns,min:"1"});
                     break;
                 case "equipItem":
                     var types = ["Weapons","Armour","Shields","Footwear","Accessories"];
@@ -746,34 +723,61 @@ $(function(){
                         props.quality = qualities[0];
                         props.material = this.p.equipment[props.eqType][gear[0]].materials[0];
                     }
-                    content = '<p class="editor-descriptor-half light-gradient">Officer</p><select class="effect-prop char inline-select" initial-value="'+props.char+'">';
-                    chars.forEach(function(c){
-                        content+='<option>'+c+'</option>';
-                    });
-                    content+='</select>';
-                    content += '<p class="editor-descriptor-half light-gradient">Equipment Type</p><select class="effect-prop eqType inline-select" initial-value="'+props.eqType+'">';
-                    types.forEach(function(s){
-                        if(s===props.eqType) content+='<option selected>'+s+'</option>';
-                        else content+='<option>'+s+'</option>';
-                    });
-                    content +='</select>';
-                    content += '<p class="editor-descriptor-half light-gradient">Gear</p><select class="effect-prop gear inline-select" initial-value="'+props.gear+'">';
-                    content += this.gearOptions(props.eqType);
-                    content +='</select>';
-                    content += '<p class="editor-descriptor-half light-gradient">Quality</p><select class="effect-prop quality inline-select" initial-value="'+props.quality+'">';
-                    qualities.forEach(function(c){
-                        if(c===props.quality) content+='<option selected>'+c+'</option>';
-                        else content+='<option>'+c+'</option>';
-                    });
-                    content +='</select>';
-                    content += '<p class="editor-descriptor-half light-gradient">Material</p><select class="effect-prop material inline-select" initial-value="'+props.material+'">';
-                    content += this.materialOptions(props.eqType,props.gear);
-                    content +='</select>';
+                    content = this.setUpEffectProp("select","Officer","char",{opts:chars,char:props.char});
+                    content += this.setUpEffectProp("select","Equipment Type","eqType",{opts:types,eqType:props.eqType});
+                    content += this.setUpEffectProp("select","Gear","gear",{opts:this.gearOptions(props.eqType),gear:props.gear});
+                    content += this.setUpEffectProp("select","Quality","quality",{opts:qualities,quality:props.quality});
+                    content += this.setUpEffectProp("select","Material","material",{opts:this.materialOptions(props.eqType,props.gear),material:props.material});
+                    break;
+                case "unequipItem":
+                    var chars = Object.keys(this.p.characters);
+                    var from = ["righthand","lefthand","armour","footwear","accessory","all"];
+                    var options = ["toBag","delete"];
+                    if(!props){props = {};
+                        props.char = chars[0];
+                        props.from = from[0];
+                        props.doWith = options[0];
+                    }
+                    content = this.setUpEffectProp("select","Char","char",{opts:chars,char:props.char});
+                    content += this.setUpEffectProp("select","From","from",{opts:from,from:props.from});
+                    content += this.setUpEffectProp("select","Options","options",{opts:options,options:props.options});
                     break;
             }
             return content;
         },
-        
+        setUpEffectProp:function(type,descText,key,props){
+            var content = '';
+            switch(type){
+                case "input":
+                    content += '<p class="editor-descriptor light-gradient">'+descText+'</p>';
+                    content += '<input type="'+props.inputType+'" min="'+props.min+'" value='+props[key]+' class="effect-prop '+key+'">';
+                    break;
+                case "select":
+                    content += '<p class="editor-descriptor-half light-gradient">'+descText+'</p>';
+                    content += '<select class="effect-prop '+key+' inline-select" initial-value="'+props[key]+'">';
+                    if(props.opts){
+                        if(typeof props.opts==="string"){
+                            content += props.opts;
+                        } else {
+                            props.opts.forEach(function(o){
+                                if(o===props[key]) content+='<option selected>'+o+'</option>';
+                                else content += '<option>'+o+'</option>';
+                            });
+                        }
+                    }
+                    content += '</select>';
+                    break;
+                case "toggle":
+                    content += '<p class="editor-descriptor-half light-gradient">'+descText+'</p>';
+                    content += '<div class="effect-prop '+key+' btn btn-quarter fifty-width '+props.toggleHandle+'">'+props[key]+'</div>';
+                    break;
+                case "textarea":
+                    content += '<p class="editor-descriptor light-gradient">'+descText+'</p>';
+                    content += '<textarea class="effect-prop '+key+'">'+props[key]+'</textarea>';
+                    break;
+            }
+            return content;
+        },
         addOnloadGroup:function(to,group){
             $(to).append('\n\
                 <div class="cond-group">\n\
@@ -854,7 +858,7 @@ $(function(){
         
         //Gets the vars from the list
         getVars:function(){
-            var scope = "event";
+            var scope = "Event";
             var vars = {};
             //Get the current event's vars
             $(this.p.varsCont).children(".vr").each(function(idx,itm){
@@ -865,10 +869,10 @@ $(function(){
                 vars[name] = val;
             });
             if(!Object.keys(vars).length){
-                scope = "scene";
+                scope = "Scene";
                 vars = this.p.sceneVars;
                 if(!vars.length){
-                    scope = "global";
+                    scope = "Global";
                     vars = this.p.globalVars;
                 }
             }
@@ -886,7 +890,7 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat","tempStatChange","equipItem"];
+            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });
@@ -901,7 +905,12 @@ $(function(){
             return opts;
         },
         scopeOptions:function(){
-            return '<option value="event">Event</option><option value="scene">Scene</option><option value="global">Global</option>';
+            var opts = '';
+            var scopes = ["Event","Scene","Global"];
+            scopes.forEach(function(s){
+                opts += '<option value="'+s+'">'+s+'</option>';
+            });
+            return opts;
         },
         pageOptions:function(){
             var opts = '';
@@ -923,13 +932,13 @@ $(function(){
         varOptions:function(scope){
             var vars;
             switch(scope){
-                case "event":
+                case "Event":
                     vars = this.getVars().vars;
                     break;
-                case "scene":
+                case "Scene":
                     vars = this.p.sceneVars;
                     break;
-                case "global":
+                case "Global":
                     vars = this.p.globalVars;
                     break;
             }
@@ -1048,7 +1057,7 @@ $(function(){
     
     //Start editor-content buttons
     $("#add-new-variable").click(function(){
-        DC.addVar("Var "+$(DC.p.varsCont).children(".vr").length);
+        DC.addVar("Var"+$(DC.p.varsCont).children(".vr").length);
     });
     $("#add-new-page").click(function(){
         DC.savePage();

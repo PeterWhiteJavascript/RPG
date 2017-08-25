@@ -6,7 +6,43 @@
     "music":"demo.mp3",
     "placementSquares":[[11,7]],
     "maxAllies":1,
+    "victory":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"Forest-Battle-victory"
+        }
+    },
+    "defeat":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"Forest-Battle-defeat"
+        }
+    },
     "events":[
+        {
+            "conds":[{
+                "name":"rounds",
+                "props":[3]
+            }],
+            "effects":[{
+                "func":"setVar",
+                "props":["Scene","tookTooLongInBattle","true"]
+            }],
+            "required":"all"
+        },
+        {
+            "conds":[{
+                "name":"rounds",
+                "props":[5]
+            }],
+            "effects":[{
+                "func":"spawnEnemy",
+                "props":["test_level1.json","Main","Bandit-Legionnaire",[15,6],"left"]
+            }],
+            "required":1
+        }
     ],
     "characters": [
         {

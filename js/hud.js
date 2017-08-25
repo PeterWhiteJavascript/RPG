@@ -498,7 +498,7 @@ Quintus.HUD=function(Q){
             var opts = [];
             var funcs = [];
             var itms = [];
-            var items = Q.state.get("Bag").items.consumable;
+            var items = Q.state.get("Bag").items.Consumables;
             //If there are items in the bag
             if(items.length){
                 items.forEach(function(item){

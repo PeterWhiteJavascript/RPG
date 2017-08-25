@@ -1,5 +1,5 @@
 {
-    "potion":{
+    "Potion":{
         "name": "Potion",
         "type":"Item",
         "desc": "Heals 20 hp",
@@ -8,7 +8,7 @@
         "aoe":[0,"normal"],
         "resist":"None"
     },
-    "goldCoin":{
+    "Gold Coin":{
         "name": "Gold Coin",
         "desc": "A valuable coin",
         "kind":"key",

@@ -1,0 +1,107 @@
+{
+    "name": "Alex-arrives-in-town",
+    "desc": "After the battle with the archer in the forest, Alex arrives in the town at the candy shop may or may not be closed depending on how many turns the battle took.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Arrive in town",
+            "music": "homeland.mp3",
+            "bg": "bg\/city.jpg",
+            "text": "Alex arrives in town, still looking forward to go to the candy shop. {o.Alex.g@He} can hear the bell tower ring signalling that it is {@time}",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Go to candy shop",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Go to pub",
+                    "desc": "",
+                    "page": "Go to pub",
+                    "disabled": "Disabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Scene",
+                                "vr": "tookTooLongInBattle",
+                                "vl": "true"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Enabled",
+                                "choice": "Go to pub"
+                            }
+                        ],
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Disabled",
+                                "choice": "Next"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {
+                "time": [
+                    {
+                        "text": "3pm. The candy shop closes at 5pm, so {o.Alex.g@he} made it just on time!"
+                    },
+                    {
+                        "text": "6pm. The candy shop closed at 5pm, so Alex decides to change {o.Alex.g@his2} plans and go to the pub instead.",
+                        "checks": [
+                            [
+                                "Scene",
+                                "tookTooLongInBattle",
+                                "!=",
+                                "false"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Go to candy shop",
+            "music": "homeland.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "Alex arrives at the candy shop.",
+            "choices": [
+                {
+                    "displayText": "Go inside",
+                    "desc": "",
+                    "page": "Arrive in town",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Go to pub",
+            "music": "homeland.mp3",
+            "bg": "bg\/pub.jpg",
+            "text": "Alex arrives at the pub.",
+            "choices": [],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        }
+    ],
+    "vrs": {}
+}

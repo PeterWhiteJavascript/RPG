@@ -1,0 +1,54 @@
+{
+    "name": "Forest-Battle-defeat",
+    "desc": "Alex has lost the battle against the bandit archer.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex is defeated by the bandit and  must give him {o.Alex.g@his2} equipment in order to pass...",
+            "choices": [
+                {
+                    "displayText": "Done",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Alex-arrives-in-town"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "unequipItem",
+                            {
+                                "char": "Alex",
+                                "from": "righthand",
+                                "options": "delete"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

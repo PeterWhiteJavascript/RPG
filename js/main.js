@@ -111,15 +111,17 @@ Q.newGame=function(options){
         Q.state.set("allies",[storyAlex,astraea,random1,random2]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
-            consumable:[
-                ["potion",3]
+            Consumables:[
+                [3,"Potion"]
             ],
-            weapon:[],
-            shield:[],
-            body:[],
-            feet:[],
-            accessory:[],
-            key:[]
+            Weapons:[
+                [1,"Short Sword","Shoddy","Brass"]
+            ],
+            Shields:[],
+            Armour:[],
+            Footwear:[],
+            Accessories:[],
+            Key:[]
         }}));
         //Set up the applications roster
         //For now, there will be 4 random characters in it
@@ -227,6 +229,7 @@ function convertEquipment(data){
         var gears = Object.keys(data[key]);
         gears.forEach(function(gear){
             obj.gear[gear] = data[key][gear];
+            obj.gear[gear].kind = key;
         });
     });
     return obj;

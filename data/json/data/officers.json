@@ -4,7 +4,7 @@
         "level":1,
         "gender":"Male",
         "equipment":{
-            "righthand":false,
+            "righthand":["Average","Brass","Short Sword"],
             "lefthand":false,
             "armour":false,
             "footwear":false,

@@ -256,9 +256,15 @@
             "desc": "Alex travels to a candy shop and meets friends and foes along the way! A true tale of adventure!",
             "eventOrder": [
                 "Leaving-Home",
-                "Forest-to-Candy-Store"
+                "Forest-to-Candy-Store",
+                "Forest-Battle",
+                "Forest-Battle-victory",
+                "Forest-Battle-defeat",
+                "Alex-arrives-in-town"
             ],
-            "vrs": []
+            "vrs": {
+                "tookTooLongInBattle": "false"
+            }
         }
     ]
 }
