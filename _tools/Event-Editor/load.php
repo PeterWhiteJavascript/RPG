@@ -5,6 +5,7 @@ $nor = $file['Other'];
 $off = $file['Officer'];
 $act = $file['Story'];
 $crc = $file['Character'];
+$loc = $file['Locations'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,6 +39,14 @@ $crc = $file['Character'];
                         <?php
                             foreach($act as $data){
                                 echo '<li name="'.$data['name'].'" desc="'.$data['desc'].'" type="Story"><a class="scene-button"><div class="menu-button btn btn-default">'.$data['name'].'</div></a></li>';
+                            }
+                        ?>
+                    </ul>
+                    <ul class="load-scene collapse-menu">
+                        <li><div class="minimize">Locations</div></li>
+                        <?php
+                            foreach($loc as $data){
+                                echo '<li name="'.$data['name'].'" desc="'.$data['desc'].'" type="Locations"><a class="scene-button"><div class="menu-button btn btn-default">'.$data['name'].'</div></a></li>';
                             }
                         ?>
                     </ul>

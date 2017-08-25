@@ -964,7 +964,8 @@ Quintus.GameObjects=function(Q){
                 }
             }
             //If all allies are placed, start the battle.
-            if(allies.filter(function(c){return c.placedOnMap;}).length===allies.length){
+            var numPlaced = allies.filter(function(c){return c.placedOnMap;}).length;
+            if(numPlaced===allies.length||numPlaced===this.stage.options.data.maxAllies){
                 this.startBattle();
             } else {
                 this.startPlacingAllies();
@@ -979,7 +980,7 @@ Quintus.GameObjects=function(Q){
             Q.pointer = Q.stage(0).insert(new Q.Pointer({loc:[0,0]}));
             Q.viewFollow(Q.pointer,Q.stage(0));
             */
-           this.removePlacementSquares();
+            this.removePlacementSquares();
             this.allies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="ally"; 
             });
@@ -990,43 +991,24 @@ Quintus.GameObjects=function(Q){
             //Do start battle animation, and then start turn (TODO)
             this.startTurn();
         },
-        finishBattle:function(){
-            this.allies.forEach(function(ally){
-                if(ally.p.savedData){
-                    ally.p.savedData.awards = ally.p.awards;  
-                }
-            });
-            Q.clearStages();
+        finishBattle:function(props){
+            Q.startScene(props.next.type,props.next.scene,props.next.event);
+            //Q.clearStages();
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
             //FOR TESTING, DON'T END THE BATTLE
-            return false;
-            if(this.allies.length===0){
+            //return false;
+            var aliveAllies = this.allies.filter(function(c){return c.p.combatStats.hp>0;}).length;
+            if(!aliveAllies){
                 //Do anything that happens after a battle
-                this.finishBattle();
-                var defeat = this.stage.options.battleData.defeat;
-                if(defeat.func==="loadBattleScene"){
-                    Q.stageScene("battleScene",0,{data:this.stage.options.data, path:defeat.scene});
-                } else if(defeat.func==="loadDialogue"){
-                    Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:defeat.scene});
-                } else if(defeat.func==="loadBattle"){
-                    Q.stageScene("battle",0,{data:this.stage.options.data, path:defeat.scene});
-                }
+                this.finishBattle(this.stage.options.data.defeat);
                 return true;
             }
-            if(this.enemies.length===0){
+            var aliveEnemies = this.enemies.filter(function(c){return c.p.combatStats.hp>0;}).length;
+            if(!aliveEnemies){
                 //Do anything that happens after a battle
-                this.finishBattle();
-                var victory = this.stage.options.battleData.victory;
-                if(victory.func==="loadBattleScene"){
-                    Q.stageScene("battleScene",0,{data:this.stage.options.data, path:victory.scene});
-                } else if(victory.func==="loadDialogue"){
-                    Q.stageScene("dialogue", 1, {data: this.stage.options.data,path:victory.scene});
-                } else if(victory.func==="loadBattle"){
-                    Q.stageScene("battle",0,{data:this.stage.options.data, path:victory.scene});
-                }
-                
+                this.finishBattle(this.stage.options.data.victory);
                 return true;
             }
         },
@@ -2649,7 +2631,19 @@ Quintus.GameObjects=function(Q){
         //All properties are included except loc and dir, which depend on the event.
         //These properties should be added to the returned character
         generateCharacter:function(data,type){
-            var char = {};
+            var char = {
+                tempStatChange:{
+                    "str":0,
+                    "end":0,
+                    "dex":0,
+                    "wsk":0,
+                    "rfl":0,
+                    "ini":0,
+                    "enr":0,
+                    "skl":0,
+                    "eff":0
+                }
+            };
             var act = "Act-"+Q.state.get("saveData").act;
             switch(type){
                 //Create a character for the applications roster.
@@ -3281,31 +3275,31 @@ Quintus.GameObjects=function(Q){
         },
         
         get_strength:function(p){
-            return p.baseStats.str;
+            return p.baseStats.str+p.tempStatChange.str;
         },
         get_endurance:function(p){
-            return p.baseStats.end;
+            return p.baseStats.end+p.tempStatChange.end;
         },
         get_dexterity:function(p){
-            return p.baseStats.dex;
+            return p.baseStats.dex+p.tempStatChange.dex;
         },
         get_weaponSkill:function(p){
-            return p.baseStats.wsk;
+            return p.baseStats.wsk+p.tempStatChange.wsk;
         },
         get_reflexes:function(p){
-            return p.baseStats.rfl;
+            return p.baseStats.rfl+p.tempStatChange.rfl;
         },
         get_initiative:function(p){
-            return p.baseStats.ini;
+            return p.baseStats.ini+p.tempStatChange.ini;
         },
         get_energy:function(p){
-            return p.baseStats.enr;
+            return p.baseStats.enr+p.tempStatChange.enr;
         },
         get_skill:function(p){
-            return p.baseStats.skl;
+            return p.baseStats.skl+p.tempStatChange.skl;
         },
         get_efficiency:function(p){
-            return p.baseStats.eff;
+            return p.baseStats.eff+p.tempStatChange.eff;
         }
     });
 };

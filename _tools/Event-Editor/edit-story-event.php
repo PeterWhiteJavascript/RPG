@@ -36,15 +36,16 @@ for($i=0;$i<count($group);$i++){
         $sceneVars = $group[$i]['vrs'];
     }
 }
-
+/*
 $locationEvents = array_slice(scandir('../../data/json/story/locations'), 2);
 $locEvents = [];
 foreach($locationEvents as $ev){
     $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
-}
+}*/
 $characters = json_decode(file_get_contents('../../data/json/data/officers.json'), true);
 
 $charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
+$equipment = json_decode(file_get_contents('../../data/json/data/equipment.json'), true);
 ?>
 
 <!DOCTYPE html>
@@ -56,9 +57,10 @@ $charGen = json_decode(file_get_contents('../../data/json/data/character-generat
         <div id="global-vars" value='<?php echo json_encode($globalVars); ?>'></div>
         <div id="scene-vars" value='<?php echo json_encode($sceneVars); ?>'></div>
         <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
-        <div id="location-events" value='<?php echo json_encode($locEvents); ?>'></div>
+        <div id="scenes-list" value='<?php echo htmlspecialchars(json_encode(json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true))); ?>'></div>
         <div id="characters" value='<?php echo json_encode($characters); ?>'></div>
         <div id="char-gen" value='<?php echo json_encode($charGen); ?>'></div>
+        <div id="equipment" value='<?php echo json_encode($equipment); ?>'></div>
         
         
         <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
@@ -84,7 +86,7 @@ $charGen = json_decode(file_get_contents('../../data/json/data/character-generat
             <div class="editor-left-menu" id="page-vars">
                 <div class="centered-title">PAGES</div>
                 <div id="editor-pages">
-                    <ul>
+                    <ul class="sortable">
 
                     </ul>
                 </div>

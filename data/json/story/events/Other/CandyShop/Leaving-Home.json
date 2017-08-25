@@ -1,0 +1,349 @@
+{
+    "name": "Leaving-Home",
+    "desc": "Alex gets ready to go to the candy store.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Wake up",
+            "music": "homeland.mp3",
+            "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+            "text": "Alex wakes up in the early morning, excited that {o.Alex.g@he} gets to go to the candy shop today!\n\nAlex gets out of bed, still dressed in {o.Alex.g@his2} pajamas.\n\n",
+            "choices": [
+                {
+                    "displayText": "Get dressed",
+                    "desc": "Alex walks over to {o.Alex.g@his2} closet to change into {o.Alex.g@his2} gear for the day.",
+                    "page": "At closet",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Go have breakfast",
+                    "desc": "Alex goes to the kitchen to have breakfast.",
+                    "page": "Go have breakfast",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "At closet",
+            "music": "homeland.mp3",
+            "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+            "text": "Alex opens the door to {o.Alex.g@his2} closet.",
+            "choices": [
+                {
+                    "displayText": "Put on Leather Outfit",
+                    "desc": "Alex puts on the leather outfit.\n\nAlex then goes to the kitchen to have breakfast.",
+                    "page": "Go have breakfast",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "hasArmour",
+                                        "vl": "LeatherOutfit"
+                                    }
+                                ],
+                                [
+                                    "equipItem",
+                                    {
+                                        "char": "Alex",
+                                        "eqType": "Armour",
+                                        "gear": "Outfit",
+                                        "quality": "Average",
+                                        "material": "Soft Leather"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Put on Hide Outifit",
+                    "desc": "Alex puts on the hide outfit.\n\nAlex then goes to the kitchen to have breakfast.",
+                    "page": "Go have breakfast",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "event",
+                                        "vr": "hasArmour",
+                                        "vl": "Hide Outfit"
+                                    }
+                                ],
+                                [
+                                    "equipItem",
+                                    {
+                                        "char": "Alex",
+                                        "eqType": "Armour",
+                                        "gear": "Outfit",
+                                        "quality": "Average",
+                                        "material": "Hide"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Go have breakfast",
+            "music": "homeland.mp3",
+            "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+            "text": "At the kitchen, Alex opens the fridge to see what to make for breakfast.\n\n{@gotDressed}",
+            "choices": [
+                {
+                    "displayText": "Make eggs",
+                    "desc": "Alex makes eggs and feels strong. Alex gains 3 str.",
+                    "page": "After Breakfast",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "tempStatChange",
+                                    {
+                                        "stat": "str",
+                                        "char": "Alex",
+                                        "val": "3",
+                                        "turns": "1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Make rice",
+                    "desc": "Alex makes rice and feels full. Alex gains 3 str, 3 end, and 3 dex.",
+                    "page": "After Breakfast",
+                    "disabled": "Disabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "tempStatChange",
+                                    {
+                                        "stat": "str",
+                                        "char": "Alex",
+                                        "val": "3",
+                                        "turns": "1"
+                                    }
+                                ],
+                                [
+                                    "tempStatChange",
+                                    {
+                                        "stat": "end",
+                                        "char": "Alex",
+                                        "val": "3",
+                                        "turns": "1"
+                                    }
+                                ],
+                                [
+                                    "tempStatChange",
+                                    {
+                                        "stat": "dex",
+                                        "char": "Alex",
+                                        "val": "3",
+                                        "turns": "1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Make toast",
+                    "desc": "Alex makes toast and feels fast. Alex gains 3 dex.",
+                    "page": "After Breakfast",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "tempStatChange",
+                                    {
+                                        "stat": "dex",
+                                        "char": "Alex",
+                                        "val": "3",
+                                        "turns": "1"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "event",
+                                "vr": "hasArmour",
+                                "vl": "false"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "enableChoice",
+                            {
+                                "toggle": "Enabled",
+                                "choice": "Make rice"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": [],
+            "modulesVars": {
+                "gotDressed": [
+                    {
+                        "text": "It's still early so Alex has time to make rice if {o.Alex.g@he} wants."
+                    },
+                    {
+                        "text": "Alex is running out of time and has to settle for something quick.",
+                        "checks": [
+                            [
+                                "event",
+                                "hasArmour",
+                                "!=",
+                                "false"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "After Breakfast",
+            "music": "homeland.mp3",
+            "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+            "text": "{@wearingPajamas}\n\nAlex puts on {o.Alex.g@his2} shoes and leaves the house.\n\nAlex arrives at the shed where {o.Alex.g@he} keeps {o.Alex.g@his2} weapons. ",
+            "choices": [
+                {
+                    "displayText": "Pick up Sword",
+                    "desc": "Alex takes the sword with {o.Alex.g@him}.",
+                    "page": "Leave the house",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "equipItem",
+                                    {
+                                        "char": "Alex",
+                                        "eqType": "Weapons",
+                                        "gear": "Short Sword",
+                                        "quality": "Average",
+                                        "material": "Brass"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Pick up Spear",
+                    "desc": "Alex takes the spear with {o.Alex.g@him}.",
+                    "page": "Leave the house",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "equipItem",
+                                    {
+                                        "char": "Alex",
+                                        "eqType": "Weapons",
+                                        "gear": "Spear",
+                                        "quality": "Average",
+                                        "material": "Brass"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {
+                "wearingPajamas": [
+                    {
+                        "text": "Alex hurriedly puts on some clothes that were close to the door."
+                    },
+                    {
+                        "text": "Alex finishes breakfast and walks to the door.",
+                        "checks": [
+                            [
+                                "event",
+                                "hasArmour",
+                                "!=",
+                                "false"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Leave the house",
+            "music": "the_usual.mp3",
+            "bg": "bg\/path.jpeg",
+            "text": "Alex leaves {o.Alex.g@his2} property and walks along the forest path to the candy shop.",
+            "choices": [
+                {
+                    "displayText": "Done",
+                    "desc": "",
+                    "page": "Wake up",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Forest-to-Candy-Store"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {
+        "hasArmour": "false",
+        "hasWeapon": "false"
+    }
+}

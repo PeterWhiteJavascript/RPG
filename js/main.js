@@ -107,7 +107,6 @@ Q.newGame=function(options){
         var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
         var random1 = Q.charGen.generateCharacter({},"roster");
         var random2 = Q.charGen.generateCharacter({},"roster");
-        console.log(random1,random2)
         //console.log(legion)
         Q.state.set("allies",[storyAlex,astraea,random1,random2]);
         //Set up the new game bag
@@ -135,7 +134,7 @@ Q.newGame=function(options){
         if(Q.state.get("startSceneType")) Q.state.get("saveData").startSceneType = Q.state.get("startSceneType");
         
         //Start a scene
-        Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName,[Q.state.get("allies")[1]]);
+        Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
     });
 };
@@ -384,7 +383,7 @@ Q.load(files.join(','),function(){
 },{
     progressCallback:function(loaded,total){
         if(loaded===total){
-            $("#loading-screen").remove();
+            $("#loading-screen").hide();
         }
     }
 });

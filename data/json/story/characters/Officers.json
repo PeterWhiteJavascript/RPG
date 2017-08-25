@@ -1,8 +1,8 @@
 {
-    "Main": {
-        "Bandit-Legionnaire": {
-            "handle": "Bandit-Legionnaire",
-            "name": "",
+    "Officers": {
+        "Alex": {
+            "handle": "Alex",
+            "name": "Alex",
             "levelmin": 1,
             "levelmax": 1,
             "gender": "Male",
@@ -31,7 +31,7 @@
             },
             "baseStats": [
                 "Random",
-                "Low"
+                "Medium"
             ],
             "techniques": [
                 "Forced March",
@@ -41,15 +41,15 @@
                 "Direct",
                 "Phalanx"
             ],
-            "nationality": "Dardoian",
+            "nationality": "Venorian",
             "charClass": "Legionnaire"
         },
-        "Bandit-Archer": {
-            "handle": "Bandit-Archer",
-            "name": "",
+        "Astraea": {
+            "handle": "Astraea",
+            "name": "Astraea",
             "levelmin": 1,
-            "levelmax": 2,
-            "gender": "Male",
+            "levelmax": 1,
+            "gender": "Female",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -75,62 +75,18 @@
             },
             "baseStats": [
                 "Random",
-                "Low"
+                "Medium"
             ],
             "techniques": [
-                "Long Shot",
-                "Armour Piercing Shot",
-                "Rapid Shot",
-                "Critical Shot",
-                "Painful Shot",
-                "Sniper Shot"
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
             ],
-            "nationality": "Dardoian",
-            "charClass": "Archer"
-        },
-        "Bandit-Leader": {
-            "handle": "Bandit-Leader",
-            "name": "Bandit Guy",
-            "levelmin": 3,
-            "levelmax": 3,
-            "gender": "Male",
-            "equipment": {
-                "righthand": [
-                    "Average",
-                    "Brass",
-                    "Ax"
-                ],
-                "lefthand": [
-                    "Default",
-                    "None",
-                    "None"
-                ],
-                "armour": [
-                    "Average",
-                    "Brass",
-                    "Outfit"
-                ],
-                "footwear": [
-                    "Average",
-                    "Soft Leather",
-                    "Shoes"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": [
-                "Random",
-                "High"
-            ],
-            "techniques": [
-                "Push",
-                "Staredown",
-                "Charge Through",
-                "Headbutt",
-                "Pull",
-                "War Cry"
-            ],
-            "nationality": "Dardoian",
-            "charClass": "Berserker"
+            "nationality": "Venorian",
+            "charClass": "Vanguard"
         }
     }
 }

@@ -1,38 +1,20 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(type,scene,event,characters){
+    Q.startScene = function(type,scene,event){
         if(scene==="locations"){ 
             Q.stageScene("location",1,{location:event});
         }
         else {
             Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
+                Q.clearStages();
                 var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
-                //Do different code for different scene types
-                switch(data.kind){
-                    case "story":
-                        Q.clearStages();
-                        Q.stageScene("story",1,{data:data,characters:characters});
-                        break;
-                    case "battleScene":
-                        Q.loadTMX(data.map, function() {
-                            Q.clearStages();
-                            Q.stageScene("battleScene",0,{data:data});
-                        });
-
-                        break;
-                    case "battle":
-                        Q.loadTMX(data.map, function() {
-                            Q.clearStages();
-                            Q.stageScene("battle",0,{data:data});
-                        });
-                        break;
-                }
+                Q.stageScene(data.kind,0,{data:data});
             });
         }
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
-        var characters = stage.options.characters;
+        var characters = Q.state.get("allies");
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
@@ -128,67 +110,71 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //Get the data to play out this scene
         var data = stage.options.data;
-        //Display the tmx tile map
-        //If one is not passed in, we are re-using the map from the previous battle
-        if(data.map){
-            Q.stageTMX(data.map, stage);
-        }
-        stage.lists.TileLayer[0].p.z = 0;
-        stage.lists.TileLayer[1].p.z = 1;
-        stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-        stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-        stage.add("viewport");
-        stage.viewport.scale = 2;
-        //The invisible sprite that the viewport follows
-        stage.viewSprite = stage.insert(new Q.ViewSprite());
-        Q.viewFollow(stage.viewSprite,stage);
-        //Set the batcon's stage
-        Q.BatCon.stage = stage;
-        
-        Q.placeCharacters(data.characters,stage);
-        
-        //DialogueController holds the functions for the battleScene
-        Q.stageScene("script",1,{data:data});
+        Q.loadTMX(data.map, function() {
+            //Display the tmx tile map
+            //If one is not passed in, we are re-using the map from the previous battle
+            if(data.map){
+                Q.stageTMX(data.map, stage);
+            }
+            stage.lists.TileLayer[0].p.z = 0;
+            stage.lists.TileLayer[1].p.z = 1;
+            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+            stage.add("viewport");
+            stage.viewport.scale = 2;
+            //The invisible sprite that the viewport follows
+            stage.viewSprite = stage.insert(new Q.ViewSprite());
+            Q.viewFollow(stage.viewSprite,stage);
+            //Set the batcon's stage
+            Q.BatCon.stage = stage;
+
+            Q.placeCharacters(data.characters,stage);
+
+            //DialogueController holds the functions for the battleScene
+            Q.stageScene("script",1,{data:data});
+        });
     },{sort:true});
     Q.scene("battle",function(stage){
         Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
-        var music = battleData.music;
-        if(!music) music = Q.state.get("currentMusic"); 
-        Q.playMusic(music,function(){
-            //Display the tmx tile map
-            Q.stageTMX(battleData.map, stage);
-            stage.lists.TileLayer[0].p.z = -5;
-            stage.lists.TileLayer[1].p.z = -4;
-            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-            
-            //Set the battlegrid's stage
-            Q.BattleGrid.stage = stage;
-            //Reset the battle grid for this battle
-            Q.BattleGrid.reset();
-            //Set the batcon's stage
-            Q.BatCon.stage = stage;
-            stage.add("viewport");
-            stage.viewport.scale = 2;
-            
-            //Display the enemies, interactables, pickups, and placement locations
-            var enemyData = battleData.characters;
-            enemyData.forEach(function(enemy){
-                stage.insert(new Q.Character(Q.charGen.generateCharacter(enemy,"enemy")));
+        Q.loadTMX(battleData.map, function() {
+            var music = battleData.music;
+            if(!music) music = Q.state.get("currentMusic"); 
+            Q.playMusic(music,function(){
+                //Display the tmx tile map
+                Q.stageTMX(battleData.map, stage);
+                stage.lists.TileLayer[0].p.z = -5;
+                stage.lists.TileLayer[1].p.z = -4;
+                stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+                stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+
+                //Set the battlegrid's stage
+                Q.BattleGrid.stage = stage;
+                //Reset the battle grid for this battle
+                Q.BattleGrid.reset();
+                //Set the batcon's stage
+                Q.BatCon.stage = stage;
+                stage.add("viewport");
+                stage.viewport.scale = 2;
+
+                //Display the enemies, interactables, pickups, and placement locations
+                var enemyData = battleData.characters;
+                enemyData.forEach(function(enemy){
+                    stage.insert(new Q.Character(Q.charGen.generateCharacter(enemy,"enemy")));
+                });
+                //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
+                Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
+
+                //Default to following the pointer
+                Q.viewFollow(Q.pointer,stage);
+
+                //Display the hud which shows character and terrain information
+                Q.stageScene("battleHUD",3);
+                Q.BatCon.showPlacementSquares();
+                Q.BatCon.startPlacingAllies();
+
             });
-            //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-            Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
-
-            //Default to following the pointer
-            Q.viewFollow(Q.pointer,stage);
-
-            //Display the hud which shows character and terrain information
-            Q.stageScene("battleHUD",3);
-            Q.BatCon.showPlacementSquares();
-            Q.BatCon.startPlacingAllies();
-            
         });
         
     },{sort:true});

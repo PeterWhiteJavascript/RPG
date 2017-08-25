@@ -44,24 +44,28 @@
     
     "g":{
         "Male":{
-            "a":"he",
-            "A":"He",
-            "b":"him",
-            "B":"Him",
-            "c":"his",
-            "C":"His",
-            "d":"himself",
-            "D":"Himself"
+            "he":"he",
+            "He":"He",
+            "him":"him",
+            "Him":"Him",
+            "his":"his",
+            "His":"His",
+            "his2":"his",
+            "His2":"His",
+            "himself":"himself",
+            "Himself":"Himself"
         },
         "Female":{
-            "a":"she",
-            "A":"She",
-            "b":"her",
-            "B":"Her",
-            "c":"hers",
-            "C":"Hers",
-            "d":"herself",
-            "D":"Herself"
+            "he":"she",
+            "He":"She",
+            "him":"her",
+            "Him":"Her",
+            "his":"hers",
+            "His":"Hers",
+            "his2":"her",
+            "His2":"Her",
+            "himself":"herself",
+            "Himself":"Herself"
         }
     }
 }

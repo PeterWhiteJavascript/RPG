@@ -16,9 +16,11 @@ Quintus.UIObjects=function(Q){
             var page = choice.page;
             var desc = choice.desc;
             Q.storyController.insertChoiceDesc(desc);
+            Q.storyController.changePage(page);
+            /*
             setTimeout(function(){
                 Q.storyController.changePage(page);
-            },desc.length*25);
+            },desc.length*25);*/
         });
     });
     Q.component("time",{
@@ -413,6 +415,10 @@ Quintus.UIObjects=function(Q){
                             if(varValue==checks[j][3]) success = true;
                             else success = false;
                             break;
+                        case "!=":
+                            if(varValue!=checks[j][3]) success = true;
+                            else success = false;
+                            break;
                         case ">":
                             if(varValue>checks[j][3]) success = true;
                             else success = false;
@@ -432,7 +438,7 @@ Quintus.UIObjects=function(Q){
                     }
                 }
                 if(success){
-                    text = module[i].text;
+                    text = Q.textModules.processTextVars(module[i].text);
                 }
             }
             return text;
@@ -718,7 +724,6 @@ Quintus.UIObjects=function(Q){
             }
             //Make the background correct
             this.p.bgImage.p.asset = page.bg;
-            
             //Play the music for the page
             Q.playMusic(page.music);
             var text = $('<pre>'+Q.textModules.processTextVars(page.text)+'</pre>');
@@ -732,9 +737,10 @@ Quintus.UIObjects=function(Q){
             });
         },
         insertChoiceDesc:function(desc){
-            this.removePage();
+            //this.removePage();
+            this.removeChoices();
             var contentBox = this.p.textContent;
-            $(contentBox).append('<pre>'+desc+'</pre>');
+            $(contentBox).append('<pre>'+Q.textModules.processTextVars(desc)+'</pre>');
             
         },
         removeChoices:function(){
@@ -753,7 +759,7 @@ Quintus.UIObjects=function(Q){
         changePage:function(pageName){
             var lastPage = this.p.pages[this.p.pageNum];
             var pageNum = this.p.pageNum = this.getPageNum(pageName);
-            this.removePage();
+            //this.removePage();
             this.insertPage(pageNum);
         },
         checkConds:function(cond){
@@ -898,14 +904,12 @@ Quintus.UIObjects=function(Q){
                 t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = obj.toggle;
             },
             changeEvent:function(t,obj){
-                Q.startScene(obj.scene,obj.event);
+                Q.startScene(obj.type,obj.scene,obj.event);
                 $("#text-container").remove();
             },
             recruitChar:function(t,obj){
                 var data = Q.state.get("characters")[obj.name];
                 var char = Q.charGen.generateCharacter(data);
-                char.events = data.events?data.events:{};
-                char.completedEvents = {};
                 char.officer = data.officer;
                 Q.state.get("allies").push(char);
             },
@@ -936,7 +940,34 @@ Quintus.UIObjects=function(Q){
                         }
                         break;
                 }
+            },
+            tempStatChange:function(t,obj){
+                obj.val = parseInt(obj.val);
+                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                char.tempStatChange[obj.stat] += obj.val;
+            },
+            equipItem:function(t,obj){
+                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
+                //TO DO: Run the equipment through a function that unequips what is there and adds it to the bag
+                switch(obj.eqType){
+                    case "Weapons":
+                    case "Shields":
+                        char.equipment.righthand = eq;
+                        break;
+                    case "Armour":
+                        char.equipment.armour = eq;
+                        break;
+                    case "Footwear":
+                        char.equipment.footwear = eq;
+                    break;
+                    case "Accesories":
+                        char.equipment.accessory = eq;
+                        break;
+                }
+                char.combatStats = Q.charGen.getCombatStats(char);
             }
+            
         }
     });
     Q.UI.Container.extend("DialogueController",{

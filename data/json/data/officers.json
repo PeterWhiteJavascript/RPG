@@ -4,10 +4,10 @@
         "level":1,
         "gender":"Male",
         "equipment":{
-            "righthand":["Average","Brass","Short Sword"],
-            "lefthand":["Average","Wood","Small Shield"],
-            "armour":["Average","Soft Leather","Shirt"],
-            "footwear":["Average","Wood","Shoes"],
+            "righthand":false,
+            "lefthand":false,
+            "armour":false,
+            "footwear":false,
             "accessory":false
         },
         "baseStats":{

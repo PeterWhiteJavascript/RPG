@@ -1,0 +1,110 @@
+{
+    "name": "Forest-to-Candy-Store",
+    "desc": "A little battle scene on the way to the candy store.",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        2,
+                        7
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "the_usual.mp3"
+                ]
+            }
+        ],
+        [
+            "Move",
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            11,
+                            7
+                        ]
+                    ],
+                    "right",
+                    true
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Bandit-Archer",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "HEY! I WILL NOT LET YOU GO TO THE CANDY STORE!!?!",
+                    "FIGHTING GO!"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/knight.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Forest-Battle"
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                0,
+                7
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                7
+            ],
+            "dir": "left"
+        }
+    ],
+    "map": "forest-to-candy-store.tmx"
+}

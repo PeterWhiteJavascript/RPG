@@ -143,7 +143,7 @@
         },
         {
             "name": "Custom",
-            "desc": "Any additional events that happen due to more 'custom' conditions.",
+            "desc": "Any additional events that happen due to more custom conditions.",
             "eventOrder": [
                 "NomadicLegionnaireBackstory"
             ],
@@ -156,11 +156,9 @@
             "desc": "Test for act 1-1",
             "eventOrder": [
                 "Full-Test",
-                "Event-1",
-                "MetaximoMarket",
-                "Battle-Scene-Test",
-                "New-battlescene",
-                "Attacked-By-Bandits"
+                "firstbattletest",
+                "fullbattletest",
+                "battleTest"
             ],
             "vrs": []
         },
@@ -242,12 +240,24 @@
             "vrs": []
         }
     ],
-    "Other": [],
-    "": [
+    "Locations": [
         {
-            "name": "",
-            "desc": null,
-            "eventOrder": [],
+            "name": "Metaximo",
+            "desc": "Metaximo is a cool place",
+            "eventOrder": [
+                "metaximo1"
+            ],
+            "vrs": []
+        }
+    ],
+    "Other": [
+        {
+            "name": "CandyShop",
+            "desc": "Alex travels to a candy shop and meets friends and foes along the way! A true tale of adventure!",
+            "eventOrder": [
+                "Leaving-Home",
+                "Forest-to-Candy-Store"
+            ],
             "vrs": []
         }
     ]

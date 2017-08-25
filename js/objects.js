@@ -290,7 +290,8 @@ Quintus.Objects=function(Q){
                 this.playCounter(Q.compareLocsForDirection(this.p.loc,toCounter.p.loc,this.p.dir),callback);
                 Q.playSound("slashing.mp3");
             },
-            showExpGain:function(exp,leveledUp,time){
+            showExpGain:function(exp,leveledUp,callback){
+                console.log(exp,leveledUp)
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
                 //If the character leveled up
                 if(leveledUp){
@@ -301,7 +302,12 @@ Quintus.Objects=function(Q){
                 } else {
                     Q.playSound("coin.mp3");
                 }
-                return time?time:300;
+                if(callback){
+                    setTimeout(function(){
+                        callback();
+                    },500);
+                }
+                
             },
             showHealed:function(amount,callback){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
@@ -377,7 +383,7 @@ Quintus.Objects=function(Q){
                         //Only give exp if possible (if an ally killed this character, no exp is given)
                         if(this.p.hitBy.length){
                             //Figure out how much exp should be awarded
-                            text.push(Q.BatCon.giveExp(this,this.p.hitBy));
+                            text.concat(Q.BatCon.giveExp(this,this.p.hitBy));
                         }
                     }
                     if(callback){

@@ -58,6 +58,7 @@ for($i=0;$i<count($file['pages']);$i++){
             if(isset($moduleVar[$key]->checks)){
                 foreach($moduleVar[$key]->checks as $key3=>$value3){
                     $moduleVar[$key]->checks[$key3][2] = urldecode($value3[2]);
+                    $moduleVar[$key]->checks[$key3][3] = urldecode($value3[3]);
                 }
             }
             

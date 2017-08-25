@@ -16,7 +16,12 @@ $(function(){
     $('#open-scene').click(function(e){
         var scene = $(selectedScene).parent().attr("name");
         var type = $(selectedScene).parent().attr("type");
-        var form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+        var form;
+        if(type==="Locations"){
+            form = $('<form action="show-locations.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+        } else {
+            form = $('<form action="show-events.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+        }
         $("body").append(form);
         form.submit();
     });

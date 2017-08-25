@@ -1,0 +1,24 @@
+{
+    "name": "Forest-Battle",
+    "desc": "The battle in the forest on the way to the candy store.",
+    "kind": "battle",
+    "map": "forest-to-candy-store.tmx",
+    "music":"demo.mp3",
+    "placementSquares":[[11,7]],
+    "maxAllies":1,
+    "events":[
+    ],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                7
+            ],
+            "dir": "left"
+        }
+    ]
+}

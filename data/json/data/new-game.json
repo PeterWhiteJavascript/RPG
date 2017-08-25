@@ -42,7 +42,7 @@
         "Kind":10
     },
     "relations":{
-        "Venoriae":[10,50],
+        "Venoriae":[50,50],
         "Dardoine":[50,50],
         "Aljudramil":[50,50],
         "Nomads":[50,50],
@@ -50,8 +50,8 @@
     },
     
     "startSceneName":"Act-1-1",
-    "startSceneType":"Story",
-    "startEventName":"fullbattletest",
+    "startSceneType":"story",
+    "startEventName":"firstbattletest",
     
     "act":"1-1",
     "applicationsRoster":[]

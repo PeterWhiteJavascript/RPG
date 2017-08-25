@@ -52,7 +52,14 @@ Quintus.QFunctions=function(Q){
                 bgAssets.push(data[i].bg);
             }
         }
-        Q.load(musicAssets.concat(bgAssets),callback);
+        $("#loading-screen").show();
+        Q.load(musicAssets.concat(bgAssets),callback,{
+            progressCallback:function(loaded,total){
+                if(loaded===total){
+                    $("#loading-screen").hide();
+                }
+            }
+        });
     };
     //Value scale of 1-100
     Q.getCharacterValue=function(value){
