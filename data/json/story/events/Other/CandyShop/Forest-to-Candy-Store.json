@@ -6,6 +6,12 @@
         [
             "Initial",
             {
+                "func": "changeMusic",
+                "props": [
+                    "the_usual.mp3"
+                ]
+            },
+            {
                 "func": "modDialogueBox",
                 "props": [
                     "hide"
@@ -19,24 +25,10 @@
                         7
                     ]
                 ]
-            },
-            {
-                "func": "changeMusic",
-                "props": [
-                    "the_usual.mp3"
-                ]
             }
         ],
         [
             "Move",
-            {
-                "func": "changeEvent",
-                "props": [
-                    "Other",
-                    "CandyShop",
-                    "Forest-Battle"
-                ]
-            },
             {
                 "func": "moveAlong",
                 "props": [
@@ -79,6 +71,14 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Forest-Battle"
+                ]
             }
         ]
     ],

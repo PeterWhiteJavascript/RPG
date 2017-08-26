@@ -49,9 +49,9 @@
         "Talumpatua":[50,50]
     },
     
-    "startSceneName":"Act-1-1",
-    "startSceneType":"story",
-    "startEventName":"firstbattletest",
+    "startSceneName":"CandyShop",
+    "startSceneType":"Other",
+    "startEventName":"Leaving-Home",
     
     "act":"1-1",
     "applicationsRoster":[]

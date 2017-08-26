@@ -3,7 +3,7 @@
     "desc": "The battle in the forest on the way to the candy store.",
     "kind": "battle",
     "map": "forest-to-candy-store.tmx",
-    "music":"demo.mp3",
+    "music":"battle.mp3",
     "placementSquares":[[11,7]],
     "maxAllies":1,
     "victory":{

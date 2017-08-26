@@ -104,11 +104,11 @@ Q.newGame=function(options){
         
         var storyAlex = Q.charGen.generateCharacter(alex,"alex");
         //For now, alex is the only character
-        var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
+        /*var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
         var random1 = Q.charGen.generateCharacter({},"roster");
-        var random2 = Q.charGen.generateCharacter({},"roster");
+        var random2 = Q.charGen.generateCharacter({},"roster");*/
         //console.log(legion)
-        Q.state.set("allies",[storyAlex,astraea,random1,random2]);
+        Q.state.set("allies",[storyAlex/*,astraea,random1,random2*/]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:{
             Consumables:[
@@ -134,7 +134,14 @@ Q.newGame=function(options){
         if(Q.state.get("startSceneName")) Q.state.get("saveData").startSceneName = Q.state.get("startSceneName");
         if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
         if(Q.state.get("startSceneType")) Q.state.get("saveData").startSceneType = Q.state.get("startSceneType");
-        
+        //TO DO: save each scenes vars somewhere
+        Q.state.set(
+            "sceneVars",
+            Q.state.get("scenesList")[Q.state.get("saveData").startSceneType].filter(function(sc){
+                return sc.name===Q.state.get("saveData").startSceneName;
+            })[0].vrs
+        );
+
         //Start a scene
         Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
@@ -299,7 +306,6 @@ Q.load(files.join(','),function(){
     //The functions that take text from the modules.json
     Q.textModules = new Q.TextModules();
     
-    
     /* TESTING EVENT */
     if(document.getElementById("title")&&document.getElementById("title").innerHTML.length){
         var scene = document.getElementById("title").innerHTML;
@@ -308,12 +314,6 @@ Q.load(files.join(','),function(){
         Q.state.set("startSceneName",scene);
         Q.state.set("startEventName",name);
         Q.state.set("startSceneType",type);
-        Q.state.set(
-            "sceneVars",
-            Q.state.get("scenesList")[type].filter(function(sc){
-                return sc.name===scene;
-            })[0].vrs
-        );
         Q.load("json/story/events/"+type+"/"+scene+"/"+name+".json",function(){
             Q.state.set("testingScene",Q.assets["json/story/events/"+type+"/"+scene+"/"+name+".json"]);
             var kind = Q.state.get("testingScene").kind;

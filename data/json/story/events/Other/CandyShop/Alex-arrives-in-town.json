@@ -19,9 +19,23 @@
                 {
                     "displayText": "Go to pub",
                     "desc": "",
-                    "page": "Go to pub",
+                    "page": "Arrive in town",
                     "disabled": "Disabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Character",
+                                        "scene": "Custom",
+                                        "event": "NomadicLegionnaireBackstory"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 }
             ],
             "onload": [
@@ -83,7 +97,7 @@
                 {
                     "displayText": "Go inside",
                     "desc": "",
-                    "page": "Arrive in town",
+                    "page": "Inside Shop",
                     "disabled": "Enabled",
                     "groups": []
                 }
@@ -93,11 +107,26 @@
             "modulesVars": []
         },
         {
-            "name": "Go to pub",
+            "name": "Inside Shop",
             "music": "homeland.mp3",
-            "bg": "bg\/pub.jpg",
-            "text": "Alex arrives at the pub.",
-            "choices": [],
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "The inside of the candy shop is pretty sweet! There are lots of candies to choose from.",
+            "choices": [
+                {
+                    "displayText": "Choose the gummies",
+                    "desc": "Alex picked up the gummies and took them to the cashier.",
+                    "page": "Arrive in town",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Choose the hard candies",
+                    "desc": "Alex picked up the hard candies and took them to the cashier.",
+                    "page": "Arrive in town",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
             "onload": [],
             "modules": [],
             "modulesVars": []

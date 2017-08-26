@@ -260,7 +260,9 @@
                 "Forest-Battle",
                 "Forest-Battle-victory",
                 "Forest-Battle-defeat",
-                "Alex-arrives-in-town"
+                "Alex-arrives-in-town",
+                "Forest-battle-victory2",
+                "Inside-the-pub"
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"

@@ -46,8 +46,8 @@
                                 [
                                     "setVar",
                                     {
-                                        "scope": "event",
-                                        "vr": "hasArmour",
+                                        "scope": "Event",
+                                        "vr": "gotDressed",
                                         "vl": "LeatherOutfit"
                                     }
                                 ],
@@ -77,9 +77,9 @@
                                 [
                                     "setVar",
                                     {
-                                        "scope": "event",
-                                        "vr": "hasArmour",
-                                        "vl": "Hide Outfit"
+                                        "scope": "Event",
+                                        "vr": "gotDressed",
+                                        "vl": "Hide"
                                     }
                                 ],
                                 [
@@ -98,8 +98,8 @@
                 }
             ],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
         },
         {
             "name": "Go have breakfast",
@@ -198,8 +198,8 @@
                         [
                             "checkVar",
                             {
-                                "scope": "event",
-                                "vr": "hasArmour",
+                                "scope": "Event",
+                                "vr": "gotDressed",
                                 "vl": "false"
                             }
                         ]
@@ -215,7 +215,7 @@
                     ]
                 }
             ],
-            "modules": [],
+            "modules": {},
             "modulesVars": {
                 "gotDressed": [
                     {
@@ -225,8 +225,8 @@
                         "text": "Alex is running out of time and has to settle for something quick.",
                         "checks": [
                             [
-                                "event",
-                                "hasArmour",
+                                "Event",
+                                "gotDressed",
                                 "!=",
                                 "false"
                             ]
@@ -299,8 +299,8 @@
                         "text": "Alex finishes breakfast and walks to the door.",
                         "checks": [
                             [
-                                "event",
-                                "hasArmour",
+                                "Event",
+                                "gotDressed",
                                 "!=",
                                 "false"
                             ]
@@ -338,12 +338,11 @@
                 }
             ],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
         }
     ],
     "vrs": {
-        "hasArmour": "false",
-        "hasWeapon": "false"
+        "gotDressed": "false"
     }
 }

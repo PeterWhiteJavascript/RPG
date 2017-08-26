@@ -135,13 +135,12 @@ Quintus.SceneFuncs=function(Q){
         });
     },{sort:true});
     Q.scene("battle",function(stage){
-        Q.stageScene("fader",11);
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         Q.loadTMX(battleData.map, function() {
-            var music = battleData.music;
-            if(!music) music = Q.state.get("currentMusic"); 
-            Q.playMusic(music,function(){
+            $("#loading-screen").show();
+            Q.stageScene("fader",11);
+            Q.playMusic(battleData.music,function(){
                 //Display the tmx tile map
                 Q.stageTMX(battleData.map, stage);
                 stage.lists.TileLayer[0].p.z = -5;
@@ -176,6 +175,12 @@ Quintus.SceneFuncs=function(Q){
                 Q.BatCon.startPlacingAllies();
                 
             });
+        },{
+            progressCallback:function(loaded,total){
+                if(loaded===total){
+                    $("#loading-screen").hide();
+                }
+            }
         });
         
     },{sort:true});

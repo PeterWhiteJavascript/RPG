@@ -1,0 +1,18 @@
+{
+    "name": "Inside-the-pub",
+    "desc": "Alex go to the pub because the candy shop was closed.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "demo.mp3",
+            "bg": "bg\/pub.jpg",
+            "text": "Alex arrives at the pub and looks around.",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

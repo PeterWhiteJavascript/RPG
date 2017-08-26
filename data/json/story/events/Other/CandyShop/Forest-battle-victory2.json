@@ -1,6 +1,6 @@
 {
-    "name": "Forest-Battle-victory",
-    "desc": "Alex has won the battle vs the bandit archer.",
+    "name": "Forest-battle-victory2",
+    "desc": "after winning the battle, you get another one!",
     "kind": "battleScene",
     "script": [
         [
@@ -25,20 +25,67 @@
                 "props": [
                     "demo.mp3"
                 ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            13,
+                            13
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
             }
         ],
         [
-            "Do Stuff",
+            "Bandits chase",
             {
-                "func": "playAnim",
+                "func": "moveAlong",
                 "props": [
                     [
-                        "Bandit-Archer",
+                        "Bandit-Legionnaire",
                         0
                     ],
-                    "Hurt",
-                    "left",
-                    "dying.mp3"
+                    [
+                        [
+                            13,
+                            18
+                        ],
+                        [
+                            13,
+                            17
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ],
+                    [
+                        [
+                            14,
+                            18
+                        ],
+                        [
+                            14,
+                            17
+                        ]
+                    ],
+                    "up",
+                    true
                 ]
             },
             {
@@ -49,7 +96,7 @@
             },
             {
                 "text": [
-                    "I am no match for you..."
+                    "HEY, GET BACK HERE! I NEED YOUR STUFF!!!"
                 ],
                 "asset1": "story\/empty.png",
                 "asset2": "story\/knight.png",
@@ -64,6 +111,28 @@
                 ]
             },
             {
+                "func": "changeMoveSpeed",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    0.15
+                ]
+            },
+            {
+                "func": "playAnim",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "Counter",
+                    "up",
+                    "confirm.mp3"
+                ]
+            },
+            {
                 "func": "moveAlong",
                 "props": [
                     [
@@ -71,10 +140,6 @@
                         0
                     ],
                     [
-                        [
-                            13,
-                            7
-                        ],
                         [
                             13,
                             0
@@ -98,21 +163,9 @@
                 "func": "centerView",
                 "props": [
                     [
-                        "Bandit-Archer",
+                        "Bandit-Leader",
                         0
                     ]
-                ]
-            },
-            {
-                "func": "playAnim",
-                "props": [
-                    [
-                        "Bandit-Archer",
-                        0
-                    ],
-                    "Counter",
-                    "up",
-                    "inflict_status.mp3"
                 ]
             },
             {
@@ -123,10 +176,10 @@
             },
             {
                 "text": [
-                    "Nihihi, they have no clue what is ahead..."
+                    "YAR, OUR PREY GOT AWAY!"
                 ],
                 "asset1": "story\/empty.png",
-                "asset2": "story\/knight.png",
+                "asset2": "story\/empty.png",
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
@@ -136,7 +189,7 @@
                 "props": [
                     "Other",
                     "CandyShop",
-                    "Forest-battle-victory2"
+                    "Alex-arrives-in-town"
                 ]
             }
         ]
@@ -148,22 +201,33 @@
             "handle": "Alex",
             "uniqueId": 0,
             "loc": [
-                12,
-                7
+                13,
+                22
             ],
-            "dir": "right"
+            "dir": "up"
         },
         {
             "file": "test_level1.json",
             "group": "Main",
-            "handle": "Bandit-Archer",
+            "handle": "Bandit-Legionnaire",
             "uniqueId": 0,
             "loc": [
-                14,
-                7
+                21,
+                18
             ],
-            "dir": "left"
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                22,
+                18
+            ],
+            "dir": "down"
         }
     ],
-    "map": "forest-to-candy-store.tmx"
+    "map": "forest-to-candy-store2.tmx"
 }

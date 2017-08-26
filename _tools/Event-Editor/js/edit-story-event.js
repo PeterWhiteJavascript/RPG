@@ -809,7 +809,7 @@ $(function(){
             //Get all of the variables
             var v = this.getVars();
             var vrs = "{}";
-            if(v.scope==="event"){
+            if(v.scope==="Event"){
                 vrs = JSON.stringify(v.vars).trim().replace(/ /g, '%20');
             }
             form.append("<input type='text' name='vrs' value="+vrs+">");

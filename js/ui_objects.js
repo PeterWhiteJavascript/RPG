@@ -872,6 +872,7 @@ Quintus.UIObjects=function(Q){
                         vars = Q.state.get("globalVars");
                         break;
                 }
+                console.log(Q.state.get("sceneVars"),obj)
                 var keys = Object.keys(vars);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
@@ -1149,7 +1150,7 @@ Quintus.UIObjects=function(Q){
         //Battle Scene Below
         changeMusic:function(music){
             var t = this;
-            Q.playMusic(music+".mp3",function(){t.forceCycle();});
+            Q.playMusic(music,function(){t.forceCycle();});
             return true;
         },
         checkAddCharacter:function(name){
