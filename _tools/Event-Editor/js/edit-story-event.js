@@ -248,7 +248,7 @@ $(function(){
             }
         },
         moduleVarAddNewCheck:function(cont,check){
-            var s = check.length?check[0]:"event";
+            var s = check.length?check[0]:"Event";
             $(cont).append('\n\
                 <div class="module-check">\n\
                     <div class="choice-group-top">\n\
@@ -608,8 +608,9 @@ $(function(){
                     }
                     var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="cond-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
                     var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
+                    var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" value="'+props.operator+'"><option>==</option><option><</option><option>></option><option><=</option><option>>=</option></select>';
                     var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
-                    content = scope+vr+vl;
+                    content = scope+vr+operator+vl;
                     break;
                 case "checkChar":
                     if(!props){props = {};
@@ -642,15 +643,16 @@ $(function(){
                 case "setVar":
                     if(!props){props = {};
                         var varProps = this.getVars();
-                        console.log(varProps)
                         props.scope = varProps.scope;
                         var firstVar = Object.keys(varProps.vars)[0];
                         props.vr = firstVar;
+                        props.operator = "=";
                         props.vl = varProps.vars[firstVar];
                     }
                     content = this.setUpEffectProp("select","Scope","scope",{opts:this.scopeOptions(),scope:props.scope});
                     content += this.setUpEffectProp("select","Variable","vr",{opts:this.varOptions(props.scope),vr:props.vr});
-                    content += this.setUpEffectProp("input","Set Variable to","vl",{vl:props.vl});
+                    content += this.setUpEffectProp("select","Operator","operator",{opts:["=","+","-"],operator:props.operator});
+                    content += this.setUpEffectProp("input","Amount","vl",{vl:props.vl});
                     break;
                 case "changePage":
                     if(!props){props = {};
@@ -750,7 +752,7 @@ $(function(){
             switch(type){
                 case "input":
                     content += '<p class="editor-descriptor light-gradient">'+descText+'</p>';
-                    content += '<input type="'+props.inputType+'" min="'+props.min+'" value='+props[key]+' class="effect-prop '+key+'">';
+                    content += '<input type="'+props.inputType+'" min="'+props.min+'" value="'+props[key]+'" class="effect-prop '+key+'">';
                     break;
                 case "select":
                     content += '<p class="editor-descriptor-half light-gradient">'+descText+'</p>';
@@ -940,6 +942,7 @@ $(function(){
                     break;
                 case "Global":
                     vars = this.p.globalVars;
+                    vars.money = 0;
                     break;
             }
             var opts = '';

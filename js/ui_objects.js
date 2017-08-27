@@ -589,7 +589,7 @@ Quintus.UIObjects=function(Q){
             var prop = text.slice(text.indexOf("@")+1,text.length);
             var varText = "";
             switch(aff[0]){
-                //Event var
+                //Event var -> {e@varName}
                 case "e":
                     return Q.storyController.p.vrs[prop];
                 //Scene var
@@ -872,14 +872,25 @@ Quintus.UIObjects=function(Q){
                         vars = Q.state.get("globalVars");
                         break;
                 }
-                console.log(Q.state.get("sceneVars"),obj)
                 var keys = Object.keys(vars);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
-                        if(vars[keys[i]]===obj.vl){
-                            return true;
-                        } else {
-                            return false;
+                        switch(obj.operator){
+                            case "==":
+                                if(vars[keys[i]]==obj.vl) return true;
+                                break;
+                            case ">":
+                                if(vars[keys[i]]>obj.vl) return true;
+                                break;
+                            case "<":
+                                if(vars[keys[i]]<obj.vl) return true;
+                                break;
+                            case ">=":
+                                if(vars[keys[i]]>=obj.vl) return true;
+                                break;
+                            case "<=":
+                                if(vars[keys[i]]<=obj.vl) return true;
+                                break;
                         }
                     }
                 }
@@ -897,9 +908,24 @@ Quintus.UIObjects=function(Q){
                         break;
                     case "Global":
                         vars = Q.state.get("globalVars");
+                        vars.money = Q.state.get("saveData").money;
                         break;
                 }
-                vars[obj.vr] = obj.vl;
+                //Process it so that you can have vars in the value.
+                var processedVal = Q.textModules.processTextVars(obj.vl);
+                switch(obj.operator){
+                    case "=":
+                        vars[obj.vr] = processedVal;
+                        break;
+                    case "+":
+                        vars[obj.vr] += processedVal;
+                        break;
+                    case "-":
+                        vars[obj.vr] -= processedVal;
+                        break;
+                }
+                //Special case for money PROBABLY TEMP
+                if(obj.vr==="money") Q.state.get("saveData").money = vars[obj.vr];
             },
             changePage:function(t,obj){
                 t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];

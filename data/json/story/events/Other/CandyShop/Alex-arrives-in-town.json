@@ -46,6 +46,7 @@
                             {
                                 "scope": "Scene",
                                 "vr": "tookTooLongInBattle",
+                                "operator": "==",
                                 "vl": "true"
                             }
                         ]
@@ -115,22 +116,141 @@
                 {
                     "displayText": "Choose the gummies",
                     "desc": "Alex picked up the gummies and took them to the cashier.",
-                    "page": "Arrive in town",
+                    "page": "Ask Pay",
                     "disabled": "Enabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "price",
+                                        "operator": "=",
+                                        "vl": "2"
+                                    }
+                                ],
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "sweet",
+                                        "operator": "=",
+                                        "vl": "Gummies"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 },
                 {
                     "displayText": "Choose the hard candies",
                     "desc": "Alex picked up the hard candies and took them to the cashier.",
-                    "page": "Arrive in town",
+                    "page": "Ask Pay",
                     "disabled": "Enabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "price",
+                                        "operator": "=",
+                                        "vl": "3"
+                                    }
+                                ],
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "sweet",
+                                        "operator": "=",
+                                        "vl": "Hard Candies"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 }
             ],
             "onload": [],
             "modules": [],
             "modulesVars": []
+        },
+        {
+            "name": "Ask Pay",
+            "music": "homeland.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "The cashier asks Alex for {e@price} moenys for the {e@sweet}.",
+            "choices": [
+                {
+                    "displayText": "Pay",
+                    "desc": "",
+                    "page": "Pay",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Global",
+                                        "vr": "money",
+                                        "operator": "-",
+                                        "vl": "{e@price}"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Choose something else",
+                    "desc": "",
+                    "page": "Inside Shop",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Pay",
+            "music": "homeland.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "Alex payed for the {e@sweet}.",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Leave",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Leave",
+            "music": "homeland.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "Alex walked outside.",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
         }
     ],
-    "vrs": {}
+    "vrs": {
+        "price": "0",
+        "sweet": "false"
+    }
 }
