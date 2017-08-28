@@ -8,6 +8,24 @@
         "aoe":[0,"normal"],
         "resist":"None"
     },
+    "Gummy":{
+        "name": "Gummy",
+        "type":"Item",
+        "desc": "Heals 10 hp",
+        "kind": "Consumable",
+        "range":[1,"self"],
+        "aoe":[0,"normal"],
+        "resist":"None"
+    },
+    "Hard Candy":{
+        "name": "Hard Candy",
+        "type":"Item",
+        "desc": "Heals 10 hp",
+        "kind": "Consumable",
+        "range":[1,"self"],
+        "aoe":[0,"normal"],
+        "resist":"None"
+    },
     "Gold Coin":{
         "name": "Gold Coin",
         "desc": "A valuable coin",

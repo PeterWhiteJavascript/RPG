@@ -217,8 +217,18 @@
                 }
             ],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Leave",
+            "music": "homeland.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "Alex walked outside.",
+            "choices": [],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
         },
         {
             "name": "Pay",
@@ -234,19 +244,54 @@
                     "groups": []
                 }
             ],
-            "onload": [],
-            "modules": {},
-            "modulesVars": {}
-        },
-        {
-            "name": "Leave",
-            "music": "homeland.mp3",
-            "bg": "bg\/CircusCircus_1.jpg",
-            "text": "Alex walked outside.",
-            "choices": [],
-            "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Event",
+                                "vr": "sweet",
+                                "operator": "==",
+                                "vl": "Gummies"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "changeItemQuantity",
+                            {
+                                "name": "Gummy",
+                                "amount": "1"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Event",
+                                "vr": "sweet",
+                                "operator": "==",
+                                "vl": "Hard Candy"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "changeItemQuantity",
+                            {
+                                "name": "Hard Candy",
+                                "amount": "1"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": [],
+            "modulesVars": []
         }
     ],
     "vrs": {

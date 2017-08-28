@@ -41,8 +41,9 @@ Quintus.Objects=function(Q){
         },
         getItem:function(type,props){
             var items = this.items[type];
+            console.log(items)
             switch(type){
-                case "Consumable":
+                case "Consumables":
                     for(var i=0;i<items.length;i++){
                         var item = items[i];
                         if(item.name===props.gear){
@@ -69,7 +70,7 @@ Quintus.Objects=function(Q){
             //If the item wasn't found, add it
             if(!item){
                 switch(type){
-                    case "Consumable":
+                    case "Consumables":
                         this.items[type].push(this.convertConsumable([props.amount || 1, props.gear]));
                         break;
                     case "Key":
@@ -82,7 +83,7 @@ Quintus.Objects=function(Q){
                         break;
                 }
             } else {
-                item.amount += props.amount || 1;
+                this.increaseItem(item,props.amount)
             }
         },
         removeItem:function(type,props){

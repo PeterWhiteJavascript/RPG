@@ -718,7 +718,6 @@ Quintus.UIObjects=function(Q){
         },
         insertPage:function(num){
             var page = this.p.pages[num];
-            
             //Do the onload conditions/effects
             for(var i=0;i<page.onload.length;i++){
                 var on = page.onload[i];
@@ -978,8 +977,12 @@ Quintus.UIObjects=function(Q){
                 char.tempStatChange[obj.stat] += obj.val;
             },
             equipItem:function(t,obj){
-                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
                 var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
+                if(obj.name==="Bag"){
+                    Q.state.get("Bag").addItem(obj.eqType,eq);
+                    return;
+                }
+                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
                 //TO DO: Run the equipment through a function that unequips what is there and adds it to the bag
                 switch(obj.eqType){
                     case "Weapons":
@@ -1009,6 +1012,14 @@ Quintus.UIObjects=function(Q){
                 else {
                     Q.state.get("Bag").unequipItem(char,obj.from,obj.options);
                 }
+            },
+            changeItemQuantity:function(t,obj){
+                if(obj.amount<0){
+                    Q.state.get("Bag").decreaseItem("Consumables",{gear:obj.name},parseInt(obj.amount));
+                } else {
+                    Q.state.get("Bag").addItem("Consumables",{gear:obj.name,amount:parseInt(obj.amount)});
+                }
+                
             }
             
         }

@@ -43,7 +43,8 @@ $(function(){
             sceneVars:JSON.parse($("#scene-vars").attr("value")),
             
             characters:JSON.parse($("#characters").attr("value")),
-            equipment:JSON.parse($("#equipment").attr("value"))
+            equipment:JSON.parse($("#equipment").attr("value")),
+            items:JSON.parse($("#items").attr("value"))
                     
         },
         convertScenesList:function(data){
@@ -629,6 +630,10 @@ $(function(){
                         content+=val;
                     }
                     break;
+                //Checks if there is an item in the bag. Should check equipment, key, and consumable.
+                case "checkHasItem":
+                    
+                    break;
             }
             return content;
         },
@@ -713,10 +718,11 @@ $(function(){
                     content += this.setUpEffectProp("input","Amount","val",{inputType:"number",val:props.val});
                     content += this.setUpEffectProp("input","Turns","turns",{inputType:"number",turns:props.turns,min:"1"});
                     break;
+                //Equip an item (generates equipment not from bag). Also can put the item in the bag.
                 case "equipItem":
                     var types = ["Weapons","Armour","Shields","Footwear","Accessories"];
                     var qualities = Object.keys(this.p.equipment["Quality"]);
-                    var chars = Object.keys(this.p.characters);
+                    var chars = Object.keys(this.p.characters).unshift("Bag");
                     if(!props){props = {};
                         props.char = chars[0];
                         props.eqType = types[0];
@@ -744,6 +750,16 @@ $(function(){
                     content += this.setUpEffectProp("select","From","from",{opts:from,from:props.from});
                     content += this.setUpEffectProp("select","Options","options",{opts:options,options:props.options});
                     break;
+                //Add/Remove item from the bag.
+                case "changeItemQuantity":
+                    var items = Object.keys(this.p.items);
+                    if(!props){props = {};
+                        props.name = items[0];
+                        props.amount = 1;
+                    }
+                    content = this.setUpEffectProp("select","Item","name",{opts:items,name:props.name});
+                    content += this.setUpEffectProp("input","Amount","amount",{inputType:"number",amount:props.amount});
+                    break
             }
             return content;
         },
@@ -892,7 +908,7 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem"];
+            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem","changeItemQuantity"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });

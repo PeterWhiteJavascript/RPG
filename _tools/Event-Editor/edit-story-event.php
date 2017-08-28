@@ -46,6 +46,7 @@ $characters = json_decode(file_get_contents('../../data/json/data/officers.json'
 
 $charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
 $equipment = json_decode(file_get_contents('../../data/json/data/equipment.json'), true);
+$items = json_decode(file_get_contents('../../data/json/data/items.json'), true);
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +62,7 @@ $equipment = json_decode(file_get_contents('../../data/json/data/equipment.json'
         <div id="characters" value='<?php echo json_encode($characters); ?>'></div>
         <div id="char-gen" value='<?php echo json_encode($charGen); ?>'></div>
         <div id="equipment" value='<?php echo json_encode($equipment); ?>'></div>
+        <div id="items" value='<?php echo json_encode($items); ?>'></div>
         
         
         <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
