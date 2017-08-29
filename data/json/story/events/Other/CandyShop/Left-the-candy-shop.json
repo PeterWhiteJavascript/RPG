@@ -1,0 +1,263 @@
+{
+    "name": "Left-the-candy-shop",
+    "desc": "Alex bought some candies and now is leaving the candy shop.",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "demo.mp3"
+                ]
+            }
+        ],
+        [
+            "Walk",
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ],
+                    [
+                        [
+                            19,
+                            14
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        0
+                    ],
+                    [
+                        [
+                            18,
+                            14
+                        ],
+                        [
+                            17,
+                            14
+                        ],
+                        [
+                            17,
+                            13
+                        ]
+                    ],
+                    "right",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Archer",
+                        0
+                    ],
+                    [
+                        [
+                            19,
+                            14
+                        ],
+                        [
+                            21,
+                            14
+                        ],
+                        [
+                            21,
+                            13
+                        ]
+                    ],
+                    "left",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            19,
+                            12
+                        ]
+                    ],
+                    "down",
+                    true
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "prebattle.mp3"
+                ]
+            },
+            {
+                "func": "playAnim",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ],
+                    "Attack",
+                    "up",
+                    "slashing.mp3"
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "HEY, WE FOUND YOU! TIME TO FIGHT THIS TIME!"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/knight.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "the_usual.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            17,
+                            9
+                        ]
+                    ],
+                    "down",
+                    true
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "Looks like you could use some help! I am Astraea and I will do the stuff!"
+                ],
+                "asset1": "story\/skirm.png",
+                "asset2": "story\/empty.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "After-candy-shop-battle"
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                19,
+                6
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                8,
+                9
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                18,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                19,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                19,
+                22
+            ],
+            "dir": "up"
+        }
+    ],
+    "map": "demo2.tmx"
+}

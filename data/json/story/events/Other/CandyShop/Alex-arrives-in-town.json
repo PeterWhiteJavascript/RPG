@@ -174,6 +174,13 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "displayText": "Choose nothing and leave",
+                    "desc": "",
+                    "page": "Leave",
+                    "disabled": "Enabled",
+                    "groups": []
                 }
             ],
             "onload": [],
@@ -225,8 +232,42 @@
             "music": "homeland.mp3",
             "bg": "bg\/CircusCircus_1.jpg",
             "text": "Alex walked outside.",
-            "choices": [],
-            "onload": [],
+            "choices": [
+                {
+                    "displayText": "Done",
+                    "desc": "",
+                    "page": "Arrive in town",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Left-the-candy-shop"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "recruitChar",
+                            {
+                                "name": "Astraea"
+                            }
+                        ]
+                    ]
+                }
+            ],
             "modules": [],
             "modulesVars": []
         },

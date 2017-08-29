@@ -41,7 +41,6 @@ Quintus.Objects=function(Q){
         },
         getItem:function(type,props){
             var items = this.items[type];
-            console.log(items)
             switch(type){
                 case "Consumables":
                     for(var i=0;i<items.length;i++){

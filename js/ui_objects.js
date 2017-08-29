@@ -939,8 +939,7 @@ Quintus.UIObjects=function(Q){
             },
             recruitChar:function(t,obj){
                 var data = Q.state.get("characters")[obj.name];
-                var char = Q.charGen.generateCharacter(data);
-                char.officer = data.officer;
+                var char = Q.charGen.generateCharacter(data,"officer");
                 Q.state.get("allies").push(char);
             },
             changeStat:function(t,obj){
@@ -974,6 +973,7 @@ Quintus.UIObjects=function(Q){
             tempStatChange:function(t,obj){
                 obj.val = parseInt(obj.val);
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                if(!char) return;
                 char.tempStatChange[obj.stat] += obj.val;
             },
             equipItem:function(t,obj){
@@ -983,6 +983,7 @@ Quintus.UIObjects=function(Q){
                     return;
                 }
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                if(!char) return;
                 //TO DO: Run the equipment through a function that unequips what is there and adds it to the bag
                 switch(obj.eqType){
                     case "Weapons":
@@ -1003,6 +1004,7 @@ Quintus.UIObjects=function(Q){
             },
             unequipItem:function(t,obj){
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                if(!char) return;
                 if(obj.from==="all"){
                     var keys = Object.keys(char.equipment);
                     keys.forEach(function(k){
@@ -1069,6 +1071,7 @@ Quintus.UIObjects=function(Q){
             this.next();
         },
         cycleText:function(){
+            if(!this.p.script) return;
             if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length-1){
                 this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
                 this.off("step",this,"cycleText");
@@ -1301,9 +1304,9 @@ Quintus.UIObjects=function(Q){
                 if(allowCycle){
                     Q.dialogueController.p.scriptNum++;
                     Q.dialogueController.next();
-                    //Allow cycling to the next script item
-                    Q.dialogueController.p.noCycle = false;
                 }
+                //Allow cycling to the next script item
+                Q.dialogueController.p.noCycle = false;
             });
             obj.moveAlongPath(path);
             this.p.noCycle = true;

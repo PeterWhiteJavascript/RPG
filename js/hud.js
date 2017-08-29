@@ -603,6 +603,7 @@ Quintus.HUD=function(Q){
         //Show the attack grid for the skill
         loadTechnique:function(){
             var skill = this.p.techniques[this.menuControls.selected];
+            if(!skill) return this.loadItem();
             if(this.p.target.p.combatStats.tp-(skill.cost-this.p.target.p.combatStats.efficiency)<0){
                 alert("Not Enough TP!");
                 return;

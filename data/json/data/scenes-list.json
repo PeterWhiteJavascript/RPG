@@ -262,7 +262,13 @@
                 "Forest-Battle-defeat",
                 "Alex-arrives-in-town",
                 "Forest-battle-victory2",
-                "Inside-the-pub"
+                "Inside-the-pub",
+                "Left-the-candy-shop",
+                "After-candy-shop-battle",
+                "Candy-Battle-Victory",
+                "In-pub-with-Astraea",
+                "Candy-Battle-Loss",
+                "On-the-way-home."
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"

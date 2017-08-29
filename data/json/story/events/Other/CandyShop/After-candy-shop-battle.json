@@ -1,0 +1,61 @@
+{
+    "name": "After-candy-shop-battle",
+    "desc": "After Alex leaves the candy shop.",
+    "kind": "battle",
+    "map": "demo2.tmx",
+    "music":"battle.mp3",
+    "placementSquares":[[19,12],[19,11]],
+    "maxAllies":2,
+    "victory":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"Forest-Battle-victory"
+        }
+    },
+    "defeat":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"Forest-Battle-defeat"
+        }
+    },
+    "events":[
+        
+    ],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                17,
+                13
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                19,
+                14
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                21,
+                13
+            ],
+            "dir": "left"
+        }
+    ]
+}

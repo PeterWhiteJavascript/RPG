@@ -1,0 +1,297 @@
+{
+    "name": "Candy-Battle-Victory",
+    "desc": "After the battle outside the candy shop.",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "Go back to your home bandits!"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "the_usual.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        0
+                    ],
+                    [
+                        [
+                            7,
+                            9
+                        ],
+                        [
+                            4,
+                            9
+                        ]
+                    ],
+                    "left",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ],
+                    [
+                        [
+                            4,
+                            10
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Archer",
+                        0
+                    ],
+                    [
+                        [
+                            3,
+                            10
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            },
+            {
+                "func": "changeDir",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    "down"
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "I was just on the way to the pub. Come with me!"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            18,
+                            17
+                        ],
+                        [
+                            13,
+                            17
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            18,
+                            17
+                        ],
+                        [
+                            14,
+                            17
+                        ]
+                    ],
+                    "left",
+                    true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "500"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            13,
+                            17
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "1000"
+                ]
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Inside-the-pub"
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                18,
+                12
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                18,
+                11
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                10
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                12
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                11
+            ],
+            "dir": "right"
+        }
+    ],
+    "map": "demo2.tmx"
+}

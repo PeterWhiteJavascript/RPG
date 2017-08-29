@@ -1,0 +1,504 @@
+{
+    "name": "In-pub-with-Astraea",
+    "desc": "After the battle with Astraea, Alex goes to the pub.",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "homeland.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            5,
+                            15
+                        ],
+                        [
+                            5,
+                            11
+                        ],
+                        [
+                            6,
+                            11
+                        ],
+                        [
+                            6,
+                            7
+                        ],
+                        [
+                            7,
+                            7
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            8,
+                            15
+                        ],
+                        [
+                            5,
+                            15
+                        ],
+                        [
+                            5,
+                            12
+                        ],
+                        [
+                            6,
+                            12
+                        ],
+                        [
+                            6,
+                            11
+                        ],
+                        [
+                            6,
+                            8
+                        ],
+                        [
+                            7,
+                            8
+                        ],
+                        [
+                            8,
+                            8
+                        ],
+                        [
+                            8,
+                            7
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        7
+                    ],
+                    [
+                        [
+                            13,
+                            7
+                        ],
+                        [
+                            13,
+                            8
+                        ]
+                    ],
+                    "down",
+                    false
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "INSERT FILLER TEXT. blablablabla"
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        7
+                    ],
+                    [
+                        [
+                            14,
+                            8
+                        ],
+                        [
+                            14,
+                            7
+                        ],
+                        [
+                            14,
+                            4
+                        ],
+                        [
+                            8,
+                            4
+                        ],
+                        [
+                            8,
+                            3
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "text": [
+                    "SOME MORE TEXT."
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        7
+                    ],
+                    [
+                        [
+                            13,
+                            8
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        8
+                    ],
+                    [
+                        [
+                            1,
+                            8
+                        ],
+                        [
+                            1,
+                            14
+                        ],
+                        [
+                            2,
+                            14
+                        ]
+                    ],
+                    "right",
+                    false
+                ]
+            },
+            {
+                "text": [
+                    "TEXTXTXTXETETXTX"
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        8
+                    ],
+                    [
+                        [
+                            1,
+                            10
+                        ],
+                        [
+                            1,
+                            4
+                        ],
+                        [
+                            7,
+                            4
+                        ],
+                        [
+                            7,
+                            3
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            },
+            {
+                "text": [
+                    "TIME TO GO!"
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "On-the-way-home."
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                7,
+                16
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                8,
+                16
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                9
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 1,
+            "loc": [
+                10,
+                12
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 2,
+            "loc": [
+                5,
+                9
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                6,
+                13
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                9,
+                13
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                13,
+                12
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 3,
+            "loc": [
+                10,
+                9
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 1,
+            "loc": [
+                2,
+                9
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 2,
+            "loc": [
+                3,
+                14
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 4,
+            "loc": [
+                3,
+                7
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 5,
+            "loc": [
+                11,
+                7
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 3,
+            "loc": [
+                10,
+                1
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 4,
+            "loc": [
+                10,
+                2
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 5,
+            "loc": [
+                5,
+                1
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 6,
+            "loc": [
+                5,
+                2
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 7,
+            "loc": [
+                13,
+                5
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 8,
+            "loc": [
+                2,
+                5
+            ],
+            "dir": "down"
+        }
+    ],
+    "map": "inside-pub.tmx"
+}

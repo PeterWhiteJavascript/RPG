@@ -1,0 +1,90 @@
+{
+    "name": "On-the-way-home.",
+    "desc": "Alex and Astraea go home.",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "demo.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            13,
+                            9
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            14,
+                            9
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                0
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                0
+            ],
+            "dir": "down"
+        }
+    ],
+    "map": "forest-to-candy-store2.tmx"
+}

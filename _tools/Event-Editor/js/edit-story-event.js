@@ -722,7 +722,8 @@ $(function(){
                 case "equipItem":
                     var types = ["Weapons","Armour","Shields","Footwear","Accessories"];
                     var qualities = Object.keys(this.p.equipment["Quality"]);
-                    var chars = Object.keys(this.p.characters).unshift("Bag");
+                    var chars = Object.keys(this.p.characters);
+                    chars.unshift("Bag");
                     if(!props){props = {};
                         props.char = chars[0];
                         props.eqType = types[0];

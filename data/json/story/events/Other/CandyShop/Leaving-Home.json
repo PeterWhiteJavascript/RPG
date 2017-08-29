@@ -48,6 +48,7 @@
                                     {
                                         "scope": "Event",
                                         "vr": "gotDressed",
+                                        "operator": "=",
                                         "vl": "LeatherOutfit"
                                     }
                                 ],
@@ -79,6 +80,7 @@
                                     {
                                         "scope": "Event",
                                         "vr": "gotDressed",
+                                        "operator": "=",
                                         "vl": "Hide"
                                     }
                                 ],
@@ -98,8 +100,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Go have breakfast",
@@ -200,6 +202,7 @@
                             {
                                 "scope": "Event",
                                 "vr": "gotDressed",
+                                "operator": "==",
                                 "vl": "false"
                             }
                         ]
@@ -289,7 +292,7 @@
                 }
             ],
             "onload": [],
-            "modules": {},
+            "modules": [],
             "modulesVars": {
                 "wearingPajamas": [
                     {

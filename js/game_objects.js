@@ -2079,10 +2079,14 @@ Quintus.GameObjects=function(Q){
                 case "Potion":
                     newText = this.entity.skillFuncs["healHp"](20,target,user);
                     break;
+                case "Gummy":
+                    newText = this.entity.skillFuncs["healHp"](10,target,user);
+                    break;
+                case "Hard Candy":
+                    newText = this.entity.skillFuncs["healHp"](11,target,user);
+                    break;
             }
-            for(var i=0;i<newText.length;i++){
-                this.text.push(newText[i]);
-            }
+            this.text.concat(newText);
         },
         //Checks against the defender's resistance of a certain skill type.
         checkResisted:function(attacker,defender,skill){
@@ -2446,29 +2450,30 @@ Quintus.GameObjects=function(Q){
         },
         removeDebuff:function(name,target,user,callback){
             if(name==="all"){
-                Q.BatCon.attackFuncs.text.unshift({func:"removeAllBadStatus",obj:target,props:[]});
+                return {func:"removeAllBadStatus",obj:target,props:[]};
             } else {
-                Q.BatCon.attackFuncs.text.unshift({func:"removeStatus",obj:target,props:[name]});
+                return {func:"removeStatus",obj:target,props:[name]};
             }
-            callback();
+            //callback();
         },
         healTp:function(amount,target,user,callback){
             if(target.p.combatStats.tp+amount>target.p.combatStats.maxTp) amount=target.p.combatStats.maxTp-target.p.combatStats.tp;
             target.p.combatStats.tp+=amount;
-            Q.BatCon.attackFuncs.text.unshift({func:"showHealed",obj:target,props:[amount]});
-            callback();
+            return {func:"showHealed",obj:target,props:[amount]}
+            //callback();
         },
         healHp:function(amount,target,user,callback){
             if(target.p.combatStats.hp+amount>target.p.combatStats.maxHp) amount=target.p.combatStats.maxHp-target.p.combatStats.hp;
             target.p.combatStats.hp+=amount;
-            Q.BatCon.attackFuncs.text.unshift({func:"showHealed",obj:target,props:[amount]});
-            callback();
+            return [{func:"showHealed",obj:target,props:[amount]}];
+           // callback();
         },
         
         changeCombatStat:function(amount,stat,target,user,callback){
             target.p.combatStats[stat]+=amount;
-            Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
-            callback();
+            return {func:"showStatUp",obj:target,props:[amount,stat]};
+            //Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
+            //callback();
         },
         createMirage:function(loc,user,callback){
             if(user.p.mirage) user.p.mirage.dispellMirage();

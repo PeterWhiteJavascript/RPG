@@ -1188,11 +1188,11 @@ DC.setUpFuncs = {
                     Q.stage(0).trigger("selectedLocation",val[1][i]);
                 }
                 $("#dir-on-arrival").val(val[2]);
-                $("#cycle-text-on-arrival").children(".menu-button").attr("val",val[3]);
-                if(val[3]==="true"){
-                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text On Arrival");
+                $("#cycle-text-on-arrival").attr("val",val[3]);
+                if(val[3]===true){
+                    $("#cycle-text-on-arrival").text("Cycle Text On Arrival");
                 } else {
-                    $("#cycle-text-on-arrival").children(".menu-button").text("Cycle Text Instantly");
+                    $("#cycle-text-on-arrival").text("Cycle Text Instantly");
                 }
             }
             //Turn on saving for placing individual locations

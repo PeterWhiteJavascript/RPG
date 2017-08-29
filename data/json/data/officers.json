@@ -38,7 +38,7 @@
     },
     "Astraea":{
         "name": "Astraea",
-        "level":1,
+        "level":5,
         "gender":"Female",
         "desc":"Astraea is a champion warrior, noble landholder in Borios (the northern province of Venoriae), and wife of Vicanti.",
         "equipment":{
