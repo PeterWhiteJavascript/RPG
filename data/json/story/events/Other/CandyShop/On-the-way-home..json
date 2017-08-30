@@ -36,10 +36,10 @@
                     [
                         [
                             13,
-                            9
+                            18
                         ]
                     ],
-                    "up",
+                    "right",
                     false
                 ]
             },
@@ -53,11 +53,141 @@
                     [
                         [
                             14,
-                            9
+                            18
+                        ]
+                    ],
+                    "right",
+                    true
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "Eh, you will buy from us, right?"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/knight.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ],
+                    [
+                        [
+                            23,
+                            18
+                        ]
+                    ],
+                    "left",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            22,
+                            18
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            21,
+                            18
+                        ]
+                    ],
+                    "right",
+                    true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "1000"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            22,
+                            18
                         ]
                     ],
                     "up",
                     true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "1000"
+                ]
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Inside-Bandit's-Shop"
                 ]
             }
         ]
@@ -84,6 +214,83 @@
                 0
             ],
             "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                14,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 2,
+            "loc": [
+                15,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 3,
+            "loc": [
+                12,
+                21
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                16,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                17,
+                19
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 1,
+            "loc": [
+                16,
+                19
+            ],
+            "dir": "left"
         }
     ],
     "map": "forest-to-candy-store2.tmx"

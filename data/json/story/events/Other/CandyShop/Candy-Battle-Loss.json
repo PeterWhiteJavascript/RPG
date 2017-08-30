@@ -14,7 +14,21 @@
                     "desc": "",
                     "page": "Page 1",
                     "disabled": "Enabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "On-the-way-home."
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 }
             ],
             "onload": [
@@ -26,7 +40,7 @@
                             {
                                 "char": "Alex",
                                 "from": "all",
-                                "options": "toBag"
+                                "options": "delete"
                             }
                         ],
                         [

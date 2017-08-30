@@ -1,0 +1,150 @@
+{
+    "name": "Inside-Bandit's-Shop",
+    "desc": "Inside  the shop",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "hide"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "prebattle.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            5,
+                            6
+                        ]
+                    ],
+                    "up",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            4,
+                            6
+                        ]
+                    ],
+                    "up",
+                    true
+                ]
+            },
+            {
+                "func": "modDialogueBox",
+                "props": [
+                    "show"
+                ]
+            },
+            {
+                "text": [
+                    "Heh, what can I do for you?"
+                ],
+                "asset1": "story\/empty.png",
+                "asset2": "story\/knight.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                2,
+                6
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                1,
+                6
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                5,
+                4
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                3,
+                2
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 1,
+            "loc": [
+                3,
+                3
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 2,
+            "loc": [
+                3,
+                4
+            ],
+            "dir": "left"
+        }
+    ],
+    "map": "inside-bandits-shop.tmx"
+}

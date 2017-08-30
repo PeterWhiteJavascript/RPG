@@ -363,11 +363,12 @@ var DC = {
                     //The script item is text
                     if(itm.text){
                         var text = itm.text[0].slice(0,20);
-                        $(group).children(".script-items").append("<div class='script-item text' props='"+JSON.stringify(itm)+"'><div class='script-item-name'>"+text+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
+                        console.log(itm.text)
+                        $(group).children(".script-items").append("<div class='script-item text' props='"+JSON.stringify(itm).replace(/'/g, "&#39;")+"'><div class='script-item-name'>"+text+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
                     } 
                     //Otherwise it is a func
                     else if(itm.func){
-                        $(group).children(".script-items").append("<div class='script-item func' func='"+itm.func+"' props='"+JSON.stringify(itm.props)+"'><div class='script-item-name'>"+itm.func+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
+                        $(group).children(".script-items").append("<div class='script-item func' func='"+itm.func+"' props='"+JSON.stringify(itm.props).replace(/'/g, "&#39;")+"'><div class='script-item-name'>"+itm.func+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
                     }
                 }
             }
@@ -1564,7 +1565,7 @@ $(document).on("click","#add-new-text",function(e){
     $(this).parent().children("ul").append('<li class="script-text-dragger"><textarea class="script-text new-script-item"></textarea><div class="btn btn-group center remove-choice">x</div></li>');
 });
 
-var createSaveForm = function(form){
+var getSaveData = function(form){
     var data = {
         scriptData:[],
         characters:[]
@@ -1608,28 +1609,35 @@ var createSaveForm = function(form){
         });
     });
     var json = JSON.stringify(data);
-    //Won't do single quotes
-    form.append("<input type='text' name='data' value='"+json+"'>");
-    return form;
+    return json;
 };
 $(document).on("click","#menu-save-file",function(e){
-    var form = $('<form action="save-battleScene-script.php" method="post"></form>');
-    form = createSaveForm(form);
-    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-    form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-    $("body").append(form);
-    form.submit();
+    $.ajax({
+        type:'POST',
+        url:'save-battleScene-script.php',
+        data:{data:getSaveData(),name:$("#editor-title").text(),scene:$("#scene-name").text(),type:$("#scene-type").text()},
+        dataType:'json'
+    })
+    .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+    .fail(function(data){console.log(data)});
 });
 $(document).on("click","#menu-test-event",function(e){
-    var form = $('<form action="save-battleScene-script.php" method="post"></form>');
-    form = createSaveForm(form);
-    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-    form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-    form.append('<input type="text" name="testing" value="true">');
-    $("body").append(form);
-    form.submit();
+    $.ajax({
+        type:'POST',
+        url:'save-battleScene-script.php',
+        data:{data:getSaveData(),name:$("#editor-title").text(),scene:$("#scene-name").text(),type:$("#scene-type").text()},
+        dataType:'json'
+    })
+    .done(function(data){
+        var form = $('<form action="../../index.php" method="post"></form>');
+        form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+        form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+        form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
+        form.append('<input type="text" name="testing" value="true">');
+        $("body").append(form);
+        form.submit();
+    })
+    .fail(function(data){console.log("fail");console.log(data)});
 });
 $(document).on("click","#menu-go-back",function(e){
     var sure = confirm("Are you sure you want to go back without saving?");

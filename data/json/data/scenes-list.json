@@ -268,7 +268,8 @@
                 "Candy-Battle-Victory",
                 "In-pub-with-Astraea",
                 "Candy-Battle-Loss",
-                "On-the-way-home."
+                "On-the-way-home.",
+                "Inside-Bandit's-Shop"
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"
