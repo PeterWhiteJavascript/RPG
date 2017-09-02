@@ -6,24 +6,12 @@
         [
             "Initial",
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
                         "Alex",
                         0
                     ]
-                ]
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
                 ]
             },
             {
@@ -35,12 +23,6 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
             },
             {
                 "func": "changeMusic",
@@ -114,12 +96,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
-                ]
-            },
-            {
                 "text": [
                     "I was just on the way to the pub. Come with me!"
                 ],
@@ -128,12 +104,6 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
             },
             {
                 "func": "moveAlong",
@@ -231,7 +201,7 @@
                 "props": [
                     "Other",
                     "CandyShop",
-                    "Inside-the-pub"
+                    "In-pub-with-Astraea"
                 ]
             }
         ]

@@ -223,7 +223,7 @@ var files = [
     "json/data/scenes-list.json",
     "json/data/default-equipment.json",
     
-    "json/story/global-vars.json"
+    "json/data/global-vars.json"
 ];
 function convertEquipment(data){
     var obj = {
@@ -281,7 +281,7 @@ Q.load(files.join(','),function(){
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
     //The global variables that are set in global-vars.json
-    Q.state.set("globalVars",Q.assets['json/story/global-vars.json'].vrs);
+    Q.state.set("globalVars",Q.assets['json/data/global-vars.json'].vrs);
     //The modules for text replacement
     Q.state.set("modules",Q.assets["json/data/modules.json"]);
     //All important story events that happen on a certain week

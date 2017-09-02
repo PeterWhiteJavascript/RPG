@@ -6,12 +6,6 @@
         [
             "Initial",
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
@@ -42,12 +36,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
-                ]
-            },
-            {
                 "text": [
                     "I am no match for you..."
                 ],
@@ -56,12 +44,6 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
             },
             {
                 "func": "moveAlong",
@@ -113,12 +95,6 @@
                     "Counter",
                     "up",
                     "inflict_status.mp3"
-                ]
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
                 ]
             },
             {

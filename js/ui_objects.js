@@ -869,26 +869,28 @@ Quintus.UIObjects=function(Q){
                         break;
                     case "Global":
                         vars = Q.state.get("globalVars");
+                        vars["money"] = Q.state.get("saveData").money;
                         break;
                 }
                 var keys = Object.keys(vars);
+                var processedVal = Q.textModules.processTextVars(obj.vl);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
                         switch(obj.operator){
                             case "==":
-                                if(vars[keys[i]]==obj.vl) return true;
+                                if(vars[keys[i]]==processedVal) return true;
                                 break;
                             case ">":
-                                if(vars[keys[i]]>obj.vl) return true;
+                                if(vars[keys[i]]>processedVal) return true;
                                 break;
                             case "<":
-                                if(vars[keys[i]]<obj.vl) return true;
+                                if(vars[keys[i]]<processedVal) return true;
                                 break;
                             case ">=":
-                                if(vars[keys[i]]>=obj.vl) return true;
+                                if(vars[keys[i]]>=processedVal) return true;
                                 break;
                             case "<=":
-                                if(vars[keys[i]]<=obj.vl) return true;
+                                if(vars[keys[i]]<=processedVal) return true;
                                 break;
                         }
                     }
@@ -983,6 +985,7 @@ Quintus.UIObjects=function(Q){
                     return;
                 }
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
+                console.log(char)
                 if(!char) return;
                 //TO DO: Run the equipment through a function that unequips what is there and adds it to the bag
                 switch(obj.eqType){
@@ -1054,6 +1057,7 @@ Quintus.UIObjects=function(Q){
             this.p.leftImage = $('<img id="left-asset"></img>');
             this.p.rightImage = $('<img id="right-asset"></img>');
             this.p.textBox = $('<div id="dialogue-text"></div>');
+            this.modDialogueBox("hide");
             $(this.p.container).append(this.p.leftImage);
             $(this.p.container).append(this.p.rightImage);
             $(this.p.container).append(this.p.textBox);
@@ -1071,7 +1075,7 @@ Quintus.UIObjects=function(Q){
             this.next();
         },
         cycleText:function(){
-            if(!this.p.script) return;
+            if(!!this.p.script[this.p.groupNum]||!this.p.script[this.p.groupNum][this.p.scriptNum]) return;
             if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length-1){
                 this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
                 this.off("step",this,"cycleText");
@@ -1104,6 +1108,7 @@ Quintus.UIObjects=function(Q){
                     this.on("step",this,"cycleText");
                 }
                 if("noCycle"==="Yes") this.p.noCycle = true;
+                this.modDialogueBox("show");
             } 
             //If it's a function
             else {
@@ -1121,10 +1126,12 @@ Quintus.UIObjects=function(Q){
             if(this.p.textNum>=this.p.script[this.p.groupNum][this.p.scriptNum].text.length){
                 this.p.scriptNum++;
                 this.next();
+                this.modDialogueBox("hide");
             } else {
                 this.p.textIndex = 0;
                 $(this.p.textBox).text("");
                 this.on("step",this,"cycleText");
+                this.modDialogueBox("show");
             }
         },
         waitForInputsTimer:function(){
@@ -1138,6 +1145,7 @@ Quintus.UIObjects=function(Q){
         checkInputs:function(){
             if(Q.inputs['confirm']){
                 if(!this.p.cantCycle&&!this.p.noCycle){
+                    if(!this.p.script[this.p.groupNum][this.p.scriptNum].text) return;
                     //Check if the text is complete
                     if($(this.p.textBox).text().length===this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length){
                         if(this.p.nextTextTri) this.p.nextTextTri.destroy();

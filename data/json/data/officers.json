@@ -11,15 +11,15 @@
             "accessory":false
         },
         "baseStats":{
-            "str":15,
-            "end":15,
-            "dex":5,
-            "wsk":5,
-            "rfl":10,
-            "ini":10,
-            "enr":10,
-            "skl":10,
-            "eff":10
+            "str":18,
+            "end":18,
+            "dex":10,
+            "wsk":12,
+            "rfl":12,
+            "ini":14,
+            "enr":8,
+            "skl":8,
+            "eff":7
         },
         "techniques":[
             "Forced March",
@@ -31,7 +31,7 @@
         ],
         "nationality":"Venorian",
         "charClass":"Legionnaire",
-        "exp":0,
+        "exp":99,
         "primaryStat":"str",
         "secondaryStat":"end"
         

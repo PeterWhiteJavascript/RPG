@@ -1,0 +1,101 @@
+{
+    "name": "Forest-Battle",
+    "desc": "The battle in the forest on the way to the candy store.",
+    "kind": "battle",
+    "map": "forest-to-candy-store2.tmx",
+    "music":"battle.mp3",
+    "placementSquares":[[22,18],[22,19]],
+    "maxAllies":2,
+    "victory":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"win-vs-police"
+        },
+        "groups":[
+            [
+                "changeStat",
+                {
+                    "stat": "Reputation-Venoriae",
+                    "val": -50
+                }
+            ]
+        ]
+    },
+    "defeat":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"lose-vs-police"
+        },
+        "groups":[
+            [
+                "changeStat",
+                {
+                    "stat": "Reputation-Venoriae",
+                    "val": -25
+                }
+            ]
+        ]
+    },
+    "events":[
+        
+    ],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Ally-Bandits",
+            "handle": "Leader",
+            "uniqueId": 0,
+            "loc": [
+                18,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Ally-Bandits",
+            "handle": "Legionnaire",
+            "uniqueId": 2,
+            "loc": [
+                16,
+                19
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Ally-Bandits",
+            "handle": "Legionnaire",
+            "uniqueId": 3,
+            "loc": [
+                16,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Police",
+            "handle": "Enemy-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                18
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Police",
+            "handle": "Enemy-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                14,
+                19
+            ],
+            "dir": "right"
+        }
+    ]
+}

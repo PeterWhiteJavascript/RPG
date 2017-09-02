@@ -12,12 +12,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
@@ -53,12 +47,6 @@
                         "Bandit-Archer",
                         0
                     ]
-                ]
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
                 ]
             },
             {

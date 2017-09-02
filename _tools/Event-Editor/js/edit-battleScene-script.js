@@ -363,7 +363,6 @@ var DC = {
                     //The script item is text
                     if(itm.text){
                         var text = itm.text[0].slice(0,20);
-                        console.log(itm.text)
                         $(group).children(".script-items").append("<div class='script-item text' props='"+JSON.stringify(itm).replace(/'/g, "&#39;")+"'><div class='script-item-name'>"+text+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
                     } 
                     //Otherwise it is a func

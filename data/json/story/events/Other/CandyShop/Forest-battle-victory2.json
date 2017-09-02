@@ -6,12 +6,6 @@
         [
             "Initial",
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
@@ -89,12 +83,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
-                ]
-            },
-            {
                 "text": [
                     "HEY, GET BACK HERE! I NEED YOUR STUFF!!!"
                 ],
@@ -103,12 +91,6 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
             },
             {
                 "func": "changeMoveSpeed",
@@ -166,12 +148,6 @@
                         "Bandit-Leader",
                         0
                     ]
-                ]
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
                 ]
             },
             {

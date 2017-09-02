@@ -17,6 +17,9 @@ $music = array_diff(scandir($music_directory), array('..', '.'));
 $directory = '../../data/json/story/events';
 $scenes = array_diff(scandir($directory), array('..', '.'));
 
+$dataFiles = array_slice(scandir('../../data/json/data'),2);
+
+/*
 $eventsJSON = (object)[];
 foreach($scenes as $key => $val){
     $ev =[];
@@ -41,12 +44,15 @@ $locationEvents = array_slice(scandir('../../data/json/story/locations'), 2);
 $locEvents = [];
 foreach($locationEvents as $ev){
     $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
-}*/
+}
 $characters = json_decode(file_get_contents('../../data/json/data/officers.json'), true);
 
 $charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
 $equipment = json_decode(file_get_contents('../../data/json/data/equipment.json'), true);
 $items = json_decode(file_get_contents('../../data/json/data/items.json'), true);
+
+$scenesList = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true);
+*/
 ?>
 
 <!DOCTYPE html>
@@ -55,23 +61,15 @@ $items = json_decode(file_get_contents('../../data/json/data/items.json'), true)
         <?php include 'config.php';?>
     </head>
     <body>
-        <div id="global-vars" value='<?php echo json_encode($globalVars); ?>'></div>
-        <div id="scene-vars" value='<?php echo json_encode($sceneVars); ?>'></div>
-        <div id="scenes" value='<?php echo json_encode($eventsJSON); ?>'></div>
-        <div id="scenes-list" value='<?php echo htmlspecialchars(json_encode(json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true))); ?>'></div>
-        <div id="characters" value='<?php echo json_encode($characters); ?>'></div>
-        <div id="char-gen" value='<?php echo json_encode($charGen); ?>'></div>
-        <div id="equipment" value='<?php echo json_encode($equipment); ?>'></div>
-        <div id="items" value='<?php echo json_encode($items); ?>'></div>
-        
-        
-        <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
-        <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
-        <div id="scene-type" hidden><h2><?php echo $type; ?></h2></div>
-        
-        <div id="pages-data" hidden><?php echo json_encode($pages); ?></div>
-        <div id="variables-data" hidden><?php echo json_encode($variables); ?></div>
-        
+        <script>
+            var sceneType = '<?php echo $type; ?>';
+            var sceneName = '<?php echo $scene; ?>';
+            var eventName = '<?php echo $name; ?>';
+            
+            var dataFiles = <?php echo json_encode($dataFiles) ?>;
+            var dataPages = <?php echo json_encode($pages); ?>;
+            var dataVariables = <?php echo json_encode($variables); ?>;
+        </script>
         <div id="editor-content">
             <div id="top-bar">
                 <ul>

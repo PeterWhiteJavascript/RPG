@@ -24,15 +24,20 @@ $(function(){
                     switch(prop){
                         case "gender":
                             genProp = gen.genders;
+                            genProp.push("Random");
                             break;
                         case "nationality":
                             genProp = gen.nationalities;
+                            genProp.push("Random");
                             break;
                         case "charClass":
                             genProp = gen.classNames;
+                            genProp.push("Random");
+                            break;
+                        case "team":
+                            genProp = ["Enemy","Ally"];
                             break;
                     }
-                    genProp.push("Random");
                     genProp.forEach(function(name){
                         DC.addOption($(e).children(".char-prop"),name);
                     });
@@ -142,6 +147,7 @@ $(function(){
                 nationality:char.nationality,
                 charClass:char.charClass,
                 baseStats:char.baseStats,
+                team:char.team,
                 "right-hand-quality":char.equipment.righthand[0],
                 "right-hand-gear":char.equipment.righthand[2],
                 "right-hand-material":char.equipment.righthand[1],
@@ -342,6 +348,7 @@ $(function(){
                 gender:"Male",
                 nationality:"Venorian",
                 charClass:"Legionnaire",
+                team:"Enemy",
                 baseStats:["Random","Medium"],
                 "right-hand-quality":"Default",
                 "right-hand-gear":"Default",
@@ -423,6 +430,7 @@ $(function(){
                 "levelmin":parseInt(char.levelmin),
                 "levelmax":parseInt(char.levelmax),
                 "gender":char.gender,
+                "team":char.team,
                 "equipment":{
                     "righthand":[char["right-hand-quality"],char["right-hand-material"],char["right-hand-gear"]],
                     "lefthand":[char["left-hand-quality"],char["left-hand-material"],char["left-hand-gear"]],
@@ -792,6 +800,11 @@ $(function(){
     $(document).on("click",".remove-choice-deep",function(e){
         $(this).parent().parent().remove();
     });
+    
+    $(document).on("change",".charClass",function(){
+        $("#default-technique-button").trigger("click");
+    });
+    
     
     $(document).on("change",".right-hand-gear",function(){
         $(".right-hand-material").empty();

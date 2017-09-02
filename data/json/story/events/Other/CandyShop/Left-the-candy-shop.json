@@ -6,12 +6,6 @@
         [
             "Initial",
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
@@ -132,12 +126,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
-                ]
-            },
-            {
                 "text": [
                     "HEY, WE FOUND YOU! TIME TO FIGHT THIS TIME!"
                 ],
@@ -146,12 +134,6 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
             },
             {
                 "func": "changeMusic",
@@ -174,12 +156,6 @@
                     ],
                     "down",
                     true
-                ]
-            },
-            {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
                 ]
             },
             {

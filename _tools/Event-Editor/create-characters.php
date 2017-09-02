@@ -75,6 +75,10 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
                         <div class="stat-name"><p>Char Class</p></div>
                         <select class="char-prop charClass fifty-width"></select>
                     </div>
+                    <div class="prop-cont">
+                        <div class="stat-name"><p>Team</p></div>
+                        <select class="char-prop team fifty-width"></select>
+                    </div>
                 </div>
                 
                 <div class="char-stat-title medium-gradient"><p>Equipment</p></div>

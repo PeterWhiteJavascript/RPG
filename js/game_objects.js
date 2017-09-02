@@ -986,7 +986,7 @@ Quintus.GameObjects=function(Q){
             }
             //If all allies are placed, start the battle.
             var numPlaced = allies.filter(function(c){return c.placedOnMap;}).length;
-            if(numPlaced===allies.length||numPlaced===this.stage.options.data.maxAllies){
+            if(numPlaced===this.placeableAllies.length||numPlaced===this.stage.options.data.maxAllies){
                 this.startBattle();
             } else {
                 this.startPlacingAllies();
@@ -1013,8 +1013,26 @@ Quintus.GameObjects=function(Q){
             this.startTurn();
         },
         finishBattle:function(props){
-            //Do anything that happens after each battle (TO DO)
-            
+            //Save some of the properties for allies
+            this.allies.forEach(function(ally){
+                //Find the associated saved ally
+                var char = Q.state.get("allies").filter(function(c){
+                    return c.name===ally.p.name&&c.uniqueId===ally.p.uniqueId;
+                })[0];
+                if(!char) return;
+                char.exp = ally.p.exp;
+                char.level = ally.p.level;
+                char.combatStats.hp = ally.p.combatStats.hp;
+                char.combatStats.tp = ally.p.combatStats.tp;
+                if(ally.hasStatus("dead")){
+                    char.wounded = 5;
+                } else if(ally.hasStatus("bleedingOut")){
+                    char.wounded = 5-ally.hasStatus("bleedingOut").turns+1;
+                }
+            });
+            Q.state.get("allies").forEach(function(char){
+                char.placedOnMap = false;
+            });
             //Start the next scene
             Q.startScene(props.next.type,props.next.scene,props.next.event);
         },
@@ -1076,8 +1094,12 @@ Quintus.GameObjects=function(Q){
                         break;
                 }
             },
-            spawnEnemy:function(file,group,id,loc,dir){
-                
+            spawnEnemy:function(file,group,handle,loc,dir){
+                var char = Q.stage(0).insert(new Q.Character(Q.charGen.generateCharacter({file:file,group:group,handle:handle,loc:loc,dir:dir},"battleChar")));
+                //TODO: generate uniqueID
+                //Add to allies or enemeies
+                Q.BatCon.addToTeam(char);
+                Q.BatCon.addToTurnOrder(char);
             }
         },
         triggerEffects:function(effects){
@@ -1390,13 +1412,14 @@ Quintus.GameObjects=function(Q){
                     gain*=2;
                 }
                 obj.p.exp+= gain;
-                obj.trigger("saveProp",{name:"exp",value:obj.p.exp});
                 var leveledUp = false;
                 //Level up the character if they are at or over 100
                 if(obj.p.exp>=100){
                     leveledUp = true;
-                    obj.levelUp();
-                    obj.trigger("saveProp",{name:"level",value:obj.p.level});
+                    obj.p.baseStats = Q.charGen.levelUp(Q.charGen.order[Q.charGen.getStatTo(obj.p.level-1)],obj.p.baseStats,obj.p.primaryStat,obj.p.secondaryStat);
+                    obj.p.combatStats = Q.charGen.getCombatStats(obj.p);
+                    obj.p.level++;
+                    obj.p.exp-=100;
                 }
                 text.push({func:"showExpGain",obj:obj,props:[gain,leveledUp]});
             });
@@ -2253,8 +2276,6 @@ Quintus.GameObjects=function(Q){
             if(skill){
                 if(skill.cost) {
                     attacker.p.combatStats.tp-=(skill.cost-attacker.p.combatStats.efficiency);
-                    //Save the sp use
-                    attacker.trigger("saveProp",{name:"tp",value:attacker.p.combatStats.tp});
                 }
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;
@@ -2274,18 +2295,10 @@ Quintus.GameObjects=function(Q){
             if(skill){
                 this.processAdditionalEffects(attacker,targets,skill);
             }
-            var text = this.text;
-            //If a defender died, there will be an exp gain
-            if(this.expText.length){
-                //Wait between damage and exp gain
-                text.push({func:"waitTime",obj:this,props:[800]});
-                text.push.apply(text,this.expText);
-                //Empty the expText array for next time
-                this.expText = [];
-            }
-            this.processText(text);
+            this.processText(this.text);
         },
         processText:function(text){
+            console.log(this.text[0])
             var obj = this;
             if(!text) text = this.text;
             //If the process is over, finish the end the turn
@@ -2847,17 +2860,16 @@ Quintus.GameObjects=function(Q){
                     
                     char.combatStats = this.getCombatStats(char);
                     break;
-                //Create an enemy used in battles
                 //The data will include a reference to the actual character properties that are in the character's file.
-                case "enemy":
-                    char.team = "enemy";
-                    char.loc = data.loc;
+                case "battleChar":
+                    char.loc = Q.BattleGrid.getObject(data.loc)?Q.BattleGrid.getEmptyAround(data.loc,{})[0]:data.loc;
                     char.dir = data.dir;
                     char.uniqueId = data.uniqueId;
                     char.exp = 0;
                     //Reset the data variable
                     data = Q.state.get("characterFiles")[data.file][data.group][data.handle];
                     
+                    char.team = data.team.toLowerCase();
                     //Random number between levelmin and levelmax
                     char.level = Math.floor(Math.random()*(data.levelmax-data.levelmin))+data.levelmin;
                     char.nationality = data.nationality==="Random"?this.generateNationality(act):data.nationality;
@@ -3116,6 +3128,9 @@ Quintus.GameObjects=function(Q){
             else charName+=this.nameParts[natNum][gender][Math.floor(Math.random()*this.nameParts[natNum][gender].length)];
             return charName.charAt(0).toUpperCase() + charName.slice(1);
         },
+        getStatTo:function(level){
+            return level%this.order.length;
+        },
         levelUp:function(statTo,stats,primary,secondary){
             switch(statTo){
                 case "primary":
@@ -3137,7 +3152,7 @@ Quintus.GameObjects=function(Q){
             stats[primary]+=5;
             stats[secondary]+=3;
             for(var idx=0;idx<level;idx++){
-                var num = idx%this.order.length;
+                var num = this.getStatTo(idx);
                 stats = this.levelUp(this.order[num],stats,primary,secondary);
             }  
             return stats;
@@ -3202,7 +3217,7 @@ Quintus.GameObjects=function(Q){
             char.combatStats.magicalResistance = this.get_magicalResistance(char);
 
             char.combatStats.atkRange = this.get_atkRange(char);
-            char.combatStats.maxAtkDmg = this.get_maxAtkDmg(char);
+            char.combatStats.maxAtkDmg = 10000;//this.get_maxAtkDmg(char);
             char.combatStats.minAtkDmg = this.get_minAtkDmg(char);
             char.combatStats.maxSecondaryDmg = this.get_maxSecondaryDmg(char);
             char.combatStats.minSecondaryDmg = this.get_minSecondaryDmg(char);
@@ -3291,7 +3306,7 @@ Quintus.GameObjects=function(Q){
             var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
             var range = attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
             if(range>1&&p.talents.includes("Sniper")) range+=2;
-            return range;
+            return range || 1;
         },
         get_maxAtkDmg:function(p){
             var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
@@ -3303,7 +3318,7 @@ Quintus.GameObjects=function(Q){
             var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
             var t = handed===1?1:1.5;
             var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-            return 100//Math.floor((str*t)+(level*h)+minDamageRight);
+            return Math.floor((str*t)+(level*h)+minDamageRight);
         },
         get_maxSecondaryDmg:function(p){
             var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment.lefthand), charGroup = p.charGroup;

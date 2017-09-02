@@ -1,6 +1,6 @@
 {
-    "name": "On-the-way-home.",
-    "desc": "Alex and Astraea go home.",
+    "name": "Did-not-buy",
+    "desc": "Didn't buy from the Bandits.",
     "kind": "battleScene",
     "script": [
         [
@@ -17,32 +17,77 @@
             {
                 "func": "changeMusic",
                 "props": [
-                    "demo.mp3"
+                    "prebattle.mp3"
                 ]
+            }
+        ],
+        [
+            "Talk",
+            {
+                "text": [
+                    "Hmm, why would we buy from the bandits anyways?"
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
             },
             {
-                "func": "moveAlong",
+                "func": "changeDir",
                 "props": [
                     [
                         "Alex",
                         0
                     ],
+                    "left"
+                ]
+            },
+            {
+                "func": "changeDir",
+                "props": [
                     [
-                        [
-                            13,
-                            18
-                        ]
+                        "Astraea",
+                        0
                     ],
-                    "right",
-                    false
+                    "left"
+                ]
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Bandit-Leader",
+                        0
+                    ]
+                ]
+            },
+            {
+                "text": [
+                    "I hope you didn't think we'd let you go without paying us!",
+                    "Let's fight!!!"
+                ],
+                "asset1": "story\/knight.png",
+                "asset2": "story\/empty.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            }
+        ],
+        [
+            "Police come",
+            {
+                "func": "changeMusic",
+                "props": [
+                    "the_usual.mp3"
                 ]
             },
             {
                 "func": "moveAlong",
                 "props": [
                     [
-                        "Astraea",
-                        0
+                        "Bandit-Legionnaire",
+                        4
                     ],
                     [
                         [
@@ -51,33 +96,6 @@
                         ]
                     ],
                     "right",
-                    true
-                ]
-            },
-            {
-                "text": [
-                    "Eh, you will buy from us, right?"
-                ],
-                "asset1": "story\/empty.png",
-                "asset2": "story\/knight.png",
-                "pos": "Left",
-                "autoCycle": 0,
-                "noCycle": "No"
-            },
-            {
-                "func": "moveAlong",
-                "props": [
-                    [
-                        "Bandit-Leader",
-                        0
-                    ],
-                    [
-                        [
-                            23,
-                            18
-                        ]
-                    ],
-                    "left",
                     false
                 ]
             },
@@ -85,30 +103,17 @@
                 "func": "moveAlong",
                 "props": [
                     [
-                        "Astraea",
-                        0
+                        "Bandit-Legionnaire",
+                        5
                     ],
                     [
                         [
-                            22,
-                            18
-                        ]
-                    ],
-                    "up",
-                    false
-                ]
-            },
-            {
-                "func": "moveAlong",
-                "props": [
-                    [
-                        "Alex",
-                        0
-                    ],
-                    [
+                            13,
+                            19
+                        ],
                         [
-                            21,
-                            18
+                            14,
+                            19
                         ]
                     ],
                     "right",
@@ -116,60 +121,75 @@
                 ]
             },
             {
-                "func": "fadeChar",
+                "func": "playAnim",
                 "props": [
                     [
-                        "Astraea",
-                        0
+                        "Bandit-Legionnaire",
+                        4
                     ],
-                    "out"
+                    "Attack",
+                    "right",
+                    "slashing.mp3"
+                ]
+            },
+            {
+                "func": "playAnim",
+                "props": [
+                    [
+                        "Bandit-Legionnaire",
+                        5
+                    ],
+                    "Attack",
+                    "right",
+                    "slashing.mp3"
                 ]
             },
             {
                 "func": "waitTime",
                 "props": [
-                    "1000"
+                    "500"
                 ]
             },
             {
-                "func": "moveAlong",
+                "func": "playAnim",
                 "props": [
                     [
-                        "Alex",
+                        "Bandit-Archer",
                         0
                     ],
-                    [
-                        [
-                            22,
-                            18
-                        ]
-                    ],
-                    "up",
-                    true
+                    "Dying",
+                    "right",
+                    "hit1.mp3"
                 ]
             },
             {
-                "func": "fadeChar",
+                "func": "playAnim",
                 "props": [
                     [
-                        "Alex",
-                        0
+                        "Bandit-Archer",
+                        1
                     ],
-                    "out"
+                    "Dying",
+                    "right",
+                    "hit1.mp3"
                 ]
             },
             {
-                "func": "waitTime",
-                "props": [
-                    "1000"
-                ]
+                "text": [
+                    "We've come to take you in, Bandits!"
+                ],
+                "asset1": "story\/l.jpg",
+                "asset2": "story\/empty.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
             },
             {
                 "func": "changeEvent",
                 "props": [
                     "Other",
                     "CandyShop",
-                    "Inside-Bandit's-Shop"
+                    "Fight-Bandits"
                 ]
             }
         ]
@@ -181,8 +201,8 @@
             "handle": "Alex",
             "uniqueId": 0,
             "loc": [
-                13,
-                0
+                22,
+                18
             ],
             "dir": "down"
         },
@@ -192,52 +212,8 @@
             "handle": "Astraea",
             "uniqueId": 0,
             "loc": [
-                14,
-                0
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "test_level1.json",
-            "group": "Main",
-            "handle": "Bandit-Legionnaire",
-            "uniqueId": 0,
-            "loc": [
-                13,
-                21
-            ],
-            "dir": "up"
-        },
-        {
-            "file": "test_level1.json",
-            "group": "Main",
-            "handle": "Bandit-Legionnaire",
-            "uniqueId": 1,
-            "loc": [
-                14,
-                21
-            ],
-            "dir": "up"
-        },
-        {
-            "file": "test_level1.json",
-            "group": "Main",
-            "handle": "Bandit-Legionnaire",
-            "uniqueId": 2,
-            "loc": [
-                15,
-                21
-            ],
-            "dir": "up"
-        },
-        {
-            "file": "test_level1.json",
-            "group": "Main",
-            "handle": "Bandit-Legionnaire",
-            "uniqueId": 3,
-            "loc": [
-                12,
-                21
+                22,
+                19
             ],
             "dir": "up"
         },
@@ -247,10 +223,10 @@
             "handle": "Bandit-Leader",
             "uniqueId": 0,
             "loc": [
-                16,
+                18,
                 18
             ],
-            "dir": "left"
+            "dir": "right"
         },
         {
             "file": "test_level1.json",
@@ -258,10 +234,10 @@
             "handle": "Bandit-Archer",
             "uniqueId": 0,
             "loc": [
-                17,
-                19
+                15,
+                18
             ],
-            "dir": "left"
+            "dir": "right"
         },
         {
             "file": "test_level1.json",
@@ -269,10 +245,54 @@
             "handle": "Bandit-Archer",
             "uniqueId": 1,
             "loc": [
+                15,
+                19
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 2,
+            "loc": [
                 16,
                 19
             ],
-            "dir": "left"
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 3,
+            "loc": [
+                16,
+                18
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 4,
+            "loc": [
+                14,
+                7
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 5,
+            "loc": [
+                13,
+                9
+            ],
+            "dir": "down"
         }
     ],
     "map": "forest-to-candy-store2.tmx"

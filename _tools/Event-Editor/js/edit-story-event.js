@@ -1,11 +1,21 @@
 $(function(){
+    var JSONdata = {};
     //In charge of dynamic content
     var DC = {
         //Initialize this object with the vrs and pages from the save data. vrs and pages are the only properties that get saved on this page
         init:function(){
-            this.convertScenesList(JSON.parse($("#scenes-list").attr("value")));
-            var pages = JSON.parse($("#pages-data").text());
-            var vrs = JSON.parse($("#variables-data").text());
+            this.p.scenes = JSONdata['scenes-list.json'];
+            this.p.events = this.getEventsList(this.p.scenes);
+            this.p.globalVars = JSONdata['global-vars.json'].vrs;
+            this.p.sceneVars = this.getSceneVars(this.p.scenes,sceneName,sceneType);
+            this.p.characters = JSONdata['officers.json'];
+            this.p.equipment = JSONdata['equipment.json'];
+            this.p.items = JSONdata['items.json'];
+            this.p.charGen = JSONdata['character-generation.json'];
+            
+            var pages = dataPages;
+            var vrs = dataVariables;
+            
             //Create the vrs
             var keys = Object.keys(vrs);
             for(var i=0;i<keys.length;i++){
@@ -23,8 +33,6 @@ $(function(){
         //Store properties here that track the current page, choice, etc...
         //Also store list parent objects
         p:{
-            scenes:JSON.parse($("#scenes").attr("value")),
-            
             varsCont:$("#editor-variables").children("ul").first(),
             pagesCont:$("#editor-pages").children("ul").first(),
             modulesCont:$("#modules").children("ul").first(),
@@ -37,28 +45,23 @@ $(function(){
             onloadCont:$("#onload"),
             choicesCont:$("#choices").children("ul").first(),
             
-            
-            uniquePages:1,
-            globalVars:JSON.parse($("#global-vars").attr("value")),
-            sceneVars:JSON.parse($("#scene-vars").attr("value")),
-            
-            characters:JSON.parse($("#characters").attr("value")),
-            equipment:JSON.parse($("#equipment").attr("value")),
-            items:JSON.parse($("#items").attr("value"))
+            uniquePages:1
                     
         },
-        convertScenesList:function(data){
+        getSceneVars:function(scenes,scene,type){
+            return scenes[type].filter(function(s){return s.name===scene;})[0].vrs;
+        },
+        getEventsList:function(data){
             var list = {};
             var types = Object.keys(this.p.scenes);
             for(var i=0;i<types.length;i++){
                 var scenes = this.p.scenes[types[i]];
                 for(var j=0;j<scenes.length;j++){
-                    var name = scenes[j];
-                    list[name] = data[types[i]].filter(function(s){return s.name===name;})[0].eventOrder;
+                    list[scenes[j].name] = scenes[j].eventOrder;
                 }
                 
             }
-            this.p.events = list;
+            return list;
         },
         //Adds a var to the list
         addVar:function(name,val,fromSave){
@@ -310,31 +313,31 @@ $(function(){
             var options = '';
             switch(condType){
                 case "Personality":
-                    JSON.parse($("#char-gen").attr("value")).personalityNames.forEach(function(prop,i){
+                    this.p.charGen.personalityNames.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Character Class":
-                    JSON.parse($("#char-gen").attr("value")).classNames.forEach(function(prop,i){
+                    this.p.charGen.classNames.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Value":
-                    JSON.parse($("#char-gen").attr("value")).values.forEach(function(prop,i){
+                    this.p.charGen.values.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Methodology":
-                    JSON.parse($("#char-gen").attr("value")).methodologies.forEach(function(prop,i){
+                    this.p.charGen.methodologies.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
                     break;
                 case "Nationality":
-                    JSON.parse($("#char-gen").attr("value")).nationalities.forEach(function(prop,i){
+                    this.p.charGen.nationalities.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
@@ -352,7 +355,7 @@ $(function(){
                     });
                     break;
                 case "Gender":
-                    JSON.parse($("#char-gen").attr("value")).genders.forEach(function(prop,i){
+                    this.p.charGen.genders.forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });
@@ -603,13 +606,14 @@ $(function(){
                     if(!props){props = {};
                         var varProps = this.getVars();
                         props.scope = varProps.scope;
+                        props.operator = "=";
                         var firstVar = Object.keys(varProps.vars)[0];
                         props.vr = firstVar;
                         props.vl = varProps.vars[firstVar];
                     }
                     var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="cond-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
                     var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
-                    var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" value="'+props.operator+'"><option>==</option><option><</option><option>></option><option><=</option><option>>=</option></select>';
+                    var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" initial-value="'+props.operator+'"><option value="==">==</option><option value="<"><</option><option value=">">></option><option value="<="><=</option><option value=">=">>=</option></select>';
                     var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
                     content = scope+vr+operator+vl;
                     break;
@@ -824,14 +828,14 @@ $(function(){
             }
         },
         //Sets all of the pages and vrs for saving
-        setSaveData:function(form){
+        getSaveData:function(){
+            var data = {};
             //Get all of the variables
             var v = this.getVars();
-            var vrs = "{}";
             if(v.scope==="Event"){
-                vrs = JSON.stringify(v.vars).trim().replace(/ /g, '%20');
+                data.vrs = v.vars;
             }
-            form.append("<input type='text' name='vrs' value="+vrs+">");
+            data.vrs = data.vrs || {};
             //Get all of the pages
             var pages = [];
             $(this.p.pagesCont).children(".page").each(function(idx,itm){
@@ -846,12 +850,8 @@ $(function(){
                     modulesVars:JSON.parse($(itm).attr("modulesVars"))
                 });
             });
-            var json = JSON.stringify(pages).trim().replace(/ /g, '%20');
-            form.append("<input type='text' name='pages' value="+json+">");
-            form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-            form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-            form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-            return form;
+            data.pages = pages;
+            return data;
         },
         //The user is asked if they would like to go back without saving.
         //If they say yes, the user is taken back to the show-events.php
@@ -981,7 +981,7 @@ $(function(){
             var opts = '';
             var scenes = this.p.scenes[type];
             for(var i=0;i<scenes.length;i++){
-                opts+='<option value="'+scenes[i]+'">'+scenes[i]+'</option>';
+                opts+='<option value="'+scenes[i].name+'">'+scenes[i].name+'</option>';
             }
             return opts;
         },
@@ -1010,7 +1010,22 @@ $(function(){
             return opts;
         }
     };
-    DC.init();
+    
+    //Get the list of files that are in the data folder and load them here. The list is generated in php.
+    //dataFiles is declared in the php file.
+    var files = dataFiles;
+    function loadJSON(data){
+        if(data){
+            JSONdata[files[0]] = data;
+            files.shift();
+            if(!files.length) return DC.init();
+        }
+        $.getJSON("../../data/json/data/"+files[0],loadJSON);
+    }
+    loadJSON();
+    
+    
+    
     
     //BG and Music selects start
     $(document).on("change","#music-select select",function(){
@@ -1106,20 +1121,35 @@ $(function(){
     $("#save-event").click(function(){
         //Save the current page
         DC.savePage();
-        //Create the save form
-        var form = $('<form action="save-story-pages.php" method="post"></form>');
-        form = DC.setSaveData(form);
-        $("body").append(form);
-        form.submit();
+        var data = DC.getSaveData();
+        $.ajax({
+            type:'POST',
+            url:'save-story-pages.php',
+            data:{pages:JSON.stringify(data.pages).trim().replace(/ /g, '%20'),vrs:JSON.stringify(data.vrs).trim().replace(/ /g, '%20'),name:eventName,scene:sceneName,type:sceneType},
+            dataType:'json'
+        })
+        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+        .fail(function(data){console.log(data)});
     });
     $("#test-event").click(function(){
         
         //Save the current page
         DC.savePage();
+        var data = DC.getSaveData();
+        $.ajax({
+            type:'POST',
+            url:'save-story-pages.php',
+            data:{pages:JSON.stringify(data.pages).trim().replace(/ /g, '%20'),vrs:JSON.stringify(data.vrs).trim().replace(/ /g, '%20'),name:eventName,scene:sceneName,type:sceneType},
+            dataType:'json'
+        })
+        .done(function(data){console.log(data)})
+        .fail(function(data){console.log(data)});
         //Create the save form
-        var form = $('<form action="save-story-pages.php" method="post"></form>');
+        var form = $('<form action="../../index.php" method="post"></form>');
+        form.append('<input type="text" name="name" value="'+eventName+'">');
+        form.append('<input type="text" name="scene" value="'+sceneName+'">');
+        form.append('<input type="text" name="type" value="'+sceneType+'">');
         form.append('<input type="text" name="testing" value="true">');
-        form = DC.setSaveData(form);
         $("body").append(form);
         form.submit();
     });
@@ -1128,9 +1158,9 @@ $(function(){
         var sure = confirm("Are you sure you want to go back without saving?");
         if(sure){
             var form = $('<form action="show-events.php" method="post"></form>');
-            form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-            form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-            form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
+            form.append('<input type="text" name="scene" value="'+sceneName+'">');
+            form.append('<input type="text" name="name" value="'+eventName+'">');
+            form.append('<input type="text" name="type" value="'+sceneType+'">');
             $("body").append(form);
             form.submit();
         }

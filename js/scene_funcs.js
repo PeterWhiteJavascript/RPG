@@ -135,10 +135,10 @@ Quintus.SceneFuncs=function(Q){
         });
     },{sort:true});
     Q.scene("battle",function(stage){
+        $("#loading-screen").show();
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         Q.loadTMX(battleData.map, function() {
-            $("#loading-screen").show();
             Q.stageScene("fader",11);
             Q.playMusic(battleData.music,function(){
                 //Display the tmx tile map
@@ -158,9 +158,12 @@ Quintus.SceneFuncs=function(Q){
                 stage.viewport.scale = 2;
 
                 //Display the enemies, interactables, pickups, and placement locations
-                var enemyData = battleData.characters;
-                enemyData.forEach(function(enemy){
-                    stage.insert(new Q.Character(Q.charGen.generateCharacter(enemy,"enemy")));
+                var chars = [];
+                for(var i=0;i<battleData.characters.length;i++){
+                    chars.push(battleData.characters[i]);
+                }
+                chars.forEach(function(char){
+                    stage.insert(new Q.Character(Q.charGen.generateCharacter(char,"battleChar")));
                 });
                 //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
                 Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));

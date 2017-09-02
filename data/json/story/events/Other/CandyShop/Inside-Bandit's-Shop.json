@@ -6,12 +6,6 @@
         [
             "Initial",
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "hide"
-                ]
-            },
-            {
                 "func": "centerView",
                 "props": [
                     [
@@ -61,12 +55,6 @@
                 ]
             },
             {
-                "func": "modDialogueBox",
-                "props": [
-                    "show"
-                ]
-            },
-            {
                 "text": [
                     "Heh, what can I do for you?"
                 ],
@@ -75,6 +63,14 @@
                 "pos": "Left",
                 "autoCycle": 0,
                 "noCycle": "No"
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Other",
+                    "CandyShop",
+                    "Buy-or-not-from-Bandits"
+                ]
             }
         ]
     ],

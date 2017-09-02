@@ -269,7 +269,15 @@
                 "In-pub-with-Astraea",
                 "Candy-Battle-Loss",
                 "On-the-way-home.",
-                "Inside-Bandit's-Shop"
+                "Inside-Bandit's-Shop",
+                "Buy-or-not-from-Bandits",
+                "Did-not-buy",
+                "Bought-from-Bandits",
+                "Fight-Police",
+                "win-vs-police",
+                "lose-vs-police",
+                "win-vs-bandits",
+                "lose-vs-bandits"
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"

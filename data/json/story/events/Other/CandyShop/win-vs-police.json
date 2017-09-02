@@ -1,0 +1,18 @@
+{
+    "name": "win-vs-police",
+    "desc": "",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "prebattle.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex and Astraea, along with the bandits defeated the police. Their reputation with Venoriae dropped by 50.\n\nEND DEMO",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

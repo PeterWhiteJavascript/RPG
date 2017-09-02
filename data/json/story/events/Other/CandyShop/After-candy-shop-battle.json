@@ -10,14 +10,14 @@
         "next":{
             "type":"Other",
             "scene":"CandyShop",
-            "event":"Forest-Battle-victory"
+            "event":"Candy-Battle-Victory"
         }
     },
     "defeat":{
         "next":{
             "type":"Other",
             "scene":"CandyShop",
-            "event":"Forest-Battle-defeat"
+            "event":"Candy-Battle-Loss"
         }
     },
     "events":[

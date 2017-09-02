@@ -28,9 +28,9 @@
                                 [
                                     "changeEvent",
                                     {
-                                        "type": "Character",
-                                        "scene": "Custom",
-                                        "event": "NomadicLegionnaireBackstory"
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Inside-the-pub"
                                     }
                                 ]
                             ]
@@ -104,8 +104,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Inside Shop",
@@ -184,8 +184,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Ask Pay",
@@ -268,14 +268,14 @@
                     ]
                 }
             ],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Pay",
             "music": "homeland.mp3",
             "bg": "bg\/CircusCircus_1.jpg",
-            "text": "Alex payed for the {e@sweet}.",
+            "text": "Alex paid for the {e@sweet}.",
             "choices": [
                 {
                     "displayText": "Leave",

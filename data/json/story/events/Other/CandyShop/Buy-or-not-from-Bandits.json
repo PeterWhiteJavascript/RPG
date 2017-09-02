@@ -1,0 +1,219 @@
+{
+    "name": "Buy-or-not-from-Bandits",
+    "desc": "Alex and Astraea are in the bandit's shop and they have to decided to buy or not.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "The shopkeeper asks Alex if {o.Alex.g@he} would like to buy anything.",
+            "choices": [
+                {
+                    "displayText": "Buy",
+                    "desc": "",
+                    "page": "Buy",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Don't Buy",
+                    "desc": "",
+                    "page": "Don't Buy",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Buy",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "What would you like?",
+            "choices": [
+                {
+                    "displayText": "Average Iron Sword",
+                    "desc": "Alex points to the Sword on the table.",
+                    "page": "Select Item",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "equipment",
+                                        "operator": "=",
+                                        "vl": "Average Iron Sword"
+                                    }
+                                ],
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Event",
+                                        "vr": "cost",
+                                        "operator": "=",
+                                        "vl": "100"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Don't Buy",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Alex and Astraea left without buying anything.",
+            "choices": [
+                {
+                    "displayText": "Done",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Did-not-buy"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Select Item",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "You'd like the {e@equipment}? It'll cost you {e@cost} money.",
+            "choices": [
+                {
+                    "displayText": "Yes",
+                    "desc": "",
+                    "page": "Confirmed buy",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "No",
+                    "desc": "",
+                    "page": "Buy",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Confirmed buy",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "{@hasEnough}",
+            "choices": [
+                {
+                    "displayText": "Done",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Other",
+                                        "scene": "CandyShop",
+                                        "event": "Bought-from-Bandits"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Global",
+                                "vr": "money",
+                                "operator": ">=",
+                                "vl": "{e@cost}"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "equipItem",
+                            {
+                                "char": "Alex",
+                                "eqType": "Weapons",
+                                "gear": "Sword",
+                                "quality": "Average",
+                                "material": "Iron"
+                            }
+                        ],
+                        [
+                            "setVar",
+                            {
+                                "scope": "Global",
+                                "vr": "money",
+                                "operator": "-",
+                                "vl": "{e@cost}"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {
+                "hasEnough": [
+                    {
+                        "text": "Thanks for the money."
+                    },
+                    {
+                        "text": "You don't even have enough money...",
+                        "checks": [
+                            [
+                                "Global",
+                                "money",
+                                "<",
+                                "{e@cost}"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "vrs": {
+        "equipment": "false",
+        "cost": "0"
+    }
+}

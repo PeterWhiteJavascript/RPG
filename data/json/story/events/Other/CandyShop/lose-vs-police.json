@@ -1,0 +1,18 @@
+{
+    "name": "lose-vs-police",
+    "desc": "",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "prebattle.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "The bandits, Alex, and Astraea went to jail. Relations with Venoriae dropped by 25.\n\nEND DEMO",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

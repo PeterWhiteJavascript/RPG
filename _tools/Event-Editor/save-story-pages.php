@@ -66,41 +66,4 @@ for($i=0;$i<count($file['pages']);$i++){
     }
 }
 file_put_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json', json_encode($file, JSON_PRETTY_PRINT));
-
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <?php include 'config.php';?>
-    </head>
-    <body>
-        <div id="title"><h1><?php echo $scene; ?></h1></div>
-        <div id="title2"><h1><?php echo $name; ?></h1></div>
-        <div id="title3"><h1><?php echo $type; ?></h1></div>
-        <script>
-            
-        <?php
-        if(isset($_POST['testing'])){
-        ?>
-        var scene = $("#title").text();
-        var name = $("#title2").text();
-        var type = $("#title3").text();
-        var form = $('<form action="../../index.php" method="post"><input type="text" name="scene" value="'+scene+'"><input type="text" name="name" value="'+name+'"><input type="text" name="type" value="'+type+'"></form>');
-        $("body").append(form);
-        form.submit();
-        <?php
-        } else {
-        ?>
-        var scene = $("#title").text();
-        var name = $("#title2").text();
-        var type = $("#title3").text();
-        var form = $('<form action="edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
-        $("body").append(form);
-        form.submit();
-        <?php
-        }
-        ?>
-        </script>
-    </body>
-</html>
+echo json_encode($file);

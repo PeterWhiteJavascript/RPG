@@ -203,7 +203,7 @@ Quintus.Objects=function(Q){
                 this.on("doneLevelingUp",function(){
                     this.off("doneLevelingUp");
                     if(callback) callback();
-                    this.play("stand"+this.p.dir);
+                    this.playStand(this.p.dir);
                 });
             },
             playFainted:function(dir,callback){
@@ -233,17 +233,6 @@ Quintus.Objects=function(Q){
     Q.component("interactable",{
         added:function(){
             
-        }
-    });
-    //Any object that saves some properties
-    Q.component("save",{
-        added:function(){
-            this.entity.on("saveProp",this,"saveProp");
-        },
-        saveProp:function(props){
-            var name = props.name;
-            var value = props.value;
-            this.entity.p.savedData[name] = value;
         }
     });
     //Any functions that are run because of skills are here as well
@@ -329,7 +318,6 @@ Quintus.Objects=function(Q){
                 Q.playSound("slashing.mp3");
             },
             showExpGain:function(exp,leveledUp,callback){
-                console.log(exp,leveledUp)
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
                 //If the character leveled up
                 if(leveledUp){
@@ -370,7 +358,6 @@ Quintus.Objects=function(Q){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.combatStats.hp-=dmg;
-                this.trigger("saveProp",{name:"hp",value:this.p.combatStats.hp});
                 Q.setAward(attacker,"damageDealt",dmg);
                 Q.setAward(this,"damageTaken",dmg);
                 //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
@@ -404,7 +391,6 @@ Quintus.Objects=function(Q){
                     //Q.BatCon.markForRemoval(this);
                     //Set the hp to 0
                     this.p.combatStats.hp = 0;
-                    this.trigger("saveProp",{name:"hp",value:this.p.combatStats.hp});
                     //Give the character that got the last hit an 'enemiesDefeated' award
                     Q.setAward(attacker,"enemiesDefeated",1);
                     Q.setAward(this,"timesDied",1);
@@ -421,14 +407,18 @@ Quintus.Objects=function(Q){
                         //Only give exp if possible (if an ally killed this character, no exp is given)
                         if(this.p.hitBy.length){
                             //Figure out how much exp should be awarded
-                            text.concat(Q.BatCon.giveExp(this,this.p.hitBy));
+                            var expText = Q.BatCon.giveExp(this,this.p.hitBy);
+                            for(var i=0;i<expText.length;i++){
+                                Q.BatCon.attackFuncs.text.push(expText[i]);
+                            }
+                            
                         }
-                    }
+                    }/*
                     if(callback){
                         if(text.length) Q.BatCon.attackFuncs.text.unshift(text);
                         callback();
                     }
-                    return text;//If this is returned, the character is dead and it executes
+                    return*/
                 } else {
                     if(this.p.talents.includes("Second Wind")&&this.p.tempHp<=Math.floor(this.p.combatStats.maxHp/10)){
                         Q.BatCon.removeFromTurnOrder(this);

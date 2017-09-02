@@ -1,0 +1,151 @@
+{
+    "name": "Forest-Battle",
+    "desc": "The battle in the forest on the way to the candy store.",
+    "kind": "battle",
+    "map": "forest-to-candy-store2.tmx",
+    "music":"battle.mp3",
+    "placementSquares":[[22,18],[22,19]],
+    "maxAllies":2,
+    "victory":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"win-vs-bandits"
+        },
+        "groups":[
+            [
+                "changeStat",
+                {
+                    "stat": "Reputation-Venoriae",
+                    "val": 10
+                }
+            ]
+        ]
+    },
+    "defeat":{
+        "next":{
+            "type":"Other",
+            "scene":"CandyShop",
+            "event":"lose-vs-bandits"
+        },
+        "groups":[
+            
+        ]
+    },
+    "events":[
+        {
+            "conds":[{
+                "name":"rounds",
+                "props":[1]
+            }],
+            "effects":[{
+                "func":"spawnEnemy",
+                "props":["test_level1.json","Police","Ally-Legionnaire",[13,15],"down"]
+            }],
+            "required":1
+        },
+        
+        {
+            "conds":[{
+                "name":"rounds",
+                "props":[3]
+            }],
+            "effects":[{
+                "func":"spawnEnemy",
+                "props":["test_level1.json","Police","Ally-Legionnaire",[13,15],"down"]
+            }],
+            "required":1
+        },
+        
+        {
+            "conds":[{
+                "name":"rounds",
+                "props":[5]
+            }],
+            "effects":[{
+                "func":"spawnEnemy",
+                "props":["test_level1.json","Police","Ally-Legionnaire",[13,15],"down"]
+            }],
+            "required":1
+        }
+    ],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Leader",
+            "uniqueId": 0,
+            "loc": [
+                18,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Archer",
+            "uniqueId": 1,
+            "loc": [
+                15,
+                19
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 2,
+            "loc": [
+                16,
+                19
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 3,
+            "loc": [
+                16,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Police",
+            "handle": "Ally-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                18
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Police",
+            "handle": "Ally-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                14,
+                19
+            ],
+            "dir": "left"
+        }
+    ]
+}
