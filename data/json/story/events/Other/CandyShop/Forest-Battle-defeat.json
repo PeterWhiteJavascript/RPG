@@ -23,7 +23,7 @@
                                     {
                                         "type": "Other",
                                         "scene": "CandyShop",
-                                        "event": "Alex-arrives-in-town"
+                                        "event": "Town"
                                     }
                                 ]
                             ]

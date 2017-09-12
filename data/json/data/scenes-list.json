@@ -277,7 +277,9 @@
                 "win-vs-police",
                 "lose-vs-police",
                 "win-vs-bandits",
-                "lose-vs-bandits"
+                "lose-vs-bandits",
+                "House",
+                "Town"
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"

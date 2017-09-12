@@ -200,7 +200,7 @@ Quintus.QFunctions=function(Q){
                     }
                     
                     //Allow walking over allies and dead people as long as there's no zoc tile
-                    if(objOn&&(objOn.p.team===team||objOn.p.hp<=0||windWalking)/*&&!zocOn*/){objOn=false;};
+                    if(objOn&&(objOn.p.team===team||objOn.p.combatStats.hp<=0||windWalking)/*&&!zocOn*/){objOn=false;};
                 }
                 //If there's still no enemy on the square, get the tileCost
                 if(objOn){

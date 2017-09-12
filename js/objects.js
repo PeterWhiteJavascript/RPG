@@ -92,8 +92,9 @@ Quintus.Objects=function(Q){
             itm.amount += amount || 1;
         },
         decreaseItem:function(type,itm,amount){
-            itm.amount -= amount || 1;
-            if(itm.amount<=0) this.removeItem(type,{gear:itm.name,quality:itm.quality,material:itm.material});
+            var item = this.getItem(type,{gear:itm.gear,quality:itm.quality,material:itm.material});
+            item.amount -= amount || 1;
+            if(item.amount<=0) this.removeItem(type,{gear:itm.name,quality:itm.quality,material:itm.material});
         },
         
         //TO DO once we get to the menus

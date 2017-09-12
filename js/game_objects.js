@@ -2109,7 +2109,7 @@ Quintus.GameObjects=function(Q){
                     newText = this.entity.skillFuncs["healHp"](11,target,user);
                     break;
             }
-            this.text.concat(newText);
+            this.text.push(newText[0]);
         },
         //Checks against the defender's resistance of a certain skill type.
         checkResisted:function(attacker,defender,skill){
@@ -2138,9 +2138,9 @@ Quintus.GameObjects=function(Q){
                     return;
                 }
                 switch(skill.type){
-                    case "Consumable":
+                    case "Item":
                         var bag = Q.state.get("Bag");
-                        bag.decreaseItem(skill,skill.kind);
+                        bag.decreaseItem(skill.kind,{gear:skill.name});
                         this.useItem(attacker,defender,skill);
                         return;
                     case "Support":
@@ -2154,9 +2154,6 @@ Quintus.GameObjects=function(Q){
                         damage = Math.max(0,props.damage);
                         sound = props.sound;
                         time = props.time || time;
-                        break;
-                    case "Item":
-                        this.useItem(attacker,defender,skill);
                         break;
                 }
             } 
@@ -2274,7 +2271,7 @@ Quintus.GameObjects=function(Q){
             attacker.p.didAction = true;
             attacker.p.tempHp = attacker.p.combatStats.hp;
             if(skill){
-                if(skill.cost) {
+                if(skill.type!=="Item"&&skill.cost) {
                     attacker.p.combatStats.tp-=(skill.cost-attacker.p.combatStats.efficiency);
                 }
                 if(skill.anim) anim = skill.anim;
@@ -2298,7 +2295,6 @@ Quintus.GameObjects=function(Q){
             this.processText(this.text);
         },
         processText:function(text){
-            console.log(this.text[0])
             var obj = this;
             if(!text) text = this.text;
             //If the process is over, finish the end the turn
@@ -3217,7 +3213,7 @@ Quintus.GameObjects=function(Q){
             char.combatStats.magicalResistance = this.get_magicalResistance(char);
 
             char.combatStats.atkRange = this.get_atkRange(char);
-            char.combatStats.maxAtkDmg = 10000;//this.get_maxAtkDmg(char);
+            char.combatStats.maxAtkDmg = this.get_maxAtkDmg(char);
             char.combatStats.minAtkDmg = this.get_minAtkDmg(char);
             char.combatStats.maxSecondaryDmg = this.get_maxSecondaryDmg(char);
             char.combatStats.minSecondaryDmg = this.get_minSecondaryDmg(char);
@@ -3274,11 +3270,14 @@ Quintus.GameObjects=function(Q){
             return Math.min(25,enr+skl);
         },
         get_atkAccuracy:function(p){
+            //If there is a left hand equipped, we need an average of the two.
+            var equipped = p.equipment.lefthand?2:1;
             var wsk = p.combatStats.weaponSkill,
-                wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/2), 
+                wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/equipped), 
                 encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
                 level = p.level;
-            return 99;//Math.min(99,Math.floor(wsk+wield+encPenalty+level));
+            //I multiplied by 2 to get some better accuracies.
+            return Math.min(99,Math.floor(wsk+wield+encPenalty+level)*2);
         },
         get_critChance:function(p){
             var attackAccuracy = p.combatStats.atkAccuracy,charGroup = p.charGroup;

@@ -4,7 +4,7 @@
         "level":1,
         "gender":"Male",
         "equipment":{
-            "righthand":["Average","Brass","Short Sword"],
+            "righthand":false,
             "lefthand":false,
             "armour":false,
             "footwear":false,
@@ -14,7 +14,7 @@
             "str":18,
             "end":18,
             "dex":10,
-            "wsk":12,
+            "wsk":18,
             "rfl":12,
             "ini":14,
             "enr":8,
@@ -31,7 +31,7 @@
         ],
         "nationality":"Venorian",
         "charClass":"Legionnaire",
-        "exp":99,
+        "exp":0,
         "primaryStat":"str",
         "secondaryStat":"end"
         

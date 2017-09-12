@@ -1,16 +1,11 @@
 Quintus.SceneFuncs=function(Q){
     
     Q.startScene = function(type,scene,event){
-        if(scene==="locations"){ 
-            Q.stageScene("location",1,{location:event});
-        }
-        else {
-            Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
-                Q.clearStages();
-                var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
-                Q.stageScene(data.kind,0,{data:data});
-            });
-        }
+        Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
+            Q.clearStages();
+            var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
+            Q.stageScene(data.kind,0,{data:data});
+        });
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
@@ -30,14 +25,11 @@ Quintus.SceneFuncs=function(Q){
         
     }); 
     Q.scene("location",function(stage){
-        var location = stage.options.location;
-        Q.load("json/story/locations/"+location+".json",function(){
-            var data = Q.assets["json/story/locations/"+location+".json"];
-            Q.load("bg/"+data.bg,function(){
-                var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.bg}));
-                Q.playMusic(data.music,function(){
-                    Q.locationController = stage.insert(new Q.LocationController({location:Q.assets["json/story/locations/"+location+".json"],bgImage:bgImage}));
-                });
+        var data = stage.options.data;
+        Q.loadSceneAssets([{music:data.music,bg:data.bg}],function(){
+            var bgImage = stage.insert(new Q.BackgroundImage({asset:data.bg}));
+            Q.playMusic(data.music,function(){
+                Q.locationController = stage.insert(new Q.LocationController({location:data,bgImage:bgImage}));
             });
         });
     });

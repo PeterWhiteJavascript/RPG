@@ -817,7 +817,7 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
-            var status = target.p.status;
+            var status = target.p.status || {};
             var keys = Object.keys(status);
             for(var i=0;i<keys.length;i++){
                 this.insert(new Q.UI.Text({label:status[keys[i]].name,x:5,y:5+i*28,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));

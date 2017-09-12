@@ -30,7 +30,7 @@
             
         ]
     },
-    "money":2000,
+    "money":200,
     "week":1,
         
     "influence":{
@@ -48,10 +48,9 @@
         "Nomads":[50,50],
         "Talumpatua":[50,50]
     },
-    
     "startSceneName":"CandyShop",
     "startSceneType":"Other",
-    "startEventName":"Leaving-Home",
+    "startEventName":"Town",
     
     "act":"1-1",
     "applicationsRoster":[]

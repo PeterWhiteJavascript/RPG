@@ -62,6 +62,99 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
+    Q.component("locationActions",{
+        extend:{
+            doAction:function(p){
+                if(!p) return this.createMainMenu();
+                this[p[1]](p[2]);
+            },
+            changePage:function(p){
+                this.p.lastPage = this.p.currentPage;
+                this.p.currentPage = p.page;
+                this.emptyConts();
+                if(p.page==="start") return this.displayList(this.p.location);
+                this.displayList(this.p.location[p.page]);
+            },
+            changeEvent:function(p){
+                this.fullDestroy();
+                Q.startScene(p.type,p.scene,p.event);
+            },
+            displayBuyItemsList:function(p){
+                this.emptyConts();
+                var list = p.list;
+                var newList = [];
+                list.forEach(function(itm,i){
+                    switch(itm[2]){
+                        case "Consumables":
+                            newList.push([itm[0],"askBuyQuantity",Q.state.get("items")[itm[1]]]); 
+                            break;
+                    }
+                   
+                });
+                this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.lastPage}]])});
+            },
+            askBuyQuantity:function(item){
+                this.emptyConts();
+                this.displayQuantityToggle({titleText:"Buy how many "+item.name,confirmText:"Confirm Buy",confirmFunc:"askBuy",item:item});
+            },
+            askBuy:function(props){
+                this.emptyConts();
+                //Check if we have enough money and display the correct text.
+                var money = Q.state.get("saveData").money;
+                var quantity = parseInt(props.quantity);
+                if(money>=quantity*props.p.item.cost){
+                    $(".mid-cont").text("Purchase "+props.p.item.name+" for "+quantity*props.p.item.cost+" money?"+" You have "+money+" money.");
+                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item}],["Back","changePage",{page:this.p.currentPage}]]});
+                } else {
+                    $(".mid-cont").append("You don't have enough money!");
+                    this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
+                }
+            },
+            buyItem:function(p){
+                this.emptyConts();
+                Q.state.get("Bag").addItem(p.item.kind,{amount:1,gear:p.item.name});
+                Q.state.get("saveData").money -= p.quantity*p.item.cost;
+                $(".mid-cont").text("You purchased the "+p.item.name+" for "+p.quantity*p.item.cost+" money.");
+                this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
+            },
+            displaySellItemsList:function(p){
+                this.emptyConts();
+                var list;
+                switch(p.allow){
+                    case "all":
+                        list = Q.state.get("Bag");
+                        break;
+                    case "items":
+                        list = Q.state.get("Bag").items.Consumables;
+                        break;
+                    case "equipment":
+                        
+                        break;
+                }
+                var newList = [];
+                list.forEach(function(itm){
+                    newList.push([itm.name,"askSellQuantity",itm]);
+                });
+                this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.currentPage}]])});
+            },
+            askSellQuantity:function(item){
+                this.emptyConts();
+                this.displayQuantityToggle({titleText:"Sell how many "+item.name,confirmText:"Confirm Sell",confirmFunc:"askSell",item:item});
+            },
+            askSell:function(props){
+                this.emptyConts();
+                var quantity = parseInt(props.quantity);
+                $(".mid-cont").text("Sell "+quantity+" "+props.p.item.name+" for "+quantity*props.p.item.cost/2+"?");
+                this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back","changePage",{page:this.p.currentPage}]]});
+            },
+            sellItems:function(p){
+                this.emptyConts();
+                Q.state.get("Bag").decreaseItem(p.item.kind,{gear:p.item.name},p.quantity);
+                Q.state.get("saveData").money += p.item.cost*p.quantity/2;
+                this.changePage({page:this.p.currentPage});
+            }
+        }
+    });
     //Using CSS/Jquery, create the locations controller
     //This is used when the player goes to a location and selects from different menu options.
     Q.UI.Container.extend("LocationController",{
@@ -75,8 +168,18 @@ Quintus.UIObjects=function(Q){
             this.p.x+=10;
             this.p.y+=10;
             this.on("inserted");
+            this.add("locationActions");
             this.add("time");
+            //Add a Back button to the first actions menu.
+            this.p.location.actions.push(["Back","createMainMenu"]);
             
+        },
+        fullDestroy:function(){
+            this.emptyConts();
+            $(this.p.menuCont).remove();
+            $(this.p.leftCont).remove();
+            $(this.p.midCont).remove();
+            this.destroy();
         },
         inserted:function(){
             this.p.menuCont = this.createCont("main-menu");
@@ -107,13 +210,19 @@ Quintus.UIObjects=function(Q){
         createMainMenu:function(){
             this.emptyConts();
             var cont = this.p.menuCont;
-            cont.append(
+            /*cont.append(
                 '<ul id="main-menu-ul">\n\
                     <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
                     <li id="lc-briony" class="btn btn-default" func="createBrionyMenu">Briony</li>\n\
                     <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
                     <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
                     <li id="lc-options" class="btn btn-default" func="createOptionsMenu">Options</li>\n\
+                </ul>'
+            );*/
+            cont.append(
+                '<ul id="main-menu-ul">\n\
+                    <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
+                    <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
                 </ul>'
             );
             $("#main-menu-ul li").click(function(){
@@ -151,15 +260,33 @@ Quintus.UIObjects=function(Q){
         },
         createActionsMenu:function(){
             this.emptyConts();
-            var actions = this.p.location.actions;
+            this.p.currentPage = "start";
+            this.displayList(this.p.location);
+        },
+        displayQuantityToggle:function(p){
+            var cont = this.p.menuCont;
+            cont.append('<div>'+p.titleText+'</div><ul id="actions-menu-ul"></ul>');
+            $("#actions-menu-ul").append('\n\
+                <li><input type="number" min=1 max='+p.item.amount+' class="menu-input" value=1></li>\n\
+                <li id="confirm-quantity" class="btn btn-default" func="'+p.confirmFunc+'">'+p.confirmText+'</li>\n\
+                <li id="quantity-go-back" class="btn btn-default">Back</li>\n\
+                ');
+            $("#confirm-quantity").click(function(){
+                Q.locationController[$("#confirm-quantity").attr("func")]({quantity:$("#actions-menu-ul li input").first().val(),p:p});
+            });
+            $("#quantity-go-back").click(function(){
+                Q.locationController.changePage({page:Q.locationController.p.lastPage});
+            });
+        },
+        displayList:function(p){
+            var actions = p.actions;
             var cont = this.p.menuCont;
             cont.append('<ul id="actions-menu-ul"></ul>');
             for(var i=0;i<actions.length;i++){
-                $("#actions-menu-ul").append('<li id="ac-'+actions[i]+'" class="btn btn-default" func="create'+actions[i]+'Menu">'+actions[i]+'</li>');
+                $("#actions-menu-ul").append('<li id="ac-'+actions[i][1]+'" class="btn btn-default" num="'+i+'">'+actions[i][0]+'</li>');
             }
-            $("#actions-menu-ul").append('<li id="ac-back" class="btn btn-default" func="createMainMenu">Back</li>');
             $("#actions-menu-ul li").click(function(){
-                Q.locationController[$(this).attr("func")]();
+                Q.locationController.doAction(actions[$(this).attr("num")]);
             });
         },
         createFundraiseMenu:function(){
@@ -371,7 +498,7 @@ Quintus.UIObjects=function(Q){
             var char = Q.state.get("allies").filter(function(obj){
                 return name == obj.name;
             })[0];
-            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:char}));
+            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:{p:char}}));
         },
         removeCharacterMenu:function(){
             this.p.characterMenu.destroy();
@@ -381,6 +508,7 @@ Quintus.UIObjects=function(Q){
             
         }
     });
+    
     
     Q.GameObject.extend("TextModules",{
         getObjPathFromString:function(obj,i){
@@ -1075,7 +1203,7 @@ Quintus.UIObjects=function(Q){
             this.next();
         },
         cycleText:function(){
-            if(!!this.p.script[this.p.groupNum]||!this.p.script[this.p.groupNum][this.p.scriptNum]) return;
+            if(!this.p.script[this.p.groupNum]||!this.p.script[this.p.groupNum][this.p.scriptNum]) return;
             if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length-1){
                 this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
                 this.off("step",this,"cycleText");
