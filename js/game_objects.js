@@ -2954,8 +2954,8 @@ Quintus.GameObjects=function(Q){
                 if(key==="materials") return;
                 gear[key] = data[key];
             });
-            var materialData = this.equipment.Materials[gear.material];
-            var qualityData = this.equipment.Quality[gear.quality];
+            var materialData = this.equipment.Materials[gear.material] || 0;
+            var qualityData = this.equipment.Quality[gear.quality] || 0;
             gear.weight = Math.ceil(gear.weight+materialData[0]);
             gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]);
             if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);

@@ -82,7 +82,7 @@ Quintus.Objects=function(Q){
                         break;
                 }
             } else {
-                this.increaseItem(item,props.amount)
+                this.increaseItem(item,props.amount);
             }
         },
         removeItem:function(type,props){
@@ -94,13 +94,15 @@ Quintus.Objects=function(Q){
         decreaseItem:function(type,itm,amount){
             var item = this.getItem(type,{gear:itm.gear,quality:itm.quality,material:itm.material});
             item.amount -= amount || 1;
-            if(item.amount<=0) this.removeItem(type,{gear:itm.name,quality:itm.quality,material:itm.material});
+            if(item.amount<=0) this.removeItem(type,itm);
         },
         
-        //TO DO once we get to the menus
-        equipItem:function(char,type,from,options){
-            
-            
+        equipItem:function(char,to,gear,material,quality){
+            if(!gear) return;
+            var eq = Q.charGen.convertEquipment([material,gear],quality);
+            char.equipment[to] = eq;
+            this.decreaseItem(eq.kind,{gear:gear,quality:quality,material:material},1);
+            char.combatStats = Q.charGen.getCombatStats(char);
         },
         unequipItem:function(char,from,options){
             if(!char.equipment[from]) return;

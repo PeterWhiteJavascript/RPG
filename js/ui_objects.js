@@ -222,6 +222,7 @@ Quintus.UIObjects=function(Q){
             cont.append(
                 '<ul id="main-menu-ul">\n\
                     <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
+                    <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
                     <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
                 </ul>'
             );
@@ -232,10 +233,18 @@ Quintus.UIObjects=function(Q){
         createEntourageMenu:function(){
             this.emptyConts();
             var cont = this.p.menuCont;
+            /*
             cont.append(
                 '<ul id="entourage-menu-ul">\n\
                     <li id="en-taskforce" class="btn btn-default" func="createTaskforceMenu">Taskforce</li>\n\
                     <li id="en-cash-bonus" class="btn btn-default" func="createCashBonusMenu">Cash Bonus</li>\n\
+                    <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
+                    <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
+                </ul>'
+            );
+             */
+            cont.append(
+                '<ul id="entourage-menu-ul">\n\
                     <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
                     <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
                 </ul>'
@@ -252,9 +261,119 @@ Quintus.UIObjects=function(Q){
             
         },
         createDistributeGearMenu:function(){
+            this.emptyConts();
+            var actions = [];
+            var allies = Q.state.get("allies");
+            allies.forEach(function(ally){
+                actions.push([ally.name,"fillEquipMenu",ally]);
+            });
+            actions.push(["Back","createEntourageMenu"]);
+            this.displayList({actions:actions});
+            var cont = this.p.midCont;
+            cont.append('\n\
+                <div id="equip-menu">\n\
+                    <div id="equip-menu-left"><img></div>\n\
+                    \n\
+                    <div id="equip-menu-mid">\n\
+                        <ul>\n\
+                            <li>Right Hand</li>\n\
+                            <li>Left Hand</li>\n\
+                            <li>Body</li>\n\
+                            <li>Feet</li>\n\
+                            <li>Accessory</li>\n\
+                        </ul>\n\
+                    </div>\n\
+                    <div id="equip-menu-right">\n\
+                        <ul>\n\
+                            <li><select id="equip-right-hand" class="equip-select">'+this.fillHandsSelect(allies[0].equipment.righthand)+'</select></li>\n\
+                            <li><select id="equip-left-hand" class="equip-select">'+this.fillHandsSelect(allies[0].equipment.lefthand)+'</select></li>\n\
+                            <li><select id="equip-armour" class="equip-select">'+this.fillArmourSelect(allies[0].equipment.armour)+'</select></li>\n\
+                            <li><select id="equip-footwear" class="equip-select">'+this.fillFootwearSelect(allies[0].equipment.footwear)+'</select></li>\n\
+                            <li><select id="equip-accessory" class="equip-select">'+this.fillAccessorySelect(allies[0].equipment.accessory)+'</select></li>\n\
+                        </ul>\n\
+                    </div>\n\
+                </div>\n\
+            ');
+            this.fillEquipMenu(allies[0]);
+            //Removes the selected item from the bag, add the item to the character, remove what was equipped and add to bag.
+            $(".equip-select").on("change",function(){
+                var thisID = $(this).attr("id");
+                var char = Q.locationController.p.selectedAlly;
+                if(thisID==="equip-accessory"){
+                    Q.state.get("Bag").unequipItem(char,"accessory","toBag");
+                    Q.state.get("Bag").equipItem(char,"accessory",$(this).find(":selected").attr("name"));
+                } else {
+                    var quality = $(this).find(":selected").attr("quality");
+                    var material = $(this).find(":selected").attr("material");
+                    var name = $(this).find(":selected").attr("name");
+                    if(thisID==="equip-right-hand"){
+                        Q.state.get("Bag").unequipItem(char,"righthand","toBag");
+                        Q.state.get("Bag").equipItem(char,"righthand",name,material,quality);
+                        $("#equip-left-hand").empty();
+                        $("#equip-left-hand").append(Q.locationController.fillHandsSelect(char.equipment.lefthand));
+                        Q.locationController.fillHandsSelect(char.equipment.lefthand);
+                    } else if(thisID==="equip-left-hand"){
+                        Q.state.get("Bag").unequipItem(char,"lefthand","toBag");
+                        Q.state.get("Bag").equipItem(char,"lefthand",name,material,quality);
+                        $("#equip-right-hand").empty();
+                        $("#equip-right-hand").append(Q.locationController.fillHandsSelect(char.equipment.righthand));
+                    } else if(thisID==="equip-armour"){
+                        Q.state.get("Bag").unequipItem(char,"armour","toBag");
+                        Q.state.get("Bag").equipItem(char,"armour",name,material,quality);
+                    } else {
+                        Q.state.get("Bag").unequipItem(char,"footwear","toBag");
+                        Q.state.get("Bag").equipItem(char,"footwear",name,material,quality);
+                    }
+                }
+                Q.locationController.fillEquipMenu(char);
+            });
+        },
+        fillHandsSelect:function(ha){
+            var opts = '<option>None</option>';
+            var eq = Q.state.get("Bag").items.Weapons.concat(Q.state.get("Bag").items.Shields);
+            if(ha) eq.unshift(ha);
+            eq.forEach(function(e){
+                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
+            });
+            return opts;
+        },
+        fillArmourSelect:function(ar){
+            var opts = '<option>None</option>';
+            var eq = Q.state.get("Bag").items.Armour;
+            if(ar) eq.unshift(ar);
+            eq.forEach(function(e){
+                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
+            });
+            return opts;
+        },
+        fillFootwearSelect:function(ft){
+            var opts = '<option>None</option>';
+            var eq = Q.state.get("Bag").items.Footwear;
+            if(ft) eq.unshift(ft);
+            eq.forEach(function(e){
+                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
+            });
+            return opts;
+        },
+        fillAccessorySelect:function(ac){
+            var opts = '<option>None</option>';
+            var eq = Q.state.get("Bag").items.Accessories;
+            if(ac) eq.unshift(ac);
+            eq.forEach(function(e){
+                opts += '<option name="'+e.name+'">'+e.name+'</option>';
+            });
+            return opts;
+        },
+        fillEquipMenu:function(ally){
+            this.p.selectedAlly = ally;
+            $("#equip-menu-left img").attr("src","images/sprites/"+ally.charClass.toLowerCase()+".png");
+            $("#equip-right-hand").val(ally.equipment.righthand ? ally.equipment.righthand.quality+" "+ally.equipment.righthand.material+" "+ally.equipment.righthand.name : "None");
+            $("#equip-left-hand").val(ally.equipment.lefthand ? ally.equipment.lefthand.quality+" "+ally.equipment.lefthand.material+" "+ally.equipment.lefthand.name : "None");
+            $("#equip-armour").val(ally.equipment.armour ? ally.equipment.armour.quality+" "+ally.equipment.armour.material+" "+ally.equipment.armour.name : "None");
+            $("#equip-footwear").val(ally.equipment.footwear ? ally.equipment.footwear.quality+" "+ally.equipment.footwear.material+" "+ally.equipment.footwear.name : "None");
+            $("#equip-accessory").val(ally.equipment.accessory ? ally.equipment.accessory.name : "None");
             
         },
-        
         createBrionyMenu:function(){
             
         },

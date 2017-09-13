@@ -751,7 +751,8 @@ Quintus.HUD=function(Q){
             for(var i=0;i<keys.length;i++){
                 //If the target has equipment here
                 if(eq[keys[i]]&&eq[keys[i]].name){
-                    var text = this.insert(new Q.UI.Text({label:eq[keys[i]].quality+" "+eq[keys[i]].material+" "+eq[keys[i]].name,cx:0,cy:0,x:this.p.w/2,y:this.p.h/3+this.p.h/4+i*(eqTextSize*2),size:eqTextSize,family:"Consolas"}));
+                    var label = eq[keys[i]].quality ? eq[keys[i]].quality+" "+eq[keys[i]].material+" "+eq[keys[i]].name : eq[keys[i]].name;
+                    var text = this.insert(new Q.UI.Text({label:label,cx:0,cy:0,x:this.p.w/2,y:this.p.h/3+this.p.h/4+i*(eqTextSize*2),size:eqTextSize,family:"Consolas"}));
                 } else {
                     this.insert(new Q.UI.Text({label:"-",cx:0,cy:0,x:this.p.w/2,y:this.p.h/3+this.p.h/4+i*(eqTextSize*2),size:eqTextSize,family:"Consolas"}));
                 }

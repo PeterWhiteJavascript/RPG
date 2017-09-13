@@ -110,19 +110,7 @@ Q.newGame=function(options){
         //console.log(legion)
         Q.state.set("allies",[storyAlex/*,astraea,random1,random2*/]);
         //Set up the new game bag
-        Q.state.set("Bag",new Q.Bag({items:{
-            Consumables:[
-                [3,"Potion"]
-            ],
-            Weapons:[
-                [1,"Short Sword","Shoddy","Brass"]
-            ],
-            Shields:[],
-            Armour:[],
-            Footwear:[],
-            Accessories:[],
-            Key:[]
-        }}));
+        Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
         //Set up the applications roster
         //For now, there will be 4 random characters in it
         var freeSpaces = 4;

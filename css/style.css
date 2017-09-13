@@ -161,3 +161,47 @@ pre{
     width:100%;
     height:auto;
 }
+
+#equip-menu{
+    width:100%;
+    height:100%;
+    background:grey;
+    border:5px solid black;
+}
+#equip-menu-left{
+    width:20%;
+    height:100%;
+    float:left;
+}
+#equip-menu-mid{
+    width:30%;
+    height:100%;
+    float:left;
+    font-size:22px;
+}
+#equip-menu-mid ul{
+    height:100%;
+    list-style:none;
+    padding-top:10px;
+}
+#equip-menu-mid ul li{
+    height:20%;
+}
+#equip-menu-right{
+    width:50%;
+    height:100%;
+    float:left;
+    font-size:22px;
+}
+#equip-menu-right ul{
+    height:100%;
+    list-style:none;
+}
+#equip-menu-right ul li{
+    padding:11px;
+    color:black;
+    height:20%;
+}
+#equip-menu-right ul li select{
+    width:100%;    
+}

@@ -8,25 +8,27 @@
         ]
     },
     "inventory":{
-        "consumable":[
+        "Consumables":[
             
         ],
-        "weapon":[
-            ["Shoddy","Brass","Short Sword",1]
+        "Weapons":[
+            [1,"Short Sword","Shoddy","Brass"]
         ],
-        "shield":[
-            
+        "Shields":[
+            [1,"Shield","Quality","Brass"]
         ],
-        "body":[
-            
+        "Armour":[
+            [1,"Breastplate","Quality","Brass"],
+            [1,"Shirt","Quality","Wool"]
         ],
-        "feet":[
-            
+        "Footwear":[
+            [1,"Shoes","Shoddy","Wood"],
+            [1,"Shoes","Average","Wood"]
         ],
-        "accessory":[
-            
+        "Accessories":[
+            [1,"Ruby Ring"]
         ],
-        "key":[
+        "Key":[
             
         ]
     },
