@@ -225,6 +225,7 @@ function convertEquipment(data){
         gears.forEach(function(gear){
             obj.gear[gear] = data[key][gear];
             obj.gear[gear].kind = key;
+            obj.gear[gear].name = gear;
         });
     });
     return obj;

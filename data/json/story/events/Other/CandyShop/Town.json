@@ -6,7 +6,8 @@
     "music": "the_usual.mp3",
     "actions":[
         ["Go to Pub","changePage",{"page":"pub"}],
-        ["Go to Candy Shop","changePage",{"page":"shop"}]
+        ["Go to Candy Shop","changePage",{"page":"shop"}],
+        ["Go to Blacksmith","changePage",{"page":"blacksmith"}]
     ],
     "pub":{
         "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
@@ -37,8 +38,8 @@
                 "displayBuyItemsList",
                 {
                     "list":[
-                        ["Gummy","Gummy","Consumables",100],
-                        ["Hard Candy","Hard Candy","Consumables",100]
+                        ["Gummy","Consumables"],
+                        ["Hard Candy","Consumables"]
                     ]
                 }
             ],
@@ -56,6 +57,38 @@
                     "type":"Other",
                     "scene":"CandyShop",
                     "event":"Alex-arrives-in-town"
+                }
+            ]
+        ]
+    },
+    "blacksmith":{
+        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "music":"the_usual.mp3",
+        "actions":[
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list":[
+                        ["Short Sword","Weapons","Average","Brass"],
+                        ["Spear","Weapons","Average","Bronze"],
+                        ["Shield","Weapons","Average","Bronze"],
+                        ["Ruby Ring","Accessories"]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {
+                    "allow":"equipment"
+                }
+            ],
+            [
+                "Leave",
+                "changePage",
+                {
+                    "page":"start"
                 }
             ]
         ]

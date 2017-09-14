@@ -84,18 +84,25 @@ Quintus.UIObjects=function(Q){
                 var list = p.list;
                 var newList = [];
                 list.forEach(function(itm,i){
-                    switch(itm[2]){
+                    switch(itm[1]){
                         case "Consumables":
-                            newList.push([itm[0],"askBuyQuantity",Q.state.get("items")[itm[1]]]); 
+                            newList.push([itm[0],"askBuyQuantity",{item:Q.state.get("items")[itm[0]],text:itm[0]}]); 
+                            break;
+                        case "Accessories":
+                            newList.push([itm[0],"askBuyQuantity",{item:Q.state.get("equipment").gear[itm[0]],text:itm[0]}]);
+                            break;
+                        default:
+                            //Get the cost based on material and quality
+                            newList.push([itm[2]+" "+itm[3]+" "+itm[0],"askBuyQuantity",{item:Q.charGen.convertEquipment([itm[3],itm[0]],itm[2]),text:itm[2]+" "+itm[3]+" "+itm[0]}]);
                             break;
                     }
                    
                 });
                 this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.lastPage}]])});
             },
-            askBuyQuantity:function(item){
+            askBuyQuantity:function(p){
                 this.emptyConts();
-                this.displayQuantityToggle({titleText:"Buy how many "+item.name,confirmText:"Confirm Buy",confirmFunc:"askBuy",item:item});
+                this.displayQuantityToggle({titleText:"Buy how many "+p.text+"? They cost "+p.item.cost+" each. You have "+Q.state.get("saveData").money+" money.",confirmText:"Confirm Buy",confirmFunc:"askBuy",item:p.item,text:p.text});
             },
             askBuy:function(props){
                 this.emptyConts();
@@ -103,8 +110,8 @@ Quintus.UIObjects=function(Q){
                 var money = Q.state.get("saveData").money;
                 var quantity = parseInt(props.quantity);
                 if(money>=quantity*props.p.item.cost){
-                    $(".mid-cont").text("Purchase "+props.p.item.name+" for "+quantity*props.p.item.cost+" money?"+" You have "+money+" money.");
-                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item}],["Back","changePage",{page:this.p.currentPage}]]});
+                    $(".mid-cont").text("Purchase "+quantity+" "+props.p.text+" for "+(quantity*props.p.item.cost)+" money?"+" You have "+money+" money.");
+                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item,text:props.p.text}],["Back","changePage",{page:this.p.currentPage}]]});
                 } else {
                     $(".mid-cont").append("You don't have enough money!");
                     this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
@@ -112,45 +119,51 @@ Quintus.UIObjects=function(Q){
             },
             buyItem:function(p){
                 this.emptyConts();
-                Q.state.get("Bag").addItem(p.item.kind,{amount:1,gear:p.item.name});
+                Q.state.get("Bag").addItem(p.item.kind,{amount:1,gear:p.item.name,material:p.item.material,quality:p.item.quality});
                 Q.state.get("saveData").money -= p.quantity*p.item.cost;
-                $(".mid-cont").text("You purchased the "+p.item.name+" for "+p.quantity*p.item.cost+" money.");
+                $(".mid-cont").text("You purchased the "+p.text+" for "+(p.quantity*p.item.cost)+" money.");
                 this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
             },
             displaySellItemsList:function(p){
                 this.emptyConts();
-                var list;
+                var list = [];
+                var bag = Q.state.get("Bag");
                 switch(p.allow){
                     case "all":
-                        list = Q.state.get("Bag");
+                        var keys = Object.keys(bag.items);
+                        keys.forEach(function(k){
+                            list.concat(bag.items[k]);
+                        });
                         break;
                     case "items":
-                        list = Q.state.get("Bag").items.Consumables;
+                        list = bag.items.Consumables;
                         break;
                     case "equipment":
-                        
+                        list = bag.items.Weapons.concat(bag.items.Shields.concat(bag.items.Armour.concat(bag.items.Footwear.concat(bag.items.Accessories))));
                         break;
                 }
                 var newList = [];
                 list.forEach(function(itm){
-                    newList.push([itm.name,"askSellQuantity",itm]);
+                    var text = itm.quality ? itm.quality+" "+itm.material+" "+itm.name : itm.name;
+                    newList.push([text,"askSellQuantity",{item:itm,text:text}]);
                 });
                 this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.currentPage}]])});
             },
-            askSellQuantity:function(item){
+            askSellQuantity:function(p){
                 this.emptyConts();
-                this.displayQuantityToggle({titleText:"Sell how many "+item.name,confirmText:"Confirm Sell",confirmFunc:"askSell",item:item});
+                this.displayQuantityToggle({titleText:"Sell how many "+p.text+" for "+Math.floor(p.item.cost/2)+" each.",confirmText:"Confirm Sell",confirmFunc:"askSell",item:p.item,text:p.text});
             },
             askSell:function(props){
                 this.emptyConts();
                 var quantity = parseInt(props.quantity);
-                $(".mid-cont").text("Sell "+quantity+" "+props.p.item.name+" for "+quantity*props.p.item.cost/2+"?");
+                console.log(props)
+                $(".mid-cont").text("Sell "+quantity+" "+props.p.text+" for "+Math.floor(quantity*props.p.item.cost/2)+"?");
                 this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back","changePage",{page:this.p.currentPage}]]});
             },
             sellItems:function(p){
                 this.emptyConts();
-                Q.state.get("Bag").decreaseItem(p.item.kind,{gear:p.item.name},p.quantity);
-                Q.state.get("saveData").money += p.item.cost*p.quantity/2;
+                Q.state.get("Bag").decreaseItem(p.item.kind,{gear:p.item.name,material:p.item.material,quality:p.item.quality},p.quantity);
+                Q.state.get("saveData").money += Math.floor(p.item.cost*p.quantity/2);
                 this.changePage({page:this.p.currentPage});
             }
         }
@@ -386,7 +399,7 @@ Quintus.UIObjects=function(Q){
             var cont = this.p.menuCont;
             cont.append('<div>'+p.titleText+'</div><ul id="actions-menu-ul"></ul>');
             $("#actions-menu-ul").append('\n\
-                <li><input type="number" min=1 max='+p.item.amount+' class="menu-input" value=1></li>\n\
+                <li><input type="number" min=1 max='+(p.item.amount || 99)+' class="menu-input" value=1></li>\n\
                 <li id="confirm-quantity" class="btn btn-default" func="'+p.confirmFunc+'">'+p.confirmText+'</li>\n\
                 <li id="quantity-go-back" class="btn btn-default">Back</li>\n\
                 ');

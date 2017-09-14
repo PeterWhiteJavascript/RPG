@@ -1022,7 +1022,8 @@ Quintus.GameObjects=function(Q){
                 if(!char) return;
                 char.exp = ally.p.exp;
                 char.level = ally.p.level;
-                char.combatStats.hp = ally.p.combatStats.hp;
+                //TEMP for now set hp to 1 after battle if dead.
+                char.combatStats.hp = ally.p.combatStats.hp || 1;
                 char.combatStats.tp = ally.p.combatStats.tp;
                 if(ally.hasStatus("dead")){
                     char.wounded = 5;
@@ -2956,8 +2957,8 @@ Quintus.GameObjects=function(Q){
             });
             var materialData = this.equipment.Materials[gear.material] || 0;
             var qualityData = this.equipment.Quality[gear.quality] || 0;
-            gear.weight = Math.ceil(gear.weight+materialData[0]);
-            gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]);
+            gear.weight = Math.ceil(gear.weight+materialData[0]) || gear.weight;
+            gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]) || gear.cost;
             if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
             if(gear.wield) gear.wield = Math.ceil(gear.wield*qualityData[0]);
             if(gear.mindmg) gear.mindmg = Math.ceil(gear.mindmg*materialData[1]);

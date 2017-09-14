@@ -114,7 +114,7 @@ pre{
     border-color: black;
     border-image: initial;
     text-align:center;
-    font-size:40px;
+    font-size:1vw;
 }
 .mid-cont{
     position:absolute;
@@ -124,6 +124,7 @@ pre{
     width:50%;
     height:50%;
     color:white;
+    font-size:1vw;
 }
 .left-cont{
     position:absolute;
@@ -203,5 +204,5 @@ pre{
     height:20%;
 }
 #equip-menu-right ul li select{
-    width:100%;    
+    width:100%;   
 }

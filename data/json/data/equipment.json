@@ -243,7 +243,7 @@
             "materials":["None"],
             "weight":0.5,
             "effect":"Immune to blind.",
-            "cost":20
+            "cost":2000
         }
     },
     "Materials":{
