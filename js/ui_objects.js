@@ -92,8 +92,9 @@ Quintus.UIObjects=function(Q){
                             newList.push([itm[0],"askBuyQuantity",{item:Q.state.get("equipment").gear[itm[0]],text:itm[0]}]);
                             break;
                         default:
+                            var item = Q.charGen.convertEquipment([itm[3],itm[0]],itm[2]);
                             //Get the cost based on material and quality
-                            newList.push([itm[2]+" "+itm[3]+" "+itm[0],"askBuyQuantity",{item:Q.charGen.convertEquipment([itm[3],itm[0]],itm[2]),text:itm[2]+" "+itm[3]+" "+itm[0]}]);
+                            newList.push([itm[2]+" "+itm[3]+" "+itm[0]+"   "+item.cost,"askBuyQuantity",{item:item,text:itm[2]+" "+itm[3]+" "+itm[0]}]);
                             break;
                     }
                    
@@ -1237,6 +1238,7 @@ Quintus.UIObjects=function(Q){
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
                 if(!char) return;
                 char.tempStatChange[obj.stat] += obj.val;
+                char.eachTempStatChange.push(obj);
             },
             equipItem:function(t,obj){
                 var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
@@ -1245,25 +1247,31 @@ Quintus.UIObjects=function(Q){
                     return;
                 }
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
-                console.log(char)
                 if(!char) return;
-                //TO DO: Run the equipment through a function that unequips what is there and adds it to the bag
                 switch(obj.eqType){
                     case "Weapons":
                     case "Shields":
+                        Q.state.get("Bag").unequipItem(char,"righthand","toBag");
                         char.equipment.righthand = eq;
                         break;
                     case "Armour":
+                        Q.state.get("Bag").unequipItem(char,"armour","toBag");
                         char.equipment.armour = eq;
                         break;
                     case "Footwear":
+                        Q.state.get("Bag").unequipItem(char,"footwear","toBag");
                         char.equipment.footwear = eq;
                     break;
                     case "Accesories":
+                        Q.state.get("Bag").unequipItem(char,"accessory","toBag");
                         char.equipment.accessory = eq;
                         break;
                 }
+                var hp = char.combatStats.hp;
+                var tp = char.combatStats.tp;
                 char.combatStats = Q.charGen.getCombatStats(char);
+                char.combatStats.hp = hp;
+                char.combatStats.tp = tp;
             },
             unequipItem:function(t,obj){
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];

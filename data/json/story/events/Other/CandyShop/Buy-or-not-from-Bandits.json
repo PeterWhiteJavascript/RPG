@@ -67,8 +67,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Don't Buy",
@@ -99,8 +99,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Select Item",
@@ -118,7 +118,7 @@
                 {
                     "displayText": "No",
                     "desc": "",
-                    "page": "Buy",
+                    "page": "Start",
                     "disabled": "Enabled",
                     "groups": []
                 }

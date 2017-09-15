@@ -6,6 +6,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -52,6 +53,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -96,6 +98,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Excellent",
@@ -140,6 +143,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -184,6 +188,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -228,6 +233,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -272,6 +278,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -316,6 +323,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -360,6 +368,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -404,6 +413,7 @@
             "levelmin": 50,
             "levelmax": 50,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Default",
@@ -450,6 +460,7 @@
             "levelmin": 3,
             "levelmax": 3,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Random Medium",
@@ -494,6 +505,7 @@
             "levelmin": 2,
             "levelmax": 3,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Random Medium",
@@ -540,6 +552,7 @@
             "levelmin": 5,
             "levelmax": 5,
             "gender": "Male",
+            "team": "Enemy",
             "equipment": {
                 "righthand": [
                     "Quality",

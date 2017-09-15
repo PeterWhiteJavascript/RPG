@@ -1418,7 +1418,11 @@ Quintus.GameObjects=function(Q){
                 if(obj.p.exp>=100){
                     leveledUp = true;
                     obj.p.baseStats = Q.charGen.levelUp(Q.charGen.order[Q.charGen.getStatTo(obj.p.level-1)],obj.p.baseStats,obj.p.primaryStat,obj.p.secondaryStat);
+                    var hp = obj.p.combatStats.hp;
+                    var tp = obj.p.combatStats.tp;
                     obj.p.combatStats = Q.charGen.getCombatStats(obj.p);
+                    obj.p.combatStats.hp = hp;
+                    obj.p.combatStats.tp = tp;
                     obj.p.level++;
                     obj.p.exp-=100;
                 }
@@ -2720,7 +2724,8 @@ Quintus.GameObjects=function(Q){
                     "enr":0,
                     "skl":0,
                     "eff":0
-                }
+                },
+                "eachTempStatChange":[]
             };
             var act = "Act-"+Q.state.get("saveData").act;
             switch(type){
@@ -2780,7 +2785,8 @@ Quintus.GameObjects=function(Q){
                     char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
                     char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
                     char.combatStats = this.getCombatStats(char);
-                    
+                    char.combatStats.hp = char.combatStats.maxHp;
+                    char.combatStats.tp = char.combatStats.maxTp;
                     char.exp = data.exp || 0;
                     char.loyalty = data.loyalty || 50;
                     char.morale = data.morale || 50;
@@ -2813,6 +2819,8 @@ Quintus.GameObjects=function(Q){
                     char.secondaryStat = data.secondaryStat;
                     
                     char.combatStats = this.getCombatStats(char);
+                    char.combatStats.hp = char.combatStats.maxHp;
+                    char.combatStats.tp = char.combatStats.maxTp;
                     char.uniqueId = 0;
                 break;
                 //This is done when generating an officer from the officers.json. Only do this for new officers.
@@ -2856,6 +2864,8 @@ Quintus.GameObjects=function(Q){
                     char.personality = data.personality;
                     
                     char.combatStats = this.getCombatStats(char);
+                    char.combatStats.hp = data.hp || char.combatStats.maxHp;
+                    char.combatStats.tp = data.maxTp || char.combatStats.maxTp;
                     break;
                 //The data will include a reference to the actual character properties that are in the character's file.
                 case "battleChar":
@@ -2888,6 +2898,8 @@ Quintus.GameObjects=function(Q){
                     char.name = data.name.length ? data.name : this.generateName(char.natNum,char.gender);
                     
                     char.combatStats = this.getCombatStats(char);
+                    char.combatStats.hp = char.combatStats.maxHp;
+                    char.combatStats.tp = char.combatStats.maxTp;
                     break;
                 //Creates a simple character sprite used in battle scenes.
                 //Doesn't generate combat 
@@ -3231,9 +3243,6 @@ Quintus.GameObjects=function(Q){
             char.combatStats.atkSpeed = this.get_atkSpeed(char);
             
             char.combatStats.moveSpeed = this.get_moveSpeed(char);
-            
-            char.combatStats.hp = char.combatStats.maxHp;
-            char.combatStats.tp = char.combatStats.maxTp;
             return char.combatStats;
         },
         get_maxHp:function(p){
@@ -3340,7 +3349,8 @@ Quintus.GameObjects=function(Q){
             var encPenalty = p.talents.includes("Armoured March")?0:p.combatStats.encumbrancePenalty,
                 charGroup = p.charGroup;
             var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
-            return m + Math.floor(encPenalty/10);
+            var shoes = this.getEquipmentProp("move",p.equipment.footwear);
+            return m + Math.floor(encPenalty/10) + shoes;
         },
         get_encumbranceThreshold:function(p){
             var str = p.combatStats.strength, charGroup = p.charGroup;

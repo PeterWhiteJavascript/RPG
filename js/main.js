@@ -66,7 +66,7 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
 //The default values will be overridden by data coming from the save file.
 Q.state.set({
     options:{
-        "musicEnabled":false,
+        "musicEnabled":true,
         "musicVolume":20,
         "soundEnabled":true,
         "soundVolume":100,

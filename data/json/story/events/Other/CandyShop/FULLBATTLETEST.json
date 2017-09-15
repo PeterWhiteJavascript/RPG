@@ -1,0 +1,113 @@
+{
+    "name": "FULLBATTLETEST",
+    "desc": "All char classes fight.",
+    "kind": "battle",
+    "map": "fun-stuff.tmx",
+    "music":"battle.mp3",
+    "placementSquares":[[14,10]],
+    "maxAllies":1,
+    "events":[
+        
+    ],
+    "characters": [
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                9
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                10
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Vanguard",
+            "uniqueId": 0,
+            "loc": [
+                12,
+                11
+            ],
+            "dir": "right"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Archer",
+            "uniqueId": 0,
+            "loc": [
+                13,
+                12
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Skirmisher",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                12
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Assassin",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                12
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Elementalist",
+            "uniqueId": 0,
+            "loc": [
+                16,
+                9
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Healer",
+            "uniqueId": 0,
+            "loc": [
+                16,
+                10
+            ],
+            "dir": "left"
+        },
+        {
+            "file": "Proto.json",
+            "group": "Low",
+            "handle": "Illusionist",
+            "uniqueId": 0,
+            "loc": [
+                16,
+                11
+            ],
+            "dir": "left"
+        }
+    ]
+}

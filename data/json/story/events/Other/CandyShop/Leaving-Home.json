@@ -145,7 +145,7 @@
                                     {
                                         "stat": "str",
                                         "char": "Alex",
-                                        "val": "3",
+                                        "val": "10",
                                         "turns": "1"
                                     }
                                 ],
@@ -154,7 +154,7 @@
                                     {
                                         "stat": "end",
                                         "char": "Alex",
-                                        "val": "3",
+                                        "val": "10",
                                         "turns": "1"
                                     }
                                 ],
@@ -163,7 +163,7 @@
                                     {
                                         "stat": "dex",
                                         "char": "Alex",
-                                        "val": "3",
+                                        "val": "10",
                                         "turns": "1"
                                     }
                                 ]
@@ -218,7 +218,7 @@
                     ]
                 }
             ],
-            "modules": [],
+            "modules": {},
             "modulesVars": {
                 "gotDressed": [
                     {
@@ -292,7 +292,7 @@
                 }
             ],
             "onload": [],
-            "modules": [],
+            "modules": {},
             "modulesVars": {
                 "wearingPajamas": [
                     {
@@ -341,8 +341,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         }
     ],
     "vrs": {

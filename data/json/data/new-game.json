@@ -30,7 +30,7 @@
             
         ]
     },
-    "money":200,
+    "money":1000,
     "week":1,
         
     "influence":{
@@ -50,7 +50,7 @@
     },
     "startSceneName":"CandyShop",
     "startSceneType":"Other",
-    "startEventName":"Town",
+    "startEventName":"House",
     
     "act":"1-1",
     "applicationsRoster":[]
