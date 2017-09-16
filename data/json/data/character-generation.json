@@ -9,9 +9,14 @@
     "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
     "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
     "primaryStats":["wsk","str","end","dex","rfl","ini","eff","skl","enr"],
-    "secondaryStats":["str","end","wsk","ini","dex","rfl","enr","eff","skl"],
-    "order":["primary","secondary","primary","secondary","primary"],
-    "autoChance":["primary","primary","secondary","primary"],
+    "primaryCoords":[[2,0],[1,0],[0,0],[1,1],[2,1],[0,1],[2,1],[2,0],[2,2]],
+    "levelUpMultiplier":[[0,-1],[1,0],[0,1],[-1,0],[-1,-1],[1,-1],[1,1],[-1,1]],
+    "levelUpGraph":[
+        ["end","str","wsk"],
+        ["ini","dex","rfl"],
+        ["skl","eff","enr"]
+    ],
+    
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{

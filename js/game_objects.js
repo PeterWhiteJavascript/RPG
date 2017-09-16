@@ -1417,7 +1417,7 @@ Quintus.GameObjects=function(Q){
                 //Level up the character if they are at or over 100
                 if(obj.p.exp>=100){
                     leveledUp = true;
-                    obj.p.baseStats = Q.charGen.levelUp(Q.charGen.order[Q.charGen.getStatTo(obj.p.level-1)],obj.p.baseStats,obj.p.primaryStat,obj.p.secondaryStat);
+                    obj.p.baseStats = Q.charGen.levelUp(obj.p.baseStats,obj.p.primaryStat,obj.p.lean);
                     var hp = obj.p.combatStats.hp;
                     var tp = obj.p.combatStats.tp;
                     obj.p.combatStats = Q.charGen.getCombatStats(obj.p);
@@ -2702,9 +2702,9 @@ Quintus.GameObjects=function(Q){
             this.statTexts = data.statTexts;
             this.statNames = data.statNames;
             this.primaryStats = data.primaryStats;
-            this.secondaryStats = data.secondaryStats;
-            this.order = data.order;
-            this.autoChance = data.autoChance;
+            this.primaryCoordinates = data.primaryCoords;
+            this.levelUpGraph = data.levelUpGraph;
+            this.levelUpMultiplier = data.levelUpMultiplier;
             
             this.equipment = Q.state.get("equipment");
             this.qualityKeys = Object.keys(this.equipment.Quality);
@@ -2753,7 +2753,7 @@ Quintus.GameObjects=function(Q){
                     char.charGroup = this.generateCharGroup(char.classNum);
                     
                     char.primaryStat = this.primaryStats[char.classNum];
-                    char.secondaryStat = this.secondaryStats[char.classNum];
+                    char.primaryCoordinate = this.primaryCoordinates[char.classNum];
                     //Generate random values for the roster. At the moment it's the same as enemy generation
                     char.equipment = this.getEquipment(
                         {
@@ -2781,7 +2781,8 @@ Quintus.GameObjects=function(Q){
                         },char.classNum,char.natNum,char.level);
                     char.techniques = this.getTechniques(data.techniques) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
                     char.talents = this.getTalents(char.charClass,char.charGroup);
-                    char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.secondaryStat,char.level);//Requires level, primary, and secondary
+                    char.lean = [this.getStatLean(),this.getStatLean()];
+                    char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.level,char.lean);
                     char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
                     char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
                     char.combatStats = this.getCombatStats(char);
@@ -2816,7 +2817,8 @@ Quintus.GameObjects=function(Q){
                     
                     char.exp = data.exp;
                     char.primaryStat = data.primaryStat;
-                    char.secondaryStat = data.secondaryStat;
+                    char.primaryCoordinate = this.primaryCoordinates[char.classNum];
+                    char.lean = data.lean;
                     
                     char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;
@@ -2858,7 +2860,9 @@ Quintus.GameObjects=function(Q){
                     char.methodology = data.methodology;
                     char.exp = data.exp;
                     char.primaryStat = data.primaryStat;
-                    char.secondaryStat = data.secondaryStat;
+                    char.primaryCoordinate = this.primaryCoordinates[char.classNum];
+                    char.lean = data.lean;
+                    
                     char.loyalty = data.loyalty;
                     char.morale = data.morale;
                     char.personality = data.personality;
@@ -2887,12 +2891,13 @@ Quintus.GameObjects=function(Q){
                     char.charGroup = this.generateCharGroup(char.classNum);
                     
                     char.primaryStat = this.primaryStats[char.classNum];
-                    char.secondaryStat = this.secondaryStats[char.classNum];
+                    char.primaryCoordinate = this.primaryCoordinates[char.classNum];
+                    char.lean = [this.getStatLean(),this.getStatLean()];
                     
                     char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
                     char.techniques = this.getTechniques(this.setLevelTechniques(data.techniques,char.level));//Techniques are always filled out and are not random for enemies.
                     char.talents = this.getTalents(char.charClass,char.charGroup);
-                    char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.secondaryStat);
+                    char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.primaryCoordinate,char.lean);
                     
                     char.gender = data.gender==="Random"?this.generateGender(char.charClass,char.natNum):data.gender;//Requires charClass and natNum
                     char.name = data.name.length ? data.name : this.generateName(char.natNum,char.gender);
@@ -2908,6 +2913,23 @@ Quintus.GameObjects=function(Q){
                     break;
             }
             return char;
+        },
+        //Generates four random numbers that all add up to 100
+        getStatLean:function(){
+            //Force at least 1 percent chance for each stat
+            var lean = [1,1,1,1];
+            //Start at 96 since 4 is already taken.
+            var num = 96;
+            //The skew is how far apart the numbers will probably be. Higher skew = higher chance of very big/very small numbers.
+            var skew = 15;
+            //Generate some pretty decent random numbers
+            while(num>0){
+                var rand = Math.ceil(Math.random()*skew);
+                if(rand>num) rand = num;
+                lean[Math.floor(Math.random()*4)] += rand;
+                num -= rand;
+            }
+            return lean;
         },
         equipQuality:function(val,level){
             var qualities = Q.state.get("defaultEquipment").quality;
@@ -3039,42 +3061,38 @@ Quintus.GameObjects=function(Q){
             }
             return techniques;
         },
-        enemyBaseStats:function(val,level,primary,secondary){
+        enemyBaseStats:function(val,level,primary,primaryCoordinate,lean){
             if(Q._isArray(val)){
                 switch(val[0]){
                     case "Random":
                         switch(val[1]){
                             case "Low":
-                                return this.statsToLevel(this.generateBaseStats(10,5),primary,secondary,level);
+                                return this.statsToLevel(this.generateBaseStats(10,5),primary,primaryCoordinate,level,lean);
                             case "Medium":
-                                return this.statsToLevel(this.generateBaseStats(12,5),primary,secondary,level);
+                                return this.statsToLevel(this.generateBaseStats(12,5),primary,primaryCoordinate,level,lean);
                             case "High":
-                                return this.statsToLevel(this.generateBaseStats(15,5),primary,secondary,level);
+                                return this.statsToLevel(this.generateBaseStats(15,5),primary,primaryCoordinate,level,lean);
                             case "Maxed":
-                                return this.statsToLevel(this.generateBaseStats(20,0),primary,secondary,level);
+                                return this.statsToLevel(this.generateBaseStats(20,0),primary,primaryCoordinate,level,lean);
                         }
                         break;
                     case "Specialized":
                         switch(val[1]){
                             case "Low":
-                                var stats = this.statsToLevel(this.generateBaseStats(10,5),primary,secondary,level);
+                                var stats = this.statsToLevel(this.generateBaseStats(10,5),primary,primaryCoordinate,level,lean);
                                 stats[primary]+=5;
-                                stats[secondary]+=3;
                                 return stats;
                             case "Medium":
-                                var stats = this.statsToLevel(this.generateBaseStats(12,5),primary,secondary,level);
+                                var stats = this.statsToLevel(this.generateBaseStats(12,5),primary,primaryCoordinate,level,lean);
                                 stats[primary]+=5;
-                                stats[secondary]+=3;
                                 return stats;
                             case "High":
-                                var stats = this.statsToLevel(this.generateBaseStats(15,5),primary,secondary,level);
+                                var stats = this.statsToLevel(this.generateBaseStats(15,5),primary,primaryCoordinate,level,lean);
                                 stats[primary]+=5;
-                                stats[secondary]+=3;
                                 return stats;
                             case "Maxed":
-                                var stats = this.statsToLevel(this.generateBaseStats(20,0),primary,secondary,level);
+                                var stats = this.statsToLevel(this.generateBaseStats(20,0),primary,primaryCoordinate,level,lean);
                                 stats[primary]+=5;
-                                stats[secondary]+=3;
                                 return stats;
                         }
                         break;
@@ -3137,32 +3155,37 @@ Quintus.GameObjects=function(Q){
             else charName+=this.nameParts[natNum][gender][Math.floor(Math.random()*this.nameParts[natNum][gender].length)];
             return charName.charAt(0).toUpperCase() + charName.slice(1);
         },
-        getStatTo:function(level){
-            return level%this.order.length;
-        },
-        levelUp:function(statTo,stats,primary,secondary){
-            switch(statTo){
-                case "primary":
-                    stats[primary]+=1;
-                    break;
-                case "secondary":
-                    stats[secondary]+=1;
-                    break;
-                case "random":
-                    stats[this.statNames[Math.floor(Math.random()*this.statNames.length)]]+=1;
-                    break;
-                case "auto":
-                    stats = this.levelUp(this.autoChance[Math.floor(Math.random()*this.autoChance.length)],stats,primary,secondary);
-                    break;
+        levelUp:function(stats,primary,primaryCoordinate,lean){
+            function inBounds(num){
+                return num>2 ? 0 : num<0 ? 2 : num;
+            };
+            stats[primary] += 2;
+            var center = primaryCoordinate;
+            var graph = this.levelUpGraph;
+            var mult = this.levelUpMultiplier;
+            //Get 3 unique secondary stats.
+            var secStats = [];
+            for(var i=0;i<3;i++){
+                var secStat;
+                do{
+                    var secondary = this.getIdx(lean[0],this.rand());
+                    var secPos = [inBounds(center[0]+mult[secondary][0]),inBounds(center[1]+mult[secondary][1])];
+                    secStat = graph[secPos[1]][secPos[0]];
+                } while(secStats.indexOf(secStat)!==-1);
+                secStats.push(secStat);
+                stats[secStat]++;
             }
+            //Get 1 tertiary stat.
+            var tertiary = this.getIdx(lean[1],this.rand());
+            var terPos = [inBounds(center[0]+mult[tertiary+4][0]),inBounds(center[1]+mult[tertiary+4][1])];
+            var terStat = graph[terPos[1]][terPos[0]];
+            stats[terStat]++;
             return stats;
         },
-        statsToLevel:function(stats,primary,secondary,level){
+        statsToLevel:function(stats,primary,primaryCoordinate,level,lean){
             stats[primary]+=5;
-            stats[secondary]+=3;
             for(var idx=0;idx<level;idx++){
-                var num = this.getStatTo(idx);
-                stats = this.levelUp(this.order[num],stats,primary,secondary);
+                stats = this.levelUp(stats,primary,primaryCoordinate,lean);
             }  
             return stats;
         },

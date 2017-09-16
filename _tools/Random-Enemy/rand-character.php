@@ -16,7 +16,7 @@
         <select id="chapters"></select>
         <button onclick="cont.generateCharacter()">Generate New Character</button>
         <button onclick="cont.deleteCharacter()">Delete Top Character</button>
-        <button onclick="cont.goToEditor()">Adjust Values</button>
+        <!--<button onclick="cont.goToEditor()">Adjust Values</button>-->
         <table id="charTable">
             <tr>
                 <th>LV UP</th>
@@ -27,7 +27,6 @@
                 <th>Gender</th>
                 <th>Value</th>
                 <th>Method</th>
-                <th>Personality</th>
                 <th>STR</th>
                 <th>END</th>
                 <th>DEX</th>
@@ -60,10 +59,9 @@
                     var statTexts = data.statTexts;
                     var statNames = data.statNames;
                     var primaryStats = data.primaryStats;
-                    var secondaryStats = data.secondaryStats;
-                    var order = data.order;
-                    var autoChance = data.autoChance;
-                    
+                    var primaryCoordinates = data.primaryCoords;
+                    var levelUpGraph = data.levelUpGraph;
+                    var levelUpMultiplier = data.levelUpMultiplier;
                     
                     //Returns the index of an array based off of a random number
                     cont.getIdx = function(group,num){
@@ -78,42 +76,65 @@
                     cont.deleteCharacter = function(){
                         document.getElementById("charTable").deleteRow(1);
                     };
-                    cont.levelUp = function(statTo,stats,primary,secondary){
-                        switch(statTo){
-                            case "primary":
-                                stats[primary]+=1;
-                                break;
-                            case "secondary":
-                                stats[secondary]+=1;
-                                break;
-                            case "random":
-                                stats[statNames[Math.floor(Math.random()*statNames.length)]]+=1;
-                                break;
-                            case "auto":
-                                stats = cont.levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary,secondary);
-                                break;
+                    cont.levelUp = function(stats,primary,primaryCoordinate,lean){
+                        function inBounds(num){
+                            return num>2 ? 0 : num<0 ? 2 : num;
+                        };
+                        stats[primary] += 2;
+                        var center = primaryCoordinate;
+                        var graph = levelUpGraph;
+                        var mult = levelUpMultiplier;
+                        //Get 3 unique secondary stats.
+                        var secStats = [];
+                        for(var i=0;i<3;i++){
+                            var secStat;
+                            do{
+                                var secondary = this.getIdx(lean[0],this.rand());
+                                var secPos = [inBounds(center[0]+mult[secondary][0]),inBounds(center[1]+mult[secondary][1])];
+                                secStat = graph[secPos[1]][secPos[0]];
+                            } while(secStats.indexOf(secStat)!==-1);
+                            secStats.push(secStat);
+                            stats[secStat]++;
                         }
+                        //Get 1 tertiary stat.
+                        var tertiary = this.getIdx(lean[1],this.rand());
+                        var terPos = [inBounds(center[0]+mult[tertiary+4][0]),inBounds(center[1]+mult[tertiary+4][1])];
+                        var terStat = graph[terPos[1]][terPos[0]];
+                        stats[terStat]++;
                         return stats;
                     };
-                    cont.getStats = function(level,classNum){
+                    cont.getStats = function(level,classNum,primaryCoordinate,lean){
                         var stats = {};
                         //Set all starting stats
                         statNames.forEach(function(st){
                             stats[st] = Math.floor(Math.random()*10)+10;
                         });
                         var primary = primaryStats[classNum];
-                        var secondary = secondaryStats[classNum];
                         stats[primary]+=5;
-                        stats[secondary]+=3;
 
                         for(var idx=0;idx<level;idx++){
-                            var num = idx%order.length;
-                            stats = cont.levelUp(order[num],stats,primary,secondary);
+                            stats = cont.levelUp(stats,primary,primaryCoordinate,lean);
                         }
                         return stats;
                     };
                     cont.rand = function(){
                         return Math.ceil(Math.random()*100);
+                    };
+                    cont.getStatLean = function(){
+                        //Force at least 1 percent chance for each stat
+                        var lean = [1,1,1,1];
+                        //Start at 96 since 4 is already taken.
+                        var num = 96;
+                        //The skew is how far apart the numbers will probably be. Higher skew = higher chance of very big/very small numbers.
+                        var skew = 15;
+                        //Generate some pretty decent random numbers
+                        while(num>0){
+                            var rand = Math.ceil(Math.random()*skew);
+                            if(rand>num) rand = num;
+                            lean[Math.floor(Math.random()*4)] += rand;
+                            num -= rand;
+                        }
+                        return lean;
                     };
                     cont.generateCharacter = function(){
                         var chapter = document.getElementById("chapters").value;
@@ -139,6 +160,9 @@
 
                         var randPersonalityText = personalities.muchValues[Math.floor(Math.random()*personalities.muchValues.length)];
                         var randPersonality = personalities.traits[traitsKeys[Math.floor(Math.random()*traitsKeys.length)]];
+                        var primaryCoordinate = primaryCoordinates[classNum];
+                        var lean = [cont.getStatLean(),cont.getStatLean()];
+                        console.log(lean)
                         var char =  {
                             name:charName,
                             level:charLevel,
@@ -148,7 +172,9 @@
                             value:charValue,
                             method:charMethod,
                             personality:randPersonalityText+" "+randPersonality.name,
-                            stats:cont.getStats(charLevel,classNum),
+                            stats:cont.getStats(charLevel,classNum,primaryCoordinate,lean),
+                            lean:lean,
+                            primaryCoordinate:primaryCoordinate,
 
                             classNum:classNum
                         };
@@ -168,19 +194,16 @@
                         var gender = row.insertCell(5);
                         var value = row.insertCell(6);
                         var method = row.insertCell(7);
-                        var personality = row.insertCell(8);
-
                         var lvUpButton = document.createElement("button");
                         lvUpButton.className = "lvUp";
                         lvUpButton.innerHTML = "UP";
                         lvUpButton.onclick = function() {
                             var primary = primaryStats[char.classNum];
-                            var secondary = secondaryStats[char.classNum];
-                            cont.levelUp(order[char.level%order.length],char.stats,primary,secondary);
+                            cont.levelUp(char.stats,primary,char.primaryCoordinate,char.lean);
                             char.level++;
                             level.innerHTML = char.level;
                             statNames.forEach(function(st,i){
-                                row.cells[9+i].innerHTML = char.stats[st];
+                                row.cells[8+i].innerHTML = char.stats[st];
                             });
                         };
                         lvUp.appendChild(lvUpButton);
@@ -192,9 +215,8 @@
                         gender.innerHTML = char.gender;
                         value.innerHTML = char.value;
                         method.innerHTML = char.method;
-                        personality.innerHTML = char.personality;
                         statNames.forEach(function(st,i){
-                            row.insertCell(9+i).innerHTML = char.stats[st];
+                            row.insertCell(8+i).innerHTML = char.stats[st];
                         });
                         cont.characters.push(char);
                     };
