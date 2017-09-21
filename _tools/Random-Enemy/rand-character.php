@@ -80,7 +80,7 @@
                         function inBounds(num){
                             return num>2 ? 0 : num<0 ? 2 : num;
                         };
-                        stats[primary] += 2;
+                        stats[primary] += 1;
                         var center = primaryCoordinate;
                         var graph = levelUpGraph;
                         var mult = levelUpMultiplier;
@@ -95,6 +95,7 @@
                             } while(secStats.indexOf(secStat)!==-1);
                             secStats.push(secStat);
                             stats[secStat]++;
+                            
                         }
                         //Get 1 tertiary stat.
                         var tertiary = this.getIdx(lean[1],this.rand());
@@ -141,7 +142,7 @@
                         var charLevel = scenes[chapter].startLevel+cont.getIdx(scenes[chapter].spread,cont.rand());
                         var natNum = cont.getIdx(scenes[chapter].natSpread,cont.rand());
                         var charNat = natKeys[natNum];
-                        var classNum = cont.getIdx(natClasses[charNat].classSpread,cont.rand());
+                        var classNum =0// cont.getIdx(natClasses[charNat].classSpread,cont.rand());
                         var charClass = classKeys[classNum];
                         var charGender = genders[cont.getIdx([classes[charClass].gender[natNum],100],cont.rand())];
                         var numNameParts = cont.getIdx(nameParts[natNum].nameParts,cont.rand())+1;

@@ -1,0 +1,155 @@
+{
+    "name": "Prologue",
+    "desc": "Prologue for this fully featured demo scene.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Throne Room",
+            "music": "throne-room.mp3",
+            "bg": "bg\/throne-room.jpg",
+            "text": "Deep within the walls of Venoriaea, Vicanti readies his {o.Alex.g@son} Alex for an important mission. It is a rite of passage on the {o.Alex.g@prince}'s 16th birthday to lead a small force through the west forest to Dardoine in order to maintain relations with the neighbouring country. It is customary to also provide a gift to the king of Dardoine as a goodwill.\n\nAs Alex holds out {o.Alex.g@his2} hand to accept the gift of the king of Dardoine, a castle guard opens the door and shouts excitedly.\n\n\"My lord, forgive the intrusion, but the queen has returned from her mission!\"\n\n\"Bring her here at once\", Vicanti exclaims.\n\nThe guard takes his leave, off to escort the queen to the throne room.\n\nAlex takes the present and stores it safely in {o.Alex.g@his2} bag. Moments later, the door opens again. A lady dressed in battle armour appears.\n\n\"My lord, I Astraea have returned from battle. What orders do you have next?\"\n\nVicanti explained to his wife that she must accompany Alex on {o.Alex.g@his2} mission to Dardoine. He argued that it would be better if both the {o.Alex.g@prince} and queen of Venoriaea visited the Dardoine king. Astraea agreed passionately, with a sense of duty. \n\nVicanti signaled to the guard to let Astraea leave. Once the queen retired to her quarters, Vicanti resumed his instruction.\n\n\"Though the primary goal of this mission is to preserve relations with Dardoine, it is also important that you learn how to manage a small force. For this mission you will be expected to recruit a group of soldiers to help complete the challenges that lie ahead. Astraea will join in your party, but you will be in charge of finding the others.\"\n\nVicanti presented Alex with a bag of coins.\n\n\"This money should be enough to find some good recruits, Come see me again when you have formed your party.\"\n\nA guard opens the door to let Alex leave the room.",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Leave the throne room",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Say something to Vicanti",
+                    "desc": "",
+                    "page": "Say something to Vicanti",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Say something to Vicanti",
+            "music": "throne-room.mp3",
+            "bg": "bg\/throne-room.jpg",
+            "text": "",
+            "choices": [
+                {
+                    "displayText": "Ask for more money",
+                    "desc": "Alex asks his father for some more money.\n\nVicanti responds by handing over another small bag of money.",
+                    "page": "Leave the throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Scene",
+                                        "vr": "startVicantiAsk",
+                                        "operator": "=",
+                                        "vl": "money"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Ask for a recommendation for party members",
+                    "desc": "Alex asks his father if there are any strong soldiers that can be recommended for hire.\n\nVicanti responds by ensuring that only the finest soldiers will be at the barracks.",
+                    "page": "Leave the throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "setVar",
+                                    {
+                                        "scope": "Scene",
+                                        "vr": "startVicantiAsk",
+                                        "operator": "=",
+                                        "vl": "soldiers"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Leave",
+                    "desc": "Alex decided not to ask anything after all.",
+                    "page": "Leave the throne room",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Leave the throne room",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "Alex left the throne room with the bag of money and stepped out into the hallway. {@vicantiPromise}",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Throne Room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Recruit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": {
+                "vicantiPromise": [
+                    {
+                        "text": "Alex looked inside the bag of money that {o.Alex.g@his2} gave {o.Alex.g@him}. This was the most money Alex had ever been in possession of, as it should be enough to recruit a few people at least!\n\nAlex leaves the castle and goes into town."
+                    },
+                    {
+                        "text": "Alex is pleased that {o.Alex.g@his2} father gave {o.Alex.g@him} some extra money to recruit people. With this in mind, {o.Alex.g@he} closes the bag and leaves the castle.",
+                        "checks": [
+                            [
+                                "Scene",
+                                "startVicantiAsk",
+                                "==",
+                                "money"
+                            ]
+                        ]
+                    },
+                    {
+                        "text": "Alex is excited to meet the great new people that {o.Alex.g@he} will be able to recruit. {o.Alex.g@He} hopes that {o.Alex.g@he} has enough money to recruit enough people.",
+                        "checks": [
+                            [
+                                "Scene",
+                                "startVicantiAsk",
+                                "==",
+                                "soldiers"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "vrs": {}
+}

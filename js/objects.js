@@ -102,7 +102,11 @@ Quintus.Objects=function(Q){
             var eq = Q.charGen.convertEquipment([material,gear],quality);
             char.equipment[to] = eq;
             this.decreaseItem(eq.kind,{gear:gear,quality:quality,material:material},1);
+            var hp = char.combatStats.hp;
+            var tp = char.combatStats.tp;
             char.combatStats = Q.charGen.getCombatStats(char);
+            char.combatStats.hp = hp;
+            char.combatStats.tp = tp;
         },
         unequipItem:function(char,from,options){
             if(!char.equipment[from]) return;

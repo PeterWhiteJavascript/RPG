@@ -260,14 +260,14 @@ Quintus.GameObjects=function(Q){
             this.entity.off("pressedConfirm",Q.RangeGridObj,"checkConfirmAttack");
             this.entity.off("pressedBack",this,"pressedBack");
             if(this.entity.p.skill){
-                if(this.entity.p.skill.range[1]==="straight"){
+                if(this.entity.p.skill.aoe[1]==="straight"){
                     this.entity.p.movingStraight = false;
                     this.entity.off("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveStraightTiles");
-                } else if(this.entity.p.skill.range[1]==="hLine"){
+                } else if(this.entity.p.skill.aoe[1]==="hLine"){
                     this.entity.off("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineTiles");
-                } else if(this.entity.p.skill.range[1]==="hLineForward"){
+                } else if(this.entity.p.skill.aoe[1]==="hLineForward"){
                     this.entity.off("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineForwardTiles");
                 } else {
@@ -2258,7 +2258,7 @@ Quintus.GameObjects=function(Q){
                     }
                     Q.BattleGrid.icyStatus.push({locs:locs,turns:2});
                     //Wait for as long as the animation plays
-                    this.text.unshift({func:"makeIcy",obj:this.entity.skillFuncs,props:[locs]});
+                    this.text.splice(1,0,{func:"makeIcy",obj:this.entity.skillFuncs,props:[locs]});
                     break;
                 case "Flamethrower":
                     this.closeTileOccupied = false;
@@ -2526,10 +2526,11 @@ Quintus.GameObjects=function(Q){
             };
             field.add("tween");
             var flash = function(obj){
-                obj.animate({opacity:0.5},2, Q.Easing.Quadratic.InOut).chain({opacity:1},1, Q.Easing.Quadratic.InOut,{callback:function(){flash(obj);callback();}});
+                obj.animate({opacity:0.5},2, Q.Easing.Quadratic.InOut).chain({opacity:1},1, Q.Easing.Quadratic.InOut,{callback:function(){flash(obj);}});
             };
             field.animateTo(1);
             flash(field);
+            callback();
             field.add("stability");
         },
         createCaltrops:function(loc,user,callback){
@@ -2558,7 +2559,7 @@ Quintus.GameObjects=function(Q){
             }
             callback();
         },
-        makeIcy:function(locs){
+        makeIcy:function(locs,callback){
             var dirAngles = {
                 right:0,
                 down:90,
@@ -2588,9 +2589,14 @@ Quintus.GameObjects=function(Q){
                     if(num!==locs.length){
                         makeIce();
                     } else {
+                        var call = false;
                         anims.forEach(function(a){
                             a.on("finished",function(){
                                 a.destroy();
+                                if(!call){
+                                    callback();
+                                    call=true;
+                                }
                             });
                             a.play("frostExploding");
                             var tileType = Q.BatCon.getTileType(a.p.loc);
@@ -2606,7 +2612,6 @@ Quintus.GameObjects=function(Q){
                 anims.push(iceAnim);
             };    
             makeIce();
-            return 300*locs.length+500;
         },
         //Spawns one of the three random locations
         spawnLightning:function(loc,user){
@@ -3159,7 +3164,7 @@ Quintus.GameObjects=function(Q){
             function inBounds(num){
                 return num>2 ? 0 : num<0 ? 2 : num;
             };
-            stats[primary] += 2;
+            stats[primary] += 1;
             var center = primaryCoordinate;
             var graph = this.levelUpGraph;
             var mult = this.levelUpMultiplier;
@@ -3327,12 +3332,7 @@ Quintus.GameObjects=function(Q){
             var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
             var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
             var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
-            var threshold = 50;
-            var amountAboveThreshold = Math.max(0,amount-threshold);
-            var max = 80;
-            var aboveWorth = 3;
-            var finalAmount = Math.min(max,amount-amountAboveThreshold+Math.floor(amountAboveThreshold/aboveWorth));
-            return finalAmount;
+            return amount;
         },
         get_atkRange:function(p){
             var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
@@ -3389,32 +3389,46 @@ Quintus.GameObjects=function(Q){
             return Math.max(0,totalWeight-encThreshold);
         },
         
+        //Trims a base stat down once it reaches certain thresholds.
+        trimBaseStat:function(num){
+            //At which point the stat changes
+            var threshold = 20;
+            //The final stat value
+            var trimmedStat = 0;
+            //The multiplier each iteration
+            var mult = 1;
+            for(var i=0;i<Math.ceil(num/threshold);i++){
+                trimmedStat += threshold * mult;
+                mult *= 0.8;
+            }
+            return Math.floor(trimmedStat);
+        },
         get_strength:function(p){
-            return p.baseStats.str+p.tempStatChange.str;
+            return this.trimBaseStat(p.baseStats.str+p.tempStatChange.str);
         },
         get_endurance:function(p){
-            return p.baseStats.end+p.tempStatChange.end;
+            return this.trimBaseStat(p.baseStats.end+p.tempStatChange.end);
         },
         get_dexterity:function(p){
-            return p.baseStats.dex+p.tempStatChange.dex;
+            return this.trimBaseStat(p.baseStats.dex+p.tempStatChange.dex);
         },
         get_weaponSkill:function(p){
-            return p.baseStats.wsk+p.tempStatChange.wsk;
+            return this.trimBaseStat(p.baseStats.wsk+p.tempStatChange.wsk);
         },
         get_reflexes:function(p){
-            return p.baseStats.rfl+p.tempStatChange.rfl;
+            return this.trimBaseStat(p.baseStats.rfl+p.tempStatChange.rfl);
         },
         get_initiative:function(p){
-            return p.baseStats.ini+p.tempStatChange.ini;
+            return this.trimBaseStat(p.baseStats.ini+p.tempStatChange.ini);
         },
         get_energy:function(p){
-            return p.baseStats.enr+p.tempStatChange.enr;
+            return this.trimBaseStat(p.baseStats.enr+p.tempStatChange.enr);
         },
         get_skill:function(p){
-            return p.baseStats.skl+p.tempStatChange.skl;
+            return this.trimBaseStat(p.baseStats.skl+p.tempStatChange.skl);
         },
         get_efficiency:function(p){
-            return p.baseStats.eff+p.tempStatChange.eff;
+            return this.trimBaseStat(p.baseStats.eff+p.tempStatChange.eff);
         }
     });
 };

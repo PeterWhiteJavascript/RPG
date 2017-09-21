@@ -1,7 +1,7 @@
 Quintus.UIObjects=function(Q){
     $(function(){
         //When clicking a choice
-        $('body').on('click', '.choice-div', function() {
+        $('body').on('click', '.choice-list li', function() {
             Q.storyController.p.choice = Q.storyController.getChoice(Q.storyController.p.pages[Q.storyController.p.pageNum],$(this).text());
             //Check if something happens before doing the default change page
             //Will be true if all conditions are met
@@ -990,25 +990,43 @@ Quintus.UIObjects=function(Q){
             this.p.bgImage.p.asset = page.bg;
             //Play the music for the page
             Q.playMusic(page.music);
-            var text = $('<pre>'+Q.textModules.processTextVars(page.text)+'</pre>');
+            var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
             var contentBox = this.p.textContent;
-            $(contentBox).append(text);
+            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
             //Show the choices
+            $(contentBox).append('<ul class="choice-list"></ul>');
             page.choices.forEach(function(choice){
                 if(choice.disabled==="Enabled"){
-                    $(contentBox).append('<div class="btn btn-default choice-div"><a class="choice"><div>'+choice.displayText+'</div></a></div>');
+                    $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
                 }
             });
+        },
+        beautifyText:function(txt){
+            //Split up all of the text by paragraph into an array(at \n)
+            var beau = txt.split("\n").filter(
+                    //Remove any \n that has no text in it
+                    function(itm){
+                        return itm.length;
+                    //Rework the items into paragraphs.
+                    }).map(function(itm){
+                        var pClass = "story";
+                        if(itm[0]==="\"") pClass = "dialogue";
+                        return "<p class='"+pClass+"'>"+itm+"</p>";
+                    //Join the array back into a string
+                    }).join(" ");
+            if(beau.length) beau = "<div class='text-header-line'></div>"+beau;
+            return beau;
         },
         insertChoiceDesc:function(desc){
             //this.removePage();
             this.removeChoices();
             var contentBox = this.p.textContent;
-            $(contentBox).append('<pre>'+Q.textModules.processTextVars(desc)+'</pre>');
+            var txt = this.beautifyText(Q.textModules.processTextVars(desc));
+            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
             
         },
         removeChoices:function(){
-            $(".choice-div").remove();
+            $(".choice-list").remove();
         },
         removePage:function(){
             $(this.p.textContent).empty();

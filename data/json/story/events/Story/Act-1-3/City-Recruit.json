@@ -1,0 +1,25 @@
+{
+    "name": "City-Recruit",
+    "kind":"location",
+    "desc":"First time in town. Goal is to recruit people.",
+    "bg": "bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+    "music": "homeland.mp3",
+    "actions":[
+        ["Barracks","changePage",{"page":"barracks"}]
+    ],
+    "barracks":{
+        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "music":"the_usual.mp3",
+        "actions":[
+            [
+                "View Recruits",
+                "createRecruitMenu"
+            ],
+            [
+                "Leave",
+                "changePage",
+                {"page":"start"}
+            ]
+        ]
+    }
+}
