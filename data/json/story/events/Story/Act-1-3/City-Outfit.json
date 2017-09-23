@@ -4,6 +4,9 @@
     "desc":"Second time in town. Goal is to outfit soldiers.",
     "bg": "bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
     "music": "homeland.mp3",
+    "vrs":{
+        "visitedBlacksmith":false
+    },
     "onload":[
         {
             "conds":[
@@ -23,18 +26,58 @@
                     1
                 ]
             ]
+        },
+        {
+            "conds":[
+                [
+                    "checkVar",
+                    {
+                        "scope": "Event",
+                        "vr": "visitedBlacksmith",
+                        "operator": "==",
+                        "vl": true
+                    }
+                ]
+            ],
+            "effects":[
+                [
+                    "enableAction",
+                    2
+                ]
+            ]
         }
     ],
     "disabled":[
-        1
+        1,2
     ],
     "actions":[
         ["Blacksmith","changePage",{"page":"blacksmith"}],
-        ["Calen's Blacksmith","changePage",{"page":"calensBlacksmith"}]
+        ["Calen's Blacksmith","changePage",{"page":"calensBlacksmith"}],
+        ["Back to Castle","changeEvent",{
+        "type":"Story",
+        "scene":"Act-1-3",
+        "event":"Return-from-outfitting"
+        }]
     ],
     "blacksmith":{
         "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
         "music":"the_usual.mp3",
+        "onload":[
+            {
+                "conds":[],
+                "effects":[
+                    [
+                        "setVar",
+                        {
+                            "scope": "Event",
+                            "vr": "visitedBlacksmith",
+                            "operator": "=",
+                            "vl": true
+                        }
+                    ]
+                ]
+            }
+        ],
         "actions":[
             [
                 "Buy",
@@ -67,6 +110,22 @@
     "calensBlacksmith":{
         "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
         "music":"the_usual.mp3",
+        "onload":[
+            {
+                "conds":[],
+                "effects":[
+                    [
+                        "setVar",
+                        {
+                            "scope": "Event",
+                            "vr": "visitedBlacksmith",
+                            "operator": "=",
+                            "vl": true
+                        }
+                    ]
+                ]
+            }
+        ],
         "actions":[
             [
                 "Buy",

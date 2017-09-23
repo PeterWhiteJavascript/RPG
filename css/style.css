@@ -122,7 +122,7 @@ pre{
 }
 .main-menu{
     position:absolute;
-    top:20%;
+    top:5%;
     right:5%;
     width:20%;
     background:grey;
@@ -157,7 +157,7 @@ pre{
 }
 .left-cont{
     position:absolute;
-    top:20%;
+    top:5%;
     left:5%;
     width:20%;
     background:grey;
@@ -178,7 +178,7 @@ pre{
     border-color: black;
     border-image: initial;
     text-align:center;
-    font-size:40px;
+    font-size:1vw;
 }
 
 .mid-box{

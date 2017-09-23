@@ -103,19 +103,18 @@ Q.newGame=function(options){
         alex.gender = options.gender;
         
         var storyAlex = Q.charGen.generateCharacter(alex,"alex");
-        //For now, alex is the only character
-        var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
+        //var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
         /*var random1 = Q.charGen.generateCharacter({},"roster");
         var random2 = Q.charGen.generateCharacter({},"roster");*/
         //console.log(legion)
-        Q.state.set("allies",[storyAlex,astraea/*,random1,random2*/]);
+        Q.state.set("allies",[storyAlex/*,astraea,random1,random2*/]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
         //Set up the applications roster
-        //For now, there will be 4 random characters in it
-        var freeSpaces = 4;
+        //At the start of the game, there will be 10 random characters in it and they will all be venorian
+        var freeSpaces = 10;
         for(var i=0;i<freeSpaces;i++){
-            var char = Q.charGen.generateCharacter({},"roster");
+            var char = Q.charGen.generateCharacter({nationality:"Venorian"},"roster");
             Q.state.get("saveData").applicationsRoster.push(char);
         };
         //TESTING ONLY

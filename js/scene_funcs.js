@@ -4,6 +4,8 @@ Quintus.SceneFuncs=function(Q){
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
             var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
+            //TODO: come up with a way to save the previous vars (maybe won't be necessary if we won't be going back to events and also the vars will re-evaluate when going back)
+            Q.state.set("eventVars",data.vrs);
             Q.stageScene(data.kind,0,{data:data});
         });
     };

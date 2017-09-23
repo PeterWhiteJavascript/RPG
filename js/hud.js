@@ -683,7 +683,7 @@ Quintus.HUD=function(Q){
                 opacity:0.5,
                 border:2
             });
-            this.p.x = Q.width/2-this.p.w/2-100;
+            this.p.x = Q.width/1.5-this.p.w/2-100;
             this.p.y = Q.height/2-this.p.h/2;
             this.on("inserted");
         },
@@ -779,7 +779,7 @@ Quintus.HUD=function(Q){
             var num = 0;
             for(var i=0;i<rows;i++){
                 for(var j=0;j<cols;j++){
-                    this.insert(new Q.UI.Text({label:labels[num]+": "+stats[num],x:5+(j*60),y:16+i*16,size:12,cx:0,cy:0,align:"left",family:"Consolas"}));
+                    this.insert(new Q.UI.Text({label:labels[num]+":"+stats[num],x:5+(j*45),y:16+i*16,size:10,cx:0,cy:0,align:"left",family:"Consolas"}));
                     num++;
                 }
             }

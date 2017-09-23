@@ -58,25 +58,12 @@ Quintus.UIObjects=function(Q){
         }
     });
     Q.component("locationActions",{
-        //Hide actions that are not available. Check if disabled actions should be enabled
-        added:function(){
-            var location = this.entity.p.location;
-            //Figure out if we need to enable an action
-            Q.textModules.processCondEffects(this.entity,location.onload);
-            var disabled = location.disabled;
-            if(disabled){
-                for(var i=disabled.length-1;i>=0;i--){
-                    location.actions.splice(disabled[i],1);
-                }
-            }
-        },
         extend:{
             doAction:function(p){
                 if(!p) return this.createMainMenu();
                 this[p[1]](p[2]);
             },
             goBack:function(data){
-                console.log(data)
                 //this.changePage({page:this.p.currentPage});
                 if(data) this[data.to](data.props);
                 
@@ -133,7 +120,7 @@ Quintus.UIObjects=function(Q){
             },
             buyItem:function(p){
                 this.emptyConts();
-                Q.state.get("Bag").addItem(p.item.kind,{amount:1,gear:p.item.name,material:p.item.material,quality:p.item.quality});
+                Q.state.get("Bag").addItem(p.item.kind,{amount:p.quantity,gear:p.item.name,material:p.item.material,quality:p.item.quality});
                 Q.state.get("saveData").money -= p.quantity*p.item.cost;
                 $(".mid-cont").text("You purchased the "+p.text+" for "+(p.quantity*p.item.cost)+" money.");
                 this.displayList({actions:[["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]]});
@@ -186,7 +173,8 @@ Quintus.UIObjects=function(Q){
                 },
                 enableAction:function(t,obj){
                     //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
-                    t.p.location.disabled.splice(t.p.location.disabled.indexOf(obj),1);
+                    if(t.p.currentPage==="start") t.p.location.disabled.splice(t.p.location.disabled.indexOf(obj),1);
+                    else t.p.location[t.p.currentPage].disabled.splice(t.p.location[t.p.currentPage].disabled.indexOf(obj),1);
                 }
             }
         }
@@ -459,7 +447,26 @@ Quintus.UIObjects=function(Q){
             });
         },
         displayList:function(p){
-            var actions = p.actions;
+            var actions = p.actions.slice();
+            if(p.onload){
+                var disableClone;
+                //Clone this so we can reset it after.
+                if(p.disabled) disableClone = p.disabled.slice();
+                
+                //Figure out if we need to enable an action
+                Q.textModules.processCondEffects(this,p.onload);
+                var disabled = p.disabled;
+                if(disabled){
+                    for(var i=disabled.length-1;i>=0;i--){
+                        actions.splice(disabled[i],1);
+                    }
+                }
+                if(disabled){
+                    //Reset the disabled
+                    if(this.p.currentPage==="start") this.p.location.disabled = disableClone;
+                    else this.p.location[this.p.currentPage].disabled = disableClone;
+                }
+            }
             var cont = this.p.menuCont;
             cont.append('<ul id="actions-menu-ul"></ul>');
             for(var i=0;i<actions.length;i++){
@@ -475,45 +482,38 @@ Quintus.UIObjects=function(Q){
         createCampaignMenu:function(){
             
         },
+        getCharacterCost:function(char){
+            var rh = Q.charGen.getEquipmentProp("cost",char.equipment.righthand);
+            var lh = Q.charGen.getEquipmentProp("cost",char.equipment.lefthand);
+            var ar = Q.charGen.getEquipmentProp("cost",char.equipment.armour);
+            var ft = Q.charGen.getEquipmentProp("cost",char.equipment.footwear);
+            var baseStats = 0;
+            Object.keys(char.baseStats).forEach(function(itm){baseStats+=char.baseStats[itm];});
+            var base = 100;
+            return char.level*20+rh+lh+ar+ft+baseStats+base;
+        },
         recruitCharacter:function(){
+            var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
+                return a.name===$(".character.selected-color").attr("id");
+            })[0];
+            var cost = this.getCharacterCost(character);
             var money = Q.state.get("saveData").money;
-            if(money>=100){
-                Q.state.get("saveData").money-=100;
-                var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
-                    return a.name===$(".character.selected-color").attr("id");
-                })[0];
+            if(money>=cost){
+                Q.state.get("saveData").money-=cost;
                 Q.state.get("allies").push(character);
                 Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
-                this.createRecruitMenu();
-                this.trigger("cycleWeek");
+                if(Q.state.get("saveData").applicationsRoster.length){
+                    this.createRecruitMenu();
+                } else {
+                    $("#co-back").trigger("click");
+                }
+            } else {
+                alert("You don't have "+cost+" money!");
             }
         },
         showRecruitCharacterCard:function(obj,target){
-            var pro = Q.textModules.processModule;
-            obj.p.midCont.empty();
-            obj.p.midCont.append(
-                '<ul class="recruit-card mid-box">\n\
-                    <div class="char-skills"><b>Skills</b></div>\n\
-                    <div class="char-equipment"><b>Equipment</b></div>\n\
-                </ul>'
-            );
-            var skillKeys = Object.keys(target.skills);
-            for(var i=0;i<skillKeys.length;i++){
-                $(obj.p.midCont).children(".recruit-card").children(".char-skills").append('<div><i>'+skillKeys[i]+'</i></div>');
-                for(var j=0;j<target.skills[skillKeys[i]].length;j++){
-                    if(target.skills[skillKeys[i]][j]){
-                        $(obj.p.midCont).children(".recruit-card").children(".char-skills").append('<div>'+target.skills[skillKeys[i]][j].name+'</div>');
-                    }
-                }
-            }
-            var equipmentKeys = Object.keys(target.equipment);
-            for(var i=0;i<equipmentKeys.length;i++){
-                if(target.equipment[equipmentKeys[i]].name){
-                    $(obj.p.midCont).children(".recruit-card").children(".char-equipment").append('<div>'+equipmentKeys[i]+': '+target.equipment[equipmentKeys[i]].name+'</div>');
-                } else {
-                    $(obj.p.midCont).children(".recruit-card").children(".char-equipment").append('<div>'+equipmentKeys[i]+': none</div>');
-                }
-            }
+            if(this.p.characterMenu) this.p.characterMenu.destroy();
+            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:{p:target}}));
         },
         createRecruitMenu:function(){
             this.emptyConts();
@@ -533,8 +533,11 @@ Quintus.UIObjects=function(Q){
                     return a.name===name;
                 })[0];
                 t.showRecruitCharacterCard(t,target);
+                var cost = t.getCharacterCost(Q.state.get("saveData").applicationsRoster.filter(function(a){
+                    return a.name===$(".character.selected-color").attr("id");
+                })[0]);
+                $("#co-recruit").text("Recruit for "+cost);
             });
-            $(".character").first().trigger("click");
             
             this.p.menuCont.append(
                 '<ul id="confirm-recruit-menu-ul">\n\
@@ -542,6 +545,7 @@ Quintus.UIObjects=function(Q){
                     <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
                 </ul>'
             );
+            $(".character").first().trigger("click");
             $("#confirm-recruit-menu-ul li").click(function(){
                 Q.locationController[$(this).attr("func")]();
             });
@@ -1012,7 +1016,7 @@ Quintus.UIObjects=function(Q){
                 if(Q.textModules.checkConds(data[i].conds)){
                     Q.textModules.executeEffects(obj,data[i].effects);
                 };
-            }  
+            }
         },
         checkConds:function(cond){
             var condsMet = true;
@@ -1033,7 +1037,30 @@ Quintus.UIObjects=function(Q){
                 obj["effectFuncs"][effects[i][0]](obj,effects[i][1]);
             }
         },
+        evaluateStringOperator:function(vr,op,vl){
+            switch(op){
+                case "==": return vr==vl;
+                case ">": return vr>vl;
+                case "<": return vr<vl;
+                case ">=": return vr>=vl;
+                case "<=": return vr<=vl;
+            }
+        },
         condFuncs:{
+            checkKeyword:function(t,obj){
+                var vr = obj.vr;
+                var op = obj.operator;
+                var vl = obj.vl;
+                switch(vr){
+                    case "rosterSize":
+                        vr  = Q.state.get("saveData").applicationsRoster.length;
+                        break;
+                    case "partySize":
+                        vr = Q.state.get("allies").length;
+                        break;
+                }
+                return t.evaluateStringOperator(vr,op,vl);
+            },
             checkChar:function(t,obj){
                 var char;
                 //First, get the character that we're checking
@@ -1075,24 +1102,7 @@ Quintus.UIObjects=function(Q){
                         break;
                     //Special case where we're checking a number with different operators
                     case "Stat":
-                        var stat = char.combatStats[obj.prop];
-                        switch(obj.operator){
-                            case "==":
-                                if(stat==obj.value) return true;
-                                break;
-                            case ">":
-                                if(stat>obj.value) return true;
-                                break;
-                            case "<":
-                                if(stat<obj.value) return true;
-                                break;
-                            case ">=":
-                                if(stat>=obj.value) return true;
-                                break;
-                            case "<=":
-                                if(stat<=obj.value) return true;
-                                break;
-                        }
+                        return t.evaluateStringOperator(char.combatStats[obj.prop],obj.operator,obj.value);
                         break;
                 }
                 //Once a value is found, check it against the passed in prop. Personality is check within the switch as there are multiple personality traits sometimes.
@@ -1106,7 +1116,7 @@ Quintus.UIObjects=function(Q){
                 var vars;
                 switch(obj.scope){
                     case "Event":
-                        vars = t.p.vrs;
+                        vars = Q.state.get("eventVars");
                         break;
                     case "Scene":
                         vars = Q.state.get("sceneVars");
@@ -1120,23 +1130,7 @@ Quintus.UIObjects=function(Q){
                 var processedVal = typeof obj.vl == "boolean" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
-                        switch(obj.operator){
-                            case "==":
-                                if(vars[keys[i]]==processedVal) return true;
-                                break;
-                            case ">":
-                                if(vars[keys[i]]>processedVal) return true;
-                                break;
-                            case "<":
-                                if(vars[keys[i]]<processedVal) return true;
-                                break;
-                            case ">=":
-                                if(vars[keys[i]]>=processedVal) return true;
-                                break;
-                            case "<=":
-                                if(vars[keys[i]]<=processedVal) return true;
-                                break;
-                        }
+                        return t.evaluateStringOperator(vars[keys[i]],obj.operator,processedVal);
                     }
                 }
             }
@@ -1146,7 +1140,7 @@ Quintus.UIObjects=function(Q){
                 var vars;
                 switch(obj.scope){
                     case "Event":
-                        vars = t.p.vrs;
+                        vars = Q.state.get("eventVars");
                         break;
                     case "Scene":
                         vars = Q.state.get("sceneVars");
@@ -1315,11 +1309,11 @@ Quintus.UIObjects=function(Q){
                 char.eachTempStatChange.push(obj);
             },
             equipItem:function(t,obj){
-                var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
-                if(obj.name==="Bag"){
-                    Q.state.get("Bag").addItem(obj.eqType,eq);
+                if(obj.char==="Bag"){
+                    Q.state.get("Bag").addItem(obj.eqType,{gear:obj.gear,material:obj.material,quality:obj.quality});
                     return;
                 }
+                var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
                 var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
                 if(!char) return;
                 switch(obj.eqType){

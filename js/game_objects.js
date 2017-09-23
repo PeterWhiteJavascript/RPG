@@ -2759,31 +2759,32 @@ Quintus.GameObjects=function(Q){
                     
                     char.primaryStat = this.primaryStats[char.classNum];
                     char.primaryCoordinate = this.primaryCoordinates[char.classNum];
-                    //Generate random values for the roster. At the moment it's the same as enemy generation
-                    char.equipment = this.getEquipment(
-                        {
-                            "righthand": [
-                                "Default",
-                                "Default",
-                                "Default"
-                            ],
-                            "lefthand": [
-                                "Default",
-                                "Default",
-                                "Default"
-                            ],
-                            "armour": [
-                                "Default",
-                                "Default",
-                                "Default"
-                            ],
-                            "footwear": [
-                                "Default",
-                                "Default",
-                                "Default"
-                            ],
-                            "accessory": "None"
-                        },char.classNum,char.natNum,char.level);
+                    //Generate random values for the roster
+                    //25% chance of even having equipment
+                    var eq = {
+                        "righthand": Math.floor(Math.random()*4) ? "None" : [
+                            "Default",
+                            "Default",
+                            "Default"
+                        ],
+                        "lefthand": Math.floor(Math.random()*4) ? "None" :[
+                            "Default",
+                            "Default",
+                            "Default"
+                        ],
+                        "armour": Math.floor(Math.random()*4) ? "None" :[
+                            "Default",
+                            "Default",
+                            "Default"
+                        ],
+                        "footwear": Math.floor(Math.random()*4) ? "None" :[
+                            "Default",
+                            "Default",
+                            "Default"
+                        ],
+                        "accessory": "None"
+                    };
+                    char.equipment = this.getEquipment(eq,char.classNum,char.natNum,char.level);
                     char.techniques = this.getTechniques(data.techniques) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
                     char.talents = this.getTalents(char.charClass,char.charGroup);
                     char.lean = [this.getStatLean(),this.getStatLean()];
@@ -3022,13 +3023,13 @@ Quintus.GameObjects=function(Q){
             return t;
         },
         getEquipment:function(val,classNum,natNum,level){
-            var rh = this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],level));
+            var rh = typeof val.righthand==="string" ? false : this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],level));
             var lh = false;
-            if(rh.hands!==2){
-                lh = this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],level));
+            if(!rh||rh.hands!==2){
+                lh = typeof val.lefthand==="string" ? false : this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],level));
             }
-            var ar = this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],level));
-            var ft = this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],level));
+            var ar = typeof val.armour==="string" ? false : this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],level));
+            var ft = typeof val.footwear==="string" ? false : this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],level));
             //Accessory is always either set or not. No Random.
             var ac = false;
             if(val.accessory&&val.accessory!=="None"){
@@ -3124,7 +3125,7 @@ Quintus.GameObjects=function(Q){
             }
         },
         generatePersonality:function(){
-            return this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]];
+            return [this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];
         },
         generateMethodology:function(charClass,natNum){
             return this.methodologies[this.getIdx(this.classes[charClass].methodology[natNum],this.rand())];
@@ -3394,10 +3395,11 @@ Quintus.GameObjects=function(Q){
             //At which point the stat changes
             var threshold = 20;
             //The final stat value
-            var trimmedStat = 0;
+            var trimmedStat = num;
             //The multiplier each iteration
             var mult = 1;
-            for(var i=0;i<Math.ceil(num/threshold);i++){
+            for(var i=0;i<Math.floor(num/threshold);i++){
+                trimmedStat -= threshold;
                 trimmedStat += threshold * mult;
                 mult *= 0.8;
             }
