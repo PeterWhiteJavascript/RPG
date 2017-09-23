@@ -178,10 +178,13 @@
             "desc": "",
             "eventOrder": [
                 "Prologue",
-                "City-Recruit"
+                "City-Recruit",
+                "Return-from-recruiting",
+                "City-Outfit"
             ],
             "vrs": {
-                "startVicantiAsk": "false"
+                "startVicantiAsk": false,
+                "helpedButler": false
             }
         },
         {

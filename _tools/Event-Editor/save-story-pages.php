@@ -11,6 +11,12 @@ foreach($file['vrs'] as $key=>$value){
     $file['vrs']->$key = urldecode($value);
 }
 $file['pages'] = json_decode($_POST['pages']);
+
+function checkBool($string){
+    $string = strtolower($string);
+    return (in_array($string, array("true", "false", "1", "0"/*, "yes", "no"*/), true));
+}
+
 //Decode spaces and single quotes
 for($i=0;$i<count($file['pages']);$i++){
     $page = $file['pages'][$i];
@@ -19,12 +25,24 @@ for($i=0;$i<count($file['pages']);$i++){
     foreach($page->onload as $group){
         foreach($group->conds as $cond){
             foreach($cond[1] as $key => $value){
-                $cond[1]->$key = urldecode($value);
+                if (is_numeric($value)) {
+                    $cond[1]->$key = intval(urldecode($value));
+                } else if(checkBool($value)) {
+                    $cond[1]->$key = boolval(urldecode($value));
+                } else {
+                    $cond[1]->$key = urldecode($value);
+                }
             }
         }
         foreach($group->effects as $effect){
             foreach($effect[1] as $key => $value){
-                $effect[1]->$key = urldecode($value);
+                if (is_numeric($value)) {
+                    $effect[1]->$key = intval(urldecode($value));
+                } else if(checkBool($value)) {
+                    $effect[1]->$key = boolval(urldecode($value));
+                } else {
+                    $effect[1]->$key = urldecode($value);
+                }
             }
         }
     }
@@ -37,12 +55,24 @@ for($i=0;$i<count($file['pages']);$i++){
         foreach($choice->groups as $group){
             foreach($group->conds as $cond){
                 foreach($cond[1] as $key => $value){
-                    $cond[1]->$key = urldecode($value);
+                    if (is_numeric($value)) {
+                        $cond[1]->$key = intval(urldecode($value));
+                    } else if(checkBool($value)) {
+                        $cond[1]->$key = boolval(urldecode($value));
+                    } else {
+                        $cond[1]->$key = urldecode($value);
+                    }
                 }
             }
             foreach($group->effects as $effect){
                 foreach($effect[1] as $key => $value){
-                    $effect[1]->$key = urldecode($value);
+                    if (is_numeric($value)) {
+                        $effect[1]->$key = intval(urldecode($value));
+                    } else if(checkBool($value)) {
+                        $effect[1]->$key = boolval(urldecode($value));
+                    } else {
+                        $effect[1]->$key = urldecode($value);
+                    }
                 }
             }
         }

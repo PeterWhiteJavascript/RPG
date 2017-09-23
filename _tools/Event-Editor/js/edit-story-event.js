@@ -472,7 +472,7 @@ $(function(){
                     var props = {};
                     $(itm).children(".effect-props").children(".effect-prop").each(function(i,o){
                         var val = parseInt($(o).val());
-                        if(isNaN(val)) val = $(o).val();
+                        if(isNaN(val)) val = encodeURIComponent($(o).val());
                         if(!val) val = $(o).text();
                         if(!val) val = 0;
                         props[$(o).attr("class").split(" ")[1]] = val;
@@ -1003,7 +1003,7 @@ $(function(){
         },
         materialOptions:function(type,gear){
             var opts = '';
-            var materials = this.p.equipment[type][gear].materials;
+            var materials = this.p.equipment[type][decodeURIComponent(gear)].materials;
             for(var i=0;i<materials.length;i++){
                 opts+='<option value="'+materials[i]+'">'+materials[i]+'</option>';
             }
@@ -1242,7 +1242,7 @@ $(function(){
     //Creates a new text inside a module
     $(document).on("click",".module-add-new-text",function(e){
         DC.moduleAddNewText($(this).parent(),"",{});
-    });
+    }); 
     $(document).on("click",".module-var-add-new-text",function(e){
         DC.moduleVarAddNewText($(this).parent(),"",{});
     });

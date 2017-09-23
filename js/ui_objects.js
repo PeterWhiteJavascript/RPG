@@ -6,12 +6,7 @@ Quintus.UIObjects=function(Q){
             //Check if something happens before doing the default change page
             //Will be true if all conditions are met
             //Loop through each group
-            var len = Q.storyController.p.choice.groups.length;
-            for(var i=0;i<len;i++){
-                if(Q.storyController.checkConds(Q.storyController.p.choice.groups[i].conds)){
-                    Q.storyController.executeEffects(Q.storyController.p.choice.groups[i].effects);
-                }
-            }
+            Q.textModules.processCondEffects(Q.storyController,Q.storyController.p.choice.groups);
             var choice = Q.storyController.p.choice;
             var page = choice.page;
             var desc = choice.desc;
@@ -63,10 +58,28 @@ Quintus.UIObjects=function(Q){
         }
     });
     Q.component("locationActions",{
+        //Hide actions that are not available. Check if disabled actions should be enabled
+        added:function(){
+            var location = this.entity.p.location;
+            //Figure out if we need to enable an action
+            Q.textModules.processCondEffects(this.entity,location.onload);
+            var disabled = location.disabled;
+            if(disabled){
+                for(var i=disabled.length-1;i>=0;i--){
+                    location.actions.splice(disabled[i],1);
+                }
+            }
+        },
         extend:{
             doAction:function(p){
                 if(!p) return this.createMainMenu();
                 this[p[1]](p[2]);
+            },
+            goBack:function(data){
+                console.log(data)
+                //this.changePage({page:this.p.currentPage});
+                if(data) this[data.to](data.props);
+                
             },
             changePage:function(p){
                 this.p.lastPage = this.p.currentPage;
@@ -81,7 +94,7 @@ Quintus.UIObjects=function(Q){
             },
             displayBuyItemsList:function(p){
                 this.emptyConts();
-                var list = p.list;
+                var list = p.list || this.p.list;
                 var newList = [];
                 list.forEach(function(itm,i){
                     switch(itm[1]){
@@ -94,16 +107,16 @@ Quintus.UIObjects=function(Q){
                         default:
                             var item = Q.charGen.convertEquipment([itm[3],itm[0]],itm[2]);
                             //Get the cost based on material and quality
-                            newList.push([itm[2]+" "+itm[3]+" "+itm[0]+"   "+item.cost,"askBuyQuantity",{item:item,text:itm[2]+" "+itm[3]+" "+itm[0]}]);
+                            newList.push([itm[2]+" "+itm[3]+" "+itm[0]+"   "+item.cost,"askBuyQuantity",{item:item,text:itm[2]+" "+itm[3]+" "+itm[0],list:list}]);
                             break;
                     }
-                   
                 });
-                this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.lastPage}]])});
+                this.displayList({actions:newList.concat([["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]])});
+                this.p.list = list;
             },
             askBuyQuantity:function(p){
                 this.emptyConts();
-                this.displayQuantityToggle({titleText:"Buy how many "+p.text+"? They cost "+p.item.cost+" each. You have "+Q.state.get("saveData").money+" money.",confirmText:"Confirm Buy",confirmFunc:"askBuy",item:p.item,text:p.text});
+                this.displayQuantityToggle({titleText:"Buy how many "+p.text+"? They cost "+p.item.cost+" each. You have "+Q.state.get("saveData").money+" money.",confirmText:"Confirm Buy",confirmFunc:"askBuy",item:p.item,text:p.text,goBack:{to:"displayBuyItemsList",props:{}}});
             },
             askBuy:function(props){
                 this.emptyConts();
@@ -112,10 +125,10 @@ Quintus.UIObjects=function(Q){
                 var quantity = parseInt(props.quantity);
                 if(money>=quantity*props.p.item.cost){
                     $(".mid-cont").text("Purchase "+quantity+" "+props.p.text+" for "+(quantity*props.p.item.cost)+" money?"+" You have "+money+" money.");
-                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item,text:props.p.text}],["Back","changePage",{page:this.p.currentPage}]]});
+                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item,text:props.p.text}],["Back","goBack",{to:"askBuyQuantity",props:props.p}]]});
                 } else {
                     $(".mid-cont").append("You don't have enough money!");
-                    this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
+                    this.displayList({actions:[["Back","goBack",{to:"askBuyQuantity",props:props.p}]]});
                 }
             },
             buyItem:function(p){
@@ -123,17 +136,18 @@ Quintus.UIObjects=function(Q){
                 Q.state.get("Bag").addItem(p.item.kind,{amount:1,gear:p.item.name,material:p.item.material,quality:p.item.quality});
                 Q.state.get("saveData").money -= p.quantity*p.item.cost;
                 $(".mid-cont").text("You purchased the "+p.text+" for "+(p.quantity*p.item.cost)+" money.");
-                this.displayList({actions:[["Back","changePage",{page:this.p.currentPage}]]});
+                this.displayList({actions:[["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]]});
             },
             displaySellItemsList:function(p){
                 this.emptyConts();
                 var list = [];
                 var bag = Q.state.get("Bag");
-                switch(p.allow){
+                switch(p.allow ? p.allow : "all"){
                     case "all":
                         var keys = Object.keys(bag.items);
+                        keys.splice(keys.indexOf("Key"),1);
                         keys.forEach(function(k){
-                            list.concat(bag.items[k]);
+                            list = list.concat(bag.items[k]);
                         });
                         break;
                     case "items":
@@ -148,24 +162,32 @@ Quintus.UIObjects=function(Q){
                     var text = itm.quality ? itm.quality+" "+itm.material+" "+itm.name : itm.name;
                     newList.push([text,"askSellQuantity",{item:itm,text:text}]);
                 });
-                this.displayList({actions:newList.concat([["Back","changePage",{page:this.p.currentPage}]])});
+                this.displayList({actions:newList.concat([["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]])});
             },
             askSellQuantity:function(p){
                 this.emptyConts();
-                this.displayQuantityToggle({titleText:"Sell how many "+p.text+" for "+Math.floor(p.item.cost/2)+" each.",confirmText:"Confirm Sell",confirmFunc:"askSell",item:p.item,text:p.text});
+                this.displayQuantityToggle({titleText:"Sell how many "+p.text+" for "+Math.floor(p.item.cost/2)+" each.",confirmText:"Confirm Sell",confirmFunc:"askSell",item:p.item,text:p.text,goBack:{to:"displaySellItemsList",props:{allow:p.allow}}});
             },
             askSell:function(props){
                 this.emptyConts();
                 var quantity = parseInt(props.quantity);
-                console.log(props)
                 $(".mid-cont").text("Sell "+quantity+" "+props.p.text+" for "+Math.floor(quantity*props.p.item.cost/2)+"?");
-                this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back","changePage",{page:this.p.currentPage}]]});
+                this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back","goBack",{to:"askSellQuantity",props:props.p}]]});
             },
             sellItems:function(p){
                 this.emptyConts();
                 Q.state.get("Bag").decreaseItem(p.item.kind,{gear:p.item.name,material:p.item.material,quality:p.item.quality},p.quantity);
                 Q.state.get("saveData").money += Math.floor(p.item.cost*p.quantity/2);
                 this.changePage({page:this.p.currentPage});
+            },
+            effectFuncs:{
+                setVar:function(t,obj){
+                    Q.textModules.effectFuncs.setVar(t,obj);
+                },
+                enableAction:function(t,obj){
+                    //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
+                    t.p.location.disabled.splice(t.p.location.disabled.indexOf(obj),1);
+                }
             }
         }
     });
@@ -379,7 +401,31 @@ Quintus.UIObjects=function(Q){
             return opts;
         },
         fillEquipMenu:function(ally){
+            var lastAlly = this.p.selectedAlly;
+            if(lastAlly){
+                var opts = ["right-hand","left-hand","armour","footwear"];
+                var vals = ["righthand","lefthand","armour","footwear"];
+                opts.forEach(function(o,i){
+                    $("#equip-"+o+" option").each(function() {
+                        if($(this).val()===lastAlly.equipment[vals[i]].quality+' '+lastAlly.equipment[vals[i]].material+' '+lastAlly.equipment[vals[i]].name){
+                            $(this).remove();
+                        }
+                    });
+                });
+                $("#equip-accessory option").each(function() {
+                    if($(this).val()===lastAlly.equipment.accessory.name){
+                        $(this).remove();
+                    }
+                });
+            }
             this.p.selectedAlly = ally;
+            //Add this ally's equipment options
+            if(ally.equipment.righthand) $("#equip-right-hand").append($('<option quality="'+ally.equipment.righthand.quality+'" material="'+ally.equipment.righthand.material+'" name="'+ally.equipment.righthand.name+'">'+ally.equipment.righthand.quality+' '+ally.equipment.righthand.material+' '+ally.equipment.righthand.name+'</option>'));
+            if(ally.equipment.lefthand) $("#equip-left-hand").append($('<option quality="'+ally.equipment.lefthand.quality+'" material="'+ally.equipment.lefthand.material+'" name="'+ally.equipment.lefthand.name+'">'+ally.equipment.lefthand.quality+' '+ally.equipment.lefthand.material+' '+ally.equipment.lefthand.name+'</option>'));
+            if(ally.equipment.armour) $("#equip-armour").append($('<option quality="'+ally.equipment.armour.quality+'" material="'+ally.equipment.armour.material+'" name="'+ally.equipment.armour.name+'">'+ally.equipment.armour.quality+' '+ally.equipment.armour.material+' '+ally.equipment.armour.name+'</option>'));
+            if(ally.equipment.footwear) $("#equip-footwear").append($('<option quality="'+ally.equipment.footwear.quality+'" material="'+ally.equipment.footwear.material+'" name="'+ally.equipment.footwear.name+'">'+ally.equipment.footwear.quality+' '+ally.equipment.footwear.material+' '+ally.equipment.footwear.name+'</option>'));
+            if(ally.equipment.accessory) $("#equip-accessory").append($('<option name="'+ally.equipment.accessory.name+'">'+ally.equipment.accessory.name+'</option>'));
+            
             $("#equip-menu-left img").attr("src","images/sprites/"+ally.charClass.toLowerCase()+".png");
             $("#equip-right-hand").val(ally.equipment.righthand ? ally.equipment.righthand.quality+" "+ally.equipment.righthand.material+" "+ally.equipment.righthand.name : "None");
             $("#equip-left-hand").val(ally.equipment.lefthand ? ally.equipment.lefthand.quality+" "+ally.equipment.lefthand.material+" "+ally.equipment.lefthand.name : "None");
@@ -394,6 +440,7 @@ Quintus.UIObjects=function(Q){
         createActionsMenu:function(){
             this.emptyConts();
             this.p.currentPage = "start";
+            this.p.action = 0;
             this.displayList(this.p.location);
         },
         displayQuantityToggle:function(p){
@@ -408,7 +455,7 @@ Quintus.UIObjects=function(Q){
                 Q.locationController[$("#confirm-quantity").attr("func")]({quantity:$("#actions-menu-ul li input").first().val(),p:p});
             });
             $("#quantity-go-back").click(function(){
-                Q.locationController.changePage({page:Q.locationController.p.lastPage});
+                Q.locationController.goBack(p.goBack);
             });
         },
         displayList:function(p){
@@ -958,91 +1005,14 @@ Quintus.UIObjects=function(Q){
                 if(textMatched) newText = textMatched;
             } while(textMatched);
             return newText;
-        }
-    }); 
-    
-    //Using CSS/Jquery, create the story dialogue with options
-    Q.UI.Container.extend("StoryController",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                w:Q.width/2,
-                h:Q.height-100
-            });
-            this.p.x+=10;
-            this.p.y+=10;
-            this.p.container = $('<div id="text-container"></div>');
-            this.p.textContent = $('<div id="text-content"></div>');
-            $(this.p.container).append(this.p.textContent);
-            $(document.body).append(this.p.container);
         },
-        insertPage:function(num){
-            var page = this.p.pages[num];
-            //Do the onload conditions/effects
-            for(var i=0;i<page.onload.length;i++){
-                var on = page.onload[i];
-                if(this.checkConds(on.conds)){
-                    this.executeEffects(on.effects);
+        //Conds and effects below
+        processCondEffects:function(obj,data){
+            for(var i=0;i<data.length;i++){
+                if(Q.textModules.checkConds(data[i].conds)){
+                    Q.textModules.executeEffects(obj,data[i].effects);
                 };
-            }
-            //Make the background correct
-            this.p.bgImage.p.asset = page.bg;
-            //Play the music for the page
-            Q.playMusic(page.music);
-            var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
-            var contentBox = this.p.textContent;
-            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
-            //Show the choices
-            $(contentBox).append('<ul class="choice-list"></ul>');
-            page.choices.forEach(function(choice){
-                if(choice.disabled==="Enabled"){
-                    $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
-                }
-            });
-        },
-        beautifyText:function(txt){
-            //Split up all of the text by paragraph into an array(at \n)
-            var beau = txt.split("\n").filter(
-                    //Remove any \n that has no text in it
-                    function(itm){
-                        return itm.length;
-                    //Rework the items into paragraphs.
-                    }).map(function(itm){
-                        var pClass = "story";
-                        if(itm[0]==="\"") pClass = "dialogue";
-                        return "<p class='"+pClass+"'>"+itm+"</p>";
-                    //Join the array back into a string
-                    }).join(" ");
-            if(beau.length) beau = "<div class='text-header-line'></div>"+beau;
-            return beau;
-        },
-        insertChoiceDesc:function(desc){
-            //this.removePage();
-            this.removeChoices();
-            var contentBox = this.p.textContent;
-            var txt = this.beautifyText(Q.textModules.processTextVars(desc));
-            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
-            
-        },
-        removeChoices:function(){
-            $(".choice-list").remove();
-        },
-        removePage:function(){
-            $(this.p.textContent).empty();
-        },
-        getPageNum:function(pageName){
-            for(var i=0;i<this.p.pages.length;i++){
-                if(this.p.pages[i].name===pageName){
-                    return i;
-                }
-            }
-        },
-        changePage:function(pageName){
-            var lastPage = this.p.pages[this.p.pageNum];
-            var pageNum = this.p.pageNum = this.getPageNum(pageName);
-            //this.removePage();
-            this.insertPage(pageNum);
+            }  
         },
         checkConds:function(cond){
             var condsMet = true;
@@ -1050,23 +1020,18 @@ Quintus.UIObjects=function(Q){
                 //Loop through each condition
                 for(var i=0;i<cond.length;i++){
                     //Run the condition's function (idx 0) with properties (idx 1)
-                    condsMet = this["condFuncs"][cond[i][0]](this,cond[i][1]);
+                    condsMet = Q.textModules["condFuncs"][cond[i][0]](this,cond[i][1]);
                     if(!condsMet) return condsMet;
                 }
             }
             return condsMet;
         },
-        executeEffects:function(effects){
+        executeEffects:function(obj,effects){
             //Loop through each effect and run their functions
             for(var i=0;i<effects.length;i++){
                 //Run the effects's function (idx 0) with properties (idx 1)
-                this["effectFuncs"][effects[i][0]](this,effects[i][1]);
+                obj["effectFuncs"][effects[i][0]](obj,effects[i][1]);
             }
-        },
-        getChoice:function(page,choice){
-            return page.choices.filter(function(ch){
-                return ch.displayText===choice;
-            })[0];
         },
         condFuncs:{
             checkChar:function(t,obj){
@@ -1152,7 +1117,7 @@ Quintus.UIObjects=function(Q){
                         break;
                 }
                 var keys = Object.keys(vars);
-                var processedVal = Q.textModules.processTextVars(obj.vl);
+                var processedVal = typeof obj.vl == "boolean" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
                         switch(obj.operator){
@@ -1192,7 +1157,7 @@ Quintus.UIObjects=function(Q){
                         break;
                 }
                 //Process it so that you can have vars in the value.
-                var processedVal = Q.textModules.processTextVars(obj.vl);
+                var processedVal = typeof obj.vl == "boolean" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 switch(obj.operator){
                     case "=":
                         vars[obj.vr] = processedVal;
@@ -1206,6 +1171,97 @@ Quintus.UIObjects=function(Q){
                 }
                 //Special case for money PROBABLY TEMP
                 if(obj.vr==="money") Q.state.get("saveData").money = vars[obj.vr];
+            }
+            
+        }
+    }); 
+    
+    //Using CSS/Jquery, create the story dialogue with options
+    Q.UI.Container.extend("StoryController",{
+        init:function(p){
+            this._super(p,{
+                x:0,y:0,
+                cx:0,cy:0,
+                w:Q.width/2,
+                h:Q.height-100
+            });
+            this.p.x+=10;
+            this.p.y+=10;
+            this.p.container = $('<div id="text-container"></div>');
+            this.p.textContent = $('<div id="text-content"></div>');
+            $(this.p.container).append(this.p.textContent);
+            $(document.body).append(this.p.container);
+        },
+        insertPage:function(num){
+            var page = this.p.pages[num];
+            //Do the onload conditions/effects
+            Q.textModules.processCondEffects(this,page.onload);
+            //Make the background correct
+            this.p.bgImage.p.asset = page.bg;
+            //Play the music for the page
+            Q.playMusic(page.music);
+            var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
+            var contentBox = this.p.textContent;
+            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
+            //Show the choices
+            $(contentBox).append('<ul class="choice-list"></ul>');
+            page.choices.forEach(function(choice){
+                if(choice.disabled==="Enabled"){
+                    $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
+                }
+            });
+        },
+        beautifyText:function(txt){
+            //Split up all of the text by paragraph into an array(at \n)
+            var beau = txt.split("\n").filter(
+                    //Remove any \n that has no text in it
+                    function(itm){
+                        return itm.length;
+                    //Rework the items into paragraphs.
+                    }).map(function(itm){
+                        var pClass = "story";
+                        if(itm[0]==="\"") pClass = "dialogue";
+                        return "<p class='"+pClass+"'>"+itm+"</p>";
+                    //Join the array back into a string
+                    }).join(" ");
+            if(beau.length) beau = "<div class='text-header-line'></div>"+beau;
+            return beau;
+        },
+        insertChoiceDesc:function(desc){
+            //this.removePage();
+            this.removeChoices();
+            var contentBox = this.p.textContent;
+            var txt = this.beautifyText(Q.textModules.processTextVars(desc));
+            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
+            
+        },
+        removeChoices:function(){
+            $(".choice-list").remove();
+        },
+        removePage:function(){
+            $(this.p.textContent).empty();
+        },
+        getPageNum:function(pageName){
+            for(var i=0;i<this.p.pages.length;i++){
+                if(this.p.pages[i].name===pageName){
+                    return i;
+                }
+            }
+        },
+        changePage:function(pageName){
+            var lastPage = this.p.pages[this.p.pageNum];
+            var pageNum = this.p.pageNum = this.getPageNum(pageName);
+            //this.removePage();
+            this.insertPage(pageNum);
+        },
+        getChoice:function(page,choice){
+            return page.choices.filter(function(ch){
+                return ch.displayText===choice;
+            })[0];
+        },
+        effectFuncs:{
+            setVar:function(t,obj){
+                Q.textModules.effectFuncs.setVar(t,obj);
             },
             changePage:function(t,obj){
                 t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];
@@ -1309,10 +1365,8 @@ Quintus.UIObjects=function(Q){
                     Q.state.get("Bag").decreaseItem("Consumables",{gear:obj.name},parseInt(obj.amount));
                 } else {
                     Q.state.get("Bag").addItem("Consumables",{gear:obj.name,amount:parseInt(obj.amount)});
-                }
-                
+                }    
             }
-            
         }
     });
     Q.UI.Container.extend("DialogueController",{

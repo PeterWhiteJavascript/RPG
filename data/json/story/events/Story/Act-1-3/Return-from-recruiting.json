@@ -1,0 +1,480 @@
+{
+    "name": "Return-from-recruiting",
+    "desc": "Alex returns with the new recruits.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Before throne room",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "Alex returns to the castle triumphantly with the new recruits in tow. The king should be pleased with the soldiers that have been selected. Alex opens the throne room door where {o.Alex.g@his2} father eagerly awaits {o.Alex.g@his2} return.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "In throne room",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "In throne room",
+            "music": "throne-room.mp3",
+            "bg": "bg\/throne-room.jpg",
+            "text": "\"Great job recruiting these soldiers. They will serve you well, but first you must outfit them with equipment from the town. {@extraFromEarlier}\nAlex accepts the money graciously. Vicanti signals for a guard to open the door. Alex returns to the hallway where Astraea awaits.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "After throne room",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Scene",
+                                "vr": "startVicantiAsk",
+                                "operator": "==",
+                                "vl": "money"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "Global",
+                                "vr": "money",
+                                "operator": "=",
+                                "vl": 1000
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Scene",
+                                "vr": "startVicantiAsk",
+                                "operator": "==",
+                                "vl": "soldiers"
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "Global",
+                                "vr": "money",
+                                "operator": "=",
+                                "vl": 3500
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "conds": [
+                        [
+                            "checkVar",
+                            {
+                                "scope": "Scene",
+                                "vr": "startVicantiAsk",
+                                "operator": "==",
+                                "vl": true
+                            }
+                        ]
+                    ],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "Global",
+                                "vr": "money",
+                                "operator": "=",
+                                "vl": 4000
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": [],
+            "modulesVars": {
+                "extraFromEarlier": [
+                    {
+                        "text": "Here is some money you can use to obtain equipment.\""
+                    },
+                    {
+                        "text": "Since I gave you extra money earlier for recruiting, you will receive less for equipment.\"",
+                        "checks": [
+                            [
+                                "Scene",
+                                "startVicantiAsk",
+                                "==",
+                                "money"
+                            ]
+                        ]
+                    },
+                    {
+                        "text": "Here's a bit extra to help you obtain equipment.\"",
+                        "checks": [
+                            [
+                                "Scene",
+                                "startVicantiAsk",
+                                "==",
+                                "soldiers"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "After throne room",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "Astraea greets Alex and the rest of the party. The party is just about to leave the castle when they hear a loud crash.",
+            "choices": [
+                {
+                    "displayText": "Investigate",
+                    "desc": "",
+                    "page": "Investigate",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Leave",
+                    "desc": "Alex decides to continue with the task at hand.",
+                    "page": "Leave",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "recruitChar",
+                            {
+                                "name": "Astraea"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Leave",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Before throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Outfit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Investigate",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Alex walks to the room that {o.Alex.g@he} heard the crash. Upon arriving at the room, Alex remembers that the chief of the biggest trading guild in town to meet with {o.Alex.g@his2} father today to discuss important business matters. \n\nAlex pokes {o.Alex.g@his2} head into the doorway to see what the issue is. {o.Alex.g@He} sees a butler picking up pieces of a broken saucer that was carrying a full cup of tea. Sitting at the table is the guild chief with a startled look on his face. The chief yells at the butler for making a ruckus while he is preparing to meet with the king. \n\nThe chief notices Alex and invites {o.Alex.g@him} inside. The chief has been doing business with the king for many years and recognizes Alex instantly. ",
+            "choices": [
+                {
+                    "displayText": "Help the butler clean",
+                    "desc": "",
+                    "page": "Help the butler clean",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Reprimand the butler",
+                    "desc": "",
+                    "page": "Reprimand the butler",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        },
+        {
+            "name": "Help the butler clean",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Alex walks into the room and apologizes to the chief for the butler's mistake. {o.Alex.g@He} then crouches to help the butler clean the mess that was left on the floor. The chief looks down at Alex with disappointment.\n\"Cleaning is not a duty fit for a {o.Alex.g@prince}\",  he exclaimed.",
+            "choices": [
+                {
+                    "displayText": "Continue cleaning",
+                    "desc": "",
+                    "page": "Finish cleaning",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Stand up and agree",
+                    "desc": "",
+                    "page": "Agree to stop cleaning",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Reprimand the butler",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "Alex calls out to the butler in an authoritative voice to follow him to the hallway. In the hallway, Alex expresses his discontent with the butler.",
+            "choices": [
+                {
+                    "displayText": "Fire him",
+                    "desc": "",
+                    "page": "Fire the butler",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Advise him",
+                    "desc": "",
+                    "page": "Reprimand the butler",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Advise the butler",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "In a soft, but firm voice, Alex advises the butler to never make this mistake again, or he would be out of work.\n\nAlex re-enters the waiting room and apologizes to the chief on behalf of the castle staff.\n\nThe chief commends Alex on {o.Alex.g@his2} commitment to training only the best staff. He mentions that part of the reason for him being here today is to give a gift to help Alex on {o.Alex.g@his2} journey.\n\nThe chief presents Alex with an Iron Short Sword, which Alex accepts.\n\nA guard enters the room and calls for the chief to visit the throne room. After the chief leaves, Alex decides to be on {o.Alex.g@his2} way as well.",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Before throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Outfit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "equipItem",
+                            {
+                                "char": "Bag",
+                                "eqType": "Weapons",
+                                "gear": "Short Sword",
+                                "quality": "Average",
+                                "material": "Iron"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Fire the butler",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-hallway.jpg",
+            "text": "In a loud voice, Alex commands the butler to pack his belongings and leave immediately.\n\nAlex re-enters the waiting room and apologizes to the guild chief.\n\nThe chief commends Alex on {o.Alex.g@his2} commitment to keeping only the best staff. He mentions that part of the reason for him being here today is to give a gift to help Alex on {o.Alex.g@his2} journey.\n\nThe chief presents Alex with an Iron Sword, which Alex accepts.\n\nA guard enters the room and calls for the chief to visit the throne room. After the chief leaves, Alex decides to be on {o.Alex.g@his2} way as well.",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Before throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Outfit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "equipItem",
+                            {
+                                "char": "Bag",
+                                "eqType": "Weapons",
+                                "gear": "Sword",
+                                "quality": "Average",
+                                "material": "Iron"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Finish cleaning",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Alex continues to clean, despite the disapproval of the chief. When the mess is cleaned, Alex leaves with the butler to dispose of the plate shards. The butler thanks Alex wholeheartedly and wishes to that Alex in some way. He overheard that Alex is embarking on a journey to Dardoine and {o.Alex.g@he} needs supplies. The butler recommends his son's shop. \nHis son is a new blacksmith, but Alex should be able to get some less expensive equipment there!",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Before throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Outfit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "setVar",
+                            {
+                                "scope": "Scene",
+                                "vr": "helpedButler",
+                                "operator": "=",
+                                "vl": true
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Agree to stop cleaning",
+            "music": "throne-room.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Alex promptly stands up, not wanting to upset such an important person further. The chief still seems unimpressed, but has a haughty look to him now. One the mess is cleaned up, the chief announces that he has a gift for Alex. It seems that one of the goals of this meeting was to show solidarity with the traditions of Venoriaea by assisting the {o.Alex.g@prince} on his journey.\n\nThe chief presents Alex with a shining Bronze Short Sword. Alex accepts humbly.\n\nA guard appears from the entrance and summons the chief to the throne room. After the chief leaves, Alex decides that {o.Alex.g@he} should get moving as well.",
+            "choices": [
+                {
+                    "displayText": "Leave",
+                    "desc": "",
+                    "page": "Before throne room",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "City-Outfit"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [
+                {
+                    "conds": [],
+                    "effects": [
+                        [
+                            "equipItem",
+                            {
+                                "char": "Bag",
+                                "eqType": "Weapons",
+                                "gear": "Short Sword",
+                                "quality": "Average",
+                                "material": "Bronze"
+                            }
+                        ]
+                    ]
+                }
+            ],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

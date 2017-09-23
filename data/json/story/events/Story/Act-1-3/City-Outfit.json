@@ -1,0 +1,95 @@
+{
+    "name": "City-Outfit",
+    "kind":"location",
+    "desc":"Second time in town. Goal is to outfit soldiers.",
+    "bg": "bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+    "music": "homeland.mp3",
+    "onload":[
+        {
+            "conds":[
+                [
+                    "checkVar",
+                    {
+                        "scope": "Scene",
+                        "vr": "helpedButler",
+                        "operator": "==",
+                        "vl": true
+                    }
+                ]
+            ],
+            "effects":[
+                [
+                    "enableAction",
+                    1
+                ]
+            ]
+        }
+    ],
+    "disabled":[
+        1
+    ],
+    "actions":[
+        ["Blacksmith","changePage",{"page":"blacksmith"}],
+        ["Calen's Blacksmith","changePage",{"page":"calensBlacksmith"}]
+    ],
+    "blacksmith":{
+        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "music":"the_usual.mp3",
+        "actions":[
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list":[
+                        ["Short Sword","Weapons","Average","Bronze"],
+                        ["Short Sword","Weapons","Average","Iron"],
+                        ["Spear","Weapons","Average","Bronze"],
+                        ["Spear","Weapons","Average","Iron"],
+                        ["Bow","Weapons","Average","Wood"],
+                        ["Shield","Weapons","Average","Bronze"],
+                        ["Shield","Weapons","Average","Iron"],
+                        ["Shoes","Footwear","Average","Wood"]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {"allow":"all"}
+            ],
+            [
+                "Leave",
+                "changePage",
+                {"page":"start"}
+            ]
+        ]
+    },
+    "calensBlacksmith":{
+        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "music":"the_usual.mp3",
+        "actions":[
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list":[
+                        ["Pike","Weapons","Shoddy","Brass"],
+                        ["Mace","Weapons","Shoddy","Brass"],
+                        ["Small Shield","Weapons","Shoddy","Brass"],
+                        ["Breastplate","Armour","Shoddy","Brass"]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {"allow":"all"}
+            ],
+            [
+                "Leave",
+                "changePage",
+                {"page":"start"}
+            ]
+        ]
+    }
+}

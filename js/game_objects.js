@@ -2981,7 +2981,7 @@ Quintus.GameObjects=function(Q){
         },
         //Changes the equipment from an array to an object containing all of the stats from equipment.json
         //eq is an array [gearMaterial,gearName]
-        convertEquipment:function(eq,quality){
+        convertEquipment:function(eq,quality){//console.log(eq,quality)
             if(!eq) return false;
             var data = this.equipment.gear[eq[1]];
             var keys = Object.keys(data);
