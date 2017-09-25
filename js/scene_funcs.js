@@ -126,7 +126,7 @@ Quintus.SceneFuncs=function(Q){
 
             //DialogueController holds the functions for the battleScene
             Q.stageScene("script",1,{data:data});
-        });
+        },{tmxImagePath:"../images/"});
     },{sort:true});
     Q.scene("battle",function(stage){
         $("#loading-screen").show();
@@ -177,7 +177,8 @@ Quintus.SceneFuncs=function(Q){
                 if(loaded===total){
                     $("#loading-screen").hide();
                 }
-            }
+            },
+            tmxImagePath:"../images/"
         });
         
     },{sort:true});

@@ -12,9 +12,13 @@ if(isset($_POST['map'])){
 }
 //Get all of the tmx files
 $maps = array();
-foreach (glob("../../data/*.tmx") as $mp) {
-  $maps[] = $mp;
+$dir = "../../data/maps/*";
+foreach (glob($dir) as $folder) {
+    foreach(glob($folder."/*") as $mp) {
+        $maps[] = basename(dirname($mp))."/".basename($mp);
+    }
 }
+print_r($maps);
 ?>
 
 <!DOCTYPE html>
@@ -24,14 +28,14 @@ foreach (glob("../../data/*.tmx") as $mp) {
         <?php include 'config.php';?>
         <script src="js/select-map.js"></script>
     </head>
-    <body>
+    <body
         <div id="maps" value='<?php echo json_encode($maps); ?>'></div>
         <div id="editor-title" hidden><h2><?php echo $name; ?></h2></div>
         <div id="scene-name" hidden><h2><?php echo $scene; ?></h2></div>
         <div id="scene-kind" hidden><h2><?php echo $kind; ?></h2></div>
         <div id="scene-type" hidden><h2><?php echo $type; ?></h2></div>
         <div id="options">
-            <select id="maps-select" initialValue="<?php echo "../../data/".$eventMap; ?>"></select>
+            <select id="maps-select" initialValue="<?php echo "../../data/maps/".$eventMap; ?>"></select>
         </div>
         <ul class="menu right btn-group">
             <li><a id="go-to-scene"><div class="menu-button btn btn-default">Edit Battle/Battle Scene</div></a></li>

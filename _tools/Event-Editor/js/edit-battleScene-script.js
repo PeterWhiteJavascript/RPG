@@ -10,7 +10,7 @@ var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']})
         .touch().controls(true)
         .enableSound();
 $("#new-item-box").css({left:$(document).width()/2});
-Q.options.imagePath = "../.././images/";
+Q.options.imagePath = "../../images/";
 Q.options.audioPath = "../.././audio/";
 Q.options.dataPath = ".././data/";
 
@@ -161,7 +161,7 @@ Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/el
                 Q.stageScene("map",0,{map:map});
                 DC.init();    
             });
-        });
+        },{tmxImagePath:Q.options.imagePath.substring(3)});
     });
 });
 Q.UI.Container.extend("SelectedSquare",{
@@ -340,7 +340,7 @@ var DC = {
             $(".script-list-group").children(".script-group-title").children(".nameable").last().trigger("focusout");
             //Create the options
             var group = this.getScriptItemGroup("Initial");
-            $(group).children(".script-items").append("<div class='script-item func' func='centerView' props='"+JSON.stringify([[Math.floor(Q.stage(0).mapWidth/2),Math.floor(Q.stage(0).mapHeight/2)]])+"'><div class='script-item-name'>centerView</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
+            $(group).children(".script-items").append("<div class='script-item func' func='setView' props='"+JSON.stringify([[Math.floor(Q.stage(0).mapWidth/2),Math.floor(Q.stage(0).mapHeight/2)]])+"'><div class='script-item-name'>setView</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
             $(group).children(".script-items").append("<div class='script-item func' func='changeMusic' props='"+JSON.stringify(["demo.mp3"])+"'><div class='script-item-name'>changeMusic</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
             
             $(group).children(".script-items").children(".script-item").first().trigger("click");
@@ -371,7 +371,7 @@ var DC = {
                     }
                 }
             }
-            $(group).children(".script-items").children(".script-item").first().trigger("click");
+            //$(group).children(".script-items").children(".script-item").first().trigger("click");
         }
                 $(".minimize-icon").trigger("click");
     },
@@ -987,7 +987,7 @@ Q.getXY = function(loc){
 DC.setUpFuncs = {
     setView:[
         function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a character in the stage or from the list to set the view to</p><div id='view-character-selected' class='script-func'></div>");
+            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a location in the stage to tween the view to. Selecting a character (on the stage or from the list) will set the view to it upon arrival.</p><div id='view-character-selected' class='script-func'></div>");
             allowSpriteSelecting = true;
             Q.stage(0).on("selectedCharacter",function(obj){
                 if(Q.locSelectedBox) Q.locSelectedBox.destroy();
@@ -998,16 +998,39 @@ DC.setUpFuncs = {
                 $("#view-character-selected").attr("dataType","array");
                 DC.saveFuncScriptItem();
             });
+            Q.stage(0).on("selectedLocation",function(loc){
+                //show the selected box on the location
+                var pos = Q.getXY(loc);
+                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
+                Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc}));
+                //If there is a character selected, deselect it.
+                DC.deselectChar();
+
+                $("#view-character-selected").text("Location: "+loc[0]+","+loc[1]);
+                $("#view-character-selected").attr("val",JSON.stringify(loc));
+                $("#view-character-selected").attr("dataType","array");
+                DC.saveFuncScriptItem();
+            });
             if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.stage(0).trigger("selectedCharacter",sprite);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
+                if(Q._isNumber(val[0][0])){
+                    var loc = [val[0][0],val[0][1]];
+                    Q.stage(0).trigger("selectedLocation",loc);
+                    Q.viewObj.p.x = loc[0]*Q.tileW+Q.tileW/2;
+                    Q.viewObj.p.y = loc[1]*Q.tileH+Q.tileH/2;
+                } else {
+                    var sprite = DC.getCharacter(val[0][0],val[0][1]);
+                    Q.stage(0).trigger("selectedCharacter",sprite);
+                    Q.viewObj.p.x = sprite.p.x;
+                    Q.viewObj.p.y = sprite.p.y;
+                }
+                //if(Q.locSelectedBox) Q.locSelectedBox.destroy();
+                //Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:Q.viewObj.p.x,y:Q.viewObj.p.y}));
             }
             Q.stage(0).finished = function(){
                 Q.stage(0).off("selectedCharacter");
-                Q.stage(0).finished = function(){};
+                Q.stage(0).off("selectedLocation");
                 $(".script-item").removeClass("selected-script-item");
+                Q.stage(0).finished = function(){};
                 Q("SelectedSquare",0).items.forEach(function(square){
                     square.destroy();
                 });

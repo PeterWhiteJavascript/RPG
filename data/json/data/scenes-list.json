@@ -180,7 +180,10 @@
                 "Prologue",
                 "City-Recruit",
                 "Return-from-recruiting",
-                "City-Outfit"
+                "City-Outfit",
+                "After-equipping-and-recruiting",
+                "Leave-for-journey!",
+                "Training"
             ],
             "vrs": {
                 "startVicantiAsk": false,

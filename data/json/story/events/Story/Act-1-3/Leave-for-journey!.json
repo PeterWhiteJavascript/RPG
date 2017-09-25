@@ -1,0 +1,8 @@
+{
+    "name": "Leave-for-journey!",
+    "desc": "After saying goodbye to Vicanti, Alex and friends are on their way to Dardoine!",
+    "kind": "battleScene",
+    "script": [],
+    "characters": [],
+    "map": "battle_balance1.tmx"
+}

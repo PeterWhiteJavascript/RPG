@@ -5,19 +5,19 @@ var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']})
         .setup({development: true, width:1000, height:800})
         .touch().controls(true)
         .enableSound();
-Q.options.imagePath = "../.././images/";
+Q.options.imagePath = "../../images/";
 Q.options.audioPath = "../.././audio/";
-Q.options.dataPath = ".././data/";
+Q.options.dataPath = "../.././data/";
 
 Q.tileW = 32;
 Q.tileH = 32;
 
 //All of the tmx files
 var tmxs = JSON.parse($("#maps").attr("value"));
-
 var select = $("#maps-select");
-tmxs.forEach(function(tmx){
-    $(select).append("<option value='"+tmx+"'>"+tmx+"</option>");
+tmxs.forEach(function(tmx,i){
+    tmxs[i] = "maps/"+tmx;
+    $(select).append("<option value='"+tmxs[i]+"'>"+tmxs[i]+"</option>");
 });
 $(document).on("change","#maps-select",function(e){
     Q.showMap($(this).val());
@@ -32,7 +32,7 @@ Q.showMap = function(map){
 };
 Q.loadTMX(tmxs,function(){
     Q.stageScene("map",0,{map:$("#maps-select").val()});
-});
+},{tmxImagePath:Q.options.imagePath.substring(3)});
 Q.addViewport = function(stage){
     stage.add("viewport");
     var obj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
@@ -83,8 +83,7 @@ $('#go-to-scene').click( function(e) {
         form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
         form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
         form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-        //Trim the map string to remove the ../../data/ in the path.
-        var map = $("#maps-select").val().slice(11,$("#maps-select").val().length);
+        var map = $("#maps-select").val();
         form.append('<input type="text" name="map" value="'+map+'">');
         $("body").append(form);
         form.submit();

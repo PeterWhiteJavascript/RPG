@@ -1,0 +1,80 @@
+{
+    "name": "After-equipping-and-recruiting",
+    "desc": "Alex goes back to the castle and Vicanti sends him off on his mission.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "throne-room.mp3",
+            "bg": "bg\/throne-room.jpg",
+            "text": "Alex returns to the castle after visiting the blacksmith. Upon returning to the throne room, Alex sees that the guild chief is just leaving. The chief walks past Alex with a grin on his face. Whatever business he was here for must've been a success.\n\nAlex enters the throne room to see {o.Alex.g@his2} father with the same grin.\n\n\"Welcome back, my {o.Alex.g@son}. You came at the perfect time. We will have a feast tonight to send you off on your journey in the best possible way!\"\n\nAlex returns to {o.Alex.g@his2} room and waits for dinnertime.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "In room",
+            "music": "demo.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Dinner is ready, so Alex goes to the dining room.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Dining Room",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Dining Room",
+            "music": "demo.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "After eating, Alex goes back to {o.Alex.g@his2} room and goes to bed early.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Wake up",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Wake up",
+            "music": "demo.mp3",
+            "bg": "bg\/castle-room.jpg",
+            "text": "Alex wakes up early, eagerly awaiting {o.Alex.g@his2} journey! After saying goodbye to {o.Alex.g@his2} father, Alex is on {o.Alex.g@his2} way!",
+            "choices": [
+                {
+                    "displayText": "",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

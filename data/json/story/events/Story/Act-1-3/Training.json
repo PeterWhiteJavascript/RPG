@@ -1,0 +1,39 @@
+{
+    "name": "Training",
+    "desc": "Training with Astraea",
+    "kind": "battleScene",
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "setView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "demo.mp3"
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                7,
+                22
+            ],
+            "dir": "down"
+        }
+    ],
+    "map": "maps\/Venoria\/Venoria-Castle-Training-Area.tmx"
+}
