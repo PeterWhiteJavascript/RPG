@@ -2883,6 +2883,7 @@ Quintus.GameObjects=function(Q){
                     char.dir = data.dir;
                     char.uniqueId = data.uniqueId;
                     char.exp = 0;
+                case "rosterFromFile":
                     //Reset the data variable
                     data = Q.state.get("characterFiles")[data.file][data.group][data.handle];
                     

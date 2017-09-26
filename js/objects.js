@@ -881,6 +881,7 @@ Quintus.Objects=function(Q){
         },
         updateTileEffect:function(loc){
             var tile = Q.BatCon.getTileType(loc);
+            console.log(tile)
             var data = Q.state.get("tileTypes")[tile];
             this.p.tileEffect = data.effect;
         },

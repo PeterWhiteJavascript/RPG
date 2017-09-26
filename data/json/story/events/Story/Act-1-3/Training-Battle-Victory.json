@@ -1,6 +1,6 @@
 {
-    "name": "Training",
-    "desc": "Training with Astraea",
+    "name": "Training-Battle-Victory",
+    "desc": "If Alex beats Astraea in the training battle.",
     "kind": "battleScene",
     "script": [
         [
@@ -17,12 +17,30 @@
             {
                 "func": "changeMusic",
                 "props": [
-                    "prebattle.mp3"
+                    "homeland.mp3"
                 ]
-            }
-        ],
-        [
-            "Walking",
+            },
+            {
+                "text": [
+                    "I guess you didn't even need this training!",
+                    "You are already very fit for combat.",
+                    "Make sure to recruit some people who are just as capable!"
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "centerView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
             {
                 "func": "moveAlong",
                 "props": [
@@ -33,36 +51,7 @@
                     [
                         [
                             7,
-                            15
-                        ]
-                    ],
-                    "up",
-                    false
-                ]
-            },
-            {
-                "func": "moveAlong",
-                "props": [
-                    [
-                        "Astraea",
-                        0
-                    ],
-                    [
-                        [
-                            7,
-                            18
-                        ],
-                        [
-                            7,
-                            16
-                        ],
-                        [
-                            7,
-                            14
-                        ],
-                        [
-                            7,
-                            12
+                            22
                         ]
                     ],
                     "down",
@@ -70,22 +59,27 @@
                 ]
             },
             {
-                "text": [
-                    "There is no need to hold back.",
-                    "Let us begin the training!"
-                ],
-                "asset1": "story\/pyro.png",
-                "asset2": "story\/skirm.png",
-                "pos": "Left",
-                "autoCycle": 0,
-                "noCycle": "No"
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "1000"
+                ]
             },
             {
                 "func": "changeEvent",
                 "props": [
                     "Story",
                     "Act-1-3",
-                    "Training-Battle"
+                    "City-Recruit"
                 ]
             }
         ]
@@ -98,7 +92,7 @@
             "uniqueId": 0,
             "loc": [
                 7,
-                22
+                15
             ],
             "dir": "up"
         },
@@ -109,9 +103,9 @@
             "uniqueId": 0,
             "loc": [
                 7,
-                21
+                12
             ],
-            "dir": "up"
+            "dir": "down"
         }
     ],
     "map": "maps\/Venoria\/Venoria-Castle-Training-Area.tmx"

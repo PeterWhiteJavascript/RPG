@@ -53,6 +53,7 @@ for($i=0;$i<count($characterFiles);$i++){
         <?php include 'config.php';?>
         <script src="js/edit-battleScene-script.js"></script>
         <script src="../../js/music.js"></script>
+        <script src="lib/ask-before-redirect.js"></script>
         <link rel="stylesheet" href="css/edit-battleScene.css">
     </head>
     <body>

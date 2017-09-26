@@ -54,7 +54,7 @@
                             {
                                 "scope": "Global",
                                 "vr": "money",
-                                "operator": "=",
+                                "operator": "+",
                                 "vl": 1000
                             }
                         ]
@@ -78,7 +78,7 @@
                             {
                                 "scope": "Global",
                                 "vr": "money",
-                                "operator": "=",
+                                "operator": "+",
                                 "vl": 3500
                             }
                         ]
@@ -102,14 +102,14 @@
                             {
                                 "scope": "Global",
                                 "vr": "money",
-                                "operator": "=",
+                                "operator": "+",
                                 "vl": 4000
                             }
                         ]
                     ]
                 }
             ],
-            "modules": [],
+            "modules": {},
             "modulesVars": {
                 "extraFromEarlier": [
                     {
@@ -174,8 +174,8 @@
                     ]
                 }
             ],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Leave",
@@ -206,8 +206,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Investigate",
@@ -231,8 +231,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Help the butler clean",

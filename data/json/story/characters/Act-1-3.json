@@ -1,0 +1,96 @@
+{
+    "Training": {
+        "Astraea": {
+            "handle": "Astraea",
+            "name": "Astraea",
+            "levelmin": 5,
+            "levelmax": 5,
+            "gender": "Female",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "High"
+            ],
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Vanguard"
+        }
+    },
+    "Vicanti Add to Roster": {
+        "Good Berserker": {
+            "handle": "Good Berserker",
+            "name": "Big Berserker",
+            "levelmin": 4,
+            "levelmax": 4,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "High"
+            ],
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Berserker"
+        }
+    }
+}

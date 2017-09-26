@@ -1644,6 +1644,7 @@ $(document).on("click","#menu-save-file",function(e){
     .fail(function(data){console.log(data)});
 });
 $(document).on("click","#menu-test-event",function(e){
+    window.onbeforeunload = null;
     $.ajax({
         type:'POST',
         url:'save-battleScene-script.php',
@@ -1662,16 +1663,13 @@ $(document).on("click","#menu-test-event",function(e){
     .fail(function(data){console.log("fail");console.log(data)});
 });
 $(document).on("click","#menu-go-back",function(e){
-    var sure = confirm("Are you sure you want to go back without saving?");
-    if(sure){
-        var form = $('<form action="show-events.php" method="post"></form>');
-        form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-        form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-        form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-        form.append('<input type="text" name="map" value="'+$("#event-map").text()+'">');
-        $("body").append(form);
-        form.submit();
-    }
+    var form = $('<form action="show-events.php" method="post"></form>');
+    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
+    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
+    form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
+    form.append('<input type="text" name="map" value="'+$("#event-map").text()+'">');
+    $("body").append(form);
+    form.submit();
 });
 
 

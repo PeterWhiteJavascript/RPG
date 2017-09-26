@@ -22,7 +22,31 @@
                     0
                 ]
             ]
-        }],
+        },
+        {
+            "conds":[
+                [
+                    "checkVar",
+                    {
+                        "scope": "Scene",
+                        "vr": "startVicantiAsk",
+                        "operator": "==",
+                        "vl": "soldiers"
+                    }
+                ]
+            ],
+            "effects":[
+                [
+                    "addToRoster",
+                    {
+                        "file": "Act-1-3.json",
+                        "group": "Vicanti Add to Roster",
+                        "handle": "Good Berserker"
+                    }
+                ]
+            ]
+        }
+        ],
     "disabled":[0],
     "actions":[
         ["Back to Castle","changeEvent",{

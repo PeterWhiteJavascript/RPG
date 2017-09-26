@@ -183,10 +183,13 @@
                 "City-Outfit",
                 "After-equipping-and-recruiting",
                 "Leave-for-journey!",
-                "Training"
+                "Training",
+                "Training-Battle",
+                "Training-Battle-Victory",
+                "Training-Battle-Defeat"
             ],
             "vrs": {
-                "startVicantiAsk": false,
+                "startVicantiAsk": "soldiers",
                 "helpedButler": false
             }
         },

@@ -386,30 +386,27 @@ $(function(){
             var cl = $(itm).attr("class");
             $(itm).replaceWith('<div class="'+cl+'"><p>'+val+'</p></div>');
         },
-        levelUp:function(statTo,stats,primary,secondary){
+        levelUp:function(statTo,stats,primary){
             var statNames = DC.charGen.statNames;
             var autoChance = DC.charGen.autoChance;
             switch(statTo){
                 case "primary":
                     stats[primary]+=1;
                     break;
-                case "secondary":
-                    stats[secondary]+=1;
-                    break;
                 case "random":
                     stats[statNames[Math.floor(Math.random()*statNames.length)]]+=1;
                     break;
                 case "auto":
-                    stats = DC.levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary,secondary);
+                    stats = DC.levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary);
                     break;
             }
             return stats;
         },
-        levelTo:function(stats,primary,secondary,level){
+        levelTo:function(stats,primary,level){
             var order = DC.charGen.order;
             for(var i=0;i<level;i++){
                 var num = i%order.length;
-                stats = this.levelUp(order[num],stats,primary,secondary);
+                stats = this.levelUp(order[num],stats,primary);
             }
             return stats;
         },
@@ -654,14 +651,12 @@ $(function(){
         var baseAmount = $("#value-rand-base-stats").val();
         
         var char = DC.selectedCharacter;
-        var primary,secondary;
+        var primary;
         if(char.charClass==="Random"){
             primary = DC.charGen.primaryStats[Math.floor(Math.random()*DC.charGen.primaryStats.length)];
-            secondary = DC.charGen.secondaryStats[Math.floor(Math.random()*DC.charGen.secondaryStats.length)];
         } else {
             var idx = DC.charGen.classNames.indexOf(char.charClass);
             primary = DC.charGen.primaryStats[idx];
-            secondary = DC.charGen.secondaryStats[idx];
         }
         
         var statNames = DC.charGen.statNames;
@@ -698,8 +693,6 @@ $(function(){
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
                                 stats[statNames[i]]=16;
-                            } else if(secondary===DC.charGen.statNames[i]){
-                                stats[statNames[i]]=15;
                             } else {
                                 stats[statNames[i]]=Math.floor(Math.random()*5)+10;
                             }
@@ -709,8 +702,6 @@ $(function(){
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
                                 stats[statNames[i]]=18;
-                            } else if(secondary===DC.charGen.statNames[i]){
-                                stats[statNames[i]]=17;
                             } else {
                                 stats[statNames[i]]=Math.floor(Math.random()*5)+12;
                             }
@@ -719,8 +710,6 @@ $(function(){
                     case "High":
                         for(var i=0;i<numStats;i++){
                             if(primary===DC.charGen.statNames[i]){
-                                stats[statNames[i]]=20;
-                            } else if(secondary===DC.charGen.statNames[i]){
                                 stats[statNames[i]]=20;
                             } else {
                                 stats[statNames[i]]=Math.floor(Math.random()*5)+15;
@@ -738,8 +727,7 @@ $(function(){
         //Level up to the mean of levelmin and levelmax (minus 1 as level 1 is start)
         var mean = Math.ceil((parseInt($(".levelmin").val())+parseInt($(".levelmax").val()))/2)-1;
         stats[primary]+=5;
-        stats[secondary]+=3;
-        stats = DC.levelTo(stats,primary,secondary,mean);
+        stats = DC.levelTo(stats,primary,mean);
         
         var keys = Object.keys(stats);
         $(this).parent().parent().children(".base-stats").children("li").children(".base-stat").each(function(i){

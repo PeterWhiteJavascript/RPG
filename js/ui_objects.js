@@ -175,6 +175,11 @@ Quintus.UIObjects=function(Q){
                     //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
                     if(t.p.currentPage==="start") t.p.location.disabled.splice(t.p.location.disabled.indexOf(obj),1);
                     else t.p.location[t.p.currentPage].disabled.splice(t.p.location[t.p.currentPage].disabled.indexOf(obj),1);
+                },
+                addToRoster:function(t,obj){
+                    var char = Q.charGen.generateCharacter(obj,"rosterFromFile");
+                    console.log(char);
+                    Q.state.get("saveData").applicationsRoster.push(char);
                 }
             }
         }
@@ -991,6 +996,8 @@ Quintus.UIObjects=function(Q){
         },
         //Finds a var
         matchVar:function(text){
+            //If we're dealing with a number most likely
+            if(!Q._isString(text)) return Q.textModules.processTextVarInstance(text);
             //Find any variables and replace the string with the values
             var replacedText = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
                 return Q.textModules.processTextVarInstance(p1);
@@ -1127,7 +1134,7 @@ Quintus.UIObjects=function(Q){
                         break;
                 }
                 var keys = Object.keys(vars);
-                var processedVal = typeof obj.vl == "boolean" ? obj.vl : Q.textModules.processTextVars(obj.vl);
+                var processedVal = typeof obj.vl !== "string" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
                         return t.evaluateStringOperator(vars[keys[i]],obj.operator,processedVal);
@@ -1151,7 +1158,7 @@ Quintus.UIObjects=function(Q){
                         break;
                 }
                 //Process it so that you can have vars in the value.
-                var processedVal = typeof obj.vl == "boolean" ? obj.vl : Q.textModules.processTextVars(obj.vl);
+                var processedVal = typeof obj.vl !== "string" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 switch(obj.operator){
                     case "=":
                         vars[obj.vr] = processedVal;
