@@ -47,6 +47,16 @@ $(function(){
                     $("body").append(form);
                     form.submit();
                     break;
+                case "location":
+                    
+                    var scene = $("#title").text();
+                    var name = $(selectedEvent).parent().attr("name");
+                    var type = $("#type").text();
+                    var form = $('<form action="edit-location-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                    
+                    $("body").append(form);
+                    form.submit();
+                    break;
             }
         }
     });

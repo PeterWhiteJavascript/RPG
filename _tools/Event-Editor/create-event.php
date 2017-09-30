@@ -68,6 +68,7 @@ if(isset($_POST['name'])){
                                 <option <?php if($kind=="story"){echo "selected";}?> value="story">Story</option>
                                 <option <?php if($kind=="battleScene"){echo "selected";}?> value="battleScene">Battle Scene</option>
                                 <option <?php if($kind=="battle"){echo "selected";}?> value="battle">Battle</option>
+                                <option <?php if($kind=="location"){echo "selected";}?> value="location">Location</option>
                             </select>
                             <?php
                         }

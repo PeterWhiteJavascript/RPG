@@ -2,7 +2,164 @@
     "name": "Leave-for-journey!",
     "desc": "After saying goodbye to Vicanti, Alex and friends are on their way to Dardoine!",
     "kind": "battleScene",
-    "script": [],
-    "characters": [],
-    "map": "battle_balance1.tmx"
+    "script": [
+        [
+            "Initial",
+            {
+                "func": "setView",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ]
+                ]
+            },
+            {
+                "func": "changeMusic",
+                "props": [
+                    "homeland.mp3"
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            14,
+                            13
+                        ]
+                    ],
+                    "right",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            15,
+                            13
+                        ]
+                    ],
+                    "left",
+                    true
+                ]
+            }
+        ],
+        [
+            "Talk",
+            {
+                "text": [
+                    "Well, let's be on our way through the forest."
+                ],
+                "asset1": "story\/pyro.png",
+                "asset2": "story\/skirm.png",
+                "pos": "Left",
+                "autoCycle": 0,
+                "noCycle": "No"
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    [
+                        [
+                            14,
+                            29
+                        ]
+                    ],
+                    "down",
+                    false
+                ]
+            },
+            {
+                "func": "moveAlong",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    [
+                        [
+                            15,
+                            29
+                        ]
+                    ],
+                    "down",
+                    true
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Astraea",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "fadeChar",
+                "props": [
+                    [
+                        "Alex",
+                        0
+                    ],
+                    "out"
+                ]
+            },
+            {
+                "func": "waitTime",
+                "props": [
+                    "1000"
+                ]
+            },
+            {
+                "func": "changeEvent",
+                "props": [
+                    "Story",
+                    "Act-1-3",
+                    "After-equipping-and-recruiting"
+                ]
+            }
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                3
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Astraea",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                3
+            ],
+            "dir": "down"
+        }
+    ],
+    "map": "maps\/Venoria\/Venoria-Castle-Outside.tmx"
 }

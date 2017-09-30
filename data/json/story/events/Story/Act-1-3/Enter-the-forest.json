@@ -1,0 +1,147 @@
+{
+    "name": "Enter-the-forest",
+    "desc": "Alex and Astraea enter the forest on the way to Dardoine.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex and Astraea enter the forest, eager to visit Dardoine on the other side. After walking for hours, they come across a small clearing. There seem to be people camping here in the middle of the forest! It's difficult to make out what kinds of people are at the campsite from here. The path leads straight though the campsite, but there seems to be a narrow dirt path that skirts the outside as well.",
+            "choices": [
+                {
+                    "displayText": "Approach the campsite",
+                    "desc": "",
+                    "page": "Walk through campsite",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Walk around the campsite",
+                    "desc": "",
+                    "page": "Walk around campsite",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Walk through campsite",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "The party walks straight down the center path. There are people sitting by a fire cooking some sort of meat. They all look like soldiers.",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Walk around campsite",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "The party walks around the outside of the campsite, careful not to disturb the residents. As they are halfway around, a loud crashing noise can be heard, as if someone is banging two pots together. Immediately after, soldiers appear behind them and in front of them, trapping the party.\n\nA strong looking man approaches the party.\n\n\"We're stationed here to stop anyone suspicious from passing through here. What is your business in this forest?\"",
+            "choices": [
+                {
+                    "displayText": "Answer truthfully",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Tell him that you are an Aliudramilan spy",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Tell the truth",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex responds by telling the man that they are on a mission to Dardoine to visit with the king.\n\nThe man questions Alex as to why they were sneaking around behind the campsite instead of going right through.",
+            "choices": [
+                {
+                    "displayText": "Tell him that we just didn't want any trouble",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                },
+                {
+                    "displayText": "Tell him to mind his own business",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Tell that you are spy",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex tells the man that they are Aliudramilan spies that have come to map out the forest.\n\nThe man responds by taking out his sword.\n\n\"There will be no spying here on my watch!\"\n\nThe other soldiers that have surrounded the party all pull out their weapons as well.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Tell him to mind his business",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex tells the man to mind his own business and gestures for the soldiers to move aside.\n\nThe man responds by pulling out his sword.\n\n\"It seems like we'll have to teach you what it means to be a border guard!\"\n\nAll of the other people that have surrounded the party pull out their weapons as well.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Tell him that didn't want trouble",
+            "music": "demo.mp3",
+            "bg": "bg\/forest.jpg",
+            "text": "Alex tells the man that they did not want any trouble, so they were avoiding walking through the camp.\n\nThe man doesn't seem to believe Alex and pulls out his sword.\n\n\"That's a very spy thing of you to say\".\n\nAll of the soldiers that have surrounded the party pull out their weapons as well, ready to fight.",
+            "choices": [
+                {
+                    "displayText": "Next",
+                    "desc": "",
+                    "page": "Start",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

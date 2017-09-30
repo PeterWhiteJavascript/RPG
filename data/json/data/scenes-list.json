@@ -186,10 +186,15 @@
                 "Training",
                 "Training-Battle",
                 "Training-Battle-Victory",
-                "Training-Battle-Defeat"
+                "Training-Battle-Defeat",
+                "Enter-the-forest",
+                "Venoria-Forest-Clearing-Battle",
+                "Forest-Clearing-Battle-Victory",
+                "Forest-Clearing-Battle-Defeat",
+                "Test"
             ],
             "vrs": {
-                "startVicantiAsk": "soldiers",
+                "startVicantiAsk": false,
                 "helpedButler": false
             }
         },
@@ -251,16 +256,6 @@
             "name": "FinalAct",
             "desc": "",
             "eventOrder": [],
-            "vrs": []
-        }
-    ],
-    "Locations": [
-        {
-            "name": "Metaximo",
-            "desc": "Metaximo is a cool place",
-            "eventOrder": [
-                "metaximo1"
-            ],
             "vrs": []
         }
     ],

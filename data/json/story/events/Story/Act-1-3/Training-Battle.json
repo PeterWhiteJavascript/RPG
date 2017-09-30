@@ -4,7 +4,7 @@
     "kind": "battle",
     "map": "maps\/Venoria\/Venoria-Castle-Training-Area.tmx",
     "music":"battle.mp3",
-    "placementSquares":[[6,15],[7,15],[8,15]],
+    "placementSquares":[[7,15],[6,15],[8,15]],
     "maxAllies":1,
     "victory":{
         "next":{

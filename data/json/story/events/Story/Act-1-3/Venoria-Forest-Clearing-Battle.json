@@ -1,0 +1,94 @@
+{
+    "name": "Venoria-Forest-Clearing-Battle",
+    "desc": "Battle with the guards.",
+    "kind": "battle",
+    "map": "maps\/Venoria\/Venoria-Forest-Clearing.tmx",
+    "music":"battle.mp3",
+    "placementSquares":[[8,14],[9,14],[10,14],[8,15],[9,15],[10,15]],
+    "maxAllies":6,
+    "victory":{
+        "next":{
+            "type":"Story",
+            "scene":"Act-1-3",
+            "event":"Forest-Clearing-Battle-Victory"
+        }
+    },
+    "defeat":{
+        "next":{
+            "type":"Story",
+            "scene":"Act-1-3",
+            "event":"Forest-Clearing-Battle-Defeat"
+        }
+    },
+    "events":[
+        
+    ],
+    "characters": [
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Berserker",
+            "uniqueId": 0,
+            "loc": [
+                8,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Leader",
+            "uniqueId": 0,
+            "loc": [
+                9,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Berserker",
+            "uniqueId": 1,
+            "loc": [
+                10,
+                11
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Vanguard",
+            "uniqueId": 0,
+            "loc": [
+                8,
+                18
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                9,
+                18
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Act-1-3.json",
+            "group": "Forest Clearing",
+            "handle": "Vanguard",
+            "uniqueId": 1,
+            "loc": [
+                10,
+                18
+            ],
+            "dir": "up"
+        }
+    ]
+}

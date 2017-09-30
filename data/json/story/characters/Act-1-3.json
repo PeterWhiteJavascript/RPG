@@ -92,5 +92,187 @@
             "nationality": "Venorian",
             "charClass": "Berserker"
         }
+    },
+    "Forest Clearing": {
+        "Legionnaire": {
+            "handle": "Legionnaire",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 2,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Legionnaire"
+        },
+        "Vanguard": {
+            "handle": "Vanguard",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 2,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Vanguard"
+        },
+        "Berserker": {
+            "handle": "Berserker",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 2,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Berserker"
+        },
+        "Leader": {
+            "handle": "Leader",
+            "name": "",
+            "levelmin": 3,
+            "levelmax": 3,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Legionnaire"
+        }
     }
 }

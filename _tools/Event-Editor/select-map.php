@@ -18,7 +18,6 @@ foreach (glob($dir) as $folder) {
         $maps[] = basename(dirname($mp))."/".basename($mp);
     }
 }
-print_r($maps);
 ?>
 
 <!DOCTYPE html>

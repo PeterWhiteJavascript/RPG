@@ -202,6 +202,7 @@ h2{
 #bg-select{
     width:35%;
     padding-left:15px;
+    padding-right:15px;
     float:left;
 }
 #bg-select select{
@@ -648,6 +649,7 @@ li{
 #editor-page-options{
     padding:10px;
     width:90%;
+    height:10%;
 }
 #bottom-page-options{
     float:left;

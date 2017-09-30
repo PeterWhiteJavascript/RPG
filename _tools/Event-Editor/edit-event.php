@@ -16,7 +16,7 @@ if(!isset($_POST['copying'])){
     switch($eventType){
         case "story":
             $newFile['pages'] = [];
-            $newFile['vrs'] = [];
+            $newFile['vrs'] = (object)[];
             break;
         case "battleScene":
             $newFile['script'] = [];
@@ -27,6 +27,10 @@ if(!isset($_POST['copying'])){
             $newFile['battle'] = (object)[];
             $newFile['maxAllies'] = 0;
             $newFile['characters'] = (object)[];
+            break;
+        case "location":
+            $newFile['actions'] = [];
+            $newFile['vrs'] = (object)[];
             break;
     }
     $newFile['kind'] = $eventType;
@@ -76,6 +80,14 @@ if(!isset($_POST['copying'])){
                 form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
                 form.append('<input type="text" name="type" value="'+$("#type").text()+'">');
                 form.append('<input type="text" name="kind" value="'+kind+'">');
+                $("body").append(form);
+                form.submit();
+                break;
+            case "location":
+                var form = $('<form action="edit-location-event.php" method="post"></form>');
+                form.append('<input type="text" name="name" value="'+$("#name").text()+'">');
+                form.append('<input type="text" name="scene" value="'+$("#scene").text()+'">');
+                form.append('<input type="text" name="type" value="'+$("#type").text()+'">');
                 $("body").append(form);
                 form.submit();
                 break;

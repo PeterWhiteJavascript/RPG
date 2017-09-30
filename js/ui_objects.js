@@ -171,14 +171,13 @@ Quintus.UIObjects=function(Q){
                 setVar:function(t,obj){
                     Q.textModules.effectFuncs.setVar(t,obj);
                 },
-                enableAction:function(t,obj){
+                enableChoice:function(t,obj){
                     //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
-                    if(t.p.currentPage==="start") t.p.location.disabled.splice(t.p.location.disabled.indexOf(obj),1);
-                    else t.p.location[t.p.currentPage].disabled.splice(t.p.location[t.p.currentPage].disabled.indexOf(obj),1);
+                    if(t.p.currentPage==="start") t.p.location.disabledChoices.splice(t.p.location.disabledChoices.indexOf(obj),1);
+                    else t.p.location[t.p.currentPage].disabledChoices.splice(t.p.location[t.p.currentPage].disabledChoices.indexOf(obj),1);
                 },
                 addToRoster:function(t,obj){
                     var char = Q.charGen.generateCharacter(obj,"rosterFromFile");
-                    console.log(char);
                     Q.state.get("saveData").applicationsRoster.push(char);
                 }
             }
@@ -456,11 +455,11 @@ Quintus.UIObjects=function(Q){
             if(p.onload){
                 var disableClone;
                 //Clone this so we can reset it after.
-                if(p.disabled) disableClone = p.disabled.slice();
+                if(p.disabledChoices) disableClone = p.disabledChoices.slice();
                 
                 //Figure out if we need to enable an action
                 Q.textModules.processCondEffects(this,p.onload);
-                var disabled = p.disabled;
+                var disabled = p.disabledChoices;
                 if(disabled){
                     for(var i=disabled.length-1;i>=0;i--){
                         actions.splice(disabled[i],1);
@@ -468,8 +467,8 @@ Quintus.UIObjects=function(Q){
                 }
                 if(disabled){
                     //Reset the disabled
-                    if(this.p.currentPage==="start") this.p.location.disabled = disableClone;
-                    else this.p.location[this.p.currentPage].disabled = disableClone;
+                    if(this.p.currentPage==="start") this.p.location.disabledChoices = disableClone;
+                    else this.p.location[this.p.currentPage].disabledChoices = disableClone;
                 }
             }
             var cont = this.p.menuCont;
