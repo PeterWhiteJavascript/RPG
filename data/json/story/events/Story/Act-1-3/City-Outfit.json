@@ -7,6 +7,14 @@
     "vrs":{
         "visitedBlacksmith":false
     },
+    "disabledChoices": [
+        1,2
+    ],
+    "pageList": [
+        "start",
+        "blacksmith",
+        "calensBlacksmith"
+    ],
     "onload":[
         {
             "conds":[
@@ -22,8 +30,8 @@
             ],
             "effects":[
                 [
-                    "enableAction",
-                    1
+                    "enableChoice",
+                    {"choice":1}
                 ]
             ]
         },
@@ -41,14 +49,11 @@
             ],
             "effects":[
                 [
-                    "enableAction",
-                    2
+                    "enableChoice",
+                    {"choice":2}
                 ]
             ]
         }
-    ],
-    "disabled":[
-        1,2
     ],
     "actions":[
         ["Blacksmith","changePage",{"page":"blacksmith"}],
@@ -62,6 +67,7 @@
     "blacksmith":{
         "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
         "music":"the_usual.mp3",
+        "disabledChoices":[],
         "onload":[
             {
                 "conds":[],
@@ -89,8 +95,8 @@
                         ["Spear","Weapons","Average","Bronze"],
                         ["Spear","Weapons","Average","Iron"],
                         ["Bow","Weapons","Average","Wood"],
-                        ["Shield","Weapons","Average","Bronze"],
-                        ["Shield","Weapons","Average","Iron"],
+                        ["Shield","Shields","Average","Bronze"],
+                        ["Shield","Shields","Average","Iron"],
                         ["Shoes","Footwear","Average","Wood"]
                     ]
                 }
@@ -110,6 +116,7 @@
     "calensBlacksmith":{
         "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
         "music":"the_usual.mp3",
+        "disabledChoices":[],
         "onload":[
             {
                 "conds":[],
@@ -134,7 +141,7 @@
                     "list":[
                         ["Pike","Weapons","Shoddy","Brass"],
                         ["Mace","Weapons","Shoddy","Brass"],
-                        ["Small Shield","Weapons","Shoddy","Brass"],
+                        ["Small Shield","Shields","Shoddy","Brass"],
                         ["Breastplate","Armour","Shoddy","Brass"]
                     ]
                 }

@@ -357,6 +357,36 @@ Q.load(files.join(','),function(){
                         form.submit();
                     });
                     break;
+                case "location":
+                    Q.newGame({gender:"Female",eventName:name});
+                    $(document.body).append('<div id="back-button" class="btn btn-default">TO SCRIPT</div>');
+                    //$(document.body).append('<div id="back-button2" class="btn btn-default">TO CHARACTERS</div>');  
+                    $(document.body).append('<div id="back-button3" class="btn btn-default">TO SHOW EVENTS</div>');  
+                    $("#back-button").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-location-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    /*$("#back-button2").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });*/
+                    $("#back-button3").click(function(){
+                        var scene = $("#title").text();
+                        var name = $("#title2").text();
+                        var type = $("#title3").text();
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        $("body").append(form);
+                        form.submit();
+                    });
+                    break;
             }
             
         });

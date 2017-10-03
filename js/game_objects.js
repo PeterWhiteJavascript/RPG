@@ -2306,6 +2306,7 @@ Quintus.GameObjects=function(Q){
             if(!text.length) return obj.entity.attackFuncs.finishAttack();
             //Get the first function
             var t = text.shift();
+            if(!t||!t.props) console.log(text,this.text,t);
             //Push this function as a callback so everything is timed well.
             t.props.push(function(){obj.processText(text);});
             //Do the function

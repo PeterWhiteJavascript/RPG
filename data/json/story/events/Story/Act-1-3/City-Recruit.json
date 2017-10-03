@@ -1,12 +1,19 @@
 {
     "name": "City-Recruit",
-    "kind":"location",
-    "desc":"First time in town. Goal is to recruit people.",
-    "bg": "bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+    "kind": "location",
+    "desc": "First time in town. Goal is to recruit people.",
+    "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
     "music": "homeland.mp3",
-    "onload":[
+    "disabledChoices": [
+        0
+    ],
+    "pageList": [
+        "start",
+        "barracks"
+    ],
+    "onload": [
         {
-            "conds":[
+            "conds": [
                 [
                     "checkKeyword",
                     {
@@ -16,22 +23,24 @@
                     }
                 ]
             ],
-            "effects":[
+            "effects": [
                 [
-                    "enableAction",
-                    0
+                    "enableChoice",
+                    {
+                        "choice": 0
+                    }
                 ]
             ]
         },
         {
-            "conds":[
+            "conds": [
                 [
                     "checkVar",
                     {
                         "scope": "Event",
                         "vr": "addedBerserker",
                         "operator": "==",
-                        "vl": false
+                        "vl": true
                     }
                 ],
                 [
@@ -44,7 +53,7 @@
                     }
                 ]
             ],
-            "effects":[
+            "effects": [
                 [
                     "addToRoster",
                     {
@@ -56,30 +65,52 @@
                 [
                     "setVar",
                     {
-                        "scope":"Event",
-                        "vr":"addedBerserker",
-                        "operator":"=",
-                        "vl":true
+                        "scope": "Event",
+                        "vr": "addedBerserker",
+                        "operator": "=",
+                        "vl": true
                     }
                 ]
             ]
         }
-        ],
-    "disabled":[0],
-    "actions":[
-        ["Back to Castle","changeEvent",{
-        "type":"Story",
-        "scene":"Act-1-3",
-        "event":"Return-from-recruiting"
-        }],
-        ["Barracks","changePage",{"page":"barracks"}]
     ],
-    "barracks":{
-        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
-        "music":"the_usual.mp3",
-        "onload":[
+    "actions": [
+        [
+            "Back to Castle",
+            "changeEvent",
             {
-                "conds":[
+                "type": "Story",
+                "scene": "Act-1-3",
+                "event": "Return-from-recruiting"
+            }
+        ],
+        [
+            "Barracks",
+            "changePage",
+            {
+                "page": "barracks"
+            }
+        ]
+    ],
+    "barracks": {
+        "music": "the_usual.mp3",
+        "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "actions": [
+            [
+                "View Recruits",
+                "createRecruitMenu"
+            ],
+            [
+                "Leave",
+                "changePage",
+                {
+                    "page": "start"
+                }
+            ]
+        ],
+        "onload": [
+            {
+                "conds": [
                     [
                         "checkKeyword",
                         {
@@ -89,28 +120,23 @@
                         }
                     ]
                 ],
-                "effects":[
+                "effects": [
                     [
-                        "enableAction",
-                        0
+                        "enableChoice",
+                        {
+                            "choice": 0
+                        }
                     ]
                 ]
             }
         ],
-        "disabled":[0],
-        "actions":[
-            [
-                "View Recruits",
-                "createRecruitMenu"
-            ],
-            [
-                "Leave",
-                "changePage",
-                {"page":"start"}
-            ]
+        "disabledChoices": [
+            0
         ]
     },
-    "vrs":{
-        "addedBerserker":false
-    }
+    "vrs": {
+        "addedBerserker": 0
+    },
+    "scene": "Act-1-3",
+    "type": "Story"
 }

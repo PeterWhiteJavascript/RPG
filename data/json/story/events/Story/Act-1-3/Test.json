@@ -1,8 +1,9 @@
 {
+    "desc": "Test",
     "vrs": {
         "addedBerserker": 0
     },
-    "kind":"location",
+    "kind": "location",
     "name": "Test",
     "music": "homeland.mp3",
     "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",

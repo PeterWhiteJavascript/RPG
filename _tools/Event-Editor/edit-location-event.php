@@ -17,10 +17,11 @@ $scenes = array_diff(scandir($directory), array('..', '.'));
 
 $dataFiles = array_slice(scandir('../../data/json/data'),2);
 
+//Load all of the character files
 $characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
 $characters = (object)[];
-for($i=0;$i<count($characterFiles);$i++){
-    $characters->$characterFiles[$i] = json_decode(file_get_contents('../../data/json/story/characters/'.$characterFiles[$i]), true);
+foreach($characterFiles as $charFile){
+    $characters -> $charFile = json_decode(file_get_contents('../../data/json/story/characters/'.$charFile), true);
 }
 ?>
 

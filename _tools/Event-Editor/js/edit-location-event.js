@@ -37,7 +37,7 @@ var start = function(){
             
             uniqueActions:1,
             keywords:["partySize","rosterSize"],
-            actionFuncs:["changeEvent","changePage","createRecruitMenu"]
+            actionFuncs:["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList"]
         },
         init:function(){
             this.p.scenes = GDATA['scenes-list.json'];
@@ -480,9 +480,80 @@ var start = function(){
                     }
                     content = this.setUpEffectProp("select","Enable Choice #","choice",{opts:this.enableChoiceOptions(),choice:props.choice});
                     break;
-                    
+                case "displayBuyItemsList":
+                    if(!props){props = {};
+                        props.list = [];
+                    }
+                    content = "<div><div>Item List</div><div>Add Item</div></div>";
+                    content += this.setUpBuyList(props.list);
+                    break;
+                case "displaySellItemsList":
+                    if(!props){props = {};
+                        props.allow = "all";
+                    }
+                    content = this.setUpEffectProp("select","Sell Type","allow",{opts:'<option value="all">All</option><option value="weapons">Weapons</option><option value="consumables">Consumables</option>',allow:props.allow});
+                    break;
             }
             return content;
+        },
+        getConsumablesOptions:function(){
+            var keys = Object.keys(GDATA["items.json"]);
+            var opts = "";
+            for(var i=0;i<keys.length;i++){
+                opts += "<option value='"+keys[i]+"'>"+keys[i]+"</option>";
+            }
+            return opts;
+        },
+        getQualityOptions:function(){
+            var keys = Object.keys(GDATA["equipment.json"].Quality);
+            var opts = "";
+            for(var i=0;i<keys.length;i++){
+                opts += "<option value ='"+keys[i]+"'>"+keys[i]+"</option>";
+            }
+            return opts;
+        },
+        getGearOptions:function(){
+            var equipment = GDATA["equipment.json"];
+            var keys = Object.keys(equipment.Weapons).concat(Object.keys(equipment.Shields).concat(Object.keys(equipment.Armour).concat(Object.keys(equipment.Footwear).concat(Object.keys(equipment.Accessories)))));
+            var opts = "";
+            for(var i=0;i<keys.length;i++){
+                opts += "<option value ='"+keys[i]+"'>"+keys[i]+"</option>";
+            }
+            return opts;
+        },
+        getMaterialOptions:function(type,gear){
+            var materials = GDATA["equipment.json"][type][gear].materials;
+            var opts = "";
+            for(var i=0;i<materials.length;i++){
+                opts += "<option value ='"+materials[i]+"'>"+materials[i]+"</option>";
+            }
+            return opts;
+        },
+        createItemInList:function(item){
+            var gear = item[0];
+            var type = item[1];
+            var content = "";
+            switch(type){
+                case "Consumables":
+                    content = "<div class='buy-item-cont'><select class='item-name' initial-value='"+gear+"'>"+this.getConsumablesOptions()+"</select></div>";
+                    break;
+                default:
+                    var quality = item[2];
+                    var material = item[3];
+                    content = "<div class='buy-item-cont'><select class='item-quality' initial-value='"+quality+"'>"+this.getQualityOptions()+"</select><select class='item-gear' initial-value='"+gear+"'>"+this.getGearOptions()+"</select><select class='item-material' initial-value='"+material+"'>"+this.getMaterialOptions(type,gear)+"</select></div>";
+                    break;
+            }
+            return content;
+        },
+        addItemToList:function(item){
+            
+        },
+        setUpBuyList:function(list){
+            var opts = "";
+            for(var i=0;i<list.length;i++){
+                opts += this.createItemInList(list[i]);
+            }
+            return opts;
         },
         enableChoiceOptions:function(){
             var opts = '';
@@ -591,7 +662,7 @@ var start = function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","changeEvent","addToRoster","enableChoice"];
+            var effects = ["setVar","changePage","changeEvent","addToRoster","enableChoice","displayBuyItemsList","displaySellItemsList"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });
@@ -824,15 +895,19 @@ var start = function(){
         //Save the current action
         DC.saveAction();
         var data = DC.getSaveData();
+        data.name = eventName;
+        data.scene = sceneName;
+        data.type = sceneType;
+        data.pageList 
         $.ajax({
             type:'POST',
             url:'save-location.php',
-            data:{actions:JSON.stringify(data.actions).trim().replace(/ /g, '%20'),vrs:JSON.stringify(data.vrs).trim().replace(/ /g, '%20'),name:eventName,scene:sceneName,type:sceneType},
+            data:data,
             dataType:'json'
         })
-        .done(function(data){console.log(data)})
+        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
         .fail(function(data){console.log(data)});
-        //Create the save form
+
         var form = $('<form action="../../index.php" method="post"></form>');
         form.append('<input type="text" name="name" value="'+eventName+'">');
         form.append('<input type="text" name="scene" value="'+sceneName+'">');
