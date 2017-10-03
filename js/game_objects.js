@@ -3241,7 +3241,7 @@ Quintus.GameObjects=function(Q){
                 strength:this.get_strength(char),
                 endurance:this.get_endurance(char),
                 dexterity:this.get_dexterity(char),
-                weaponSkill:this.get_weaponSkill(char),
+                weaponSkill:this.get_weaponSkill(char), 
                 reflexes:this.get_reflexes(char),
                 initiative:this.get_initiative(char),
                 energy:this.get_energy(char),
