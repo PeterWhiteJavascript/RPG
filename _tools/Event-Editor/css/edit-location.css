@@ -22,3 +22,31 @@
 .disable{
     float:none;
 }
+
+.buy-item-cont{
+    width:100%;
+}
+.item-type{
+    width:22.5%;
+    height:28px;
+    display:inline-block;
+}
+.item-gear{
+    width:22.5%;
+    height:28px;
+    display:inline-block;
+}
+.item-quality{
+    width:22.5%;
+    height:28px;
+    display:inline-block;
+}
+.item-material{
+    width:22.5%;
+    height:28px;
+    display:inline-block;
+}
+.add-item-button{
+    width:100%;
+    
+}

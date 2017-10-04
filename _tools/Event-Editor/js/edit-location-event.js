@@ -36,8 +36,13 @@ var start = function(){
             choicesCont:$("#choices").children("ul").first(),
             
             uniqueActions:1,
+            
+            scopes:["Event","Scene","Global"],
+            equipmentTypes:["Weapons","Shields","Armour","Footwear","Accessories","Consumables"],
             keywords:["partySize","rosterSize"],
-            actionFuncs:["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList"]
+            actionFuncs:["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList"],
+            conditionsFuncs:["checkChar","checkVar","checkKeyword"],
+            effectsFuncs:["setVar","changePage","changeEvent","addToRoster","enableChoice","displayBuyItemsList","displaySellItemsList"]
         },
         init:function(){
             this.p.scenes = GDATA['scenes-list.json'];
@@ -81,7 +86,7 @@ var start = function(){
                         <div class="btn btn-group center remove-choice-deep thirty-height">x</div>\n\
                     </div>\n\
                     <input class="display-text full-line" value="'+displayText+'">\n\
-                    <select class="actions-select full-line" initial-value="'+func+'">'+this.actionFuncOptions()+'</select>\n\
+                    <select class="actions-select full-line" initial-value="'+func+'">'+this.getOptString(this.p.actionFuncs)+'</select>\n\
                     <div class="btn btn-quarter full-line disable">'+(disabled?"Disabled":"Enabled")+'</div>\n\
                     <div class="effect-props">\n\
                         '+this.getEffect([func,props])+'\n\
@@ -90,14 +95,6 @@ var start = function(){
                 </li>'
             );
             ;
-        },
-        actionFuncOptions:function(){
-            var opts = '';
-            var keywords = this.p.actionFuncs;
-            keywords.forEach(function(itm){
-                opts+='<option value="'+itm+'">'+itm+'</option>';
-            });
-            return opts;
         },
         //Adds a var to the list
         addVar:function(name,val,fromSave){
@@ -152,13 +149,25 @@ var start = function(){
         getSaveProps:function(itm){
             var p = {};
             $(itm).children(".effect-props").children(".effect-prop").each(function(i,o){
-                var val = parseInt($(o).val());
-                if(isNaN(val)) val = encodeURIComponent($(o).val());
-                if(!val) val = $(o).text();
-                if(!val) val = 0;
+                var val;
+                //We're creating an array
+                if($(o).children(".effect-prop-arr").length){
+                    val = [];
+                    $(o).children(".effect-prop-arr").each(function(j,k){
+                        var itm = [];
+                        $(k).children(".arr-prop").each(function(a,b){
+                            itm.push($(b).val());
+                        });
+                        val.push(itm);
+                    });
+                } else {
+                    val = parseInt($(o).val());
+                    if(isNaN(val)) val = encodeURIComponent($(o).val());
+                    if(!val) val = $(o).text();
+                    if(!val) val = 0;
+                }
                 p[$(o).attr("class").split(" ")[1]] = val;
             });
-            
             var props = {
                 displayText:$(itm).children(".display-text").val(),
                 func:$(itm).children(".actions-select").val(),
@@ -361,7 +370,7 @@ var start = function(){
         },
         //Display the select that allows the user to select a condition
         getCondChoices:function(cond){
-            return '<div class="condition"><p class="editor-descriptor-half light-gradient">Condition</p><select class="conditions-select inline-select" initial-value="'+cond+'">'+this.conditionsOptions()+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="cond-props"></div></div>';
+            return '<div class="condition"><p class="editor-descriptor-half light-gradient">Condition</p><select class="conditions-select inline-select" initial-value="'+cond+'">'+this.getOptString(this.p.conditionsFuncs)+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="cond-props"></div></div>';
         },
         //Creates a choice condition
         getCond:function(cond){
@@ -377,7 +386,7 @@ var start = function(){
                         props.vr = firstVar;
                         props.vl = varProps.vars[firstVar];
                     }
-                    var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="cond-prop scope inline-select" initial-value="'+props.scope+'">'+this.scopeOptions()+'</select>';
+                    var scope = '<p class="editor-descriptor-half light-gradient">Scope</p><select class="cond-prop scope inline-select" initial-value="'+props.scope+'">'+this.getOptString(this.p.scopes)+'</select>';
                     var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.varOptions(props.scope)+'</select>';
                     var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" initial-value="'+props.operator+'"><option value="==">==</option><option value="<"><</option><option value=">">></option><option value="<="><=</option><option value=">=">>=</option></select>';
                     var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
@@ -389,7 +398,7 @@ var start = function(){
                         props.propType = "Personality";
                         props.prop = "Sensitive";
                     }
-                    var chars = '<p class="editor-descriptor-half light-gradient">Character</p><select class="cond-prop char inline-select" initial-value="'+props.char+'">'+this.charOptions()+'</select>';
+                    var chars = '<p class="editor-descriptor-half light-gradient">Character</p><select class="cond-prop char inline-select" initial-value="'+props.char+'">'+this.getOptString(["Current"].concat(Object.keys(this.p.characters)))+'</select>';
                     var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value='+props.propType+'><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option><option>Stat</option></select>';
                     var charProps = '<p class="editor-descriptor-half light-gradient">Prop</p><select class="cond-prop prop inline-select" initial-value="'+props.prop+'">'+this.getCharCondOptions(props.propType,props.prop).options+'</select>';
                     content = chars+charTypes+charProps;
@@ -407,7 +416,7 @@ var start = function(){
                         props.vr = firstVar;
                         props.vl = 0;
                     }
-                    var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.keywordOptions()+'</select>';
+                    var vr = '<p class="editor-descriptor-half light-gradient">Variable</p><select class="cond-prop vr inline-select" initial-value="'+props.vr+'">'+this.getOptString(this.p.keywords)+'</select>';
                     var operator = '<p class="editor-descriptor-half light-gradient unique-stat-fields">Operator</p><select class="cond-prop operator inline-select unique-stat-fields" initial-value="'+props.operator+'"><option value="==">==</option><option value="<"><</option><option value=">">></option><option value="<="><=</option><option value=">=">>=</option></select>';
                     var vl = '<p class="editor-descriptor light-gradient">Variable Value</p><input class="cond-prop vl full-line" value="'+props.vl+'">';
                     content = vr+operator+vl;
@@ -415,16 +424,8 @@ var start = function(){
             }
             return content;
         },
-        keywordOptions:function(){
-            var opts = '';
-            var keywords = this.p.keywords;
-            keywords.forEach(function(itm){
-                opts+='<option value="'+itm+'">'+itm+'</option>';
-            });
-            return opts;
-        },
         getEffectChoices:function(effect){
-            return '<div class="effect"><p class="editor-descriptor-half light-gradient">Effect</p><select class="effects-select inline-select" initial-value="'+effect+'">'+this.effectsOptions()+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="effect-props"></div></div>';
+            return '<div class="effect"><p class="editor-descriptor-half light-gradient">Effect</p><select class="effects-select inline-select" initial-value="'+effect+'">'+this.getOptString(this.p.effectsFuncs)+'</select><div class="btn btn-group center remove-choice thirty-height">x</div><div class="effect-props"></div></div>';
         },
         //Creates an effect
         getEffect:function(effect){
@@ -440,7 +441,7 @@ var start = function(){
                         props.operator = "=";
                         props.vl = varProps.vars[firstVar];
                     }
-                    content = this.setUpEffectProp("select","Scope","scope",{opts:this.scopeOptions(),scope:props.scope});
+                    content = this.setUpEffectProp("select","Scope","scope",{opts:this.getOptString(this.p.scopes),scope:props.scope});
                     content += this.setUpEffectProp("select","Variable","vr",{opts:this.varOptions(props.scope),vr:props.vr});
                     content += this.setUpEffectProp("select","Operator","operator",{opts:["=","+","-"],operator:props.operator});
                     content += this.setUpEffectProp("input","Amount","vl",{vl:props.vl});
@@ -459,9 +460,9 @@ var start = function(){
                         props.scene = Object.keys(this.p.events)[0];
                         props.event = this.p.events[props.scene];
                     }
-                    content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.typeOptions(),type:props.type});
-                    content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.sceneOptions(props.type),scene:props.scene});
-                    content += this.setUpEffectProp("select","Select an Event","event",{opts:this.eventOptions(props.scene),event:props.event});
+                    content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.getOptString(Object.keys(this.p.scenes)),type:props.type});
+                    content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.getOptString(this.p.scenes[props.type],"name"),scene:props.scene});
+                    content += this.setUpEffectProp("select","Select an Event","event",{opts:this.getOptString(this.p.events[props.scene]),event:props.event});
                     break;
                 case "addToRoster":
                     if(!props){props = {};
@@ -470,9 +471,9 @@ var start = function(){
                         props.handle = Object.keys(this.p.allCharacters[props.file][props.group])[0];
                     }
                     props.group = decodeURIComponent(props.group);
-                    content = this.setUpEffectProp("select","Select a File","file",{opts:this.charFileOptions(),file:props.file});
-                    content += this.setUpEffectProp("select","Select Group","group",{opts:this.charGroupOptions(props.file),group:props.group});
-                    content += this.setUpEffectProp("select","Select Handle","handle",{opts:this.charHandleOptions(props.file,props.group),handle:props.handle});
+                    content = this.setUpEffectProp("select","Select a File","file",{opts:this.getOptString(Object.keys(this.p.allCharacters)),file:props.file});
+                    content += this.setUpEffectProp("select","Select Group","group",{opts:this.getOptString(Object.keys(this.p.allCharacters[props.file])),group:props.group});
+                    content += this.setUpEffectProp("select","Select Handle","handle",{opts:this.getOptString(Object.keys(this.p.allCharacters[props.file][props.group])),handle:props.handle});
                     break;
                 case "enableChoice":
                     if(!props){props = {};
@@ -484,8 +485,9 @@ var start = function(){
                     if(!props){props = {};
                         props.list = [];
                     }
-                    content = "<div><div>Item List</div><div>Add Item</div></div>";
+                    content = "<div class='effect-prop list'><div class='editor-descriptor-title medium-gradient'>Item List</div><div class='btn btn-default add-item-button'>Add Item</div>";
                     content += this.setUpBuyList(props.list);
+                    content += "</div>";
                     break;
                 case "displaySellItemsList":
                     if(!props){props = {};
@@ -496,57 +498,35 @@ var start = function(){
             }
             return content;
         },
-        getConsumablesOptions:function(){
-            var keys = Object.keys(GDATA["items.json"]);
-            var opts = "";
-            for(var i=0;i<keys.length;i++){
-                opts += "<option value='"+keys[i]+"'>"+keys[i]+"</option>";
-            }
-            return opts;
-        },
-        getQualityOptions:function(){
-            var keys = Object.keys(GDATA["equipment.json"].Quality);
-            var opts = "";
-            for(var i=0;i<keys.length;i++){
-                opts += "<option value ='"+keys[i]+"'>"+keys[i]+"</option>";
-            }
-            return opts;
-        },
-        getGearOptions:function(){
-            var equipment = GDATA["equipment.json"];
-            var keys = Object.keys(equipment.Weapons).concat(Object.keys(equipment.Shields).concat(Object.keys(equipment.Armour).concat(Object.keys(equipment.Footwear).concat(Object.keys(equipment.Accessories)))));
-            var opts = "";
-            for(var i=0;i<keys.length;i++){
-                opts += "<option value ='"+keys[i]+"'>"+keys[i]+"</option>";
-            }
-            return opts;
-        },
-        getMaterialOptions:function(type,gear){
-            var materials = GDATA["equipment.json"][type][gear].materials;
-            var opts = "";
-            for(var i=0;i<materials.length;i++){
-                opts += "<option value ='"+materials[i]+"'>"+materials[i]+"</option>";
-            }
+        getOptString:function(arr,prop){
+            var opts = '';
+            arr.forEach(function(itm){
+                if(prop){
+                    opts += '<option value="' + itm[prop] + '">' + itm[prop] + '</option>';
+                } else {
+                    opts += '<option value="'+itm+'">'+itm+'</option>';
+                }
+            });
             return opts;
         },
         createItemInList:function(item){
-            var gear = item[0];
-            var type = item[1];
+            var type = item[0];
+            var gear = item[1];
             var content = "";
             switch(type){
                 case "Consumables":
-                    content = "<div class='buy-item-cont'><select class='item-name' initial-value='"+gear+"'>"+this.getConsumablesOptions()+"</select></div>";
+                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.items))+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
+                    break;
+                case "Accessories":
+                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.equipment[type]))+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
                     break;
                 default:
                     var quality = item[2];
                     var material = item[3];
-                    content = "<div class='buy-item-cont'><select class='item-quality' initial-value='"+quality+"'>"+this.getQualityOptions()+"</select><select class='item-gear' initial-value='"+gear+"'>"+this.getGearOptions()+"</select><select class='item-material' initial-value='"+material+"'>"+this.getMaterialOptions(type,gear)+"</select></div>";
+                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.equipment[type]))+"'</select><select class='arr-prop item-quality' initial-value='"+quality+"'>"+this.getOptString(Object.keys(this.p.equipment.Quality))+"</select><select class='arr-prop item-material' initial-value='"+material+"'>'"+this.getOptString(this.p.equipment[type][decodeURIComponent(gear)].materials)+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
                     break;
             }
             return content;
-        },
-        addItemToList:function(item){
-            
         },
         setUpBuyList:function(list){
             var opts = "";
@@ -560,30 +540,6 @@ var start = function(){
             var actions = $(this.p.actionsCont).children(".action").length;
             for(var i=0;i<actions;i++){
                 opts+='<option value="'+i+'">'+i+'</option>';
-            }
-            return opts;
-        },
-        charFileOptions:function(){
-            var opts = '';
-            var files = Object.keys(this.p.allCharacters);
-            for(var i=0;i<files.length;i++){
-                opts+='<option value="'+files[i]+'">'+files[i]+'</option>';
-            }
-            return opts;
-        },
-        charGroupOptions:function(file){
-            var opts = '';
-            var groups = Object.keys(this.p.allCharacters[file]);
-            for(var i=0;i<groups.length;i++){
-                opts+='<option value="'+groups[i]+'">'+groups[i]+'</option>';
-            }
-            return opts;
-        },
-        charHandleOptions:function(file,group){
-            var opts = '';
-            var handles = Object.keys(this.p.allCharacters[file][group]);
-            for(var i=0;i<handles.length;i++){
-                opts+='<option value="'+handles[i]+'">'+handles[i]+'</option>';
             }
             return opts;
         },
@@ -651,54 +607,12 @@ var start = function(){
                     .append(DC.getCharCondOptions($(cont).children(".propType").val()).options);
             
         },
-        //Return options for selects
-        conditionsOptions:function(){
-            var opts = '';
-            var conds = ["checkChar","checkVar","checkKeyword"];
-            conds.forEach(function(c){
-                opts+='<option value="'+c+'">'+c+'</option>';
-            });
-            return opts;
-        },
-        effectsOptions:function(){
-            var opts = '';
-            var effects = ["setVar","changePage","changeEvent","addToRoster","enableChoice","displayBuyItemsList","displaySellItemsList"];
-            effects.forEach(function(e){
-                opts+='<option value="'+e+'">'+e+'</option>';
-            });
-            return opts;
-        },
-        charOptions:function(){
-            var keys = Object.keys(this.p.characters);
-            var opts = '<option value="Current">Current</option>';
-            keys.forEach(function(key){
-                opts+='<option value="'+key+'">'+key+'</option>';
-            });
-            return opts;
-        },
-        scopeOptions:function(){
-            var opts = '';
-            var scopes = ["Event","Scene","Global"];
-            scopes.forEach(function(s){
-                opts += '<option value="'+s+'">'+s+'</option>';
-            });
-            return opts;
-        },
         pageOptions:function(){
             var opts = '';
             var pages = $(this.p.actionsCont).children(".action");
             $(pages).each(function(idx,itm){
                 opts+='<option value="'+$(itm).text()+'">'+$(itm).text()+'</option>';
             });
-            return opts;
-        },
-        choiceOptions:function(){
-            var opts = '';
-            var page = $(this.p.pagesCont).children(".page:eq("+DC.p.selectedPage+")");
-            var choices = JSON.parse($(page).attr("choices"));
-            for(var i=0;i<choices.length;i++){
-                opts+='<option value="'+choices[i].displayText+'">'+choices[i].displayText+'</option>';
-            }
             return opts;
         },
         varOptions:function(scope){
@@ -719,46 +633,6 @@ var start = function(){
             var keys = Object.keys(vars);
             for(var i=0;i<keys.length;i++){
                 opts+='<option value="'+keys[i]+'">'+keys[i]+'</option>';
-            }
-            return opts;
-        },
-        typeOptions:function(){
-            var opts = '';
-            var keys = Object.keys(this.p.scenes);
-            for(var i=0;i<keys.length;i++){
-                opts+='<option value="'+keys[i]+'">'+keys[i]+'</option>';
-            }
-            return opts;
-        },
-        sceneOptions:function(type){
-            var opts = '';
-            var scenes = this.p.scenes[type];
-            for(var i=0;i<scenes.length;i++){
-                opts+='<option value="'+scenes[i].name+'">'+scenes[i].name+'</option>';
-            }
-            return opts;
-        },
-        eventOptions:function(scene){
-            var opts = '';
-            var events = this.p.events[scene];
-            for(var i=0;i<events.length;i++){
-                opts+='<option value="'+events[i]+'">'+events[i]+'</option>';
-            }
-            return opts;
-        },
-        gearOptions:function(type){
-            var opts = '';
-            var gear = Object.keys(this.p.equipment[type]);
-            for(var i=0;i<gear.length;i++){
-                opts+='<option value="'+gear[i]+'">'+gear[i]+'</option>';
-            }
-            return opts;
-        },
-        materialOptions:function(type,gear){
-            var opts = '';
-            var materials = this.p.equipment[type][decodeURIComponent(gear)].materials;
-            for(var i=0;i<materials.length;i++){
-                opts+='<option value="'+materials[i]+'">'+materials[i]+'</option>';
             }
             return opts;
         },
@@ -880,7 +754,6 @@ var start = function(){
         data.name = eventName;
         data.scene = sceneName;
         data.type = sceneType;
-        data.pageList 
         $.ajax({
             type:'POST',
             url:'save-location.php',
@@ -898,7 +771,6 @@ var start = function(){
         data.name = eventName;
         data.scene = sceneName;
         data.type = sceneType;
-        data.pageList 
         $.ajax({
             type:'POST',
             url:'save-location.php',
@@ -978,38 +850,41 @@ var start = function(){
     });
     $(document).on("change",".type",function(){
         $(this).parent().children(".scene").empty();
-        var scene = $(this).val();
-        $(this).parent().children(".scene").append(DC.sceneOptions(scene));
+        var type = $(this).val();
+        $(this).parent().children(".scene").append(DC.getOptString(this.p.scenes[type],"name"));
         $(this).parent().children(".scene").trigger("change");
     });
     
     $(document).on("change",".scene",function(){
         $(this).parent().children(".event").empty();
         var scene = $(this).val();
-        $(this).parent().children(".event").append(DC.eventOptions(scene));
+        $(this).parent().children(".event").append(DC.getOptString(this.p.events[props.scene]));
     });
     
     $(document).on("change",".eqType",function(){
         $(this).parent().children(".gear").empty();
         var type = $(this).val();
-        $(this).parent().children(".gear").append(DC.gearOptions(type));
+        $(this).parent().children(".gear").append(DC.getOptString(Object.keys(this.p.equipment[type])));
         $(".gear").trigger("change");
     });
     $(document).on("change",".gear",function(){
         $(this).parent().children(".material").empty();
         var type = $(this).parent().children(".eqType").val();
         var gear = $(this).val();
-        $(this).parent().children(".material").append(DC.materialOptions(type,gear));
+        $(this).parent().children(".material").append(DC.getOptString(this.p.equipment[type][decodeURIComponent(gear)].materials));
     });
     
     $(document).on("change",".file",function(){
         $(this).parent().children(".group").empty();
-        $(this).parent().children(".group").append(DC.charGroupOptions($(this).parent().children(".file").val()));
+        var file = $(this).parent().children(".file").val();
+        $(this).parent().children(".group").append(DC.getOptString(Object.keys(this.p.allCharacters[file])));
         $(this).parent().children(".group").trigger("change");
     });
     $(document).on("change",".group",function(){
         $(this).parent().children(".handle").empty();
-        $(this).parent().children(".handle").append(DC.charHandleOptions($(this).parent().children(".file").val(),$(this).parent().children(".group").val()));
+        var file = $(this).parent().children(".file").val();
+        var group = $(this).parent().children(".group").val();
+        $(this).parent().children(".handle").append(DC.getOptString(Object.keys(this.p.allCharacters[file][group])));
     });
     
     //Change the props
@@ -1049,6 +924,45 @@ var start = function(){
             $("#bg-select select").trigger("change");
         }
     });
+    
+    //Add item to buy list
+    $(document).on("click",".add-item-button",function(e){
+        //Sets initial values but does not use them.
+        $(this).parent().append(DC.createItemInList(["Weapons","Short Sword","Shoddy","Brass"]));
+    });
+    //Change props in buy list
+    $(document).on("change",".item-type",function(e){
+        //Repopulate gear and materials
+        //If type is consumable or accessory, delete material and quality fields
+        //Create the fields if they are missing and needed
+        var type = $(this).val();
+        if(type==="Consumables"){
+            $(this).parent().children(".item-gear").empty();
+            $(this).parent().children(".item-gear").append(DC.getOptString(Object.keys(DC.p.items)));
+            $(this).parent().children(".item-material").remove();
+            $(this).parent().children(".item-quality").remove();
+        } else if(type==="Accessories"){
+            $(this).parent().children(".item-gear").empty();
+            $(this).parent().children(".item-gear").append(DC.getOptString(Object.keys(DC.p.equipment[type])));
+            $(this).parent().children(".item-material").remove();
+            $(this).parent().children(".item-quality").remove();
+        } else {
+            $(this).parent().children(".item-gear").empty();
+            $(this).parent().children(".item-gear").append(DC.getOptString(Object.keys(DC.p.equipment[type])));
+            if(!$(this).parent().children(".item-material").length){
+                $(this).parent().append("<select class='arr-prop item-quality' initial-value='Shoddy'>"+DC.getOptString(Object.keys(DC.p.equipment.Quality))+"</select><select class='arr-prop item-material' initial-value=''>'"+DC.getOptString(DC.p.equipment[type][Object.keys(DC.p.equipment[type])[0]].materials)+"'</select>");
+            }
+        }
+        $(this).parent().children(".item-gear").trigger("change");
+    });
+    $(document).on("change",".item-gear",function(e){
+        var type = $(this).parent().children(".item-type").val();
+        if(type==="Consumables"||type==="Accessories") return;
+        var gear = $(this).val();
+        $(this).parent().children(".item-material").empty();
+        $(this).parent().children(".item-material").append(DC.getOptString(DC.p.equipment[type][gear].materials));
+    });
+    
     
     //Change the type of the check
     $(document).on("change",".check-types",function(e){

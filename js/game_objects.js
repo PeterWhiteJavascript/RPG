@@ -3245,7 +3245,7 @@ Quintus.GameObjects=function(Q){
                 reflexes:this.get_reflexes(char),
                 initiative:this.get_initiative(char),
                 energy:this.get_energy(char),
-                skill:this.get_skill(char),
+                skill:this.get_skill(char), 
                 efficiency:this.get_efficiency(char)
             };
             char.combatStats = baseCombatStats;

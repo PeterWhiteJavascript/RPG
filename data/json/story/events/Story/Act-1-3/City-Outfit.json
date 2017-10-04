@@ -1,23 +1,24 @@
 {
     "name": "City-Outfit",
-    "kind":"location",
-    "desc":"Second time in town. Goal is to outfit soldiers.",
-    "bg": "bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
+    "kind": "location",
+    "desc": "Second time in town. Goal is to outfit soldiers.",
+    "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
     "music": "homeland.mp3",
-    "vrs":{
-        "visitedBlacksmith":false
+    "vrs": {
+        "visitedBlacksmith": 0
     },
     "disabledChoices": [
-        1,2
+        1,
+        2
     ],
     "pageList": [
         "start",
         "blacksmith",
         "calensBlacksmith"
     ],
-    "onload":[
+    "onload": [
         {
-            "conds":[
+            "conds": [
                 [
                     "checkVar",
                     {
@@ -28,15 +29,17 @@
                     }
                 ]
             ],
-            "effects":[
+            "effects": [
                 [
                     "enableChoice",
-                    {"choice":1}
+                    {
+                        "choice": 1
+                    }
                 ]
             ]
         },
         {
-            "conds":[
+            "conds": [
                 [
                     "checkVar",
                     {
@@ -47,31 +50,119 @@
                     }
                 ]
             ],
-            "effects":[
+            "effects": [
                 [
                     "enableChoice",
-                    {"choice":2}
+                    {
+                        "choice": 2
+                    }
                 ]
             ]
         }
     ],
-    "actions":[
-        ["Blacksmith","changePage",{"page":"blacksmith"}],
-        ["Calen's Blacksmith","changePage",{"page":"calensBlacksmith"}],
-        ["Back to Castle","changeEvent",{
-        "type":"Story",
-        "scene":"Act-1-3",
-        "event":"Return-from-outfitting"
-        }]
+    "actions": [
+        [
+            "Blacksmith",
+            "changePage",
+            {
+                "page": "blacksmith"
+            }
+        ],
+        [
+            "Calen's Blacksmith",
+            "changePage",
+            {
+                "page": "calensBlacksmith"
+            }
+        ],
+        [
+            "Back to Castle",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-1-3",
+                "event": "Prologue"
+            }
+        ]
     ],
-    "blacksmith":{
-        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
-        "music":"the_usual.mp3",
-        "disabledChoices":[],
-        "onload":[
+    "blacksmith": {
+        "music": "the_usual.mp3",
+        "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "actions": [
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list": [
+                        [
+                            "Weapons",
+                            "Short Sword",
+                            "Average",
+                            "Bronze"
+                        ],
+                        [
+                            "Weapons",
+                            "Short Sword",
+                            "Average",
+                            "Iron"
+                        ],
+                        [
+                            "Weapons",
+                            "Spear",
+                            "Average",
+                            "Bronze"
+                        ],
+                        [
+                            "Weapons",
+                            "Spear",
+                            "Average",
+                            "Iron"
+                        ],
+                        [
+                            "Weapons",
+                            "Bow",
+                            "Average",
+                            "Wood"
+                        ],
+                        [
+                            "Shields",
+                            "Shield",
+                            "Average",
+                            "Bronze"
+                        ],
+                        [
+                            "Shields",
+                            "Shield",
+                            "Average",
+                            "Hide"
+                        ],
+                        [
+                            "Footwear",
+                            "Shoes",
+                            "Average",
+                            "Wood"
+                        ]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {
+                    "allow": "all"
+                }
+            ],
+            [
+                "Leave",
+                "changePage",
+                {
+                    "page": "start"
+                }
+            ]
+        ],
+        "onload": [
             {
-                "conds":[],
-                "effects":[
+                "effects": [
                     [
                         "setVar",
                         {
@@ -81,46 +172,66 @@
                             "vl": true
                         }
                     ]
-                ]
+                ],
+                "conds": []
             }
         ],
-        "actions":[
-            [
-                "Buy",
-                "displayBuyItemsList",
-                {
-                    "list":[
-                        ["Short Sword","Weapons","Average","Bronze"],
-                        ["Short Sword","Weapons","Average","Iron"],
-                        ["Spear","Weapons","Average","Bronze"],
-                        ["Spear","Weapons","Average","Iron"],
-                        ["Bow","Weapons","Average","Wood"],
-                        ["Shield","Shields","Average","Bronze"],
-                        ["Shield","Shields","Average","Iron"],
-                        ["Shoes","Footwear","Average","Wood"]
-                    ]
-                }
-            ],
-            [
-                "Sell",
-                "displaySellItemsList",
-                {"allow":"all"}
-            ],
-            [
-                "Leave",
-                "changePage",
-                {"page":"start"}
-            ]
-        ]
+        "disabledChoices": []
     },
-    "calensBlacksmith":{
-        "bg":"bg/fantasy_castle_by_jbrown67-d7mu200.jpg",
-        "music":"the_usual.mp3",
-        "disabledChoices":[],
-        "onload":[
+    "calensBlacksmith": {
+        "music": "the_usual.mp3",
+        "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "actions": [
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list": [
+                        [
+                            "Weapons",
+                            "Pike",
+                            "Shoddy",
+                            "Brass"
+                        ],
+                        [
+                            "Weapons",
+                            "Mace",
+                            "Shoddy",
+                            "Brass"
+                        ],
+                        [
+                            "Shields",
+                            "Small Shield",
+                            "Shoddy",
+                            "Brass"
+                        ],
+                        [
+                            "Armour",
+                            "Breastplate",
+                            "Shoddy",
+                            "Brass"
+                        ]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {
+                    "allow": "all"
+                }
+            ],
+            [
+                "Leave",
+                "changePage",
+                {
+                    "page": "start"
+                }
+            ]
+        ],
+        "onload": [
             {
-                "conds":[],
-                "effects":[
+                "effects": [
                     [
                         "setVar",
                         {
@@ -130,32 +241,12 @@
                             "vl": true
                         }
                     ]
-                ]
+                ],
+                "conds": []
             }
         ],
-        "actions":[
-            [
-                "Buy",
-                "displayBuyItemsList",
-                {
-                    "list":[
-                        ["Pike","Weapons","Shoddy","Brass"],
-                        ["Mace","Weapons","Shoddy","Brass"],
-                        ["Small Shield","Shields","Shoddy","Brass"],
-                        ["Breastplate","Armour","Shoddy","Brass"]
-                    ]
-                }
-            ],
-            [
-                "Sell",
-                "displaySellItemsList",
-                {"allow":"all"}
-            ],
-            [
-                "Leave",
-                "changePage",
-                {"page":"start"}
-            ]
-        ]
-    }
+        "disabledChoices": []
+    },
+    "scene": "Act-1-3",
+    "type": "Story"
 }

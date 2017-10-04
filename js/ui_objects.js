@@ -84,17 +84,17 @@ Quintus.UIObjects=function(Q){
                 var list = p.list || this.p.list;
                 var newList = [];
                 list.forEach(function(itm,i){
-                    switch(itm[1]){
+                    switch(itm[0]){
                         case "Consumables":
-                            newList.push([itm[0],"askBuyQuantity",{item:Q.state.get("items")[itm[0]],text:itm[0]}]); 
+                            newList.push([itm[1],"askBuyQuantity",{item:Q.state.get("items")[itm[1]],text:itm[1]}]); 
                             break;
                         case "Accessories":
-                            newList.push([itm[0],"askBuyQuantity",{item:Q.state.get("equipment").gear[itm[0]],text:itm[0]}]);
+                            newList.push([itm[1],"askBuyQuantity",{item:Q.state.get("equipment").gear[itm[1]],text:itm[1]}]);
                             break;
                         default:
-                            var item = Q.charGen.convertEquipment([itm[3],itm[0]],itm[2]);
+                            var item = Q.charGen.convertEquipment([itm[3],itm[1]],itm[2]);
                             //Get the cost based on material and quality
-                            newList.push([itm[2]+" "+itm[3]+" "+itm[0]+"   "+item.cost,"askBuyQuantity",{item:item,text:itm[2]+" "+itm[3]+" "+itm[0],list:list}]);
+                            newList.push([itm[2]+" "+itm[3]+" "+itm[1]+"   "+item.cost,"askBuyQuantity",{item:item,text:itm[2]+" "+itm[3]+" "+itm[1],list:list}]);
                             break;
                     }
                 });
