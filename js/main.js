@@ -150,6 +150,8 @@ Q.startGame=function(save){
     
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
+
+//TODO: use php to search through these directories to load everything
 var files = [
     //IMAGES SPRITES
     "sprites/archer.png",
@@ -190,6 +192,7 @@ var files = [
     "sfx/whirlwind.mp3",
     "sfx/frosty.mp3",
     "sfx/fireball.mp3",
+    "sfx/none.mp3",
     //AUDIO BGM
     //"bgm/demo.mp3"
     //JSON DATA

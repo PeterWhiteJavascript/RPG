@@ -34,7 +34,7 @@ foreach (glob($dir) as $folder) {
         <div id="scene-kind" hidden><h2><?php echo $kind; ?></h2></div>
         <div id="scene-type" hidden><h2><?php echo $type; ?></h2></div>
         <div id="options">
-            <select id="maps-select" initialValue="<?php echo "../../data/maps/".$eventMap; ?>"></select>
+            <select id="maps-select" initialValue="<?php echo $eventMap; ?>"></select>
         </div>
         <ul class="menu right btn-group">
             <li><a id="go-to-scene"><div class="menu-button btn btn-default">Edit Battle/Battle Scene</div></a></li>

@@ -321,7 +321,7 @@ var start = function(){
                     });
                     break;
                 case "Stat":
-                    ["accuracy","attackSpeed","criticalChance","defense","encPenalty","encThreshold","hp","maxAtk","maxHp","maxTp","minAtk","move","moveSpeed","painTolerance","range","totalWeight","tp","zoc"].forEach(function(prop,i){
+                    ["maxHp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","maxAtkDmg","minAtkDmg","maxSecondaryDmg","minSecondaryDmg","maxTp","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"].forEach(function(prop,i){
                         if(!type&&i===0) type = prop;
                         options+='<option value="'+prop+'">'+prop+'</option>';
                     });

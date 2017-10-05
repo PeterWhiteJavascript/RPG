@@ -173,8 +173,8 @@ Quintus.UIObjects=function(Q){
                 },
                 enableChoice:function(t,obj){
                     //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
-                    if(t.p.currentPage==="start") t.p.location.disabledChoices.splice(t.p.location.disabledChoices.indexOf(obj),1);
-                    else t.p.location[t.p.currentPage].disabledChoices.splice(t.p.location[t.p.currentPage].disabledChoices.indexOf(obj),1);
+                    if(t.p.currentPage==="start") t.p.location.disabledChoices.splice(t.p.location.disabledChoices.indexOf(obj.choice),1);
+                    else t.p.location[t.p.currentPage].disabledChoices.splice(t.p.location[t.p.currentPage].disabledChoices.indexOf(obj.choice),1);
                 },
                 addToRoster:function(t,obj){
                     var char = Q.charGen.generateCharacter(obj,"rosterFromFile");

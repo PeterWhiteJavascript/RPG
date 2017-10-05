@@ -38,10 +38,11 @@ for($i=0;$i<count($types);$i++){
 }
 $images =  array_diff(scandir("../../images/story"), array('..', '.'));
 
+//Load all of the character files
 $characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
 $characters = (object)[];
-for($i=0;$i<count($characterFiles);$i++){
-    $characters->$characterFiles[$i] = json_decode(file_get_contents('../../data/json/story/characters/'.$characterFiles[$i]), true);
+foreach($characterFiles as $charFile){
+    $characters -> $charFile = json_decode(file_get_contents('../../data/json/story/characters/'.$charFile), true);
 }
 
 ?>

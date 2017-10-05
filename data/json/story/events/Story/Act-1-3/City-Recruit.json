@@ -40,7 +40,7 @@
                         "scope": "Event",
                         "vr": "addedBerserker",
                         "operator": "==",
-                        "vl": true
+                        "vl": false
                     }
                 ],
                 [

@@ -3249,6 +3249,7 @@ Quintus.GameObjects=function(Q){
                 efficiency:this.get_efficiency(char)
             };
             char.combatStats = baseCombatStats;
+            //var stats = ["maxHp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","maxAtkDmg","minAtkDmg","maxSecondaryDmg","minSecondaryDmg","maxTp","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"];
             char.combatStats.maxHp = this.get_maxHp(char);
             char.combatStats.painTolerance = this.get_painTolerance(char);
             char.combatStats.damageReduction = this.get_damageReduction(char);

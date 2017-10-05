@@ -34,7 +34,7 @@
                                 "scope": "Global",
                                 "vr": "money",
                                 "operator": "=",
-                                "vl": 5000
+                                "vl": 3000
                             }
                         ]
                     ]
@@ -73,7 +73,7 @@
                                         "scope": "Global",
                                         "vr": "money",
                                         "operator": "=",
-                                        "vl": 2000
+                                        "vl": 1000
                                     }
                                 ]
                             ]

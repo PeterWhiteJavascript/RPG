@@ -762,7 +762,7 @@ Quintus.Objects=function(Q){
                 w:20,h:30,
                 type:Q.SPRITE_NONE,
                 sprite:"Character",
-                dir:"left",
+                dir:"down",
                 //Store amounts for certain buffs/debuffs. Amounts are reset to 0 when the status finishes.
                 buffs:{
                     poisonDamage:0

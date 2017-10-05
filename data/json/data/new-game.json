@@ -30,7 +30,7 @@
             
         ]
     },
-    "money":1000,
+    "money":0,
     "week":1,
         
     "influence":{
@@ -50,7 +50,7 @@
     },
     "startSceneName":"Act-1-3",
     "startSceneType":"Story",
-    "startEventName":"Venoria-Forest-Clearing-Battle",
+    "startEventName":"Prologue",
     
     "act":"1-1",
     "applicationsRoster":[]

@@ -1,0 +1,18 @@
+{
+    "name": "Arrive-in-Dardoine",
+    "desc": "The party arrives in Dardoine.",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "throne-room.mp3",
+            "bg": "bg\/Inveraray_Castle_-_south-west_facade.jpg",
+            "text": "The party arrives at the castle gates and are questioned by the guards. They present the sealed gift for the king and are let through. They are met by a Dardoine officer who happily escorts them to the throne room.",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

@@ -191,11 +191,12 @@
                 "Venoria-Forest-Clearing-Battle",
                 "Forest-Clearing-Battle-Victory",
                 "Forest-Clearing-Battle-Defeat",
-                "Test"
+                "Arrive-in-Dardoine"
             ],
             "vrs": {
-                "startVicantiAsk": false,
-                "helpedButler": false
+                "startVicantiAsk": "",
+                "helpedButler": "",
+                "guardsInForest": "false"
             }
         },
         {

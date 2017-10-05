@@ -12,7 +12,7 @@
                 {
                     "displayText": "Next",
                     "desc": "",
-                    "page": "Page 1",
+                    "page": "In room",
                     "disabled": "Enabled",
                     "groups": []
                 }
@@ -64,11 +64,25 @@
             "text": "Alex wakes up early, eagerly awaiting {o.Alex.g@his2} journey! After saying goodbye to {o.Alex.g@his2} father, Alex is on {o.Alex.g@his2} way!",
             "choices": [
                 {
-                    "displayText": "",
+                    "displayText": "Next",
                     "desc": "",
                     "page": "Start",
                     "disabled": "Enabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "Leave-for-journey!"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 }
             ],
             "onload": [],

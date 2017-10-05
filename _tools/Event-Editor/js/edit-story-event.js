@@ -661,7 +661,7 @@ $(function(){
                     content = this.setUpEffectProp("select","Scope","scope",{opts:this.scopeOptions(),scope:props.scope});
                     content += this.setUpEffectProp("select","Variable","vr",{opts:this.varOptions(props.scope),vr:props.vr});
                     content += this.setUpEffectProp("select","Operator","operator",{opts:["=","+","-"],operator:props.operator});
-                    content += this.setUpEffectProp("input","Amount","vl",{vl:props.vl});
+                    content += this.setUpEffectProp("input","Value","vl",{vl:props.vl});
                     break;
                 case "changePage":
                     if(!props){props = {};
@@ -706,7 +706,7 @@ $(function(){
                         props.val = 0;
                     }
                     content = this.setUpEffectProp("select","Stat","stat",{opts:stats,stat:props.stat});
-                    content += this.setUpEffectProp("input","Amount","val",{inputType:"number",val:props.val});
+                    content += this.setUpEffectProp("input","Value","val",{inputType:"number",val:props.val});
                     break;
                 case "tempStatChange":
                     var stats = ["str","end","dex","wsk","rfl","ini","enr","skl","eff"];

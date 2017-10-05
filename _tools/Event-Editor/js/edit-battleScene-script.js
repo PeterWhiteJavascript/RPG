@@ -1502,7 +1502,7 @@ DC.setUpFuncs = {
     changeEvent:[
         //Select an event from the list of events/scenes
         function(val){
-            var sceneTypes = ["Character","Locations","Officer","Other","Story"];
+            var sceneTypes = ["Character","Officer","Other","Story"];
             var scenes = JSON.parse($("#all-scene-names").text());
             var events = JSON.parse($("#all-event-names").text());
             $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Type.</p><select id='scene-types' class='script-func'></select>");

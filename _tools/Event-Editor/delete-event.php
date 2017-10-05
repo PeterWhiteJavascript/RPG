@@ -13,12 +13,14 @@ for($i=0;$i<count($scenesList[$type]);$i++){
         for($j=0;$j<count($scenesList[$type][$i]['eventOrder']);$j++){
             $eventName = $scenesList[$type][$i]['eventOrder'][$j];
             if($eventName===$name){
-                array_splice($scenesList[$type][$i]['eventOrder'],$j);
+                unset($scenesList[$type][$i]['eventOrder'][$j]);
+                $scenesList[$type][$i]['eventOrder'] = array_values($scenesList[$type][$i]['eventOrder']);
+                $j = count($scenesList[$type][$i]['eventOrder']);
+                $i = count($scenesList[$type]);
             }
         }
     }
 }
-
 file_put_contents('../../data/json/data/scenes-list.json', json_encode($scenesList,JSON_PRETTY_PRINT));
 
 ?>
