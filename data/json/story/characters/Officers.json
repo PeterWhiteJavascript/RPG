@@ -5,22 +5,23 @@
             "name": "Alex",
             "levelmin": 1,
             "levelmax": 1,
-            "gender": "Male",
+            "gender": "Random",
+            "team": "Ally",
             "equipment": {
                 "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
+                    "Average",
+                    "Bronze",
+                    "Short Sword"
                 ],
                 "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
+                    "Average",
+                    "Hard Leather",
+                    "Small Shield"
                 ],
                 "armour": [
+                    "Average",
                     "Default",
-                    "Default",
-                    "Default"
+                    "Outfit"
                 ],
                 "footwear": [
                     "Default",
@@ -29,10 +30,17 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Medium"
-            ],
+            "baseStats": {
+                "str": 20,
+                "end": "20",
+                "dex": "20",
+                "wsk": "20",
+                "rfl": "20",
+                "ini": "20",
+                "enr": "20",
+                "skl": "20",
+                "eff": "20"
+            },
             "techniques": [
                 "Forced March",
                 "Fortify",
@@ -42,7 +50,7 @@
                 "Phalanx"
             ],
             "nationality": "Venorian",
-            "charClass": "Legionnaire"
+            "charClass": "Random"
         },
         "Astraea": {
             "handle": "Astraea",
@@ -50,16 +58,433 @@
             "levelmin": 1,
             "levelmax": 1,
             "gender": "Female",
+            "team": "Ally",
             "equipment": {
                 "righthand": [
+                    "Average",
+                    "Bronze",
+                    "Spear"
+                ],
+                "lefthand": [
+                    "Average",
+                    "Bronze",
+                    "Shield"
+                ],
+                "armour": [
+                    "Average",
+                    "Bronze",
+                    "Breastplate"
+                ],
+                "footwear": [
+                    "Average",
                     "Default",
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "20",
+                "end": "25",
+                "dex": 16,
+                "wsk": "20",
+                "rfl": 16,
+                "ini": "20",
+                "enr": 16,
+                "skl": "20",
+                "eff": "16"
+            },
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Vanguard"
+        },
+        "Nicodemus": {
+            "handle": "Nicodemus",
+            "name": "Nicodemus",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Iron",
+                    "Great Ax"
+                ],
+                "lefthand": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "armour": [
+                    "Average",
+                    "Silk",
+                    "Vest"
+                ],
+                "footwear": [
+                    "Average",
                     "Default",
-                    "Default"
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "25",
+                "end": "20",
+                "dex": "20",
+                "wsk": "20",
+                "rfl": "16",
+                "ini": "16",
+                "enr": "16",
+                "skl": "16",
+                "eff": "20"
+            },
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Berserker"
+        },
+        "Lysandra": {
+            "handle": "Lysandra",
+            "name": "Lysandra",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Female",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Default",
+                    "Pike"
+                ],
+                "lefthand": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "armour": [
+                    "Average",
+                    "Default",
+                    "Shirt"
+                ],
+                "footwear": [
+                    "Average",
+                    "Default",
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "20",
+                "end": "16",
+                "dex": "20",
+                "wsk": "16",
+                "rfl": "16",
+                "ini": "16",
+                "enr": "20",
+                "skl": "20",
+                "eff": "25"
+            },
+            "techniques": [
+                "Unnerve",
+                "Stun",
+                "Hypnotic Mirage",
+                "Blind",
+                "Temporary Insanity",
+                "Antithesis"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Illusionist"
+        },
+        "Gaios": {
+            "handle": "Gaios",
+            "name": "Gaios",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Wood",
+                    "Bow"
                 ],
                 "lefthand": [
                     "Default",
                     "Default",
                     "Default"
+                ],
+                "armour": [
+                    "Average",
+                    "Fur",
+                    "Capelet"
+                ],
+                "footwear": [
+                    "Average",
+                    "Default",
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "16",
+                "end": "20",
+                "dex": "20",
+                "wsk": "16",
+                "rfl": "20",
+                "ini": "25",
+                "enr": "16",
+                "skl": "20",
+                "eff": "16"
+            },
+            "techniques": [
+                "Long Shot",
+                "Armour Piercing Shot",
+                "Rapid Shot",
+                "Critical Shot",
+                "Painful Shot",
+                "Sniper Shot"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Archer"
+        },
+        "Rutendo": {
+            "handle": "Rutendo",
+            "name": "Rutendo",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Bronze",
+                    "Mace"
+                ],
+                "lefthand": [
+                    "Average",
+                    "Wicker",
+                    "Body Shield"
+                ],
+                "armour": [
+                    "Average",
+                    "Bronze",
+                    "Lamellar"
+                ],
+                "footwear": [
+                    "Average",
+                    "Default",
+                    "Shoes"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "20",
+                "end": "20",
+                "dex": "16",
+                "wsk": "25",
+                "rfl": "20",
+                "ini": 16,
+                "enr": "20",
+                "skl": "16",
+                "eff": "16"
+            },
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Aliudramilan",
+            "charClass": "Legionnaire"
+        },
+        "Imamu": {
+            "handle": "Imamu",
+            "name": "Imamu",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Bronze",
+                    "Glaive"
+                ],
+                "lefthand": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "armour": [
+                    "Quality",
+                    "Silk",
+                    "Outfit"
+                ],
+                "footwear": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "16",
+                "end": "16",
+                "dex": "16",
+                "wsk": "20",
+                "rfl": "20",
+                "ini": 16,
+                "enr": "25",
+                "skl": "20",
+                "eff": "20"
+            },
+            "techniques": [
+                "Stability Field",
+                "Heal",
+                "Cure",
+                "Revive",
+                "Energize",
+                "Resurrect"
+            ],
+            "nationality": "Aliudramilan",
+            "charClass": "Healer"
+        },
+        "Nala": {
+            "handle": "Nala",
+            "name": "Nala",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Female",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Steel",
+                    "Dagger"
+                ],
+                "lefthand": [
+                    "Average",
+                    "Default",
+                    "Sling"
+                ],
+                "armour": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "footwear": [
+                    "Average",
+                    "None",
+                    "None"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "20",
+                "end": 16,
+                "dex": "25",
+                "wsk": "16",
+                "rfl": "20",
+                "ini": "20",
+                "enr": "16",
+                "skl": "16",
+                "eff": "20"
+            },
+            "techniques": [
+                "Bleeding Strike",
+                "Caltrops",
+                "Weakening Strike",
+                "Nerve Strike",
+                "Acid Bomb",
+                "Poison Strike"
+            ],
+            "nationality": "Aliudramilan",
+            "charClass": "Assassin"
+        },
+        "Sjrna": {
+            "handle": "Sjrna",
+            "name": "Sjrna",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Female",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Average",
+                    "Iron",
+                    "Sword"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Iron",
+                    "Ax"
+                ],
+                "armour": [
+                    "Average",
+                    "Iron",
+                    "Maille"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": "16",
+                "end": "16",
+                "dex": "20",
+                "wsk": "20",
+                "rfl": "25",
+                "ini": "20",
+                "enr": "20",
+                "skl": "16",
+                "eff": "16"
+            },
+            "techniques": [
+                "Quicken",
+                "Forewarn",
+                "Sharpen",
+                "Vitalize",
+                "Vivify",
+                "Coordinated Attack"
+            ],
+            "nationality": "Dardoian",
+            "charClass": "Skirmisher"
+        },
+        "Eko": {
+            "handle": "Eko",
+            "name": "Eko",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Ally",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Bone",
+                    "Javelin"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Bone",
+                    "Knife"
                 ],
                 "armour": [
                     "Default",
@@ -73,20 +498,27 @@
                 ],
                 "accessory": "None"
             },
-            "baseStats": [
-                "Random",
-                "Medium"
-            ],
+            "baseStats": {
+                "str": "20",
+                "end": "16",
+                "dex": "20",
+                "wsk": "16",
+                "rfl": 16,
+                "ini": "16",
+                "enr": "20",
+                "skl": "25",
+                "eff": "20"
+            },
             "techniques": [
-                "Forced March",
-                "Fortify",
-                "Embolden",
-                "Fervour",
-                "Direct",
-                "Phalanx"
+                "Stone",
+                "Flamethrower",
+                "Fireball",
+                "Frost Ray",
+                "Choke",
+                "Lightning Storm"
             ],
-            "nationality": "Venorian",
-            "charClass": "Vanguard"
+            "nationality": "Talumpatuan",
+            "charClass": "Elementalist"
         }
     }
 }
