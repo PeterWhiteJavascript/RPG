@@ -5,7 +5,7 @@ $scene;
 if(isset($_POST['name'])){$name = $_POST['name'];}
 if(isset($_POST['name'])){$scene = $_POST['scene'];}
 if(isset($_POST['name'])){$type = $_POST['type'];}
-
+ 
 //Load all of the character files
 $characterFiles = array_values(array_diff(scandir('data/json/story/characters'),array('..','.')));
 $characters = (object)[];
