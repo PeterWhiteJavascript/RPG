@@ -192,7 +192,8 @@
                 "Forest-Clearing-Battle-Victory",
                 "Forest-Clearing-Battle-Defeat",
                 "Arrive-in-Dardoine",
-                "In-Dardoine"
+                "In-Dardoine",
+                "Gender-test"
             ],
             "vrs": {
                 "startVicantiAsk": "",

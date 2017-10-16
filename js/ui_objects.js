@@ -919,39 +919,31 @@ Quintus.UIObjects=function(Q){
                     return prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("saveData"));
                 break;
                 case "o":
-                    //If it is a module
-                    if(aff[1]){
-                        var intAffected = parseInt(aff[1]);
-                        //We're affecting a passed in character
-                        if(intAffected>=0){
-                            return Q.textModules.processModule(Q.storyController.p.characters[intAffected],affected,prop);
-                        } 
-                        //We're affecting a specific officer's modules
-                        else {
-                            var newText;
-                            //If there's a third property
-                            if(aff[2]){
-                                switch(aff[2]){
-                                    case "g":
-                                        var gender = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0].gender;
-                                        newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
-                                        break;
-                                }
-                            } else {
-                                var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
-                                newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
-                            }
-                            //If there's more, do it again.
-                            while(newText.indexOf("{")>=0){
-                                newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
-                            }
-                            return newText;
-                        }
-                    }  
-                    //If it is a char property
+                    var intAffected = parseInt(aff[1]);
+                    //We're affecting a passed in character
+                    if(intAffected>=0){
+                        return Q.textModules.processModule(Q.storyController.p.characters[intAffected],affected,prop);
+                    } 
+                    //We're affecting a specific officer's modules
                     else {
-                        var propAffected = prop.split('.')[0];
-                        return Q.textModules.processModule(Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0],propAffected,prop);
+                        var newText;
+                        var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
+                        //If there's a third property
+                        if(aff[2]){
+                            switch(aff[2]){
+                                case "g":
+                                    var gender = char.gender;
+                                    newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
+                                    break;
+                            }
+                        } else {
+                            newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
+                        }
+                        //If there's more, do it again.
+                        while(typeof newText==="string" && newText.indexOf("{")>=0){
+                            newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
+                        }
+                        return newText;
                     }
                 break;
                 //Modules from within modules
@@ -1136,7 +1128,8 @@ Quintus.UIObjects=function(Q){
                 var processedVal = typeof obj.vl !== "string" ? obj.vl : Q.textModules.processTextVars(obj.vl);
                 for(var i=0;i<keys.length;i++){
                     if(keys[i]===obj.vr){
-                        return t.evaluateStringOperator(vars[keys[i]],obj.operator,processedVal);
+                        var processedSavedVal = typeof vars[keys[i]] !== "string" ? vars[keys[i]] : Q.textModules.processTextVars(vars[keys[i]]);
+                        return t.evaluateStringOperator(processedSavedVal,obj.operator,processedVal);
                     }
                 }
             }
@@ -1196,20 +1189,24 @@ Quintus.UIObjects=function(Q){
             var page = this.p.pages[num];
             //Do the onload conditions/effects
             Q.textModules.processCondEffects(this,page.onload);
-            //Make the background correct
-            this.p.bgImage.p.asset = page.bg;
-            //Play the music for the page
-            Q.playMusic(page.music);
-            var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
-            var contentBox = this.p.textContent;
-            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
-            //Show the choices
-            $(contentBox).append('<ul class="choice-list"></ul>');
-            page.choices.forEach(function(choice){
-                if(choice.disabled==="Enabled"){
-                    $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
-                }
-            });
+            if(!this.p.changedPage){
+                //Make the background correct
+                this.p.bgImage.p.asset = page.bg;
+                //Play the music for the page
+                Q.playMusic(page.music);
+                var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
+                var contentBox = this.p.textContent;
+                if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
+                //Show the choices
+                $(contentBox).append('<ul class="choice-list"></ul>');
+                page.choices.forEach(function(choice){
+                    if(choice.disabled==="Enabled"){
+                        $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
+                    }
+                });
+            } else {
+                this.p.changedPage = false;
+            }
         },
         beautifyText:function(txt){
             //Split up all of the text by paragraph into an array(at \n)
@@ -1264,7 +1261,8 @@ Quintus.UIObjects=function(Q){
                 Q.textModules.effectFuncs.setVar(t,obj);
             },
             changePage:function(t,obj){
-                t.p.choice = obj;//t.p.pages[t.getPageNum(obj.page)];
+                t.changePage(obj.page);
+                t.p.changedPage = true;
             },
             enableChoice:function(t,obj){
                 //Find the page choice and enable or disable it.

@@ -672,7 +672,7 @@ $(function(){
                         props.page = $(page).text();
                         props.desc = "";
                     }
-                    content = this.setUpEffectProp("select","Select a Page","page",{opts:this.pageOptions(),page:props.page});
+                    content = this.setUpEffectProp("select","Select a Page","page",{opts:this.pageOptions(),page:decodeURIComponent(props.page)});
                     content += this.setUpEffectProp("textarea","Feedback","desc",{desc:props.desc});
                     break;
                 case "enableChoice":
