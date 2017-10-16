@@ -31,6 +31,8 @@ if(!isset($_POST['copying'])){
         case "location":
             $newFile['actions'] = [];
             $newFile['vrs'] = (object)[];
+            $newFile['disabledChoices'] = [];
+            $newFile['pageList'] = [];
             break;
     }
     $newFile['kind'] = $eventType;

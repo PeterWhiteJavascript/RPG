@@ -29,6 +29,9 @@ $(function(){
             //Create a page if there is not one
             if(!pages.length) this.addPage("Page "+DC.p.uniquePages,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),"",[],[],{},{});
             this.selectPage(0);
+            
+            $("#music-select select").trigger("change");
+            $("#bg-select select").trigger("change");
         },
         //Store properties here that track the current page, choice, etc...
         //Also store list parent objects
@@ -1034,8 +1037,6 @@ $(function(){
     $(document).on("change","#bg-select select",function(){
         $(DC.p.bgPreview).attr("src","../../images/"+$(this).val());
     });
-    $("#music-select select").trigger("change");
-    $("#bg-select select").trigger("change");
     //BG and Music selects end
     
     //Conditions and Effects select start

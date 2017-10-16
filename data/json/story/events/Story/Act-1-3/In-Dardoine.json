@@ -1,0 +1,80 @@
+{
+    "name": "In-Dardoine",
+    "desc": "When the party has some downtime after meeting with the king.",
+    "kind": "location",
+    "actions": [
+        [
+            "Infirmary",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Gather Information",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Go Hunting",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Barracks",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Blacksmith",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Take a Job",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ],
+        [
+            "Host a Feast",
+            "changeEvent",
+            {
+                "type": "Officer",
+                "scene": "Astraea",
+                "event": "Test"
+            }
+        ]
+    ],
+    "vrs": [],
+    "disabledChoices": [],
+    "pageList": [
+        "start"
+    ],
+    "music": "battle.mp3",
+    "bg": "bg\/959396-river.jpg",
+    "scene": "Act-1-3",
+    "type": "Story",
+    "onload": []
+}

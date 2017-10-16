@@ -62,15 +62,17 @@ var start = function(){
                 this.addVar(keys[i],vrs[keys[i]],true);
             }
             var pageList = event.pageList;
-            this.addAction(pageList[0],event.music,event.bg,event.actions,event.onload,event.disabledChoices);
-            var actions = event.actions;
-            //Create the actions
-            for(var i=1;i<pageList.length;i++){
-                var p = event[pageList[i]];
-                this.addAction(pageList[i],p.music,p.bg,p.actions,p.onload,p.disabledChoices);
+            if(pageList.length){
+                this.addAction(pageList[0],event.music,event.bg,event.actions,event.onload,event.disabledChoices);
+                var actions = event.actions;
+                //Create the actions
+                for(var i=1;i<pageList.length;i++){
+                    var p = event[pageList[i]];
+                    this.addAction(pageList[i],p.music,p.bg,p.actions,p.onload,p.disabledChoices);
+                }
+            } else {
+                this.addAction("Action "+DC.p.uniqueActions,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),{},{},[]);
             }
-            //Create an action if there is not one
-            if(!actions.length) this.addAction("Action "+DC.p.uniqueActions,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),{},{},[]);
             this.selectAction(0);
             
         },
@@ -87,14 +89,14 @@ var start = function(){
                     </div>\n\
                     <input class="display-text full-line" value="'+displayText+'">\n\
                     <select class="actions-select full-line" initial-value="'+func+'">'+this.getOptString(this.p.actionFuncs)+'</select>\n\
-                    <div class="btn btn-quarter full-line disable">'+(disabled?"Disabled":"Enabled")+'</div>\n\
+                    <div class="btn btn-quarter full-line disable">'+(disabled==="Disabled"?"Disabled":"Enabled")+'</div>\n\
                     <div class="effect-props">\n\
                         '+this.getEffect([func,props])+'\n\
                     </div>\n\
                     \n\
                 </li>'
             );
-            ;
+            $(".actions-select").trigger("change");
         },
         //Adds a var to the list
         addVar:function(name,val,fromSave){
