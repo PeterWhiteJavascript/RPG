@@ -12,7 +12,7 @@ $characters = (object)[];
 foreach($characterFiles as $charFile){
     $characters -> $charFile = json_decode(file_get_contents('data/json/story/characters/'.$charFile), true);
 }
-
+ 
 ?>
 
 <!DOCTYPE html>
