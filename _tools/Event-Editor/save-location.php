@@ -32,6 +32,9 @@ function processValue($value){
     }
 }
 function adjustValues($obj){
+    if(!$obj){
+        return false;
+    }
     for($i=0;$i<count($obj);$i++){
         if(isset($obj[$i]['conds'])){
             for($j=0;$j<count($obj[$i]['conds']);$j++){
@@ -42,10 +45,15 @@ function adjustValues($obj){
         } else {
             $obj[$i]['conds'] = array();
         }
-        for($j=0;$j<count($obj[$i]['effects']);$j++){
-            foreach($obj[$i]['effects'][$j][1] as $key => $value){
-                $obj[$i]['effects'][$j][1][$key] = processValue($value);
+        //There should always be an effect set, but still do this because someone might accidentally make a cond without effect at some point.
+        if(isset($obj[$i]['effects'])){
+            for($j=0;$j<count($obj[$i]['effects']);$j++){
+                foreach($obj[$i]['effects'][$j][1] as $key => $value){
+                    $obj[$i]['effects'][$j][1][$key] = processValue($value);
+                }
             }
+        } else {
+            $obj[$i]['effects'] = array();
         }
     }
     return $obj;

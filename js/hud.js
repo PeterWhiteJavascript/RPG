@@ -839,7 +839,9 @@ Quintus.HUD=function(Q){
         inserted:function(){
             var target = this.p.target;
             var stats = target.p.combatStats;
-            this.insert(new Q.UI.Text({label:"HP: "+stats.hp+"/"+stats.maxHp,x:5+this.p.w/4,y:5,size:20,cx:0,cy:0,family:"Consolas"}));
+            var hpText = "HP: "+stats.hp+"/"+stats.maxHp;
+            if(stats.hp === 0) hpText = "HP: "+stats.hp+"/"+stats.maxHp+ "(wounded for "+target.p.wounded+" turn/s)";
+            this.insert(new Q.UI.Text({label:hpText,x:5+this.p.w/4,y:5,size:20,cx:0,cy:0,family:"Consolas"}));
             this.insert(new Q.UI.Text({label:"TP: "+stats.tp+"/"+stats.maxTp,x:5+this.p.w/4+this.p.w/2,y:5,size:20,cx:0,cy:0,family:"Consolas"}));
             var leftCont = this.insert(new Q.UI.Container({h:this.p.h-50,w:this.p.w/2-7.5,x:5,y:45,fill:"green",cx:0,cy:0}));
             var leftStats = [stats.maxAtkDmg,stats.minAtkDmg,stats.maxSecondaryDmg,stats.minSecondaryDmg,stats.critChance,stats.atkSpeed,stats.atkRange,stats.atkAccuracy,stats.moveSpeed];

@@ -103,11 +103,13 @@ Q.newGame=function(options){
         alex.gender = options.gender;
         
         var storyAlex = Q.charGen.generateCharacter(alex,"alex");
-        //var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
+        var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
+        astraea.combatStats.hp = 0;
+        astraea.wounded = 1;
         /*var random1 = Q.charGen.generateCharacter({},"roster");
         var random2 = Q.charGen.generateCharacter({},"roster");*/
         //console.log(legion)
-        Q.state.set("allies",[storyAlex/*,astraea,random1,random2*/]);
+        Q.state.set("allies",[storyAlex,astraea/*,random1,random2*/]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
         //Set up the applications roster
@@ -199,7 +201,6 @@ var files = [
     "json/data/character-generation.json",
     "json/data/equipment.json",
     "json/data/items.json",
-    "json/data/locations.json",
     "json/data/character-classes.json",
     "json/data/officers.json",
     "json/data/skills.json",
@@ -213,7 +214,7 @@ var files = [
     "json/data/scenes-list.json",
     "json/data/default-equipment.json",
     
-    "json/data/global-vars.json"
+    "json/story/global-vars.json"
 ];
 function convertEquipment(data){
     var obj = {
@@ -272,7 +273,7 @@ Q.load(files.join(','),function(){
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",Q.assets['json/data/tile_types.json']);
     //The global variables that are set in global-vars.json
-    Q.state.set("globalVars",Q.assets['json/data/global-vars.json'].vrs);
+    Q.state.set("globalVars",Q.assets['json/story/global-vars.json'].vrs);
     //The modules for text replacement
     Q.state.set("modules",Q.assets["json/data/modules.json"]);
     //All important story events that happen on a certain week

@@ -74,6 +74,7 @@
         "personality":[["A little","Violent"]],
         "exp":0,
         "primaryStat":"str",
+        "lean":[[25,25,25,25],[25,25,25,25]],
         "loyalty":50,
         "morale":50
         

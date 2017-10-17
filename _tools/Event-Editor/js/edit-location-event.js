@@ -19,6 +19,7 @@ setJSONData("../../data/json/story/events/"+sceneType+"/"+sceneName+"/"+eventNam
 //Set all of the data files
 dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
 
+GDATA["global-vars.json"] = $.getJSON("../../data/json/story/global-vars.json");
 //Start the action after all data is loaded.
 var start = function(){
     var DC = {
@@ -71,7 +72,7 @@ var start = function(){
                     this.addAction(pageList[i],p.music,p.bg,p.actions,p.onload,p.disabledChoices);
                 }
             } else {
-                this.addAction("Action "+DC.p.uniqueActions,$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),{},{},[]);
+                this.addAction("start",$(DC.p.musicSelect).val(),$(DC.p.bgSelect).val(),{},{},[]);
             }
             this.selectAction(0);
             

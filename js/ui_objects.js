@@ -274,6 +274,7 @@ Quintus.UIObjects=function(Q){
             cont.append(
                 '<ul id="entourage-menu-ul">\n\
                     <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
+                    <li id="en-infirmary" class="btn btn-default" func="createInfirmaryMenu">Infirmary</li>\n\
                     <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
                 </ul>'
             );
@@ -287,6 +288,48 @@ Quintus.UIObjects=function(Q){
         },
         createCashBonusMenu:function(){
             
+        },
+        createInfirmaryMenu:function(){
+            this.emptyConts();
+            var cont = this.p.midCont;
+            
+            var cont = this.p.leftCont;
+            cont.append('<ul id="left-menu-ul"></ul>');
+            //Generate list of characters at 0 hp.
+            var chars = Q.state.get("allies").filter(function(ally){
+                return ally.combatStats.hp===0;
+            });
+            chars.forEach(function(char){
+                $("#left-menu-ul").append('<li id="'+char.name+'" class="character btn btn-default">'+char.name+'</li>');
+            });
+            var t = this;
+            $(".character").on("click",function(){
+                $('.character').removeClass("selected-color");
+                $(this).addClass("selected-color");
+                var name = $(this).attr("id");
+                var target = Q.state.get("allies").filter(function(a){
+                    return a.name===name;
+                })[0];
+                t.showRecruitCharacterCard(t,target);
+                t.p.selectedAlly = target;
+            });
+            
+            this.p.leftCont.show();
+            this.showRecruitCharacterCard(this,chars[0]);
+            var infirmaryActions = [
+                [
+                    "Visit",
+                    "infirmaryVisitCharacter"
+                ],
+                [
+                    "Back",
+                    "createEntourageMenu"
+                ]
+            ];
+            this.displayList({actions:infirmaryActions});
+        },
+        infirmaryVisitCharacter:function(){
+            console.log(this.p.selectedAlly)
         },
         createDistributeGearMenu:function(){
             this.emptyConts();
@@ -526,7 +569,7 @@ Quintus.UIObjects=function(Q){
             var cont = this.p.leftCont;
             cont.append('<ul id="left-menu-ul"></ul>');
             for(var i=0;i<available.length;i++){
-                $("#left-menu-ul").append('<li id="'+available[i].name+'" class="character btn btn-default" func="createCharacterMenu">'+available[i].name+'</li>');
+                $("#left-menu-ul").append('<li id="'+available[i].name+'" class="character btn btn-default">'+available[i].name+'</li>');
             }
             var t = this;
             $(".character").on("click",function(){
@@ -652,9 +695,6 @@ Quintus.UIObjects=function(Q){
             });
         },
         createMentorMenu:function(){
-            
-        },
-        createInfirmaryMenu:function(){
             
         },
         createMarketMenu:function(){

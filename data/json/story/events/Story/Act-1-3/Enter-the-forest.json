@@ -218,8 +218,8 @@
                 }
             ],
             "onload": [],
-            "modules": [],
-            "modulesVars": []
+            "modules": {},
+            "modulesVars": {}
         },
         {
             "name": "Tell him to mind his business",

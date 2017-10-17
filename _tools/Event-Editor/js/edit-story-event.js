@@ -627,7 +627,7 @@ $(function(){
                         props.prop = "Sensitive";
                     }
                     var chars = '<p class="editor-descriptor-half light-gradient">Character</p><select class="cond-prop char inline-select" initial-value="'+props.char+'">'+this.charOptions()+'</select>';
-                    var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value='+props.propType+'><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option><option>Stat</option></select>';
+                    var charTypes = '<p class="editor-descriptor-half light-gradient">Type</p><select class="cond-prop propType check-char-types inline-select" initial-value="'+props.propType+'"><option value="Personality">Personality</option><option value="Character Class">Character Class</option><option value="Value">Value</option><option value="Methodology">Methodology</option><option value="Nationality">Nationality</option><option value="Loyalty">Loyalty</option><option value="Morale">Morale</option><option value="Gender">Gender</option><option>Stat</option></select>';
                     var charProps = '<p class="editor-descriptor-half light-gradient">Prop</p><select class="cond-prop prop inline-select" initial-value="'+props.prop+'">'+this.getCharCondOptions(props.propType,props.prop).options+'</select>';
                     content = chars+charTypes+charProps;
                     if(props.propType==="Stat"){
@@ -1025,7 +1025,8 @@ $(function(){
         }
         $.getJSON("../../data/json/data/"+files[0],loadJSON);
     }
-    loadJSON();
+    JSONdata["global-vars.json"] = $.getJSON("../../data/json/story/global-vars.json",loadJSON);
+    
     
     
     
