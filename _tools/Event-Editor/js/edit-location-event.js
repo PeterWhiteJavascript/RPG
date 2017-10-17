@@ -18,7 +18,6 @@ setJSONData("../../data/json/story/events/"+sceneType+"/"+sceneName+"/"+eventNam
 
 //Set all of the data files
 dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
-
 GDATA["global-vars.json"] = $.getJSON("../../data/json/story/global-vars.json");
 //Start the action after all data is loaded.
 var start = function(){

@@ -2798,6 +2798,7 @@ Quintus.GameObjects=function(Q){
                     char.exp = data.exp || 0;
                     char.loyalty = data.loyalty || 50;
                     char.morale = data.morale || 50;
+                    char.completedEvents = [];
                     break;
                 //Special case for Alex as he/she does not have personality, methodology, value, loyalty, or morale.
                 case "alex":
@@ -2877,6 +2878,9 @@ Quintus.GameObjects=function(Q){
                     char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = data.hp || char.combatStats.maxHp;
                     char.combatStats.tp = data.maxTp || char.combatStats.maxTp;
+                    char.completedEvents = data.completedEvents || [];
+                    char.events = this.getEvents(char);
+                    console.log(char.events)
                     break;
                 //The data will include a reference to the actual character properties that are in the character's file.
                 case "battleChar":
@@ -2913,6 +2917,7 @@ Quintus.GameObjects=function(Q){
                     char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;
                     char.combatStats.tp = char.combatStats.maxTp;
+                    char.completedEvents = [];
                     break;
                 //Creates a simple character sprite used in battle scenes.
                 //Doesn't generate combat 
@@ -2921,6 +2926,51 @@ Quintus.GameObjects=function(Q){
                     break;
             }
             return char;
+        },
+        //Use the character data to generate the possible events list
+        getEvents:function(char){
+            var data = Q.state.get("flavourEvents");
+            var matchChar = function(char,obj){
+                return Object.keys(obj).every(function(key){
+                    return char[key] === obj[key];
+                });
+            };
+            //The full list of possible events
+            var eventTypes = function(officerName,act){
+                for(var x=0;x<data["eventTypes"].length;x++){
+                    this[data["eventTypes"][x]] = [];
+                }
+                //Get all of the special officer data
+                if(officerName){
+                    var officerData = data.officer[officerName];
+                    var keys = Object.keys(officerData);
+                    for(var a=0;a<keys.length;a++){
+                        var d = officerData[keys[a]];
+                        if(d[act]){
+                            for(var b=0;b<d[act].length;b++){
+                                this[keys[a]].push(d[act][b]);
+                            }
+                        }   
+                    }
+                }
+                var keys = Object.keys(data[act]);
+                for(var e=0;e<keys.length;e++){
+                    for(var f=0;f<data[act][keys[e]].length;f++){
+                        var d = data[act][keys[e]][f];
+                        //Evaluate if this character gets this event
+                        if(matchChar(char,d[0])){
+                            this[keys[e]].push([d[1],d[2],d[3]]);
+                        };
+                    }
+                }
+            };
+            var events = function(char){
+                var acts = ["Act-1-1","Act-1-2","Act-1-3","Act-1-4","Act-2-1","Act-2-2","Act-2-3","Act-2-4","Act-3-1","Act-3-2","Act-3-3","Act-3-4","Act-4-1","Act-4-2","Act-4-3","Act-4-4","FinalAct","All"];
+                for(var i=0;i<acts.length;i++){
+                    this[acts[i]] = new eventTypes(char.officer ? char.name : false, acts[i]);
+                }
+            };
+            return new events(char);
         },
         //Generates four random numbers that all add up to 100
         getStatLean:function(){

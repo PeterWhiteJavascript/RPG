@@ -36,10 +36,6 @@ Quintus.QFunctions=function(Q){
         if(morale<91) return "Inspired";
         return "Ecstatic";
     };
-    Q.markEventCompleted = function(char,scene){
-        char.events[scene] = false;
-    };
-    
     //Loads all unique assets that are used in a scene
     Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];

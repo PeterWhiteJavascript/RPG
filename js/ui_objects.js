@@ -38,12 +38,12 @@ Quintus.UIObjects=function(Q){
             //[char,scene,event]
             var data = potentialEvents[Math.floor(Math.random()*potentialEvents.length)];
             if(data){
-                var scene = data[1];
-                var event = data[2];
-                Q.markEventCompleted(data[0],data[1]);
+                var type = data[2].type;
+                var scene = data[2].scene;
+                var event = data[2].event;
                 var idx = potentialEvents.indexOf(data);
                 potentialEvents.splice(idx,1);
-                return {scene:scene,event:event,char:data[0]};
+                return {type:type,scene:scene,event:event,char:data[0]};
             }
             return false;
         },
@@ -51,8 +51,7 @@ Quintus.UIObjects=function(Q){
             Q.state.get("saveData").week++;
             var event = this.checkWeek(Q.state.get("saveData").week);
             if(event){
-                //The third prop might include more than one character for some events
-                Q.startScene(event.scene,event.event,[event.char]);
+                Q.startScene(event.type,event.scene,event.event);
                 Q.locationController.hideAll();
             }
         }
@@ -299,6 +298,11 @@ Quintus.UIObjects=function(Q){
             var chars = Q.state.get("allies").filter(function(ally){
                 return ally.combatStats.hp===0;
             });
+            if(!chars.length){
+                alert("There are no characters that are wounded!");
+                this.createEntourageMenu();
+                return;
+            }
             chars.forEach(function(char){
                 $("#left-menu-ul").append('<li id="'+char.name+'" class="character btn btn-default">'+char.name+'</li>');
             });
@@ -313,7 +317,7 @@ Quintus.UIObjects=function(Q){
                 t.showRecruitCharacterCard(t,target);
                 t.p.selectedAlly = target;
             });
-            
+            $(".character").first().trigger("click");
             this.p.leftCont.show();
             this.showRecruitCharacterCard(this,chars[0]);
             var infirmaryActions = [
@@ -329,7 +333,47 @@ Quintus.UIObjects=function(Q){
             this.displayList({actions:infirmaryActions});
         },
         infirmaryVisitCharacter:function(){
-            console.log(this.p.selectedAlly)
+            var ally = this.p.selectedAlly;
+            ally.loyalty = Math.min(ally.loyalty+10,100);
+            ally.wounded--;
+            if(!ally.wounded){
+                ally.combatStats.hp = ally.combatStats.maxHp;
+                $("#"+ally.name).remove();
+            }
+            if(!$(".character").length){
+                this.createEntourageMenu();
+            } else {
+                $(".character").first().trigger("click");
+            }
+            this.addToPotentialEvents(ally,"infirmary");
+            this.trigger("cycleWeek");
+        },
+        addToPotentialEvents:function(char,prop){
+            var evaluateProp = function(d,c){
+                if(!d) return true;
+            };
+            var act = "Act-"+Q.state.get("saveData").act;
+            //Loop through the events that haven't been played and find the most suitable
+            var potentialEvents = [];
+            for(var i=0;i<char.events[act][prop].length;i++){
+                var data = char.events[act][prop][i];
+                if(evaluateProp(data[0],char)){
+                    potentialEvents.push(data);
+                    char.events[act][prop].splice(1,i);
+                    char.completedEvents.push({act:act,prop:prop,idx:i});
+                };
+            }
+            for(var i=0;i<char.events["All"][prop].length;i++){
+                var data = char.events["All"][prop][i];
+                if(evaluateProp(data[0],char)){
+                    potentialEvents.push(data);
+                    char.events["All"][prop].splice(1,i);
+                    char.completedEvents.push({act:"All",prop:prop,idx:i});
+                };
+            }
+            //Find the event with the highest priority (lowest number)
+            var event = potentialEvents.sort(function(a, b){return a[1] - b[1]})[0];
+            Q.state.get("potentialEvents").push(event);
         },
         createDistributeGearMenu:function(){
             this.emptyConts();

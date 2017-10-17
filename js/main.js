@@ -213,6 +213,7 @@ var files = [
     "json/data/story-events.json",
     "json/data/scenes-list.json",
     "json/data/default-equipment.json",
+    "json/data/flavour-events-list.json",
     
     "json/story/global-vars.json"
 ];
@@ -284,6 +285,8 @@ Q.load(files.join(','),function(){
     Q.state.set("characterFiles",JSON.parse($("#all-characters").text()));
     //Default equipment for enemy generation
     Q.state.set("defaultEquipment",Q.assets["json/data/default-equipment.json"]);
+    //Events that are triggered after doing things
+    Q.state.set("flavourEvents",Q.assets["json/data/flavour-events-list.json"]);
     
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
