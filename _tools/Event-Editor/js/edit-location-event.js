@@ -779,7 +779,7 @@ var start = function(){
             data:data,
             dataType:'json'
         })
-        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+        .done(function(data){console.log(data)})
         .fail(function(data){console.log(data)});
 
         var form = $('<form action="../../index.php" method="post"></form>');

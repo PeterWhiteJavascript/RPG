@@ -1,0 +1,36 @@
+{
+    "name": "Visit-Legionnaire",
+    "desc": "",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "This event triggered because you visited a Venorian Legionnaire in the infirmary!",
+            "choices": [
+                {
+                    "displayText": "Go to anchor event (last event)",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "goToAnchorEvent",
+                                    {}
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

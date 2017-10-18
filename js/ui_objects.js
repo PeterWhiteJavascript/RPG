@@ -26,6 +26,12 @@ Quintus.UIObjects=function(Q){
         added:function(){
             this.entity.on("cycleWeek",this,"cycleWeek");
         },
+        reduceWounded:function(char){
+            char.wounded--;
+            if(!char.wounded){
+                char.combatStats.hp = char.combatStats.maxHp;
+            }
+        },
         checkWeek:function(week){
             //Check the story events first as they are the most important.
             //Story events (important ones)
@@ -36,23 +42,33 @@ Quintus.UIObjects=function(Q){
             //Get the list of all events that could be played
             var potentialEvents = Q.state.get("potentialEvents");
             //[char,scene,event]
-            var data = potentialEvents[Math.floor(Math.random()*potentialEvents.length)];
+            var data = potentialEvents[0];
             if(data){
                 var type = data[2].type;
                 var scene = data[2].scene;
                 var event = data[2].event;
                 var idx = potentialEvents.indexOf(data);
                 potentialEvents.splice(idx,1);
-                return {type:type,scene:scene,event:event,char:data[0]};
+                return {type:type,scene:scene,event:event,char:data[3]};
             }
             return false;
         },
         cycleWeek:function(){
             Q.state.get("saveData").week++;
+            //All characters that are wounded get reduced by 1
+            var allies = Q.state.get("allies");
+            for(var i=0;i<allies.length;i++){
+                this.reduceWounded(allies[i]);
+            }
+            
             var event = this.checkWeek(Q.state.get("saveData").week);
             if(event){
-                Q.startScene(event.type,event.scene,event.event);
-                Q.locationController.hideAll();
+                Q.locationController.fullDestroy();
+                var curEvent = Q.state.get("currentEvent");
+                Q.state.set("anchorEvent",{event:curEvent.event,scene:curEvent.scene,type:curEvent.type});
+                Q.startScene(event.type,event.scene,event.event,event.char);
+            } else {
+                Q.locationController.createMainMenu();
             }
         }
     });
@@ -77,6 +93,11 @@ Quintus.UIObjects=function(Q){
             changeEvent:function(p){
                 this.fullDestroy();
                 Q.startScene(p.type,p.scene,p.event);
+            },
+            goToAnchorEvent:function(){
+                this.fullDestroy();
+                var anchor = Q.state.get("anchorEvent");
+                Q.startScene(anchor.type,anchor.scene,anchor.event);
             },
             displayBuyItemsList:function(p){
                 this.emptyConts();
@@ -197,9 +218,6 @@ Quintus.UIObjects=function(Q){
             this.on("inserted");
             this.add("locationActions");
             this.add("time");
-            //Add a Back button to the first actions menu.
-            this.p.location.actions.push(["Back","createMainMenu"]);
-            
         },
         fullDestroy:function(){
             this.emptyConts();
@@ -214,7 +232,6 @@ Quintus.UIObjects=function(Q){
             this.p.leftCont = this.createCont("left-cont");
             $(this.p.leftCont).hide();
             this.createMainMenu();
-            //this.createRecruitMenu();
         },
         hideAll:function(){
             this.emptyConts();
@@ -335,45 +352,68 @@ Quintus.UIObjects=function(Q){
         infirmaryVisitCharacter:function(){
             var ally = this.p.selectedAlly;
             ally.loyalty = Math.min(ally.loyalty+10,100);
-            ally.wounded--;
-            if(!ally.wounded){
-                ally.combatStats.hp = ally.combatStats.maxHp;
-                $("#"+ally.name).remove();
-            }
-            if(!$(".character").length){
-                this.createEntourageMenu();
-            } else {
-                $(".character").first().trigger("click");
-            }
+            Q.setAward(ally,"visited",1);
+            this.time.reduceWounded(ally);
             this.addToPotentialEvents(ally,"infirmary");
             this.trigger("cycleWeek");
         },
         addToPotentialEvents:function(char,prop){
             var evaluateProp = function(d,c){
                 if(!d) return true;
+                var success = true;
+                var keys = Object.keys(d);
+                //Loop through each condition. All must evaluate true to continue.
+                keys.forEach(function(key){
+                    var value = key.split('.').reduce(Q.textModules.getObjPathFromString,char);
+                    if(!Q.textModules.evaluateStringOperator(value,d[key][0],d[key][1])) success = false;
+                });
+                return success;
+            };
+            var eventCompleted = function(act,prop,char,idx){
+                //Will be 0 if the event was not completed yet.
+                return char.completedEvents.filter(function(event){
+                    return event.act === act && event.prop === prop && event.idx === idx;
+                }).length;
+            };
+            var checkEvents = function(act,prop,char,idx){
+                var data = act.split('.').reduce(Q.textModules.getObjPathFromString,char.events)[prop];
+                if(evaluateProp(data[idx][0],char)&&!eventCompleted(act,prop,char,idx)){
+                    data.splice(1,idx);
+                    char.completedEvents.push({act:act,prop:prop,idx:idx});
+                    return data;
+                };
+                return false;
             };
             var act = "Act-"+Q.state.get("saveData").act;
             //Loop through the events that haven't been played and find the most suitable
             var potentialEvents = [];
+            //Regular act events
             for(var i=0;i<char.events[act][prop].length;i++){
-                var data = char.events[act][prop][i];
-                if(evaluateProp(data[0],char)){
-                    potentialEvents.push(data);
-                    char.events[act][prop].splice(1,i);
-                    char.completedEvents.push({act:act,prop:prop,idx:i});
-                };
+                var data = checkEvents(act,prop,char,i);
+                if(data) potentialEvents.push(data);
             }
+            //All act events
             for(var i=0;i<char.events["All"][prop].length;i++){
-                var data = char.events["All"][prop][i];
-                if(evaluateProp(data[0],char)){
-                    potentialEvents.push(data);
-                    char.events["All"][prop].splice(1,i);
-                    char.completedEvents.push({act:"All",prop:prop,idx:i});
-                };
+                var data = checkEvents("All",prop,char,i);
+                if(data) potentialEvents.push(data);
             }
+            
+            if(char.officer){
+                //Officer act events
+                for(var i=0;i<char.events["officer"][act][prop].length;i++){
+                    var data = checkEvents("officer."+act,prop,char,i);
+                    if(data) potentialEvents.push(data);
+                }
+                //Officer all act events
+                for(var i=0;i<char.events["officer"]["All"][prop].length;i++){
+                    var data = checkEvents("officer.All",prop,char,i);
+                    if(data) potentialEvents.push(data);
+                }
+            }
+            if(!potentialEvents.length) return;
             //Find the event with the highest priority (lowest number)
-            var event = potentialEvents.sort(function(a, b){return a[1] - b[1]})[0];
-            Q.state.get("potentialEvents").push(event);
+            var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
+            Q.state.get("potentialEvents").push([event[0][0],event[0][1],event[0][2],char]);
         },
         createDistributeGearMenu:function(){
             this.emptyConts();
@@ -520,7 +560,7 @@ Quintus.UIObjects=function(Q){
             this.emptyConts();
             this.p.currentPage = "start";
             this.p.action = 0;
-            this.displayList(this.p.location);
+            this.displayList({actions:this.p.location.actions.concat([["Back","createMainMenu"]])});
         },
         displayQuantityToggle:function(p){
             var cont = this.p.menuCont;
@@ -814,6 +854,8 @@ Quintus.UIObjects=function(Q){
                             varValue = Q.state.get("globalVars")[checks[j][1]];
                             break;
                     }
+                    success = this.evaluateStringOperator(varValue,checks[j][2],checks[j][3]);
+                    /*
                     switch(checks[j][2]){
                         case "==":
                             if(varValue==checks[j][3]) success = true;
@@ -839,7 +881,7 @@ Quintus.UIObjects=function(Q){
                             if(varValue<=checks[j][3]) success = true;
                             else success = false;
                             break
-                    }
+                    }*/
                 }
                 if(success){
                     text = Q.textModules.processTextVars(module[i].text);
@@ -1003,32 +1045,26 @@ Quintus.UIObjects=function(Q){
                     return prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("saveData"));
                 break;
                 case "o":
-                    var intAffected = parseInt(aff[1]);
-                    //We're affecting a passed in character
-                    if(intAffected>=0){
-                        return Q.textModules.processModule(Q.storyController.p.characters[intAffected],affected,prop);
-                    } 
                     //We're affecting a specific officer's modules
-                    else {
-                        var newText;
-                        var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
-                        //If there's a third property
-                        if(aff[2]){
-                            switch(aff[2]){
-                                case "g":
-                                    var gender = char.gender;
-                                    newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
-                                    break;
-                            }
-                        } else {
-                            newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
+                    var newText;
+                    var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
+                    //If there's a third property
+                    if(aff[2]){
+                        switch(aff[2]){
+                            case "g":
+                                var gender = char.gender;
+                                newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
+                                break;
                         }
-                        //If there's more, do it again.
-                        while(typeof newText==="string" && newText.indexOf("{")>=0){
-                            newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
-                        }
-                        return newText;
+                    } else {
+                        newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
                     }
+                    //If there's more, do it again.
+                    while(typeof newText==="string" && newText.indexOf("{")>=0){
+                        newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
+                    }
+                    return newText;
+                    
                 break;
                 //Modules from within modules
                 case "m":
@@ -1045,7 +1081,7 @@ Quintus.UIObjects=function(Q){
                     var newText;
                     //Rand character that is passed in
                     if(intAffected>=0){
-                        var char = Q.storyController.p.characters[intAffected];
+                        var char = Q.storyController.p.char;
                         //If there's more than one part to the obj
                         if(aff[1]){
                             var propAffected = aff[1];
@@ -1122,6 +1158,7 @@ Quintus.UIObjects=function(Q){
         evaluateStringOperator:function(vr,op,vl){
             switch(op){
                 case "==": return vr==vl;
+                case "!=": return vr!=vl;
                 case ">": return vr>vl;
                 case "<": return vr<vl;
                 case ">=": return vr>=vl;
@@ -1354,6 +1391,11 @@ Quintus.UIObjects=function(Q){
             },
             changeEvent:function(t,obj){
                 Q.startScene(obj.type,obj.scene,obj.event);
+                $("#text-container").remove();
+            },
+            goToAnchorEvent:function(){
+                var anchor = Q.state.get("anchorEvent");
+                Q.startScene(anchor.type,anchor.scene,anchor.event);
                 $("#text-container").remove();
             },
             recruitChar:function(t,obj){

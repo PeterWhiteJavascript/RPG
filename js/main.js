@@ -105,11 +105,15 @@ Q.newGame=function(options){
         var storyAlex = Q.charGen.generateCharacter(alex,"alex");
         var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
         astraea.combatStats.hp = 0;
-        astraea.wounded = 1;
-        /*var random1 = Q.charGen.generateCharacter({},"roster");
-        var random2 = Q.charGen.generateCharacter({},"roster");*/
+        astraea.wounded = 5;
+        var random1 = Q.charGen.generateCharacter({},"roster");
+        random1.combatStats.hp = 0;
+        random1.wounded = 5;
+        var random2 = Q.charGen.generateCharacter({},"roster");
+        random2.combatStats.hp = 0;
+        random2.wounded = 5;
         //console.log(legion)
-        Q.state.set("allies",[storyAlex,astraea/*,random1,random2*/]);
+        Q.state.set("allies",[storyAlex,astraea,random1,random2]);
         //Set up the new game bag
         Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
         //Set up the applications roster

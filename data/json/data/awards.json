@@ -31,9 +31,9 @@
         "name":"Times Wounded",
         "desc":"The total number of times this character's hp has gone to 0."
     },
-    "timesRested":{
-        "name":"Times Rested",
-        "desc":"The number of times this character has rested at an inn."
+    "visited":{
+        "name":"Times Visited",
+        "desc":"The number of times this character has been visited at the infirmary."
     },
     "feasted":{
         "name":"Times Feasted",

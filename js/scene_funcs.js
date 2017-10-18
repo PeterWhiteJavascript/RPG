@@ -1,12 +1,13 @@
 Quintus.SceneFuncs=function(Q){
     
-    Q.startScene = function(type,scene,event){
+    Q.startScene = function(type,scene,event,char){
+        Q.state.set("currentEvent",{type:type,scene:scene,event:event});
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
             var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
             //TODO: come up with a way to save the previous vars (maybe won't be necessary if we won't be going back to events and also the vars will re-evaluate when going back)
             Q.state.set("eventVars",data.vrs);
-            Q.stageScene(data.kind,0,{data:data});
+            Q.stageScene(data.kind,0,{data:data,char:char});
         });
     };
     Q.scene("story",function(stage){
@@ -15,7 +16,7 @@ Quintus.SceneFuncs=function(Q){
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
                 var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
-                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters}));
+                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters,char:stage.options.char}));
                 Q.storyController.insertPage(0);
             });
         });

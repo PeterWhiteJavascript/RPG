@@ -71,7 +71,7 @@ Quintus.QFunctions=function(Q){
     };
     
     Q.setAward = function(obj,prop,amount){
-        
+        obj["awards"][prop] += amount;
     };
     
    /* Q.getPathData=function(data,path){

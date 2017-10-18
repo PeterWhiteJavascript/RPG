@@ -2719,6 +2719,15 @@ Quintus.GameObjects=function(Q){
         //All properties are included except loc and dir, which depend on the event.
         //These properties should be added to the returned character
         generateCharacter:function(data,type){
+            var emptyAwards = function(){
+                var awards = Q.state.get("awards");
+                var keys = Object.keys(awards);
+                var obj = {};
+                keys.forEach(function(key){
+                    obj[key] = 0;
+                });
+                return obj;
+            };
             var char = {
                 tempStatChange:{
                     "str":0,
@@ -2798,7 +2807,10 @@ Quintus.GameObjects=function(Q){
                     char.exp = data.exp || 0;
                     char.loyalty = data.loyalty || 50;
                     char.morale = data.morale || 50;
-                    char.completedEvents = [];
+                    char.awards =  emptyAwards();
+                    
+                    char.completedEvents =  [];
+                    char.events = this.getEvents(char);
                     break;
                 //Special case for Alex as he/she does not have personality, methodology, value, loyalty, or morale.
                 case "alex":
@@ -2878,9 +2890,11 @@ Quintus.GameObjects=function(Q){
                     char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = data.hp || char.combatStats.maxHp;
                     char.combatStats.tp = data.maxTp || char.combatStats.maxTp;
+                    
+                    char.awards = data.awards || emptyAwards();
+                    
                     char.completedEvents = data.completedEvents || [];
                     char.events = this.getEvents(char);
-                    console.log(char.events)
                     break;
                 //The data will include a reference to the actual character properties that are in the character's file.
                 case "battleChar":
@@ -2936,22 +2950,9 @@ Quintus.GameObjects=function(Q){
                 });
             };
             //The full list of possible events
-            var eventTypes = function(officerName,act){
+            var eventTypes = function(act){
                 for(var x=0;x<data["eventTypes"].length;x++){
                     this[data["eventTypes"][x]] = [];
-                }
-                //Get all of the special officer data
-                if(officerName){
-                    var officerData = data.officer[officerName];
-                    var keys = Object.keys(officerData);
-                    for(var a=0;a<keys.length;a++){
-                        var d = officerData[keys[a]];
-                        if(d[act]){
-                            for(var b=0;b<d[act].length;b++){
-                                this[keys[a]].push(d[act][b]);
-                            }
-                        }   
-                    }
                 }
                 var keys = Object.keys(data[act]);
                 for(var e=0;e<keys.length;e++){
@@ -2964,10 +2965,31 @@ Quintus.GameObjects=function(Q){
                     }
                 }
             };
+            var officerEventTypes = function(act,name){
+                for(var x=0;x<data["eventTypes"].length;x++){
+                    this[data["eventTypes"][x]] = [];
+                }
+                var officerData = data.officer[name];
+                var keys = Object.keys(officerData);
+                for(var a=0;a<keys.length;a++){
+                    var d = officerData[keys[a]];
+                    if(d[act]){
+                        for(var b=0;b<d[act].length;b++){
+                            this[keys[a]].push(d[act][b]);
+                        }
+                    }   
+                }
+            };
             var events = function(char){
                 var acts = ["Act-1-1","Act-1-2","Act-1-3","Act-1-4","Act-2-1","Act-2-2","Act-2-3","Act-2-4","Act-3-1","Act-3-2","Act-3-3","Act-3-4","Act-4-1","Act-4-2","Act-4-3","Act-4-4","FinalAct","All"];
                 for(var i=0;i<acts.length;i++){
-                    this[acts[i]] = new eventTypes(char.officer ? char.name : false, acts[i]);
+                    this[acts[i]] = new eventTypes(acts[i]);
+                }
+                if(char.officer){
+                    this.officer = {};
+                    for(var i=0;i<acts.length;i++){
+                        this["officer"][acts[i]] = new officerEventTypes(acts[i],char.name);
+                    }
                 }
             };
             return new events(char);

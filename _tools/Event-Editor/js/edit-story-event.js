@@ -695,6 +695,9 @@ $(function(){
                     content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.sceneOptions(props.type),scene:props.scene});
                     content += this.setUpEffectProp("select","Select an Event","event",{opts:this.eventOptions(props.scene),event:props.event});
                     break;
+                case "goToAnchorEvent":
+                    
+                    break;
                 case "recruitChar":
                     var chars = Object.keys(this.p.characters).splice(1,Object.keys(this.p.characters).length);
                     if(!props){props = {};
@@ -912,7 +915,7 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem","changeItemQuantity"];
+            var effects = ["setVar","changePage","enableChoice","changeEvent","goToAnchorEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem","changeItemQuantity"];
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });
@@ -1025,8 +1028,7 @@ $(function(){
         }
         $.getJSON("../../data/json/data/"+files[0],loadJSON);
     }
-    JSONdata["global-vars.json"] = $.getJSON("../../data/json/story/global-vars.json",loadJSON);
-    
+    $.getJSON("../../data/json/story/global-vars.json",function(data){JSONdata["global-vars.json"] = data;loadJSON();});
     
     
     

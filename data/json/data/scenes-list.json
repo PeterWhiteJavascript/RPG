@@ -192,7 +192,10 @@
                 "Forest-Clearing-Battle-Victory",
                 "Forest-Clearing-Battle-Defeat",
                 "Arrive-in-Dardoine",
-                "In-Dardoine"
+                "In-Dardoine",
+                "TEST1",
+                "TEST2",
+                "Visit-Legionnaire"
             ],
             "vrs": {
                 "startVicantiAsk": "",
