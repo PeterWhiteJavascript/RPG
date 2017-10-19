@@ -378,7 +378,7 @@ $(function(){
             DC.selectedCharacter[prop] = val;
         },
         saveBaseStat:function(prop,val){
-            DC.selectedCharacter.baseStats[prop] = val;
+            DC.selectedCharacter.baseStats[prop] = parseInt(val);
         },
         //Locks in a name from input to div
         lockInName:function(itm){
@@ -817,6 +817,7 @@ $(function(){
         data.materials.forEach(function(obj){
             DC.addOption($(".right-hand-material"),obj);
         });
+        $(".right-hand-material").trigger("change");
     });
     $(document).on("change",".left-hand-gear",function(){
         $(".left-hand-material").empty();
@@ -841,6 +842,7 @@ $(function(){
         data.materials.forEach(function(obj){
             DC.addOption($(".left-hand-material"),obj);
         });
+        $(".left-hand-material").trigger("change");
     });
     $(document).on("change",".armour-gear",function(){
         $(".armour-material").empty();
@@ -862,6 +864,7 @@ $(function(){
         data.materials.forEach(function(obj){
             DC.addOption($(".armour-material"),obj);
         });
+        $(".armour-material").trigger("change");
     });
     $(document).on("change",".footwear-gear",function(){
         $(".footwear-material").empty();
@@ -883,6 +886,7 @@ $(function(){
         data.materials.forEach(function(obj){
             DC.addOption($(".footwear-material"),obj);
         });
+        $(".footwear-material").trigger("change");
     });
     
     //Re-generate base stats when the level is changed.

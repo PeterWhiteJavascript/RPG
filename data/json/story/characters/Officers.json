@@ -20,7 +20,7 @@
                 ],
                 "armour": [
                     "Average",
-                    "Default",
+                    "Wool",
                     "Outfit"
                 ],
                 "footwear": [
@@ -32,14 +32,14 @@
             },
             "baseStats": {
                 "str": 20,
-                "end": "20",
-                "dex": "20",
-                "wsk": "20",
-                "rfl": "20",
-                "ini": "20",
-                "enr": "20",
-                "skl": "20",
-                "eff": "20"
+                "end": 20,
+                "dex": 20,
+                "wsk": 20,
+                "rfl": 20,
+                "ini": 20,
+                "enr": 20,
+                "skl": 20,
+                "eff": 20
             },
             "techniques": [
                 "Forced March",
@@ -77,21 +77,21 @@
                 ],
                 "footwear": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Shoes"
                 ],
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "20",
-                "end": "25",
+                "str": 20,
+                "end": 25,
                 "dex": 16,
-                "wsk": "20",
+                "wsk": 20,
                 "rfl": 16,
-                "ini": "20",
+                "ini": 20,
                 "enr": 16,
-                "skl": "20",
-                "eff": "16"
+                "skl": 20,
+                "eff": 16
             },
             "techniques": [
                 "Critical Strike",
@@ -129,21 +129,21 @@
                 ],
                 "footwear": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Shoes"
                 ],
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "25",
-                "end": "20",
-                "dex": "20",
-                "wsk": "20",
-                "rfl": "16",
-                "ini": "16",
-                "enr": "16",
-                "skl": "16",
-                "eff": "20"
+                "str": 25,
+                "end": 20,
+                "dex": 20,
+                "wsk": 20,
+                "rfl": 16,
+                "ini": 16,
+                "enr": 16,
+                "skl": 16,
+                "eff": 20
             },
             "techniques": [
                 "Push",
@@ -166,7 +166,7 @@
             "equipment": {
                 "righthand": [
                     "Average",
-                    "Default",
+                    "Brass",
                     "Pike"
                 ],
                 "lefthand": [
@@ -176,26 +176,26 @@
                 ],
                 "armour": [
                     "Average",
-                    "Default",
+                    "Wool",
                     "Shirt"
                 ],
                 "footwear": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Shoes"
                 ],
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "20",
-                "end": "16",
-                "dex": "20",
-                "wsk": "16",
-                "rfl": "16",
-                "ini": "16",
-                "enr": "20",
-                "skl": "20",
-                "eff": "25"
+                "str": 20,
+                "end": 16,
+                "dex": 20,
+                "wsk": 16,
+                "rfl": 16,
+                "ini": 16,
+                "enr": 20,
+                "skl": 20,
+                "eff": 25
             },
             "techniques": [
                 "Unnerve",
@@ -233,21 +233,21 @@
                 ],
                 "footwear": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Shoes"
                 ],
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "16",
-                "end": "20",
-                "dex": "20",
-                "wsk": "16",
-                "rfl": "20",
-                "ini": "25",
-                "enr": "16",
-                "skl": "20",
-                "eff": "16"
+                "str": 16,
+                "end": 20,
+                "dex": 20,
+                "wsk": 16,
+                "rfl": 20,
+                "ini": 25,
+                "enr": 16,
+                "skl": 20,
+                "eff": 16
             },
             "techniques": [
                 "Long Shot",
@@ -285,21 +285,21 @@
                 ],
                 "footwear": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Shoes"
                 ],
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "20",
-                "end": "20",
-                "dex": "16",
-                "wsk": "25",
-                "rfl": "20",
+                "str": 20,
+                "end": 20,
+                "dex": 16,
+                "wsk": 25,
+                "rfl": 20,
                 "ini": 16,
-                "enr": "20",
-                "skl": "16",
-                "eff": "16"
+                "enr": 20,
+                "skl": 16,
+                "eff": 16
             },
             "techniques": [
                 "Forced March",
@@ -343,15 +343,15 @@
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "16",
-                "end": "16",
-                "dex": "16",
-                "wsk": "20",
-                "rfl": "20",
+                "str": 16,
+                "end": 16,
+                "dex": 16,
+                "wsk": 20,
+                "rfl": 20,
                 "ini": 16,
-                "enr": "25",
-                "skl": "20",
-                "eff": "20"
+                "enr": 25,
+                "skl": 20,
+                "eff": 20
             },
             "techniques": [
                 "Stability Field",
@@ -379,7 +379,7 @@
                 ],
                 "lefthand": [
                     "Average",
-                    "Default",
+                    "Soft Leather",
                     "Sling"
                 ],
                 "armour": [
@@ -395,15 +395,15 @@
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "20",
+                "str": 20,
                 "end": 16,
-                "dex": "25",
-                "wsk": "16",
-                "rfl": "20",
-                "ini": "20",
-                "enr": "16",
-                "skl": "16",
-                "eff": "20"
+                "dex": 25,
+                "wsk": 16,
+                "rfl": 20,
+                "ini": 20,
+                "enr": 16,
+                "skl": 16,
+                "eff": 20
             },
             "techniques": [
                 "Bleeding Strike",
@@ -447,15 +447,15 @@
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "16",
-                "end": "16",
-                "dex": "20",
-                "wsk": "20",
-                "rfl": "25",
-                "ini": "20",
-                "enr": "20",
-                "skl": "16",
-                "eff": "16"
+                "str": 16,
+                "end": 16,
+                "dex": 20,
+                "wsk": 20,
+                "rfl": 25,
+                "ini": 20,
+                "enr": 20,
+                "skl": 16,
+                "eff": 16
             },
             "techniques": [
                 "Quicken",
@@ -499,15 +499,15 @@
                 "accessory": "None"
             },
             "baseStats": {
-                "str": "20",
-                "end": "16",
-                "dex": "20",
-                "wsk": "16",
+                "str": 20,
+                "end": 16,
+                "dex": 20,
+                "wsk": 16,
                 "rfl": 16,
-                "ini": "16",
-                "enr": "20",
-                "skl": "25",
-                "eff": "20"
+                "ini": 16,
+                "enr": 20,
+                "skl": 25,
+                "eff": 20
             },
             "techniques": [
                 "Stone",
