@@ -41,15 +41,20 @@ Quintus.UIObjects=function(Q){
             }
             //Get the list of all events that could be played
             var potentialEvents = Q.state.get("potentialEvents");
-            //[char,scene,event]
-            var data = potentialEvents[0];
-            if(data){
-                var type = data[2].type;
-                var scene = data[2].scene;
-                var event = data[2].event;
-                var idx = potentialEvents.indexOf(data);
-                potentialEvents.splice(idx,1);
-                return {type:type,scene:scene,event:event,char:data[3]};
+            //Find the event with the highest priority (lowest number)
+            var event = potentialEvents.sort(function(a, b){return a.priority - b.priority;})[0];
+            if(event){
+                event.completed = true;
+                event.char.completedEvents.push({idx:event.idx,act:event.act,prop:event.prop});
+                //Any potential events that can not recur should be marked as completed
+                potentialEvents.forEach(function(ev){
+                    if(!ev.recur&&!ev.completed){
+                        ev.char.completedEvents.push({idx:ev.idx,act:ev.act,prop:ev.prop});
+                    }
+                });
+                Q.state.set("potentialEvents",[]);
+                var eventData = Q.state.get("flavourEvents")[event.act][event.prop][event.idx][2];
+                return {event:eventData.event,scene:eventData.scene,type:eventData.type,char:event.char};
             }
             return false;
         },
@@ -60,8 +65,14 @@ Quintus.UIObjects=function(Q){
             for(var i=0;i<allies.length;i++){
                 this.reduceWounded(allies[i]);
             }
+            /*
+            
+            //Find the event with the highest priority (lowest number)
+            var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
+            console.log(event)*/
             
             var event = this.checkWeek(Q.state.get("saveData").week);
+            console.log(event)
             if(event){
                 Q.locationController.fullDestroy();
                 var curEvent = Q.state.get("currentEvent");
@@ -358,62 +369,55 @@ Quintus.UIObjects=function(Q){
             this.trigger("cycleWeek");
         },
         addToPotentialEvents:function(char,prop){
-            var evaluateProp = function(d,c){
+            var evaluateProp = function(d,char){
                 if(!d) return true;
                 var success = true;
                 var keys = Object.keys(d);
                 //Loop through each condition. All must evaluate true to continue.
                 keys.forEach(function(key){
+                    //The character's var value
                     var value = key.split('.').reduce(Q.textModules.getObjPathFromString,char);
-                    if(!Q.textModules.evaluateStringOperator(value,d[key][0],d[key][1])) success = false;
+                    var toMatch = d[key];
+                    if(Q._isArray(toMatch)){
+                        if(!Q.textModules.evaluateStringOperator(value,toMatch[0],toMatch[1])) success = false;
+                    } else {
+                        if(toMatch !== value) success = false;
+                    }
                 });
                 return success;
             };
-            var eventCompleted = function(act,prop,char,idx){
+            var eventCompleted = function(act,prop,idx,char){
                 //Will be 0 if the event was not completed yet.
                 return char.completedEvents.filter(function(event){
                     return event.act === act && event.prop === prop && event.idx === idx;
                 }).length;
             };
             var checkEvents = function(act,prop,char,idx){
-                var data = act.split('.').reduce(Q.textModules.getObjPathFromString,char.events)[prop];
-                if(evaluateProp(data[idx][0],char)&&!eventCompleted(act,prop,char,idx)){
-                    data.splice(1,idx);
-                    char.completedEvents.push({act:act,prop:prop,idx:idx});
-                    return data;
+                var data = act.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("flavourEvents"))[prop][idx];
+                if(evaluateProp(data[0],char)&&!eventCompleted(act,prop,idx,char)){
+                    return {act:act,prop:prop,idx:idx,priority:data[1],recur:data[3],char:char};
                 };
                 return false;
             };
             var act = "Act-"+Q.state.get("saveData").act;
+            var events = Q.state.get("flavourEvents");
             //Loop through the events that haven't been played and find the most suitable
             var potentialEvents = [];
             //Regular act events
-            for(var i=0;i<char.events[act][prop].length;i++){
-                var data = checkEvents(act,prop,char,i);
-                if(data) potentialEvents.push(data);
-            }
-            //All act events
-            for(var i=0;i<char.events["All"][prop].length;i++){
-                var data = checkEvents("All",prop,char,i);
-                if(data) potentialEvents.push(data);
-            }
-            
-            if(char.officer){
-                //Officer act events
-                for(var i=0;i<char.events["officer"][act][prop].length;i++){
-                    var data = checkEvents("officer."+act,prop,char,i);
-                    if(data) potentialEvents.push(data);
-                }
-                //Officer all act events
-                for(var i=0;i<char.events["officer"]["All"][prop].length;i++){
-                    var data = checkEvents("officer.All",prop,char,i);
+            if(events[act][prop]){
+                for(var i=0;i<events[act][prop].length;i++){
+                    var data = checkEvents(act,prop,char,i);
                     if(data) potentialEvents.push(data);
                 }
             }
-            if(!potentialEvents.length) return;
-            //Find the event with the highest priority (lowest number)
-            var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
-            Q.state.get("potentialEvents").push([event[0][0],event[0][1],event[0][2],char]);
+            //'All' act events
+            if(events["All"][prop]){
+                for(var i=0;i<events["All"][prop].length;i++){
+                    var data = checkEvents("All",prop,char,i);
+                    if(data) potentialEvents.push(data);
+                }
+            }
+            Q.state.set("potentialEvents",Q.state.get("potentialEvents").concat(potentialEvents));
         },
         createDistributeGearMenu:function(){
             this.emptyConts();

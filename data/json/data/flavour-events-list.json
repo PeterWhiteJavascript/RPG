@@ -1,37 +1,5 @@
 {
     "eventTypes":["infirmary","feasted"],
-    "officer":{
-        "Astraea":{
-            "infirmary":{
-                "Act-1-3":[
-                    [
-                        {
-                            "awards.visited":[">=",4]
-                        },
-                        10,
-                        {
-                            "type":"Officer",
-                            "scene":"Astraea",
-                            "event":"Test"
-                        }
-                    ]
-                ],
-                "All":[
-                    [
-                        {
-                            "awards.visited":[">=",2]
-                        },
-                        8,
-                        {
-                            "type":"Story",
-                            "scene":"Act-1-3",
-                            "event":"TEST1"
-                        }
-                    ]
-                ]
-            }
-        }
-    },
     "Act-1-1":{
         
     },
@@ -42,29 +10,42 @@
         "infirmary":[
             [
                 {
-                    "charClass":"Vanguard",
-                    "nationality":"Venorian"
+                    "name":"Astraea",
+                    "awards.visited":[">=",1]
                 },
-                false,
                 2,
                 {
                     "type":"Story",
                     "scene":"Act-1-3",
+                    "event":"TEST1"
+                },
+                true
+            ],
+            [
+                {
+                    "charClass":"Vanguard",
+                    "nationality":"Venorian"
+                },
+                10,
+                {
+                    "type":"Story",
+                    "scene":"Act-1-3",
                     "event":"TEST2"
-                }
+                },
+                true
             ],
             [
                 {
                     "charClass":"Legionnaire",
                     "nationality":"Venorian"
                 },
-                false,
                 2,
                 {
                     "type":"Story",
                     "scene":"Act-1-3",
                     "event":"Visit-Legionnaire"
-                }
+                },
+                false
             ]
         ],
         "feasted":[
@@ -73,13 +54,13 @@
                     "charClass":"Vanguard",
                     "nationality":"Venorian"
                 },
-                false,
                 2,
                 {
                     "type":"Other",
                     "scene":"CandyShop",
                     "event":"House"
-                }
+                },
+                false
             ]
         ]
         

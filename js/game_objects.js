@@ -2810,7 +2810,6 @@ Quintus.GameObjects=function(Q){
                     char.awards =  emptyAwards();
                     
                     char.completedEvents =  [];
-                    char.events = this.getEvents(char);
                     break;
                 //Special case for Alex as he/she does not have personality, methodology, value, loyalty, or morale.
                 case "alex":
@@ -2894,7 +2893,6 @@ Quintus.GameObjects=function(Q){
                     char.awards = data.awards || emptyAwards();
                     
                     char.completedEvents = data.completedEvents || [];
-                    char.events = this.getEvents(char);
                     break;
                 //The data will include a reference to the actual character properties that are in the character's file.
                 case "battleChar":
@@ -2940,59 +2938,6 @@ Quintus.GameObjects=function(Q){
                     break;
             }
             return char;
-        },
-        //Use the character data to generate the possible events list
-        getEvents:function(char){
-            var data = Q.state.get("flavourEvents");
-            var matchChar = function(char,obj){
-                return Object.keys(obj).every(function(key){
-                    return char[key] === obj[key];
-                });
-            };
-            //The full list of possible events
-            var eventTypes = function(act){
-                for(var x=0;x<data["eventTypes"].length;x++){
-                    this[data["eventTypes"][x]] = [];
-                }
-                var keys = Object.keys(data[act]);
-                for(var e=0;e<keys.length;e++){
-                    for(var f=0;f<data[act][keys[e]].length;f++){
-                        var d = data[act][keys[e]][f];
-                        //Evaluate if this character gets this event
-                        if(matchChar(char,d[0])){
-                            this[keys[e]].push([d[1],d[2],d[3]]);
-                        };
-                    }
-                }
-            };
-            var officerEventTypes = function(act,name){
-                for(var x=0;x<data["eventTypes"].length;x++){
-                    this[data["eventTypes"][x]] = [];
-                }
-                var officerData = data.officer[name];
-                var keys = Object.keys(officerData);
-                for(var a=0;a<keys.length;a++){
-                    var d = officerData[keys[a]];
-                    if(d[act]){
-                        for(var b=0;b<d[act].length;b++){
-                            this[keys[a]].push(d[act][b]);
-                        }
-                    }   
-                }
-            };
-            var events = function(char){
-                var acts = ["Act-1-1","Act-1-2","Act-1-3","Act-1-4","Act-2-1","Act-2-2","Act-2-3","Act-2-4","Act-3-1","Act-3-2","Act-3-3","Act-3-4","Act-4-1","Act-4-2","Act-4-3","Act-4-4","FinalAct","All"];
-                for(var i=0;i<acts.length;i++){
-                    this[acts[i]] = new eventTypes(acts[i]);
-                }
-                if(char.officer){
-                    this.officer = {};
-                    for(var i=0;i<acts.length;i++){
-                        this["officer"][acts[i]] = new officerEventTypes(acts[i],char.name);
-                    }
-                }
-            };
-            return new events(char);
         },
         //Generates four random numbers that all add up to 100
         getStatLean:function(){
