@@ -5,16 +5,27 @@
         <title>Greece Lightning Event Editing Tool</title>
     </head>
     <body>
+        <script>
+            $(function(){
+                $(document).on("click",".menu-button",function(){
+                    window.location = $(this).attr("id")+".php";
+                });
+            });
+        </script>
         <div id="wrapper">
-            <div id="title"><h1>GREECE LIGHTNING EVENT EDITOR</h1></div>
-            <div id="content">
-                <ul class="menu middle">
-                    <li><a href="load.php"><div class="menu-button btn btn-default">LOAD SCENES</div></a></li>
-                    <li><a href="select-characters-file.php"><div class="menu-button btn btn-default">CREATE CHARACTERS</div></a></li>
-                    <li><a href="options.php"><div class="menu-button btn btn-default">OPTIONS</div></a></li>
-                    <li><a href="help.php"><div class="menu-button btn btn-default">HELP</div></a></li>
-                    <li><a href="about.php"><div class="menu-button btn btn-default">ABOUT</div></a></li>
-                </ul>
+            <div id="main-content">
+                <div id="scene-title"><div>Path of Ascension Editor</div></div>
+                <div class="main-menu-background">
+                    <div class="main-menu-cont">
+                        <div class="menu-divider"></div>
+                        <div class="menu-divider"></div>
+                        <div id="load" class="menu-button">Load Scenes</div>
+                        <div id="select-characters-file" class="menu-button">Create Characters</div>
+                        <div id="options" class="menu-button">Options</div>
+                        <div id="help" class="menu-button">Help</div>
+                        <div id="about" class="menu-button">About</div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

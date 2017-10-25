@@ -3,13 +3,51 @@
     <head>
         <?php include 'config.php';?>
         <title>Get Help</title>
+        <style>
+            #footer{
+                width:100%;
+                height:5%;
+                text-align: center;
+                z-index:100;
+                font-size:1.5vw;
+                display:inline-block;
+                cursor:pointer;
+                background-color:lightgrey;
+                padding:0.5%;
+            }
+            #footer:hover{
+                background-color:#F5f5f5;
+            }
+            #help-cont{
+                width:100%;
+                height:87.5%;
+                display:inline-block;
+                background-color:orange;
+                font-size:36px;
+                padding:100px;
+                overflow-y:auto;
+            }
+            p{
+                text-align:center;
+            }
+        </style>
     </head>
     <body>
+        
+        <script>
+            $(function(){
+                $("#footer").on("click",function(){window.location = "index.php";});
+            });
+        </script>
         <div id="wrapper">
-            <div id="title"><h1>HELP</h1></div>
-            <div id="content">
-                
-                <div id="footer"><a href="index.php"><div class="menu-button btn btn-default">BACK</div></a></div>
+            <div id="main-content">
+                <div id="scene-title"><div>Help</div></div>
+                <div id="help-cont">
+                    <p>Click to download files.</p>
+                    <div class="menu-divider"></div>
+                    <a href="docs/Story Scene Modules.rtf" download>Story Scene Modules</a>
+                </div>
+                <div id="footer">Go Back</div>
             </div>
         </div>        
     </body>

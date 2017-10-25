@@ -1,62 +1,47 @@
 <?php
-include("php-config.php");
-$type = $_POST['type'];
-$scene = addDashes($_POST["scene"]);
-//Get the scene
-$group = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true)[$type];
-$order;
-for($i=0;$i<count($group);$i++){
-    if($group[$i]['name']===$scene){
-        $order = $group[$i]['eventOrder'];
-    }
-}
-$directory = '../../data/json/story/events/'.$type.'/'.$scene;
-$scanned_directory = array_diff(scandir($directory), array('..', '.'));
-
-$sorted = [];
-//Sort the files by the eventsOrder
-forEach($order as $name){
-    forEach($scanned_directory as $file){
-        if($file == $name.'.json'){
-            $sorted[] = $file;
-        }
-    }
-}
+$scenes = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true);
+$flavour = json_decode(file_get_contents('../../data/json/data/flavour-events-list.json'), true);
+$globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true);
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <?php include 'config.php';?>
         <title>Load an Event</title>
+        <link rel="stylesheet" href="css/show-events.css">
+        <script src="lib/jcanvas.min.js"></script>
+        <script type="text/javascript" src="http://creativecouple.github.com/jquery-timing/jquery-timing.min.js"></script>
     </head>
     <body>
+        <script>
+            var scenes = <?php echo json_encode($scenes); ?>;
+            var flavour = <?php echo json_encode($flavour); ?>;
+            var globalVars = <?php echo json_encode($globalVars); ?>;
+            var scene = '<?php echo $_POST["scene"]; ?>';
+            var type = '<?php echo $_POST["type"]; ?>';
+        </script>
         <div id="wrapper">
-            <div id="title"><h1><?php echo $scene; ?></h1></div>
-            <div id="type"><h1><?php echo $type; ?></h1></div>
-            <div id="content">
-                <ul id="show-events" class="menu left">
-                    <li><h2>Events</h2></li>
-                    <?php
-                    foreach($sorted as $file) {
-                        $data = json_decode(file_get_contents($directory.'/'.$file), true);
-                        echo '<li name="'.$data['name'].'" desc="'.$data['desc'].'" kind="'.$data['kind'].'"><a class="scene-button"><div class="menu-button btn btn-default">'.$data['name'].'</div></a></li>';
-                    }
-                    ?>
-                </ul>
-                <div id="show-desc" class="menu middle"></div>
-                <ul class="menu right">
-                    <li><a id="new-event"><div class="menu-button btn btn-default">New Event</div></a></li>
-                    <li><a id="edit-event"><div class="menu-button btn btn-default">Edit Event</div></a></li>
-                    <li><a id="test-event"><div class="menu-button btn btn-default">Test Event</div></a></li>
-                    <!--<li><a id="copy-event"><div class="menu-button btn btn-default">Copy Event</div></a></li>
-                    <li><a id="order-events"><div class="menu-button btn btn-default">Order Events</div></a></li>
-                    <li><a id="change-scene"><div class="menu-button btn btn-default">Change Event's Scene</div></a></li>-->
-                    <li><a id="delete-event"><div class="menu-button btn btn-default">Delete Event</div></a></li>
-                    <br>
-                    <li><a id="edit-vars"><div class="menu-button btn btn-default">Edit Scene Variables</div></a></li>
-                </ul>
-                <div id="footer"><a href="load.php"><div class="menu-button btn btn-default">BACK</div></a></div>
+            <div class="full-screen-hider"></div>
+            <div id="main-content">
+                <div id="scene-title"></div>
+                <div id="events-flowchart-cont">
+                    
+                </div>
+                <div id="menu-cont">
+                    <div id="new-event" class="menu-button">New Event</div>
+                    <div id="edit-event" class="menu-button">Edit Event</div>
+                    <div id="test-event" class="menu-button">Test Event</div>
+                    <div id="delete-event" class="menu-button">Delete Event</div>
+                    <div class="menu-divider"></div>
+                    <div id="save-flowchart" class="menu-button">Save Positioning</div>
+                    <div class="menu-divider"></div>
+                    <div id="edit-vars" class="menu-button">To Scene Vars</div>
+                    <div id="back" class="menu-button">To Scenes</div>
+                    <div id="back-to-main" class="menu-button">To Main Page</div>
+                </div>
+                
             </div>
+                
         </div>
         <script src="js/show-events.js"></script>
     </body>

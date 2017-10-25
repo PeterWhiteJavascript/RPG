@@ -1,0 +1,155 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+        text-decoration:none;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Start my style */
+
+* {
+    font-family: "Kalam" !important;
+}
+textarea, input, select, option{
+    font-family: "Helvetica" !important;
+}
+body {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+#wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    min-height: 90%;
+    background-image: url(../images/greek-flag.jpg);
+    background-size: 100% 100%;
+    border-width: initial;
+    border-style: solid;
+    border-color: black;
+    border-image: initial;
+    background-repeat: no-repeat;
+}
+#main-content{
+    top:5%;
+    width:90%;
+    height:85%;
+    left:5%;
+    position:absolute;
+    font-size:0;
+    border-radius:10px; 
+    border:1px solid black;
+    border-radius:10px 10px 0px 0px; 
+}
+
+#scene-title{
+    display:inline-block;
+    width:100%;
+    height:7.5%;
+    background-color:lightgrey;
+    border-radius:5px 5px 0px 0px; 
+    padding:1%;
+}
+#scene-title div{
+    font-size:5vh;
+    text-align:center;
+}
+#menu-cont{
+    width:20%;
+    height:92.5%;
+    background-color:lightgrey;
+    display:inline-block;
+    vertical-align:top;
+    border-left:1px solid black;
+}
+.menu-button{
+    width:90%;
+    margin-left:5%;
+    margin-top:1%;
+    margin-bottom:1%;
+    font-size:2vw;
+    padding:10px;
+    text-align:center;
+    user-select:none;
+    cursor:pointer;
+}
+.menu-button:hover{
+    background-color:#F5f5f5;
+}
+.main-menu-background{
+    display:inline-block;
+    background-color:orange;
+    height:92.5%;
+    width:100%;
+}
+
+.main-menu-cont{
+    position:absolute;
+    background-color:lightgrey;
+    height:auto;
+    width:35%;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    border-radius:5px;
+}
+
+.menu-divider{
+    width:100%;
+    height:5%;
+}
+
+
+
+/* Classes that are added to an element for visual cues*/
+.selected{
+    border-color:red !important;
+}
+.crossed{
+    text-decoration: line-through;
+}

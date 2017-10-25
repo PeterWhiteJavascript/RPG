@@ -1,0 +1,33 @@
+#scenes-cont{
+    display:inline-block;
+    width:80%;
+    height:92.5%;
+    background-color:orange;
+    padding:10px;
+}
+.scene-row{
+    width:100%;
+    height:18%;
+    text-align:center;
+}
+.scene-button{
+    width:20%;
+    height:80%;
+    background-color:lightgrey;
+    text-align:center;
+    display:inline-block;
+    border:1px solid black;
+    border-radius:5px;
+    margin:0 2.5%;
+    cursor:pointer;
+    user-select:none;
+}
+.scene-button:hover{
+    background-color:#F5f5f5;
+}
+.scene-button div{
+    font-size:26px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); 
+}

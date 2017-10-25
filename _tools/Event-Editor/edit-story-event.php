@@ -2,7 +2,7 @@
 include("php-config.php");
 $scene = addDashes($_POST['scene']);
 $type = $_POST['type'];
-$name = addDashes($_POST['name']);
+$name = addDashes($_POST['event']);
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 $pages = $event['pages'];
 $variables = $event['vrs'];
@@ -19,52 +19,20 @@ $scenes = array_diff(scandir($directory), array('..', '.'));
 
 $dataFiles = array_slice(scandir('../../data/json/data'),2);
 
-/*
-$eventsJSON = (object)[];
-foreach($scenes as $key => $val){
-    $ev =[];
-    $events = array_diff(scandir($directory."/".$val), array('..', '.'));
-    foreach($events as $key2 => $val2){
-        $ev[]=pathinfo($val2, PATHINFO_FILENAME);
-         
-    }
-    $eventsJSON->$val=$ev;
-}
-$globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true)['vrs'];
-
-$group = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true)[$type];
-$sceneVars;
-for($i=0;$i<count($group);$i++){
-    if($group[$i]['name']===$scene){
-        $sceneVars = $group[$i]['vrs'];
-    }
-}
-/*
-$locationEvents = array_slice(scandir('../../data/json/story/locations'), 2);
-$locEvents = [];
-foreach($locationEvents as $ev){
-    $locEvents[] = pathinfo($ev, PATHINFO_FILENAME);
-}
-$characters = json_decode(file_get_contents('../../data/json/data/officers.json'), true);
-
-$charGen = json_decode(file_get_contents('../../data/json/data/character-generation.json'), true);
-$equipment = json_decode(file_get_contents('../../data/json/data/equipment.json'), true);
-$items = json_decode(file_get_contents('../../data/json/data/items.json'), true);
-
-$scenesList = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true);
-*/
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
         <?php include 'config.php';?>
+        <link href="css/edit-story-event.css" rel="stylesheet">
     </head>
     <body>
         <script>
             var sceneType = '<?php echo $type; ?>';
             var sceneName = '<?php echo $scene; ?>';
             var eventName = '<?php echo $name; ?>';
+            
             
             var dataFiles = <?php echo json_encode($dataFiles) ?>;
             var dataPages = <?php echo json_encode($pages); ?>;
@@ -75,11 +43,11 @@ $scenesList = json_decode(file_get_contents('../../data/json/data/scenes-list.js
                 <ul>
                     <li class="top-bar-btn"><div id="add-new-page" class="menu-button btn btn-default">Add New Page</div></li>
                     <li class="top-bar-btn"><div id="add-new-variable" class="menu-button btn btn-default">Add New Variable</div></li>
-                    <li class="top-bar-btn"><div id="copy-page" class="menu-button btn btn-default">Copy Page</div></li>
                     <li class="top-bar-btn"><div id="remove-page" class="menu-button btn btn-default">Remove Page</div></li>
                     <li class="top-bar-btn"><div id="save-event" class="menu-button btn btn-default">Save Event</div></li>
                     <li class="top-bar-btn"><div id="test-event" class="menu-button btn btn-default">Test Event</div></li>
-                    <li class="top-bar-btn"><div id="back" class="menu-button btn btn-default">Go Back</div></li>
+                    <li class="top-bar-btn"><div id="to-vars" class="menu-button btn btn-default">To Vars</div></li>
+                    <li class="top-bar-btn"><div id="to-scenes" class="menu-button btn btn-default">To Scenes</div></li>
                 </ul>
             </div>
             

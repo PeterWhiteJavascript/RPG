@@ -1580,7 +1580,6 @@ $(document).on("click","#script-noCycle",function(e){
 $(document).on("click",".remove-choice",function(e){
     $(this).parent().remove();
     $(".script-item").removeClass("selected-fill");
-    
 });
 
 $(document).on("click","#add-new-text",function(e){

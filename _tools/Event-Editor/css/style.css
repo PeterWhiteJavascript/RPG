@@ -2,7 +2,6 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -25,6 +24,8 @@ time, mark, audio, video {
         text-decoration:none;
 }
 /* HTML5 display-role reset for older browsers */
+
+/*
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -46,7 +47,7 @@ q:before, q:after {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
-}
+}*/
 
 /* Start my style */
 
@@ -69,7 +70,7 @@ a:visited {
 a:link {
     color: black;
 }
-
+/*
 body {
     width: 100%;
     height: 100%;
@@ -88,7 +89,7 @@ body {
     border-color: black;
     border-image: initial;
     background-repeat: no-repeat;
-}
+}*/
 #title {
     padding: 2%;
 }
@@ -96,7 +97,7 @@ body {
     
 }
 h1 {
-    font-family:"Palatino Linotype";
+    font-family:"Kalam";
     font-size: 58px;
     text-align: center;
     background-color: #ddd;

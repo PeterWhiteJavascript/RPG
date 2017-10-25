@@ -52,7 +52,7 @@ $(function(){
                     
         },
         getSceneVars:function(scenes,scene,type){
-            return scenes[type].filter(function(s){return s.name===scene;})[0].vrs;
+            return scenes["Story"].filter(function(s){return s.name===scene;})[0].vrs;
         },
         getEventsList:function(data){
             var list = {};
@@ -915,7 +915,8 @@ $(function(){
         },
         effectsOptions:function(){
             var opts = '';
-            var effects = ["setVar","changePage","enableChoice","changeEvent","goToAnchorEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem","changeItemQuantity"];
+            var effects = ["setVar","changePage","enableChoice","goToAnchorEvent","recruitChar","changeStat","tempStatChange","equipItem","unequipItem","changeItemQuantity"];
+            if(sceneType==="Story") effects.splice(3,0,"changeEvent");
             effects.forEach(function(e){
                 opts+='<option value="'+e+'">'+e+'</option>';
             });
@@ -1148,25 +1149,18 @@ $(function(){
         })
         .done(function(data){console.log(data)})
         .fail(function(data){console.log(data)});
-        //Create the save form
-        var form = $('<form action="../../index.php" method="post"></form>');
-        form.append('<input type="text" name="name" value="'+eventName+'">');
-        form.append('<input type="text" name="scene" value="'+sceneName+'">');
-        form.append('<input type="text" name="type" value="'+sceneType+'">');
-        form.append('<input type="text" name="testing" value="true">');
-        $("body").append(form);
-        form.submit();
+
+        $.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});
+    });
+    $("#to-vars").click(function(){
+        if(confirm("Are you sure you want to go back without saving?")){
+            $.redirect('edit-vars.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
+        }
     });
     
-    $('#back').click( function(e) {
-        var sure = confirm("Are you sure you want to go back without saving?");
-        if(sure){
-            var form = $('<form action="show-events.php" method="post"></form>');
-            form.append('<input type="text" name="scene" value="'+sceneName+'">');
-            form.append('<input type="text" name="name" value="'+eventName+'">');
-            form.append('<input type="text" name="type" value="'+sceneType+'">');
-            $("body").append(form);
-            form.submit();
+    $('#to-scenes').click( function(e) {
+        if(confirm("Are you sure you want to go back without saving?")){
+            $.redirect('show-events.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
         }
     });
     //End editor-content buttons
