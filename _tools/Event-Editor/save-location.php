@@ -13,7 +13,7 @@ foreach($_POST as $key => $value)
 
 function checkBool($string){
     $string = strtolower($string);
-    return (in_array($string, array("true", "false", "1", "0"/*, "yes", "no"*/), true));
+    return (in_array($string, array("true", "false"/*, "1", "0", "yes", "no"*/), true));
 }
 
 function adjustDisabled($obj){
@@ -26,7 +26,7 @@ function processValue($value){
     if (is_numeric($value)) {
         return intval(urldecode($value));
     } else if(checkBool($value)) {
-        return boolval(urldecode($value));
+        return urldecode($value)==='true' ? true : false;
     } else {
         return urldecode($value);
     }

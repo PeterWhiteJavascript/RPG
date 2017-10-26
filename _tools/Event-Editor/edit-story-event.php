@@ -47,7 +47,7 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                     <li class="top-bar-btn"><div id="save-event" class="menu-button btn btn-default">Save Event</div></li>
                     <li class="top-bar-btn"><div id="test-event" class="menu-button btn btn-default">Test Event</div></li>
                     <li class="top-bar-btn"><div id="to-vars" class="menu-button btn btn-default">To Vars</div></li>
-                    <li class="top-bar-btn"><div id="to-scenes" class="menu-button btn btn-default">To Scenes</div></li>
+                    <li class="top-bar-btn"><div id="to-events" class="menu-button btn btn-default">To Events</div></li>
                 </ul>
             </div>
             
@@ -60,9 +60,7 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                 </div>
                 <div class="centered-title">VARS</div>
                 <div id="editor-variables">
-                    <ul>
-
-                    </ul>
+                    
                 </div>
             </div>
             <div id="editor-main-content">

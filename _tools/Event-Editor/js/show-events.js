@@ -118,7 +118,7 @@ $(function(){
             var condTypes = {
                 "character":["name","nationality","charClass","charGroup","gender","loyalty","morale","level"],
                 "awards":["enemiesDefeated","assisted","battlesParticipated","damageDealt","damageTaken","selfHealed","targetHealed","timesWounded","visited","feasted","guestOfHonour","mentored","timesHunted"],
-                "sceneVar":Object.keys(sceneData.vrs),
+                "sceneVar":scene !== "All" ? Object.keys(sceneData.vrs) : [],
                 "globalVar":Object.keys(globalVars.vrs)
             };
             function createOptions(arr){
@@ -133,15 +133,15 @@ $(function(){
                 var opString = createOptions(["==","!=","<",">","<=",">="]);               
                 return "<div class='event-cond'><span class='cond-remove remove'>X</span><select class='cond-groups' initial-value='"+condGroup+"'>"+groupsString+"</select><select class='cond-types' initial-value='"+condType+"'>"+createOptions(condTypes[condGroup])+"</select><select class='cond-operator' initial-value='"+condOp+"'>"+opString+"</select><input class='cond-value' value='"+condVal+"'></div>";
             };
-            function newEventGroup(){
-                return "<div class='event-group'><div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value='0'><span class='recur-desc'>Recur: </span><select><option>One</option><option>false</option><option>true</option></select></div>";
+            function newEventGroup(priority,recur){
+                return "<div class='event-group'><div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
             };
             function displayCategoryEvents(category){
                 var categoryData = file[scene][category];
                 $("#events-flowchart-cont").append("<div id='group-cont'></div>");
                 for(var i=0;i<categoryData.length;i++){
                     //Group
-                    $("#group-cont").append(newEventGroup());
+                    $("#group-cont").append(newEventGroup(categoryData[i][1],categoryData[i][3]));
                     for(var k=0;k<categoryData[i][0].length;k++){
                         $(".event-group").last().children(".conds-cont").append(newCond(categoryData[i][0][k][0],categoryData[i][0][k][1],categoryData[i][0][k][2],categoryData[i][0][k][3]));
                     }
@@ -167,15 +167,12 @@ $(function(){
                 $("#group-cont").remove();
                 displayCategoryEvents($(this).text());
             });
-            $(".category:nth-child(2)").trigger("click");
-            
+            //$(".category:nth-child(2)").trigger("click");
+            $($(".category").first().trigger("click"));
             $(".cond-groups").on("change",function(){
                 var condTypesObj = $(this).siblings(".cond-types");
                 $(condTypesObj).empty();
                 $(condTypesObj).append(createOptions(condTypes[$(this).val()]));
-            });
-            $(".add-cond").off().on("click",function(){
-                $(this).parent().children(".conds-cont").append(newCond("character","name","==",""));
             });
             
             $(".event-cont").sortable({
@@ -190,6 +187,9 @@ $(function(){
             });
             $(".event-group").last().trigger("click");
             $(".event-group").last().children(".event-button").last().trigger("click");
+            
+            $('<div id="new-group" class="menu-button">New Group</div>').insertAfter("#new-event");
+            $('<div id="delete-group" class="menu-button">Delete Group</div>').insertAfter("#delete-event");
             break;
         case "Story":
             file = scenes;
@@ -211,6 +211,10 @@ $(function(){
     }
     //Load a box in the center that allows the user to input type and name. On confirm, create the file.
     $("#new-event").click(function(){
+        if(!$(".event-group").length){
+            $("#new-group").trigger("click");
+            $(".event-group").last().trigger("click");
+        }
         $(".full-screen-hider").show();
         $("#main-content").append('<div class="new-event-cont"><div class="new-event-title">NEW EVENT</div><div class="new-event-name"><input value="" placeholder="Name"></div><div class="new-event-type"><select><option>story</option><option>location</option><option>battleScene</option><option>battle</option></select></div><div class="new-event-buttons"><span class="new-event-confirm">Confirm</span><span class="new-event-cancel">Cancel</span></div></div>');
         $(".new-event-cancel").click(function(){finishNewEvent();});
@@ -254,7 +258,7 @@ $(function(){
                 left:"100px",
                 top:"100px"
             });
-            //Create the event file TODO
+            //Create the event file
             finishNewEvent();
             var newFile = {};
             newFile.name = newName;
@@ -298,9 +302,17 @@ $(function(){
             })
             .done(function(data){console.log(data);changed=false;})
             .fail(function(data){console.log(data)});
+            $("#save-flowchart").trigger("click");
             
         });
         $(".full-screen-hider").click(function(){finishNewEvent();});
+    });
+    $("#new-group").click(function(){
+        $("#group-cont").append(newEventGroup(1,"true"));
+        $(".event-group").last().children(".event-options").children("select").each(function(){
+            var val = $(this).attr("initial-value");
+            $(this).children('option[value="' + val + '"]').prop('selected', true);
+        });
     });
     $("#edit-event").click(function(){
         confirmFlowchartPosition();
@@ -333,6 +345,9 @@ $(function(){
             $(event).remove();
             saveEvents();
         }
+    });
+    $("#delete-group").click(function(){
+        $(".selected.event-group").remove();
     });
     function saveEvents(){
         switch(type){
@@ -400,6 +415,9 @@ $(function(){
         saveEvents();
         alert("Saved!");
     });
+    $("#test-event").click(function(){
+        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':type, testing:true});
+    });
 
     $("#back").click(function(){
         confirmFlowchartPosition();
@@ -420,5 +438,8 @@ $(function(){
     $(document).on("click",".event-group",function(){
         $(".event-group").removeClass("selected");
         $(this).addClass("selected");
+    });
+    $(document).on("click",".add-cond",function(){
+        $(this).parent().children(".conds-cont").append(newCond("character","name","==",""));
     });
 });

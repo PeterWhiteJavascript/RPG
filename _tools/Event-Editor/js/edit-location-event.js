@@ -16,14 +16,16 @@ var setJSONData = function(url,name){
 //Set the event
 setJSONData("../../data/json/story/events/"+sceneType+"/"+sceneName+"/"+eventName+".json","event");
 
-//Set all of the data files
-dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
-GDATA["global-vars.json"] = $.getJSON("../../data/json/story/global-vars.json");
+$.getJSON("../../data/json/story/global-vars.json",function(data){
+    GDATA["global-vars.json"] = data;
+    //Set all of the data files
+    dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
+});
 //Start the action after all data is loaded.
 var start = function(){
     var DC = {
         p:{
-            varsCont:$("#editor-variables").children("ul").first(),
+            varsCont:$("#editor-variables"),
             actionsCont:$("#editor-actions").children("ul").first(),
             modulesCont:$("#modules").children("ul").first(),
             musicSelect:$("#music-select").children("select").first(),
@@ -40,9 +42,9 @@ var start = function(){
             scopes:["Event","Scene","Global"],
             equipmentTypes:["Weapons","Shields","Armour","Footwear","Accessories","Consumables"],
             keywords:["partySize","rosterSize"],
-            actionFuncs:["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList"],
+            actionFuncs:["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList","createGatherInfoMenu","createHuntMenu"],
             conditionsFuncs:["checkChar","checkVar","checkKeyword"],
-            effectsFuncs:["setVar","changePage","changeEvent","addToRoster","enableChoice","displayBuyItemsList","displaySellItemsList"]
+            effectsFuncs:["setVar","changePage","changeEvent","addToRoster","enableChoice"]
         },
         init:function(){
             this.p.scenes = GDATA['scenes-list.json'];
@@ -101,9 +103,9 @@ var start = function(){
         //Adds a var to the list
         addVar:function(name,val,fromSave){
             if(fromSave){
-                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
             } else {
-                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
             }
         },
         
@@ -112,13 +114,9 @@ var start = function(){
         },
         getEventsList:function(data){
             var list = {};
-            var types = Object.keys(this.p.scenes);
-            for(var i=0;i<types.length;i++){
-                var scenes = this.p.scenes[types[i]];
-                for(var j=0;j<scenes.length;j++){
-                    list[scenes[j].name] = scenes[j].eventOrder;
-                }
-                
+            for(var i=0;i<this.p.scenes.Story.length;i++){
+                var sc = this.p.scenes.Story[i];
+                list[sc.name] = sc.events.map(function(s){return s.name;});
             }
             return list;
         },
@@ -458,11 +456,11 @@ var start = function(){
                     break;
                 case "changeEvent":
                     if(!props){props = {};
-                        props.type = Object.keys(this.p.scenes)[0];
-                        props.scene = Object.keys(this.p.events)[0];
-                        props.event = this.p.events[props.scene];
+                        props.type = "Story";
+                        props.scene = sceneName;
+                        props.event = this.p.events[props.scene][0];
                     }
-                    content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.getOptString(Object.keys(this.p.scenes)),type:props.type});
+                    content = this.setUpEffectProp("select","Select an Type","type",{opts:this.getOptString(Object.keys(this.p.scenes)),type:props.type});
                     content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.getOptString(this.p.scenes[props.type],"name"),scene:props.scene});
                     content += this.setUpEffectProp("select","Select an Event","event",{opts:this.getOptString(this.p.events[props.scene]),event:props.event});
                     break;
@@ -539,7 +537,7 @@ var start = function(){
         },
         enableChoiceOptions:function(){
             var opts = '';
-            var actions = $(this.p.actionsCont).children(".action").length;
+            var actions = $(this.p.choicesCont).children(".choice-li").length;
             for(var i=0;i<actions;i++){
                 opts+='<option value="'+i+'">'+i+'</option>';
             }
@@ -583,11 +581,11 @@ var start = function(){
             var scope = "Event";
             var vars = {};
             //Get the current event's vars
-            $(this.p.varsCont).children(".vr").each(function(idx,itm){
-                var name = $(itm).children(".var-button").children(".var-name").val();
-                if(!name) name = $(itm).children(".var-button").children(".var-name").text();
-                var val = parseInt($(itm).children(".var-button").children(".var-value").val());
-                if(isNaN(val)) val = $(itm).children(".var-button").children(".var-value").val();
+            $(this.p.varsCont).children(".var-button").each(function(idx,itm){
+                var name = $(itm).children(".var-name").val();
+                if(!name) name = $(itm).children(".var-name").text();
+                var val = parseInt($(itm).children(".var-value").val());
+                if(isNaN(val)) val = $(itm).children(".var-value").val();
                 vars[name] = val;
             });
             if(!Object.keys(vars).length){
@@ -715,6 +713,11 @@ var start = function(){
     $(document).on("change",".effects-select",function(){
         $(this).parent().children(".effect-props").empty();
         $(this).parent().children(".effect-props").append(DC.getEffect([$(this).val(),false]));
+        $(this).parent().children(".effect-props").children("select").each(function(){
+            var val = $(this).attr("initial-value");
+            $(this).children('option[value="' + val + '"]').prop('selected', true);
+            $(this).val(val);
+        });
     });
     $(document).on("change",".actions-select",function(){
         $(this).parent().children(".effect-props").empty();
@@ -723,7 +726,7 @@ var start = function(){
     
     //Start editor-content buttons
     $("#add-new-variable").click(function(){
-        DC.addVar("Var"+$(DC.p.varsCont).children(".vr").length);
+        DC.addVar("Var"+$(DC.p.varsCont).children(".var-button").length);
     });
     $("#add-new-action").click(function(){
         DC.saveAction();
@@ -791,15 +794,15 @@ var start = function(){
         form.submit();
     });
     
-    $('#back').click( function(e) {
-        var sure = confirm("Are you sure you want to go back without saving?");
-        if(sure){
-            var form = $('<form action="show-events.php" method="post"></form>');
-            form.append('<input type="text" name="scene" value="'+sceneName+'">');
-            form.append('<input type="text" name="name" value="'+eventName+'">');
-            form.append('<input type="text" name="type" value="'+sceneType+'">');
-            $("body").append(form);
-            form.submit();
+    $("#to-vars").click(function(){
+        if(confirm("Are you sure you want to go back without saving?")){
+            $.redirect('edit-vars.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
+        }
+    });
+    
+    $('#to-events').click( function(e) {
+        if(confirm("Are you sure you want to go back without saving?")){
+            $.redirect('show-events.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
         }
     });
     //End editor-content buttons
@@ -853,40 +856,39 @@ var start = function(){
     $(document).on("change",".type",function(){
         $(this).parent().children(".scene").empty();
         var type = $(this).val();
-        $(this).parent().children(".scene").append(DC.getOptString(this.p.scenes[type],"name"));
+        $(this).parent().children(".scene").append(DC.getOptString(DC.p.scenes[type],"name"));
         $(this).parent().children(".scene").trigger("change");
     });
     
     $(document).on("change",".scene",function(){
         $(this).parent().children(".event").empty();
-        var scene = $(this).val();
-        $(this).parent().children(".event").append(DC.getOptString(this.p.events[props.scene]));
+        $(this).parent().children(".event").append(DC.getOptString(DC.p.events[$(this).val()]));
     });
     
     $(document).on("change",".eqType",function(){
         $(this).parent().children(".gear").empty();
         var type = $(this).val();
-        $(this).parent().children(".gear").append(DC.getOptString(Object.keys(this.p.equipment[type])));
+        $(this).parent().children(".gear").append(DC.getOptString(Object.keys(DC.p.equipment[type])));
         $(".gear").trigger("change");
     });
     $(document).on("change",".gear",function(){
         $(this).parent().children(".material").empty();
         var type = $(this).parent().children(".eqType").val();
         var gear = $(this).val();
-        $(this).parent().children(".material").append(DC.getOptString(this.p.equipment[type][decodeURIComponent(gear)].materials));
+        $(this).parent().children(".material").append(DC.getOptString(DC.p.equipment[type][decodeURIComponent(gear)].materials));
     });
     
     $(document).on("change",".file",function(){
         $(this).parent().children(".group").empty();
         var file = $(this).parent().children(".file").val();
-        $(this).parent().children(".group").append(DC.getOptString(Object.keys(this.p.allCharacters[file])));
+        $(this).parent().children(".group").append(DC.getOptString(Object.keys(DC.p.allCharacters[file])));
         $(this).parent().children(".group").trigger("change");
     });
     $(document).on("change",".group",function(){
         $(this).parent().children(".handle").empty();
         var file = $(this).parent().children(".file").val();
         var group = $(this).parent().children(".group").val();
-        $(this).parent().children(".handle").append(DC.getOptString(Object.keys(this.p.allCharacters[file][group])));
+        $(this).parent().children(".handle").append(DC.getOptString(Object.keys(DC.p.allCharacters[file][group])));
     });
     
     //Change the props
@@ -990,5 +992,10 @@ var start = function(){
         }
     });
     
+    
+    $( ".sortable" ).sortable({
+        axis: "y"
+    });
+    $( ".sortable" ).disableSelection();
 };
 });

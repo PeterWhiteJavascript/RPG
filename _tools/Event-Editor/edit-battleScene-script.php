@@ -1,6 +1,6 @@
 <?php
 $scene = $_POST['scene'];
-$name = $_POST['name'];
+$name = $_POST['event'];
 $type = $_POST['type'];
 
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
@@ -79,7 +79,7 @@ foreach($characterFiles as $charFile){
                     <li class="top-bar-btn"><div id="menu-create-group" class="menu-button btn btn-default">Create Group</div></li>
                     <li class="top-bar-btn"><div id="menu-add-text-item" class="menu-button btn btn-default">Add Text Item</div></li>
                     <li class="top-bar-btn"><div id="menu-add-func-item" class="menu-button btn btn-default">Add Func Item</div></li>
-                    <li class="top-bar-btn"><div id="menu-save-file" class="menu-button btn btn-default" filename="<?php echo $filename?>">Save</div></li>
+                    <li class="top-bar-btn"><div id="menu-save-file" class="menu-button btn btn-default">Save</div></li>
                     <li class="top-bar-btn"><div id="menu-test-event" class="menu-button btn btn-default">Test</div></li>
                     <li class="top-bar-btn"><div id="menu-go-back" class="menu-button btn btn-default">Back</div></li>
                 </ul>

@@ -121,6 +121,7 @@ body {
 .menu-button:hover{
     background-color:#F5f5f5;
 }
+
 .main-menu-background{
     display:inline-block;
     background-color:orange;
@@ -143,6 +144,36 @@ body {
     width:100%;
     height:5%;
 }
+
+
+#editor-variables{
+    max-height:40%;
+    overflow-y:auto;
+}
+#editor-actions{
+    height:60%;
+    overflow-y:auto;
+}
+
+.var-button input{
+    width:75%;
+    height:30px;
+}
+.var-remove{
+    width:25%;
+    height:30px;
+}
+.var-name{
+    width:75%;
+    height:30px;
+    float:right;
+    font-size:1vw;
+    padding:5px;
+}
+.var-value{
+    font-size:1vw;
+}
+
 
 
 

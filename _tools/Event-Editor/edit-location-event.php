@@ -1,7 +1,7 @@
 <?php
 include("php-config.php");
 $scene = addDashes($_POST['scene']);
-$name = addDashes($_POST['name']);
+$name = addDashes($_POST['event']);
 $type = $_POST['type'];
 
 
@@ -30,6 +30,7 @@ foreach($characterFiles as $charFile){
     <head>
         <?php include 'config.php';?>
         <link rel="stylesheet" href="css/edit-location.css">
+        <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
         <script>
@@ -46,11 +47,11 @@ foreach($characterFiles as $charFile){
                 <ul>
                     <li class="top-bar-btn"><div id="add-new-action" class="menu-button btn btn-default">Add New Action</div></li>
                     <li class="top-bar-btn"><div id="add-new-variable" class="menu-button btn btn-default">Add New Variable</div></li>
-                    <li class="top-bar-btn"><div id="copy-action" class="menu-button btn btn-default">Copy Action</div></li>
                     <li class="top-bar-btn"><div id="remove-action" class="menu-button btn btn-default">Remove Action</div></li>
                     <li class="top-bar-btn"><div id="save-event" class="menu-button btn btn-default">Save Event</div></li>
                     <li class="top-bar-btn"><div id="test-event" class="menu-button btn btn-default">Test Event</div></li>
-                    <li class="top-bar-btn"><div id="back" class="menu-button btn btn-default">Go Back</div></li>
+                    <li class="top-bar-btn"><div id="to-vars" class="menu-button btn btn-default">To Vars</div></li>
+                    <li class="top-bar-btn"><div id="to-events" class="menu-button btn btn-default">To Events</div></li>
                 </ul>
             </div>
             
@@ -63,9 +64,7 @@ foreach($characterFiles as $charFile){
                 </div>
                 <div class="centered-title">VARS</div>
                 <div id="editor-variables">
-                    <ul>
-
-                    </ul>
+                    
                 </div>
             </div>
             <div id="editor-main-content">

@@ -223,12 +223,7 @@ h2{
 }
 #text-select textarea{
     height:100px;
-}
-.editor-left-menu{
-    width:10%;
-    height:100%;
-    border-right:thick double;
-}
+}/*
 .editor-left-menu ul{
     font-size: 22px;
     background-color: #fbfbfb;
@@ -237,7 +232,7 @@ h2{
     text-align: center;
     padding: 10px;
     overflow:auto;
-}
+}*/
 #editor-interaction-menu{
     margin-left:200px;
     border-width: initial;
@@ -262,6 +257,8 @@ h2{
     border-image: initial;
     background-color:#DDD;
     border-radius:0;
+    margin:0;
+    overflow:hidden;
 }
 .menu-button-modify{
     width:100%;
@@ -334,12 +331,6 @@ audio{
     width:100px;
 }
 
-.remove-choice{
-    float:right;
-}
-.remove-choice-deep{
-    float:right;
-}
 #choices ul{
     margin-top:36px;
 }
@@ -389,7 +380,6 @@ audio{
     text-align:center;
     font-family:"Georgia";
     font-size:22px;
-    padding:4px;
     border-radius: 2px 2px 0px 0px;
     height:30px;
 }
@@ -397,9 +387,9 @@ audio{
     text-align:center;
     font-family:"Georgia";
     font-size:22px;
-    padding:4px;
     border-radius: 2px 2px 0px 0px;
     height:30px;
+    overflow:hidden;
 }
 .editor-descriptor-quarter{
     width:25%;
@@ -408,9 +398,8 @@ audio{
     text-align:center;
     font-family:"Georgia";
     font-size:22px;
-    padding:2px;
-    padding-top:5px;
     border-radius: 2px 2px 0px 0px; 
+    overflow:hidden;
 }
 .editor-descriptor-half{
     width:50%;
@@ -419,8 +408,7 @@ audio{
     text-align:center;
     font-family:"Georgia";
     font-size:22px;
-    padding:2px;
-    padding-top:5px;
+    overflow:hidden;
 }
 .editor-descriptor-big{
     text-align:center;
@@ -428,6 +416,7 @@ audio{
     font-size:36px;
     padding:2px;
     border-radius: 2px 2px 0px 0px; 
+    overflow:hidden;
 }
 .light-gradient{
     font-family:"Calibri";
@@ -476,7 +465,7 @@ audio{
 .btn-quarter{
     width:25%;
     border-radius:0;
-    float:left;
+    /*float:left;*/
     border:groove;
     height:30px;
     padding:2px 0px !important;
@@ -494,9 +483,6 @@ audio{
     width:42.5%;
     height:30px;
     padding:0;
-}
-.remove-choice{
-    width:10%;
 }
 #quintus_container{
     position:absolute !important;
@@ -737,7 +723,6 @@ li{
     border:2px solid black;
 }
 .thirty-height{
-    padding-top:5px;
     width:7.5%;
     height:30px;
 }
@@ -825,28 +810,6 @@ li{
     width:100%;
     height:30px;
 }
-.var-remove{
-    width:25%;
-    height:30px;
-}
-.var-name{
-    width:75%;
-    height:30px;
-    float:right;
-    padding:5px;
-}
-.var-props .name{
-    width:50%;
-    float:left;
-}
-.var-props .operator{
-    width:50%;
-    float:left;
-}
-.var-props .value{
-    width:100%;
-}
-
 #maps-select{
     height:30px;
     width:1000px;

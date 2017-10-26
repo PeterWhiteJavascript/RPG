@@ -1,6 +1,12 @@
+
 .editor-left-menu{
-    margin-top:40px;
+    width:10%;
+    height:100%;
+    border-right:thick double;
+    position:fixed;
+    top:48px;
 }
+
 #disabled-select{
     float:left;
     width:50%;
@@ -49,4 +55,11 @@
 .add-item-button{
     width:100%;
     
+}
+
+.top-bar-btn div{
+    margin:0;
+}
+.remove-choice{
+    width:10%;
 }

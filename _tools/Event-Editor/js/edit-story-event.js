@@ -12,7 +12,6 @@ $(function(){
             this.p.equipment = JSONdata['equipment.json'];
             this.p.items = JSONdata['items.json'];
             this.p.charGen = JSONdata['character-generation.json'];
-            
             var pages = dataPages;
             var vrs = dataVariables;
             
@@ -36,7 +35,7 @@ $(function(){
         //Store properties here that track the current page, choice, etc...
         //Also store list parent objects
         p:{
-            varsCont:$("#editor-variables").children("ul").first(),
+            varsCont:$("#editor-variables"),
             pagesCont:$("#editor-pages").children("ul").first(),
             modulesCont:$("#modules").children("ul").first(),
             musicSelect:$("#music-select").children("select").first(),
@@ -56,22 +55,18 @@ $(function(){
         },
         getEventsList:function(data){
             var list = {};
-            var types = Object.keys(this.p.scenes);
-            for(var i=0;i<types.length;i++){
-                var scenes = this.p.scenes[types[i]];
-                for(var j=0;j<scenes.length;j++){
-                    list[scenes[j].name] = scenes[j].eventOrder;
-                }
-                
+            for(var i=0;i<this.p.scenes.Story.length;i++){
+                var sc = this.p.scenes.Story[i];
+                list[sc.name] = sc.events.map(function(s){return s.name;});
             }
             return list;
         },
         //Adds a var to the list
         addVar:function(name,val,fromSave){
             if(fromSave){
-                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
             } else {
-                $(this.p.varsCont).append("<li class='vr'><div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div></li>");
+                $(this.p.varsCont).append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
             }
         },
         //Changes the value of a vr
@@ -687,8 +682,8 @@ $(function(){
                     break;
                 case "changeEvent":
                     if(!props){props = {};
-                        props.type = Object.keys(this.p.scenes)[0];
-                        props.scene = Object.keys(this.p.events)[0];
+                        props.type = "Story";
+                        props.scene = scene;
                         props.event = this.p.events[props.scene];
                     }
                     content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.typeOptions(),type:props.type});
@@ -886,11 +881,11 @@ $(function(){
             var scope = "Event";
             var vars = {};
             //Get the current event's vars
-            $(this.p.varsCont).children(".vr").each(function(idx,itm){
-                var name = $(itm).children(".var-button").children(".var-name").val();
-                if(!name) name = $(itm).children(".var-button").children(".var-name").text();
-                var val = parseInt($(itm).children(".var-button").children(".var-value").val());
-                if(isNaN(val)) val = $(itm).children(".var-button").children(".var-value").val();
+            $(this.p.varsCont).children(".var-button").each(function(idx,itm){
+                var name = $(itm).children(".var-name").val();
+                if(!name) name = $(itm).children(".var-name").text();
+                var val = parseInt($(itm).children(".var-value").val());
+                if(isNaN(val)) val = $(itm).children(".var-value").val();
                 vars[name] = val;
             });
             if(!Object.keys(vars).length){
@@ -1051,6 +1046,11 @@ $(function(){
     $(document).on("change",".effects-select",function(){
         $(this).parent().children(".effect-props").empty();
         $(this).parent().children(".effect-props").append(DC.getEffect([$(this).val(),false]));
+        $(this).parent().children(".effect-props").children("select").each(function(){
+            var val = $(this).attr("initial-value");
+            $(this).children('option[value="' + val + '"]').prop('selected', true);
+            $(this).val(val);
+        });
     });
     //Conditions and Effects select end
     
@@ -1097,7 +1097,7 @@ $(function(){
     
     //Start editor-content buttons
     $("#add-new-variable").click(function(){
-        DC.addVar("Var"+$(DC.p.varsCont).children(".vr").length);
+        DC.addVar("Var"+$(DC.p.varsCont).children(".var-button").length);
     });
     $("#add-new-page").click(function(){
         DC.savePage();
@@ -1158,7 +1158,7 @@ $(function(){
         }
     });
     
-    $('#to-scenes').click( function(e) {
+    $('#to-events').click( function(e) {
         if(confirm("Are you sure you want to go back without saving?")){
             $.redirect('show-events.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
         }

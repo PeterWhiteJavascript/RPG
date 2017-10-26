@@ -33,7 +33,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                     <div id="test-event" class="menu-button">Test Event</div>
                     <div id="delete-event" class="menu-button">Delete Event</div>
                     <div class="menu-divider"></div>
-                    <div id="save-flowchart" class="menu-button">Save Positioning</div>
+                    <div id="save-flowchart" class="menu-button">Save Events</div>
                     <div class="menu-divider"></div>
                     <div id="edit-vars" class="menu-button">To Scene Vars</div>
                     <div id="back" class="menu-button">To Scenes</div>

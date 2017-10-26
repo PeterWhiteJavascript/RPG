@@ -19,7 +19,7 @@
                     $.redirect("edit-story-event.php",{scene:scene,event:data.name,type:type});
                     break;
                 case "battleScene":
-                    $.redirect("edit-battleScene-event.php",{scene:scene,event:data.name,type:type});
+                    $.redirect("edit-battleScene-script.php",{scene:scene,event:data.name,type:type});
                     break;
                 case "battle":
                     $.redirect("edit-battle-event.php",{scene:scene,event:data.name,type:type});

@@ -201,6 +201,7 @@ Q.Sprite.extend("CharacterSprite",{
         this.p.x = pos.x;
         this.p.y = pos.y;
         this.p.z = pos.y;
+        console.log(this.p)
         DC.grid[this.p.loc[1]][this.p.loc[0]] = this;
         this.add("animation");
         this.on("destroy",function(){
@@ -398,6 +399,7 @@ var DC = {
     addCharacterToList:function(data){
         $("#characters-list").append("<li class='event-character' data='"+JSON.stringify(data)+"'><div class='char-btn'>"+data.handle+" "+data.uniqueId+"</div><div class='btn btn-group center char-remove remove-choice'>x</div></li>");
         var charClass = DC.p.characters[data.file][data.group][data.handle].charClass;
+        if(charClass==="Random") charClass =  "Legionnaire";
         var loc = data.loc?data.loc:this.getNextEmpty([0,0]);
         var dir = data.dir?data.dir:"down";
         this.p.saveCharacters.push(data);
