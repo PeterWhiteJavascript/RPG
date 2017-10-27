@@ -2,6 +2,11 @@
     "name": "Return-from-recruiting",
     "desc": "Alex returns with the new recruits.",
     "kind": "story",
+    "pointers":{
+        "events":["City-Outfit"],
+        "sceneVars":["startVicantiAsk"],
+        "globalVars":["money"]
+    },
     "pages": [
         {
             "name": "Before throne room",

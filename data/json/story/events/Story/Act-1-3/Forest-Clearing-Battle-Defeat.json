@@ -2,6 +2,11 @@
     "name": "Forest-Clearing-Battle-Defeat",
     "desc": "The party is defeated by the guards.",
     "kind": "battleScene",
+    "pointers":{
+        "events":["Arrive-in-Dardoine"],
+        "sceneVars":[],
+        "globalVars":[]
+    },
     "script": [
         [
             "Initial",

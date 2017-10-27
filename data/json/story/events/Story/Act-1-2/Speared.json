@@ -3,6 +3,11 @@
     "desc": "",
     "kind": "story",
     "vrs": {},
+    "pointers":{
+        "events":["Circus-Gates"],
+        "sceneVars":[],
+        "globalVars":[]
+    },
     "pages": [
         {
             "name": "Page 1",

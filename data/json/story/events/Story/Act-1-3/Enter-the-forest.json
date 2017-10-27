@@ -2,6 +2,11 @@
     "name": "Enter-the-forest",
     "desc": "Alex and Astraea enter the forest on the way to Dardoine.",
     "kind": "story",
+    "pointers":{
+        "events":["Venoria-Forest-Clearing-Battle"],
+        "sceneVars":["guardsInForest"],
+        "globalVars":[]
+    },
     "pages": [
         {
             "name": "Start",

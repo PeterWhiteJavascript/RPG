@@ -2,6 +2,13 @@
     "name": "Training",
     "desc": "Training with Astraea",
     "kind": "battleScene",
+    "pointers": {
+        "events": [
+            "Training-Battle"
+        ],
+        "sceneVars": [],
+        "globalVars": []
+    },
     "script": [
         [
             "Initial",

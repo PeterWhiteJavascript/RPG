@@ -6,6 +6,11 @@
     "music":"battle.mp3",
     "placementSquares":[[8,14],[9,14],[10,14],[8,15],[9,15],[10,15]],
     "maxAllies":6,
+    "pointers":{
+        "events":["Forest-Clearing-Battle-Victory","Forest-Clearing-Battle-Defeat"],
+        "sceneVars":[],
+        "globalVars":[]
+    },
     "victory":{
         "next":{
             "type":"Story",

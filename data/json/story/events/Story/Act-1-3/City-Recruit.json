@@ -4,6 +4,15 @@
     "desc": "First time in town. Goal is to recruit people.",
     "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
     "music": "homeland.mp3",
+    "pointers": {
+        "events": [
+            "Return-from-recruiting"
+        ],
+        "sceneVars": [
+            "startVicantiAsk"
+        ],
+        "globalVars": []
+    },
     "disabledChoices": [
         0
     ],
@@ -40,7 +49,7 @@
                         "scope": "Event",
                         "vr": "addedBerserker",
                         "operator": "==",
-                        "vl": false
+                        "vl": true
                     }
                 ],
                 [
@@ -135,7 +144,7 @@
         ]
     },
     "vrs": {
-        "addedBerserker": 0
+        "addedBerserker": false
     },
     "scene": "Act-1-3",
     "type": "Story"

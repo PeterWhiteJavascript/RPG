@@ -1,7 +1,12 @@
 {
-    "name": "Circus Gates",
+    "name": "Circus-Gates",
     "desc": "",
     "kind": "story",
+    "pointers":{
+        "events":["Speared"],
+        "sceneVars":[],
+        "globalVars":["Gloobal"]
+    },
     "vrs": {
         "weapon": "0",
         "weapontext": "You have no weapon."

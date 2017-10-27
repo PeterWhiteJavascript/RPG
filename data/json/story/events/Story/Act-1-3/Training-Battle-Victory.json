@@ -2,6 +2,11 @@
     "name": "Training-Battle-Victory",
     "desc": "If Alex beats Astraea in the training battle.",
     "kind": "battleScene",
+    "pointers":{
+        "events":["City-Recruit"],
+        "sceneVars":[],
+        "globalVars":[]
+    },
     "script": [
         [
             "Initial",

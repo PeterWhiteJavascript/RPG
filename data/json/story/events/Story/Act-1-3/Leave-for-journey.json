@@ -1,7 +1,12 @@
 {
-    "name": "Leave-for-journey!",
+    "name": "Leave-for-journey",
     "desc": "After saying goodbye to Vicanti, Alex and friends are on their way to Dardoine!",
     "kind": "battleScene",
+    "pointers":{
+        "events":["Enter-the-forest"],
+        "sceneVars":[],
+        "globalVars":[]
+    },
     "script": [
         [
             "Initial",

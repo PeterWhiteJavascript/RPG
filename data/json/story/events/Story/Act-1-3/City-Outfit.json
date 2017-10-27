@@ -65,14 +65,18 @@
             "Blacksmith",
             "changePage",
             {
-                "page": "blacksmith"
+                "type": "Story",
+                "scene": "Act-1-1",
+                "event": "Start"
             }
         ],
         [
             "Calen's Blacksmith",
             "changePage",
             {
-                "page": "calensBlacksmith"
+                "type": "Story",
+                "scene": "Act-1-1",
+                "event": "Start"
             }
         ],
         [
@@ -80,86 +84,14 @@
             "changeEvent",
             {
                 "type": "Story",
-                "scene": "Act-1-3",
-                "event": "After-equipping-and-recruiting"
+                "scene": "Act-1-1",
+                "event": "Start"
             }
         ]
     ],
     "blacksmith": {
         "music": "the_usual.mp3",
         "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
-        "actions": [
-            [
-                "Buy",
-                "displayBuyItemsList",
-                {
-                    "list": [
-                        [
-                            "Weapons",
-                            "Short Sword",
-                            "Average",
-                            "Bronze"
-                        ],
-                        [
-                            "Weapons",
-                            "Short Sword",
-                            "Average",
-                            "Iron"
-                        ],
-                        [
-                            "Weapons",
-                            "Spear",
-                            "Average",
-                            "Bronze"
-                        ],
-                        [
-                            "Weapons",
-                            "Spear",
-                            "Average",
-                            "Iron"
-                        ],
-                        [
-                            "Weapons",
-                            "Bow",
-                            "Average",
-                            "Wood"
-                        ],
-                        [
-                            "Shields",
-                            "Shield",
-                            "Average",
-                            "Bronze"
-                        ],
-                        [
-                            "Shields",
-                            "Shield",
-                            "Average",
-                            "Hide"
-                        ],
-                        [
-                            "Footwear",
-                            "Shoes",
-                            "Average",
-                            "Wood"
-                        ]
-                    ]
-                }
-            ],
-            [
-                "Sell",
-                "displaySellItemsList",
-                {
-                    "allow": "all"
-                }
-            ],
-            [
-                "Leave",
-                "changePage",
-                {
-                    "page": "start"
-                }
-            ]
-        ],
         "onload": [
             {
                 "effects": [
@@ -186,46 +118,27 @@
                 "Buy",
                 "displayBuyItemsList",
                 {
-                    "list": [
-                        [
-                            "Weapons",
-                            "Pike",
-                            "Shoddy",
-                            "Brass"
-                        ],
-                        [
-                            "Weapons",
-                            "Mace",
-                            "Shoddy",
-                            "Brass"
-                        ],
-                        [
-                            "Shields",
-                            "Small Shield",
-                            "Shoddy",
-                            "Brass"
-                        ],
-                        [
-                            "Armour",
-                            "Breastplate",
-                            "Shoddy",
-                            "Brass"
-                        ]
-                    ]
+                    "type": "Story",
+                    "scene": "Act-1-1",
+                    "event": "Start"
                 }
             ],
             [
                 "Sell",
                 "displaySellItemsList",
                 {
-                    "allow": "all"
+                    "type": "Story",
+                    "scene": "Act-1-1",
+                    "event": "Start"
                 }
             ],
             [
                 "Leave",
                 "changePage",
                 {
-                    "page": "start"
+                    "type": "Story",
+                    "scene": "Act-1-1",
+                    "event": "Start"
                 }
             ]
         ],

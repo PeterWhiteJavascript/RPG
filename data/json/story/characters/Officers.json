@@ -42,12 +42,12 @@
                 "eff": 20
             },
             "techniques": [
-                "Forced March",
-                "Fortify",
-                "Embolden",
-                "Fervour",
-                "Direct",
-                "Phalanx"
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "Default"
             ],
             "nationality": "Venorian",
             "charClass": "Random"
@@ -519,6 +519,60 @@
             ],
             "nationality": "Talumpatuan",
             "charClass": "Elementalist"
+        }
+    },
+    "wet": {
+        "NewCharacter2": {
+            "handle": "NewCharacter2",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": 1233,
+                "end": 16,
+                "dex": 15,
+                "wsk": 15,
+                "rfl": 14,
+                "ini": 11,
+                "enr": 16,
+                "skl": 19,
+                "eff": 11
+            },
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Legionnaire"
         }
     }
 }
