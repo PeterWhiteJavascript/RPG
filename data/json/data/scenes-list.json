@@ -1,173 +1,93 @@
 {
-    "Officer": [
-        {
-            "name": "Astraea",
-            "desc": "Any Astraea specific events.",
-            "eventOrder": [
-                "Test"
-            ],
-            "vrs": []
-        },
-        {
-            "name": "Lysandra",
-            "desc": "Any Lysandra Events\r\n",
-            "eventOrder": [
-                "dr"
-            ],
-            "vrs": []
-        },
-        {
-            "name": "Gaios",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Imamu",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Rutendo",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Nala",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Sjrna",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Eko",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Nicodemus",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        }
-    ],
-    "Character": [
-        {
-            "name": "Feasts",
-            "desc": "When a character is selected as the Guest of Honour for a feast, check if they can do a scene.",
-            "eventOrder": [
-                "Feast1",
-                "HedonisticFeast",
-                "Feast2",
-                "Feast3"
-            ],
-            "vrs": []
-        },
-        {
-            "name": "EnemiesDefeated",
-            "desc": "After a certain number of enemies are defeated, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [
-                "EnemiesDefeated50",
-                "EnemiesDefeated100",
-                "EnemiesDefeated200"
-            ],
-            "vrs": []
-        },
-        {
-            "name": "Assisted",
-            "desc": "After a certain number of assists, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "BattlesParticipated",
-            "desc": "After a certain number of battles participated, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "DamageDealt",
-            "desc": "After a certain number of damage dealt, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "DamageTaken",
-            "desc": "After a certain number of damage taken, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "SelfHealed",
-            "desc": "After a certain number of health healed to themselves, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "TargetHealed",
-            "desc": "After a certain number of health healed to other characters, show a scene where Alex gives the character an award. Triggered when feasting.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Wounded",
-            "desc": "After a certain number of times wounded (hp down to 0). Triggered when visiting at the infirmary.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Rested",
-            "desc": "After a certain number of times rested (character is sent to rest at the infirmary). Triggered when visiting at the infirmary.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Mentored",
-            "desc": "After a certain number of times mentored by Alex. Triggered when mentoring. There is a scene for each time mentored and each officer should have custom scenes. This is where character development can occur.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Hunted",
-            "desc": "Triggered when a character is selected as the leader of the hunting party.",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Custom",
-            "desc": "Any additional events that happen due to more custom conditions.",
-            "eventOrder": [
-                "NomadicLegionnaireBackstory"
-            ],
-            "vrs": []
-        }
-    ],
     "Story": [
         {
             "name": "Act-1-1",
-            "desc": "Test for act 1-1",
-            "eventOrder": [
-                "Full-Test",
-                "firstbattletest",
-                "fullbattletest",
-                "battleTest"
+            "events": [
+                {
+                    "name": "Start",
+                    "top": "200px",
+                    "left": "100px",
+                    "events": [
+                        "Dothebadthing",
+                        "dontdothebadthing"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Dothebadthing",
+                    "top": "269px",
+                    "left": "52px",
+                    "events": [
+                        "Nico-ANGERY"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "dontdothebadthing",
+                    "top": "92px",
+                    "left": "380px",
+                    "events": [
+                        "movingon"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Nico-ANGERY",
+                    "top": "349px",
+                    "left": "149px",
+                    "events": [
+                        "movingon"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "movingon",
+                    "top": "299px",
+                    "left": "426px",
+                    "events": [
+                        "nextup"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "nextup",
+                    "top": "395px",
+                    "left": "793px",
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": []
+                }
             ],
-            "vrs": []
+            "vrs": {
+                "test": 123
+            }
         },
         {
             "name": "Act-1-2",
-            "desc": "Alex enters the awesome circus",
-            "eventOrder": [
-                "Circus-Gates",
-                "Speared"
+            "events": [
+                {
+                    "name": "Circus-Gates",
+                    "top": "200px",
+                    "left": "100px",
+                    "events": [
+                        "Speared"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Speared",
+                    "top": "512px",
+                    "left": "319px",
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": []
+                }
             ],
             "vrs": {
                 "pl": 23434
@@ -175,129 +95,310 @@
         },
         {
             "name": "Act-1-3",
-            "desc": "",
-            "eventOrder": [
-                "Prologue",
-                "City-Recruit",
-                "Return-from-recruiting",
-                "City-Outfit",
-                "After-equipping-and-recruiting",
-                "Leave-for-journey!",
-                "Training",
-                "Training-Battle",
-                "Training-Battle-Victory",
-                "Training-Battle-Defeat",
-                "Enter-the-forest",
-                "Venoria-Forest-Clearing-Battle",
-                "Forest-Clearing-Battle-Victory",
-                "Forest-Clearing-Battle-Defeat",
-                "Arrive-in-Dardoine",
-                "In-Dardoine",
-                "TEST1",
-                "TEST2",
-                "Visit-Legionnaire"
+            "events": [
+                {
+                    "name": "Prologue",
+                    "top": "0px",
+                    "left": "0px",
+                    "events": [
+                        "Training"
+                    ],
+                    "sceneVars": [
+                        "startVicantiAsk"
+                    ],
+                    "globalVars": [
+                        "money"
+                    ]
+                },
+                {
+                    "name": "City-Recruit",
+                    "top": "148px",
+                    "left": "499px",
+                    "events": [
+                        "Return-from-recruiting"
+                    ],
+                    "sceneVars": [
+                        "startVicantiAsk"
+                    ],
+                    "globalVars": []
+                },
+                {
+                    "name": "Return-from-recruiting",
+                    "top": "309px",
+                    "left": "54px",
+                    "events": [
+                        "City-Outfit"
+                    ],
+                    "sceneVars": [
+                        "startVicantiAsk"
+                    ],
+                    "globalVars": []
+                },
+                {
+                    "name": "City-Outfit",
+                    "top": "366px",
+                    "left": "29px",
+                    "events": [
+                        "After-equipping-and-recruiting"
+                    ],
+                    "sceneVars": [
+                        "helpedButler"
+                    ],
+                    "globalVars": []
+                },
+                {
+                    "name": "After-equipping-and-recruiting",
+                    "top": "432px",
+                    "left": "0px",
+                    "events": [
+                        "Leave-for-journey"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Leave-for-journey",
+                    "top": "527px",
+                    "left": "43px",
+                    "events": [
+                        "Enter-the-forest"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Training",
+                    "top": "62px",
+                    "left": "0px",
+                    "events": [
+                        "Training-Battle"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Training-Battle",
+                    "top": "66px",
+                    "left": "226px",
+                    "events": [
+                        "Training-Battle-Victory",
+                        "Training-Battle-Defeat"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Training-Battle-Victory",
+                    "top": "66px",
+                    "left": "438.297px",
+                    "events": [
+                        "City-Recruit"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Training-Battle-Defeat",
+                    "top": "113px",
+                    "left": "202px",
+                    "events": [
+                        "City-Recruit"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Enter-the-forest",
+                    "top": "617px",
+                    "left": "157px",
+                    "events": [
+                        "Venoria-Forest-Clearing-Battle"
+                    ],
+                    "sceneVars": [
+                        "guardsInForest"
+                    ],
+                    "globalVars": []
+                },
+                {
+                    "name": "Venoria-Forest-Clearing-Battle",
+                    "top": "629px",
+                    "left": "463px",
+                    "events": [
+                        "Forest-Clearing-Battle-Victory",
+                        "Forest-Clearing-Battle-Defeat"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Forest-Clearing-Battle-Victory",
+                    "top": "521px",
+                    "left": "377px",
+                    "events": [
+                        "Arrive-in-Dardoine"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Forest-Clearing-Battle-Defeat",
+                    "top": "565px",
+                    "left": "598.313px",
+                    "events": [
+                        "Arrive-in-Dardoine"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "Arrive-in-Dardoine",
+                    "top": "403px",
+                    "left": "671px",
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": []
+                },
+                {
+                    "name": "In-Dardoine",
+                    "top": "233px",
+                    "left": "658px",
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": []
+                }
             ],
             "vrs": {
-                "startVicantiAsk": "",
-                "helpedButler": "",
-                "guardsInForest": "false"
+                "startVicantiAsk": false,
+                "helpedButler": false,
+                "guardsInForest": false
             }
         },
         {
             "name": "Act-1-4",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-2-1",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-2-2",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-2-3",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-2-4",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-3-1",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-3-2",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-3-3",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "Act-3-4",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        },
-        {
-            "name": "FinalAct",
-            "desc": "",
-            "eventOrder": [],
-            "vrs": []
-        }
-    ],
-    "Other": [
-        {
-            "name": "CandyShop",
-            "desc": "Alex travels to a candy shop and meets friends and foes along the way! A true tale of adventure!",
-            "eventOrder": [
-                "Leaving-Home",
-                "Forest-to-Candy-Store",
-                "Forest-Battle",
-                "Forest-Battle-victory",
-                "Forest-Battle-defeat",
-                "Alex-arrives-in-town",
-                "Forest-battle-victory2",
-                "Inside-the-pub",
-                "Left-the-candy-shop",
-                "After-candy-shop-battle",
-                "Candy-Battle-Victory",
-                "In-pub-with-Astraea",
-                "Candy-Battle-Loss",
-                "On-the-way-home.",
-                "Inside-Bandit's-Shop",
-                "Buy-or-not-from-Bandits",
-                "Did-not-buy",
-                "Bought-from-Bandits",
-                "Fight-Police",
-                "win-vs-police",
-                "lose-vs-police",
-                "win-vs-bandits",
-                "lose-vs-bandits",
-                "House",
-                "Town"
+            "events": [
+                {
+                    "name": "Leaving-Home"
+                },
+                {
+                    "name": "Forest-to-Candy-Store"
+                },
+                {
+                    "name": "Forest-Battle"
+                },
+                {
+                    "name": "Forest-Battle-victory"
+                },
+                {
+                    "name": "Forest-Battle-defeat"
+                },
+                {
+                    "name": "Alex-arrives-in-town"
+                },
+                {
+                    "name": "Forest-battle-victory2"
+                },
+                {
+                    "name": "Inside-the-pub"
+                },
+                {
+                    "name": "Left-the-candy-shop"
+                },
+                {
+                    "name": "After-candy-shop-battle"
+                },
+                {
+                    "name": "Candy-Battle-Victory"
+                },
+                {
+                    "name": "In-pub-with-Astraea"
+                },
+                {
+                    "name": "Candy-Battle-Loss"
+                },
+                {
+                    "name": "On-the-way-home."
+                },
+                {
+                    "name": "Inside-Bandit's-Shop"
+                },
+                {
+                    "name": "Buy-or-not-from-Bandits"
+                },
+                {
+                    "name": "Did-not-buy"
+                },
+                {
+                    "name": "Bought-from-Bandits"
+                },
+                {
+                    "name": "win-vs-police"
+                },
+                {
+                    "name": "lose-vs-police"
+                },
+                {
+                    "name": "win-vs-bandits"
+                },
+                {
+                    "name": "lose-vs-bandits"
+                },
+                {
+                    "name": "House"
+                },
+                {
+                    "name": "Town"
+                }
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"
             }
+        },
+        {
+            "name": "Act-2-1",
+            "events": [],
+            "vrs": {
+                "test": true
+            }
+        },
+        {
+            "name": "Act-2-2",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-2-3",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-2-4",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-3-1",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-3-2",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-3-3",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "Act-3-4",
+            "events": [],
+            "vrs": []
+        },
+        {
+            "name": "FinalAct",
+            "events": [],
+            "vrs": []
         }
     ]
 }
