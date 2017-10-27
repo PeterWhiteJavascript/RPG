@@ -130,7 +130,7 @@ Q.newGame=function(options){
         //TO DO: save each scenes vars somewhere
         Q.state.set(
             "sceneVars",
-            Q.state.get("scenesList")[Q.state.get("saveData").startSceneType].filter(function(sc){
+            Q.state.get("scenesList").Story.filter(function(sc){
                 return sc.name===Q.state.get("saveData").startSceneName;
             })[0].vrs
         );
@@ -325,7 +325,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/edit-story-event.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
@@ -333,7 +333,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
@@ -347,7 +347,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-script.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/edit-battleScene-script.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
@@ -363,7 +363,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
@@ -377,7 +377,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/edit-location-event.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/edit-location-event.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
@@ -393,7 +393,7 @@ Q.load(files.join(','),function(){
                         var scene = $("#title").text();
                         var name = $("#title2").text();
                         var type = $("#title3").text();
-                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="name" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
+                        var form = $('<form action="_tools/Event-Editor/show-events.php" method="post"><input type="text" name="event" value="'+name+'"><input type="text" name="scene" value="'+scene+'"><input type="text" name="type" value="'+type+'"></form>');
                         $("body").append(form);
                         form.submit();
                     });
