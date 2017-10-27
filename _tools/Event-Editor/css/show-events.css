@@ -75,7 +75,7 @@
 #events-flowchart-cont{
     width:80%;
     height:92.5%;
-    background-color:orange;
+    background-color:var(--secondary-color);
     position:relative;
     display:inline-block;
     overflow:scroll;

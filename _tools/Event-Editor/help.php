@@ -12,7 +12,7 @@
                 font-size:1.5vw;
                 display:inline-block;
                 cursor:pointer;
-                background-color:lightgrey;
+                background-color:var(--main-color);
                 padding:0.5%;
             }
             #footer:hover{
@@ -22,7 +22,7 @@
                 width:100%;
                 height:87.5%;
                 display:inline-block;
-                background-color:orange;
+                background-color:var(--secondary-color);
                 font-size:36px;
                 padding:100px;
                 overflow-y:auto;
