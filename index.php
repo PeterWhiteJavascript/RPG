@@ -2,10 +2,9 @@
 //FOR TESTING, ACCEPT THE NAME AND SCENE IF WE ARE TESTING A SPECIFIC EVENT.
 $name;
 $scene;
-if(isset($_POST['name'])){$name = $_POST['name'];}
-if(isset($_POST['name'])){$scene = $_POST['scene'];}
-if(isset($_POST['name'])){$type = $_POST['type'];}
- 
+if(isset($_POST['event'])){$name = $_POST['event'];}
+if(isset($_POST['event'])){$scene = $_POST['scene'];}
+if(isset($_POST['event'])){$type = $_POST['type'];}
 //Load all of the character files
 $characterFiles = array_values(array_diff(scandir('data/json/story/characters'),array('..','.')));
 $characters = (object)[];
@@ -41,7 +40,7 @@ foreach($characterFiles as $charFile){
     <body>
         <img id="loading-screen" src="images/ui/loading-screen.png">
         <?php
-        if(isset($_POST['name'])){
+        if(isset($_POST['event'])){
         ?>
             <div id="title" hidden><?php echo $scene; ?></div>
             <div id="title2" hidden><?php echo $name; ?></div>
