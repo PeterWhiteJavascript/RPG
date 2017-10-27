@@ -26,8 +26,8 @@
     <body>
         <script>
             $(function(){ 
-                $("#main-color").val(Cookies.get("main-color"));
-                $("#secondary-color").val(Cookies.get("secondary-color"));
+                $("#main-color").val(Cookies.get("main-color") || "lightgrey");
+                $("#secondary-color").val(Cookies.get("secondary-color") || "orange");
                 function useCookies(main,second){
                     $("body").get(0).style.setProperty("--main-color", main);
                     $("body").get(0).style.setProperty("--secondary-color", second);
