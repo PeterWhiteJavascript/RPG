@@ -50,6 +50,11 @@ table {
 
 /* Start my style */
 
+:root {
+    --main-color: lightgrey;
+    --secondary-color:orange;
+}
+
 * {
     font-family: "Kalam" !important;
 }
@@ -91,7 +96,7 @@ body {
     display:inline-block;
     width:100%;
     height:7.5%;
-    background-color:lightgrey;
+    background-color:var(--main-color);
     border-radius:5px 5px 0px 0px; 
     padding:1%;
 }
@@ -102,11 +107,12 @@ body {
 #menu-cont{
     width:20%;
     height:92.5%;
-    background-color:lightgrey;
+    background-color:var(--main-color);
     display:inline-block;
     vertical-align:top;
     border-left:1px solid black;
 }
+
 .menu-button{
     width:90%;
     margin-left:5%;
@@ -121,22 +127,28 @@ body {
 .menu-button:hover{
     background-color:#F5f5f5;
 }
+.menu-button-modify{
+    width:100%;
+    height:50%;
+}
+.menu-button:hover{
+    background-color:#F5f5f5;
+}
 
 .main-menu-background{
     display:inline-block;
-    background-color:orange;
+    background-color:var(--secondary-color);
     height:92.5%;
     width:100%;
 }
 
 .main-menu-cont{
     position:absolute;
-    background-color:lightgrey;
+    background-color:var(--main-color);
     height:auto;
     width:35%;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
+    left:32.5%;
+    top:10%;
     border-radius:5px;
 }
 
@@ -145,7 +157,21 @@ body {
     height:5%;
 }
 
+.btn {
+    font-size: initial;
+}
+.remove-choice-deep{
+    width:10%;
+}
 
+.choice-group-top{
+    width:100%;
+    height:30px;
+}
+.choice-group-top p{
+    width:80%;
+    float:left;
+}
 #editor-variables{
     max-height:40%;
     overflow-y:auto;
@@ -175,6 +201,35 @@ body {
 }
 
 
+#top-bar{
+    background-color:#001;  
+    position:fixed;
+    width:100%;
+    z-index:1000;
+    margin-left:0;
+    margin-top:0;
+}
+#top-bar ul{
+    width:100%;
+    height:100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+#top-bar li{
+    float:left;
+    height:100%;
+}
+.top-bar-btn{
+    width:14.28%;
+    border:black;
+}
+.top-bar-btn div{
+    margin:0 auto !important;
+}
+
+
 
 
 /* Classes that are added to an element for visual cues*/
@@ -183,4 +238,27 @@ body {
 }
 .crossed{
     text-decoration: line-through;
+}
+
+.light-gradient{
+    font-family:"Calibri";
+    background: linear-gradient(to bottom right, grey, white);
+    color:#111;
+}
+.light-blue-gradient{
+    font-family:"Calibri";
+    background: linear-gradient(to bottom right, lightskyblue, #EEE);
+    color:#111;
+}
+.medium-gradient{
+    background: linear-gradient(to bottom right, #333, #999);
+    color:#EEE;
+}
+.dark-gradient{
+    background: linear-gradient(to bottom right, black, grey);
+    color:#EEE;
+}
+
+.thirty-height{
+    height:30px;
 }

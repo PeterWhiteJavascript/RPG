@@ -9,4 +9,11 @@
 <script src="lib/jquery-ui.min.js"></script>
 <script src="lib/jquery.redirect.min.js"></script>
 <script src="lib/jquery.connections.min.js"></script>
+<script src="lib/js.cookie.js"></script>
 <link rel="stylesheet" href="css/new-style.css">
+<script>
+    $(function(){
+        $("body").get(0).style.setProperty("--main-color", Cookies("main-color"));
+        $("body").get(0).style.setProperty("--secondary-color", Cookies("secondary-color"));
+    });
+</script>

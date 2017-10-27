@@ -13,25 +13,42 @@ if(isset($_GET['err'])){
         <?php include 'config.php';?>
         <title>Select Characters</title>
         <style>
+            #scene-title{
+                font-size:2vw;
+                text-align:center;
+            }
+            #select-character-options{
+                width:100%;
+                height:92.5%;
+                background-color:var(--secondary-color);
+            }
+            #open-character-file{
+                margin:0 auto;
+                text-align:center;
+                border-bottom:1px solid black;
+            }
+            #file-select{
+                font-size:1.5vw;
+                background-color:transparent;
+                border:0;
+                width:100%;
+                border-bottom:1px dashed black;
+            }
             #new-file-name{
-                width:200px;
+                font-size:1.5vw;
+                width:100%;
+                background-color:transparent;
+                border:0;
+                border-bottom:1px dashed black;
+                text-align:center;
+            }
+            #create-character-file{
+                border-bottom:1px solid black;
+                
             }
         </style>
     </head>
     <body>
-        <div id="title"><h1>Select a character file</h1></div>
-        <select id="file-select">
-            <?php
-            forEach($files as $file){
-                echo '<option value="'.$file.'">'.$file.'</option>';
-            }
-            ?>
-        </select>
-        <div id="load-file" class="btn btn-default">Load</div>
-        <div id="delete-file" class="btn btn-default">Delete</div>
-        
-        <input id="new-file-name" value="" placeholder="New File Name">
-        <div id="create-new-file" class="btn btn-default">Create New File</div>
         <script>
             $(function(){
                 $(document).on("click","#load-file",function(){
@@ -59,8 +76,38 @@ if(isset($_GET['err'])){
                         alert("Please fill out a name.");
                     }
                 });
+                
+                $("#back").on("click",function(){
+                    $.redirect("index.php");
+                });
             });
         </script>
-        <div id="footer"><a href="index.php"><div class="menu-button btn btn-default">BACK</div></a></div>
+        <div id="wrapper">
+            <div id="main-content">
+                <div id="scene-title">Select a character file</div>
+                <div id="select-character-options">
+                    <div class="main-menu-cont">
+                        <div id="open-character-file">
+                            <select id="file-select">
+                                <?php
+                                forEach($files as $file){
+                                    echo '<option value="'.$file.'">'.$file.'</option>';
+                                }
+                                ?>
+                            </select>
+                            <div id="load-file" class="menu-button">Load</div>
+                            <div id="delete-file" class="menu-button">Delete</div>
+                        </div>
+                        <div id="create-character-file">
+                            <input id="new-file-name" value="" placeholder="New File Name">
+                            <div id="create-new-file" class="menu-button">Create New File</div>
+                        </div>
+                        <div id="back" class="menu-button">Back</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
     <body>
 </html>

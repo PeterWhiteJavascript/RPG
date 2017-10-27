@@ -21,6 +21,7 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
         <?php include 'config.php';?>
         <title>Create Characters</title>
         <link rel="stylesheet" type="text/css" href="css/create-characters.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
         
     </head>
     <body>

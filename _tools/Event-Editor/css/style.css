@@ -418,24 +418,6 @@ audio{
     border-radius: 2px 2px 0px 0px; 
     overflow:hidden;
 }
-.light-gradient{
-    font-family:"Calibri";
-    background: linear-gradient(to bottom right, grey, white);
-    color:#111;
-}
-.light-blue-gradient{
-    font-family:"Calibri";
-    background: linear-gradient(to bottom right, lightskyblue, #EEE);
-    color:#111;
-}
-.medium-gradient{
-    background: linear-gradient(to bottom right, #333, #999);
-    color:#EEE;
-}
-.dark-gradient{
-    background: linear-gradient(to bottom right, black, grey);
-    color:#EEE;
-}
 .cond-group{
     border-radius:2px;
     border:solid 2px black;
@@ -444,14 +426,6 @@ audio{
 .cond-group-top{
     width:100%;
     height:30px;
-}
-.choice-group-top{
-    width:100%;
-    height:30px;
-}
-.choice-group-top p{
-    width:85%;
-    float:left;
 }
 .btn-group{
     border-radius:0;
@@ -597,28 +571,6 @@ li{
     height:30px;
 }
 
-#top-bar{
-    background-color:#001;
-    position:fixed;
-    width:100%;
-    z-index:1000;
-}
-#top-bar ul{
-    width:100%;
-    height:100%;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-#top-bar li{
-    float:left;
-    height:100%;
-}
-.top-bar-btn{
-    width:14.28%;
-    border:black;
-}
 #page-vars{
     top:40px;
     height:100%;
@@ -721,10 +673,6 @@ li{
 }
 #modules ul li{
     border:2px solid black;
-}
-.thirty-height{
-    width:7.5%;
-    height:30px;
 }
 .pages-to{
     height:30px;

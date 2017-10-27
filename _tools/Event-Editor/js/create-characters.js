@@ -6,10 +6,10 @@ $(function(){
             var techs = this.techniqueData = JSON.parse($("#technique-info").text());
             var keys = Object.keys(techs);
             var sortedTechs = {
-                rank:[[],[],[],[],[],[]]
+                rank:[[{name:"Default"}],[{name:"Default"}],[{name:"Default"}],[{name:"Default"}],[{name:"Default"}],[{name:"Default"}]]
             };
             for(var i=0;i<keys.length;i++){
-                for(var j=0;j<6;j++){
+                for(var j=0;j<techs[keys[i]].length;j++){
                     sortedTechs.rank[j].push(techs[keys[i]][j]);
                 }
             }
@@ -243,10 +243,10 @@ $(function(){
         },
         showCharacter:function(char,group){
             //Change the colour of the character in the groups
-            $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").children(".char-handle").removeClass("red");
+            $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").children(".char-handle").removeClass("selected");
             $("#group-menu").children(".char-group").children(".char-buttons").children(".char-button").each(function(){
                 if($(this).children(".char-handle").text()===char.handle){
-                    $(this).children(".char-handle").addClass("red");
+                    $(this).children(".char-handle").addClass("selected");
                 }
             });
             
@@ -303,7 +303,7 @@ $(function(){
                     var prop = $(this).attr("class").split(" ")[1];
                     $(this).val(char.baseStats[prop]);
                 });
-                $("#use-rand").children("p").text("Using Defined Stats");
+                $("#use-rand").children("p").text("Using Defined");
                 $("#use-rand").parent().children("#randomize-base-stats").hide();
                 $("#use-rand").parent().children("#rand-base-stats").hide();
                 $("#use-rand").parent().children("#value-rand-base-stats").hide();
@@ -386,29 +386,64 @@ $(function(){
             var cl = $(itm).attr("class");
             $(itm).replaceWith('<div class="'+cl+'"><p>'+val+'</p></div>');
         },
-        levelUp:function(statTo,stats,primary){
-            var statNames = DC.charGen.statNames;
-            var autoChance = DC.charGen.autoChance;
-            switch(statTo){
-                case "primary":
-                    stats[primary]+=1;
-                    break;
-                case "random":
-                    stats[statNames[Math.floor(Math.random()*statNames.length)]]+=1;
-                    break;
-                case "auto":
-                    stats = DC.levelUp(autoChance[Math.floor(Math.random()*autoChance.length)],stats,primary);
-                    break;
+        levelUp:function(stats,primary,primaryCoordinate,lean){
+            function inBounds(num){
+                return num>2 ? 0 : num<0 ? 2 : num;
+            };
+            stats[primary] += 1;
+            var center = primaryCoordinate;
+            var graph = DC.charGen.levelUpGraph;
+            var mult = DC.charGen.levelUpMultiplier;
+            //Get 3 unique secondary stats.
+            var secStats = [];
+            for(var i=0;i<3;i++){
+                var secStat;
+                do{
+                    var secondary = this.getIdx(lean[0],this.rand());
+                    var secPos = [inBounds(center[0]+mult[secondary][0]),inBounds(center[1]+mult[secondary][1])];
+                    secStat = graph[secPos[1]][secPos[0]];
+                } while(secStats.indexOf(secStat)!==-1);
+                secStats.push(secStat);
+                stats[secStat]++;
             }
+            //Get 1 tertiary stat.
+            var tertiary = this.getIdx(lean[1],this.rand());
+            var terPos = [inBounds(center[0]+mult[tertiary+4][0]),inBounds(center[1]+mult[tertiary+4][1])];
+            var terStat = graph[terPos[1]][terPos[0]];
+            stats[terStat]++;
             return stats;
         },
-        levelTo:function(stats,primary,level){
-            var order = DC.charGen.order;
-            for(var i=0;i<level;i++){
-                var num = i%order.length;
-                stats = this.levelUp(order[num],stats,primary);
-            }
+        generateBaseStats:function(min,variance){
+            min = min?min:10,variance = variance?variance:10;
+            var stats = {};
+            //Set all lv 1 stats
+            DC.charGen.statNames.forEach(function(st){
+                stats[st] = Math.floor(Math.random()*variance)+min;
+            });
             return stats;
+        },
+        statsToLevel:function(stats,primary,primaryCoordinate,level,lean){
+            stats[primary]+=5;
+            for(var idx=0;idx<level;idx++){
+                stats = DC.levelUp(stats,primary,primaryCoordinate,lean);
+            }  
+            return stats;
+        },
+        getStatLean:function(){
+            //Force at least 1 percent chance for each stat
+            var lean = [1,1,1,1];
+            //Start at 96 since 4 is already taken.
+            var num = 96;
+            //The skew is how far apart the numbers will probably be. Higher skew = higher chance of very big/very small numbers.
+            var skew = 15;
+            //Generate some pretty decent random numbers
+            while(num>0){
+                var rand = Math.ceil(Math.random()*skew);
+                if(rand>num) rand = num;
+                lean[Math.floor(Math.random()*4)] += rand;
+                num -= rand;
+            }
+            return lean;
         },
         getEquipmentData:function(name){
             if(name==="None"||name==="Default"||name==="Random") return {};
@@ -460,11 +495,14 @@ $(function(){
                     encoded[groupKeys[i]][charKeys[j]] = this.encodeChar(chars[charKeys[j]]);
                 }
             }
-            var form = $('<form action="save-characters.php" method="post"></form>');
-            form.append("<input type='text' name='filename' value='"+$("#file-name").text()+"'>");
-            form.append("<input type='text' name='data' value='"+JSON.stringify(encoded)+"'>");
-            $("body").append(form);
-            form.submit();
+            $.ajax({
+                type:'POST',
+                url:'save-characters.php',
+                data:{data:JSON.stringify(encoded),filename:$("#file-name").text()},
+                dataType:'json'
+            })
+            .done(function(data){console.log(data);alert("Saved Successfully!")})
+            .fail(function(data){console.log(data)});
         }
     };
     
@@ -604,11 +642,18 @@ $(function(){
     });
     
     $("#default-technique-button").click(function(){
-        var techs = DC.techniqueData[DC.selectedCharacter.charClass];
-        $(this).parent().parent().children(".prop-cont").each(function(i){
-            $(this).children(".char-prop").val(techs[i].name);
-            $(this).children(".char-prop").trigger("change");
-        });
+        if(DC.selectedCharacter.charClass==="Random"){
+            $(this).parent().parent().children(".prop-cont").each(function(i){
+                $(this).children(".char-prop").val("Default");
+                $(this).children(".char-prop").trigger("change");
+            });
+        } else {
+            var techs = DC.techniqueData[DC.selectedCharacter.charClass];
+            $(this).parent().parent().children(".prop-cont").each(function(i){
+                $(this).children(".char-prop").val(techs[i].name);
+                $(this).children(".char-prop").trigger("change");
+            });
+        }
     });
     $("#rand-technique-button").click(function(){
         $(this).parent().parent().children(".prop-cont").each(function(i){
@@ -628,7 +673,7 @@ $(function(){
     
     $("#use-rand").click(function(){
         if($(this).children("p").text()==="Using Random"){
-            $(this).children("p").text("Using Defined Stats");
+            $(this).children("p").text("Using Defined");
             $(this).parent().children("#randomize-base-stats").hide();
             $(this).parent().children("#rand-base-stats").hide();
             $(this).parent().children("#value-rand-base-stats").hide();
@@ -652,11 +697,15 @@ $(function(){
         
         var char = DC.selectedCharacter;
         var primary;
+        var classNum;
         if(char.charClass==="Random"){
-            primary = DC.charGen.primaryStats[Math.floor(Math.random()*DC.charGen.primaryStats.length)];
+            var rand = Math.floor(Math.random()*DC.charGen.primaryStats.length);
+            primary = DC.charGen.primaryStats[rand];
+            classNum = rand;
         } else {
             var idx = DC.charGen.classNames.indexOf(char.charClass);
             primary = DC.charGen.primaryStats[idx];
+            classNum = idx;
         }
         
         var statNames = DC.charGen.statNames;
@@ -726,9 +775,9 @@ $(function(){
         }
         //Level up to the mean of levelmin and levelmax (minus 1 as level 1 is start)
         var mean = Math.ceil((parseInt($(".levelmin").val())+parseInt($(".levelmax").val()))/2)-1;
-        stats[primary]+=5;
-        stats = DC.levelTo(stats,primary,mean);
-        
+        var lean = [DC.getStatLean(),DC.getStatLean()]
+        var primaryCoord = DC.charGen.primaryCoords[classNum];
+        stats = DC.statsToLevel(DC.generateBaseStats(),primary,primaryCoord,mean,lean);
         var keys = Object.keys(stats);
         $(this).parent().parent().children(".base-stats").children("li").children(".base-stat").each(function(i){
             $(this).val(stats[keys[i]]);

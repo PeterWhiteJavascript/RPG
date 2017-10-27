@@ -3,9 +3,22 @@
 }
 
 .menu-box{
-    top:40px;
+    top:48px;
     position:absolute;
     height:calc(100% - 40px);
+}
+
+.menu-button{
+    width: 100%;
+    cursor: pointer;
+    border-width: initial;
+    border-style: groove;
+    border-color: grey;
+    border-image: initial;
+    background-color:#DDD;
+    border-radius:0;
+    margin:0;
+    padding:10px;
 }
 #group-menu{
     width:20%;
@@ -51,7 +64,8 @@
     text-align:center;
 }
 .group-name p{
-    margin-top:5px;
+    margin:0;
+    height:30px;
 }
 .add-char-button{
     font-family:"Calibri";
@@ -180,6 +194,12 @@
     width:75%;
     height:30px;
     display:none;
+}
+.technique-options div{
+    float:left;
+}
+.equipment-options div{
+    float:left;
 }
 
 .red{
