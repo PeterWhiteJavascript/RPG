@@ -110,100 +110,17 @@ $(function(){
     function newEventButton(text){
         return "<div id='"+text+"' class='event-button'>"+text+"</div>";
     };
-    //Both types of events are in different formats.
-    switch(type){
-        case "Flavour":
-            file = flavour;
-            sceneData = scenes["Story"].find(function(itm){return itm.name===scene;});
-            var condTypes = {
-                "character":["name","nationality","charClass","charGroup","gender","loyalty","morale","level"],
-                "awards":["enemiesDefeated","assisted","battlesParticipated","damageDealt","damageTaken","selfHealed","targetHealed","timesWounded","visited","feasted","guestOfHonour","mentored","timesHunted"],
-                "sceneVar":scene !== "All" ? Object.keys(sceneData.vrs) : [],
-                "globalVar":Object.keys(globalVars.vrs)
-            };
-            function createOptions(arr){
-                var st = "";
-                arr.forEach(function(itm){
-                    st += "<option value='"+itm+"'>"+itm+"</option>";
-                });
-                return st;
-            }
-            function newCond(condGroup,condType,condOp,condVal){
-                var groupsString = createOptions(["character","awards","sceneVar","globalVar"]);
-                var opString = createOptions(["==","!=","<",">","<=",">="]);               
-                return "<div class='event-cond'><span class='cond-remove remove'>X</span><select class='cond-groups' initial-value='"+condGroup+"'>"+groupsString+"</select><select class='cond-types' initial-value='"+condType+"'>"+createOptions(condTypes[condGroup])+"</select><select class='cond-operator' initial-value='"+condOp+"'>"+opString+"</select><input class='cond-value' value='"+condVal+"'></div>";
-            };
-            function newEventGroup(priority,recur){
-                return "<div class='event-group'><div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
-            };
-            function displayCategoryEvents(category){
-                var categoryData = file[scene][category];
-                $("#events-flowchart-cont").append("<div id='group-cont'></div>");
-                for(var i=0;i<categoryData.length;i++){
-                    //Group
-                    $("#group-cont").append(newEventGroup(categoryData[i][1],categoryData[i][3]));
-                    for(var k=0;k<categoryData[i][0].length;k++){
-                        $(".event-group").last().children(".conds-cont").append(newCond(categoryData[i][0][k][0],categoryData[i][0][k][1],categoryData[i][0][k][2],categoryData[i][0][k][3]));
-                    }
-                    for(var j=0;j<categoryData[i][2].length;j++){
-                        $(".event-group").last().children(".event-cont").append(newEventButton(categoryData[i][2][j]));
-                    }
-                }
-                $(".event-button").off().on("click",function(){
-                    $(".event-button").removeClass("selected");
-                    $(this).addClass("selected"); 
-                });
-                $(".event-button").trigger("click");
-            };
-            $("#events-flowchart-cont").prepend("<div id='categories'></div>");
-            
-            var categories = file.eventTypes;
-            categories.forEach(function(category){
-                $("#categories").append("<div class='category'>"+category+"</div>");
-            });
-            $(".category").off().on("click",function(){
-                $(".category").removeClass("selected");
-                $(this).addClass("selected");
-                $("#group-cont").remove();
-                displayCategoryEvents($(this).text());
-            });
-            //$(".category:nth-child(2)").trigger("click");
-            $($(".category").first().trigger("click"));
-            $(".cond-groups").on("change",function(){
-                var condTypesObj = $(this).siblings(".cond-types");
-                $(condTypesObj).empty();
-                $(condTypesObj).append(createOptions(condTypes[$(this).val()]));
-            });
-            
-            $(".event-cont").sortable({
-                connectWith: ".event-cont",
-                start:function(event, ui){
-                    $(ui.item).trigger("click");
-                }
-            }).disableSelection();
-            $("select[initial-value]").each(function(){
-                var val = $(this).attr("initial-value");
-                $(this).children('option[value="' + val + '"]').prop('selected', true);
-            });
-            $(".event-group").last().trigger("click");
-            $(".event-group").last().children(".event-button").last().trigger("click");
-            
-            $('<div id="new-group" class="menu-button">New Group</div>').insertAfter("#new-event");
-            $('<div id="delete-group" class="menu-button">Delete Group</div>').insertAfter("#delete-event");
-            break;
-        case "Story":
-            file = scenes;
-            $("#events-flowchart-cont").prepend("<div id='flowchart'></div>")
+    file = scenes;
+    $("#events-flowchart-cont").prepend("<div id='flowchart'></div>")
 
-            sceneData = file["Story"].find(function(itm){return itm.name===scene;});
-            eventsInScene = sceneData.events;
-            if(eventsInScene.length){
-                showFlowchart();
-            } else {
-                $("#events-flowchart").append("<div class='no-events'>There are no events yet! Click new event to get started!</div>");
-            }
-            break;
+    sceneData = file["Story"].find(function(itm){return itm.name===scene;});
+    eventsInScene = sceneData.events;
+    if(eventsInScene.length){
+        showFlowchart();
+    } else {
+        $("#events-flowchart").append("<div class='no-events'>There are no events yet! Click new event to get started!</div>");
     }
+    
     function finishNewEvent(){
         $(".new-event-cont").remove();
         $(".full-screen-hider").hide();
@@ -225,29 +142,18 @@ $(function(){
                 alert("Please set a name");
                 return;
             } else {
-                switch(type){
-                    case "Story":
-                        $("#flowchart").append(newEventButton(newName));
-                        $(".event-button").last().addClass("absolute-event-button");
-                        $(".event-button").last().draggable({
-                            containment:$("#events-flowchart-cont"),
-                            drag:function(){
-                                $("."+$(this).attr("id")).each(function(){
-                                    adjustConnection($(this));
-                                });
-                                changed = true;
-                            }
+                $("#flowchart").append(newEventButton(newName));
+                $(".event-button").last().addClass("absolute-event-button");
+                $(".event-button").last().draggable({
+                    containment:$("#events-flowchart-cont"),
+                    drag:function(){
+                        $("."+$(this).attr("id")).each(function(){
+                            adjustConnection($(this));
                         });
-                        break;
-                    case "Flavour":
-                        var button = $(newEventButton(newName)).appendTo($(".event-group.selected").children(".event-cont"));
-                        button.off().on("click",function(){
-                            $(".event-button").removeClass("selected");
-                            $(this).addClass("selected"); 
-                        });
-                        button.trigger("click")
-                        break;
-                }
+                        changed = true;
+                    }
+                });
+                
             }
             //Create the event in story
             sceneData.events.push({
@@ -350,66 +256,25 @@ $(function(){
         $(".selected.event-group").remove();
     });
     function saveEvents(){
-        switch(type){
-            case "Story":
-                var events = $(".event-button");
-                var savedEvents = [];
-                events.each(function(){
-                    var name = $(this).text();
-                    var event = eventsInScene.find(function(elm){return elm.name===name;});
-                    event.top = $(this).css("top");
-                    event.left = $(this).css("left");
-                    savedEvents.push(event);
-                });
-                file["Story"].find(function(itm){return itm.name===scene;}).events = savedEvents;
-                $.ajax({
-                    type:'POST',
-                    url:'save-flowchart.php',
-                    data:{file:JSON.stringify(file)},
-                    dataType:'json'
-                })
-                .done(function(data){console.log(data);changed=false;})
-                .fail(function(data){console.log(data)});
-                break;
-            case "Flavour":
-                var groups = $(".event-group");
-                var savedGroups = [];
-                groups.each(function(){
-                    var conds = $(this).children(".conds-cont").children(".event-cond");
-                    var saveConds = [];
-                    conds.each(function(){
-                        saveConds.push([
-                            $(this).children(".cond-groups").val(),
-                            $(this).children(".cond-types").val(),
-                            $(this).children(".cond-operator").val(),
-                            convertValue($(this).children(".cond-value").val())
-                        ]);
-                    });
-                    var events = $(this).children(".event-cont").children(".event-button");
-                    var saveEvents = [];
-                    events.each(function(){
-                        saveEvents.push($(this).text());
-                    });
-                    var priority = $(this).children(".event-options").children("input").val();
-                    var recur = $(this).children(".event-options").children("select").val();
-                    savedGroups.push([
-                        saveConds,
-                        convertValue(priority),
-                        saveEvents,
-                        convertValue(recur)
-                    ]);
-                });
-                file[scene][$(".category.selected").text()] = savedGroups;
-                $.ajax({
-                    type:'POST',
-                    url:'save-flavour-groups.php',
-                    data:{file:JSON.stringify(file)},
-                    dataType:'json'
-                })
-                .done(function(data){console.log(data);changed=false;})
-                .fail(function(data){console.log(data)});
-                break;
-        }
+        var events = $(".event-button");
+        var savedEvents = [];
+        events.each(function(){
+            var name = $(this).text();
+            var event = eventsInScene.find(function(elm){return elm.name===name;});
+            event.top = $(this).css("top");
+            event.left = $(this).css("left");
+            savedEvents.push(event);
+        });
+        file["Story"].find(function(itm){return itm.name===scene;}).events = savedEvents;
+        $.ajax({
+            type:'POST',
+            url:'save-flowchart.php',
+            data:{file:JSON.stringify(file)},
+            dataType:'json'
+        })
+        .done(function(data){console.log(data);changed=false;})
+        .fail(function(data){console.log(data)});
+        
     }
     $("#save-flowchart").click(function(){
         saveEvents();

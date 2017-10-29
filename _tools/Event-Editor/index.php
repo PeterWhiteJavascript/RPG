@@ -19,7 +19,8 @@
                     <div class="main-menu-cont">
                         <div class="menu-divider"></div>
                         <div class="menu-divider"></div>
-                        <div id="load" class="menu-button">Load Scenes</div>
+                        <div id="load" class="menu-button">Load Story Scenes</div>
+                        <div id="show-flavour" class="menu-button">Load Flavour</div>
                         <div id="select-characters-file" class="menu-button">Create Characters</div>
                         <div id="options" class="menu-button">Options</div>
                         <div id="help" class="menu-button">Help</div>

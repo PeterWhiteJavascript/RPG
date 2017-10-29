@@ -1,6 +1,5 @@
 <?php
 $scenes = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true);
-$flavour = json_decode(file_get_contents('../../data/json/data/flavour-events-list.json'), true);
 $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.json'), true);
 ?>
 <!DOCTYPE html>
@@ -15,7 +14,6 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
     <body>
         <script>
             var scenes = <?php echo json_encode($scenes); ?>;
-            var flavour = <?php echo json_encode($flavour); ?>;
             var globalVars = <?php echo json_encode($globalVars); ?>;
             var scene = '<?php echo $_POST["scene"]; ?>';
             var type = '<?php echo $_POST["type"]; ?>';

@@ -10,6 +10,10 @@
 <script src="lib/jquery.redirect.min.js"></script>
 <script src="lib/jquery.connections.min.js"></script>
 <script src="lib/js.cookie.js"></script>
+
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<link href="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css" />
+<script src="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 <link rel="stylesheet" href="css/new-style.css">
 <script>
     $(function(){

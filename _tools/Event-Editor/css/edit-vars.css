@@ -18,7 +18,7 @@
     display:inline-block;
     width:100%;
     height:7.5%;
-    background-color:lightgrey;
+    background-color:var(--main-color);
     border-radius:5px 5px 0px 0px; 
     padding:1%;
 }
@@ -30,13 +30,13 @@
     top:0;
     width:40%;
     height:92.5%;
-    background-color:orange;
+    background-color:var(--secondary-color);
     display:inline-block;
     overflow-y:auto;
 }
 .var-title{
     font-size:24px;
-    background-color:lightgrey;
+    background-color:var(--main-color);
     text-align:center;
     border-top:1px solid black;
     border-bottom:1px solid black;
@@ -68,7 +68,7 @@
 #ref-cont{
     width:40%;
     height:92.5%;
-    background-color:orange;
+    background-color:var(--secondary-color);
     display:inline-block;
     vertical-align:top;
     border-left:1px solid black;

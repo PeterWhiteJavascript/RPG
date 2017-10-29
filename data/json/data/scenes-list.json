@@ -98,8 +98,8 @@
             "events": [
                 {
                     "name": "Prologue",
-                    "top": "0px",
-                    "left": "0px",
+                    "top": "167px",
+                    "left": "76px",
                     "events": [
                         "Training"
                     ],
@@ -168,8 +168,8 @@
                 },
                 {
                     "name": "Training",
-                    "top": "62px",
-                    "left": "0px",
+                    "top": "70px",
+                    "left": "77px",
                     "events": [
                         "Training-Battle"
                     ],

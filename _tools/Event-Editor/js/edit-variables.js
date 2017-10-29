@@ -39,7 +39,6 @@ function updateMenuOptions(type){
         $("#menu-cont").append(button("remove-var","Remove Var"));
         $("#menu-cont").append(button("save-vars","Save"));
         $("#menu-cont").append(button("show-story-events","Story Events"));
-        $("#menu-cont").append(button("show-flavour-events","Flavour Events"));
         $("#menu-cont").append(button("back","To Scenes"));
     } else if(type==="reference"){
         $("#menu-cont").empty();
@@ -47,7 +46,6 @@ function updateMenuOptions(type){
         $("#menu-cont").append(button("remove-var","Remove Var"));
         $("#menu-cont").append(button("save-vars","Save"));
         $("#menu-cont").append(button("show-story-events","Story Events"));
-        $("#menu-cont").append(button("show-flavour-events","Flavour Events"));
         $("#menu-cont").append(button("back","To Scenes"));
         $("#menu-cont").append(button("go-to-event","Go To Event"));
     }
@@ -106,12 +104,6 @@ function updateMenuOptions(type){
             $("#save-vars").trigger("click");
         }
         $.redirect('show-events.php', {'scene':scene, type:"Story"});
-    });
-    $("#show-flavour-events").click(function(){
-        if(changed&&confirm("Save vars before leaving?")){
-            $("#save-vars").trigger("click");
-        }
-        $.redirect('show-events.php', {'scene':scene, type:"Flavour"});
     });
     $("#back").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
