@@ -222,7 +222,7 @@ $(function(){
     });
     $("#edit-event").click(function(){
         confirmFlowchartPosition();
-        $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':type});
+        $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story"});
     });
     $("#edit-vars").click(function(){
         confirmFlowchartPosition();
@@ -239,7 +239,7 @@ $(function(){
                 }
             });
             //Remove the event file
-            var path = "../../data/json/story/events/"+type+"/"+scene+"/"+eventName+".json";
+            var path = "../../data/json/story/events/Story/"+scene+"/"+eventName+".json";
             $.ajax({
                 type:'POST',
                 url:'delete-file.php',

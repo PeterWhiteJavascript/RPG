@@ -13,7 +13,6 @@
                 <div id="menu-cont">
                     <div id="story" class="menu-button">Open Story</div>
                     <div id="vars" class="menu-button">Edit Vars</div>
-                    <div id="flavour" class="menu-button">Open Flavour</div>
                     <div id="back" class="menu-button">Back</div>
                 </div>
             </div>

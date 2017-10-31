@@ -402,11 +402,11 @@ $(function(){
     });
 
     $("#back").click(function(){
-        confirmFlowchartPosition();
+        saveEvents();
         window.location = "load.php";
     });
     $("#back-to-main").click(function(){
-        confirmFlowchartPosition();
+        saveEvents();
         window.location = "index.php";
     });
     $(document).on("click",".remove",function(e){
