@@ -1,16 +1,14 @@
 var changed = false;
-var convertValue = function(value){console.log(value)
+//Any hidden events are included in the list
+//When an event is shown, remove the event from all arrays it is a part of.
+var groupsList = {};
+var convertValue = function(value){
     if(value.toLowerCase()==="false") return false;
     if(value.toLowerCase()==="true") return true;
     if(Number.isInteger(parseInt(value))) return parseInt(value);
     return value;
 };
 $(function(){
-    function confirmFlowchartPosition(){
-        if(changed&&confirm("Save?")){
-            $("#save").trigger("click");
-        }
-    };
     function newEventButton(text){
         return "<div id='"+text+"' class='event-button'>"+text+"</div>";
     };
@@ -28,6 +26,16 @@ $(function(){
         "Awards":["Enemies Defeated","Assisted","Battles Participated","Damage Dealt","Damage Taken","Self Healed","Target Healed","Times Wounded","Visited","Feasted","Guest of Honour","Mentored","Times Hunted"],
         "Vars":["Scene","Global"]
     };
+    function generateGroupsList(){
+        var condKeys = Object.keys(condTypes);
+        for(var i=0;i<condKeys.length;i++){
+            groupsList[condKeys[i]] = {};
+            for(var j=0;j<condTypes[condKeys[i]].length;j++){
+                groupsList[condKeys[i]][condTypes[condKeys[i]][j]] = [];
+            }
+        }
+    };
+    generateGroupsList();
     function createOptions(arr){
         var st = "";
         arr.forEach(function(itm){
@@ -87,26 +95,52 @@ $(function(){
 
         }
     };
-    function newEventGroup(priority,recur){
-        return "<div class='event-group'><div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
+    function newEventGroup(name,priority,recur){
+        var groupName = "<div class='group-name'>"+name+"</div>";
+        if(!name.length){
+            groupName = "<input class='group-name-input' placeholder='Please input a name'>";
+        }
+        return "<div class='event-group'>"+groupName+"<div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
+    };
+    function displayCond(data){
+        $(".event-group").last().children(".conds-cont").append(newCond(data));
+    };
+    function displayEvent(data){
+        $(".event-group").last().children(".event-cont").append(newEventButton(data));
+    }
+    function displayEventGroup(name,data){
+        $("#group-cont").append(newEventGroup(name,data[1],data[3]));
+        for(var k=0;k<data[0].length;k++){
+            displayCond(data[0][k]);
+        }
+        for(var j=0;j<data[2].length;j++){
+            displayEvent(data[2][j]);
+        }
+    };
+    function hideGroup(group){
+        var groupName = $(group).children(".group-name").text();
+        $(group).children(".conds-cont").children(".event-cond").each(function(){
+            groupsList[$(this).children(".cond-groups").val()][$(this).children(".cond-types").val()].push(groupName);
+        });
+        $(group).hide();
     };
     function displayEvents(){
         var data = flavour.groups;
+        var keys = Object.keys(data);
         $("#events-cont").append("<div id='group-cont'></div>");
-        for(var i=0;i<data.length;i++){
-            $("#group-cont").append(newEventGroup(data[i][1],data[i][3]));
-            for(var k=0;k<data[i][0].length;k++){
-                $(".event-group").last().children(".conds-cont").append(newCond(data[i][0][k]));
-            }
-            for(var j=0;j<data[i][2].length;j++){
-                $(".event-group").last().children(".event-cont").append(newEventButton(data[i][2][j]));
-            }
+        for(var i=0;i<keys.length;i++){
+            displayEventGroup(keys[i],data[keys[i]]);
         }
         $(".event-button").off().on("click",function(){
             $(".event-button").removeClass("selected");
             $(this).addClass("selected"); 
         });
-        $(".event-button").trigger("click");
+        setTimeout(function(){
+            $(".event-group").last().trigger("click");
+            $(".event-button").first().trigger("click");
+            $("#triggers-select-all").trigger("click");
+        });
+        
     };
     displayEvents();
     
@@ -127,11 +161,8 @@ $(function(){
         });
     });
 
-    $(".event-cont").sortable({
-        connectWith: ".event-cont",
-        start:function(event, ui){
-            $(ui.item).trigger("click");
-        }
+    $("#group-cont").sortable({
+        stop:function(){saveEvents();}
     }).disableSelection();
     $("select[initial-value]").each(function(){
         var val = $(this).attr("initial-value");
@@ -139,7 +170,27 @@ $(function(){
     });
     $(".event-group").last().trigger("click");
     $(".event-group").last().children(".event-button").last().trigger("click");
-    
+    function makeEventContSortable(obj){
+        $(obj).sortable({
+            connectWith: ".event-cont",
+            start:function(event, ui){
+                $(ui.item).trigger("click");
+            },
+            stop:function(event,ui){
+                if($(this).parent().children(".group-name").text()!==$(ui.item).parent().parent().children(".group-name").text()){
+                    $(ui.item).parent().parent().trigger("click");
+                    $.ajax({
+                        type:'POST',
+                        url:'move-flavour-event.php',
+                        data:{filename:$(ui.item).text(),to:$(ui.item).parent().parent().children(".group-name").text(),from:$(this).parent().children(".group-name").text()},
+                        dataType:'json'
+                    });
+                    saveEvents();
+                }
+            }
+        }).disableSelection();
+    }
+    makeEventContSortable($(".event-cont"));
     function finishNewEvent(){
         $(".new-event-cont").remove();
         $(".full-screen-hider").hide();
@@ -168,15 +219,6 @@ $(function(){
                 });
                 button.trigger("click");
             }
-            //Create the event in story
-            sceneData.events.push({
-                events:[],
-                sceneVars:[],
-                globalVars:[],
-                name:newName,
-                left:"100px",
-                top:"100px"
-            });
             //Create the event file
             finishNewEvent();
             var newFile = {};
@@ -189,7 +231,7 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "location":
-                    newFile.bg = "";
+                    newFile.bg = "bg/castle-room.jpg";
                     newFile.disabledChoices = [];
                     newFile.pageList = ["start"];
                     newFile.onload = [];
@@ -197,13 +239,13 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "battleScene":
-                    newFile.map = "";
+                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.vrs = {};
                     break;
                 case "battle":
-                    newFile.map = "";
+                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
                     newFile.placementSquares = [];
                     newFile.maxAllies = 6;
                     newFile.events = [];
@@ -216,40 +258,34 @@ $(function(){
             $.ajax({
                 type:'POST',
                 url:'create-event.php',
-                data:{scene:scene,sceneType:type,data:JSON.stringify(newFile)},
+                data:{type:"Flavour",data:JSON.stringify(newFile),scene:$(".event-group.selected").children(".group-name").text()},
                 dataType:'json'
             })
             .done(function(data){console.log(data);changed=false;})
             .fail(function(data){console.log(data)});
-            $("#save").trigger("click");
+            saveEvents();
             
         });
         $(".full-screen-hider").click(function(){finishNewEvent();});
     });
     
     $("#new-group").click(function(){
-        $("#group-cont").append(newEventGroup(1,"true"));
+        displayEventGroup("",[[],0,[],"One"]);
         $(".event-group").last().children(".event-options").children("select").each(function(){
             var val = $(this).attr("initial-value");
             $(this).children('option[value="' + val + '"]').prop('selected', true);
         });
     });
     $("#edit-event").click(function(){
-        confirmFlowchartPosition();
-        $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':type});
+        saveEvents();
+        $.redirect('edit-event.php', {'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour"});
     });
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
         var eventName = $(event).text();
         if(confirm("Are you sure you want to delete "+eventName+"?")){
-            var cons = $("."+eventName);
-            cons.each(function(){
-                if($(this).attr("class").split(" ")[2]===eventName){
-                    $("#"+$(this).attr("class").split(" ")[1]).addClass("invalid-event-pointer");
-                }
-            });
             //Remove the event file
-            var path = "../../data/json/story/events/"+type+"/"+scene+"/"+eventName+".json";
+            var path = "../../data/json/story/events/Flavour/"+eventName+".json";
             $.ajax({
                 type:'POST',
                 url:'delete-file.php',
@@ -263,21 +299,74 @@ $(function(){
         }
     });
     $("#delete-group").click(function(){
-        $(".selected.event-group").remove();
+        var text = $(".selected.event-group").children(".group-name").text();
+        if(confirm("Are you sure you want to delete "+text+"?")){
+            $(".selected.event-group").remove();
+            $.ajax({
+                type:'POST',
+                url:'delete-flavour-group.php',
+                data:{name:text},
+                dataType:'json'
+            });
+        };
+        
     });
     function saveEvents(){
         var groups = $(".event-group");
-        var savedGroups = [];
+        var savedGroups = {};
         groups.each(function(){
             var conds = $(this).children(".conds-cont").children(".event-cond");
             var saveConds = [];
             conds.each(function(){
-                saveConds.push([
-                    $(this).children(".cond-groups").val(),
-                    $(this).children(".cond-types").val(),
-                    $(this).children(".cond-operator").val(),
-                    convertValue($(this).children(".cond-value").val())
-                ]);
+                switch($(this).children(".cond-groups").val()){
+                    case "Act":
+                    case "Officer":
+                    case "Character Class":
+                    case "Nationality":
+                    case "Value":
+                    case "Methodology":
+                    case "Personality":
+                    case "Gender":
+                        saveConds.push([
+                            $(this).children(".cond-groups").val(),
+                            $(this).children(".cond-types").val()
+                        ]);
+                        break;
+                    case "Base Stats":
+                    case "Derived Stats":
+                    case "Awards":
+                        saveConds.push([
+                            $(this).children(".cond-groups").val(),
+                            $(this).children(".cond-types").val(),
+                            $(this).children(".cond-operator").val(),
+                            convertValue($(this).children(".cond-value").val())
+                        ]);
+                        break;
+                    case "Vars":
+                        switch($(this).children(".cond-types").val()){
+                            case "Scene":
+                                saveConds.push([
+                                    $(this).children(".cond-groups").val(),
+                                    $(this).children(".cond-types").val(),
+                                    $(this).children(".cond-act").val(),
+                                    $(this).children(".cond-scene-var").val(),
+                                    $(this).children(".cond-operator").val(),
+                                    convertValue($(this).children(".cond-var-value").val())
+                                ]);
+                                break;
+                            case "Global":
+                                saveConds.push([
+                                    $(this).children(".cond-groups").val(),
+                                    $(this).children(".cond-types").val(),
+                                    $(this).children(".cond-global-var").val(),
+                                    $(this).children(".cond-operator").val(),
+                                    convertValue($(this).children(".cond-var-value").val())
+                                ]);
+                                break;
+                        }
+                        break;
+                        
+                }
             });
             var events = $(this).children(".event-cont").children(".event-button");
             var saveEvents = [];
@@ -286,19 +375,19 @@ $(function(){
             });
             var priority = $(this).children(".event-options").children("input").val();
             var recur = $(this).children(".event-options").children("select").val();
-            savedGroups.push([
+            var name = $(this).children(".group-name").text();
+            savedGroups[name] = [
                 saveConds,
                 convertValue(priority),
                 saveEvents,
                 convertValue(recur)
-            ]);
+            ];
         });
-        return;
-        file[scene][$(".category.selected").text()] = savedGroups;
+        flavour.groups = savedGroups;
         $.ajax({
             type:'POST',
             url:'save-flavour-groups.php',
-            data:{file:JSON.stringify(file)},
+            data:{file:JSON.stringify(flavour)},
             dataType:'json'
         })
         .done(function(data){console.log(data);changed=false;})
@@ -309,7 +398,7 @@ $(function(){
         alert("Saved!");
     });
     $("#test-event").click(function(){
-        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':type, testing:true});
+        $.redirect('../../index.php', {'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour", testing:true});
     });
 
     $("#back").click(function(){
@@ -323,7 +412,28 @@ $(function(){
     $(document).on("click",".remove",function(e){
         $(this).parent().remove();
     });
-    
+    $(document).on("change",".group-name-input",function(){
+        if($(this).val().length>0){
+            var name = $(this).val().replace(/\s+/g, '-');
+            var t = this;
+            $.ajax({
+                type:'POST',
+                url:'new-flavour-group.php',
+                data:{name:name}
+            })
+            .done(function(data){
+                if(!data.length){
+                    alert("Group name already in use!");
+                } else {
+                    makeEventContSortable($(t).parent().children(".event-cont"));
+                    $(t).replaceWith("<div class='group-name'>"+name+"</div>");
+                    saveEvents();
+                }
+            });
+            
+            
+        }
+    });
     $(document).on("click",".event-button",function(){
         $(".event-button").removeClass("selected");
         $(this).addClass("selected");
@@ -337,14 +447,81 @@ $(function(){
     });
     $("#triggers-select-all").click(function(){
         $(".trigger select").multiselect("selectAll",false);
-        $(".trigger select").multiselect('updateButtonText')
+        $(".trigger select").multiselect('updateButtonText');
+        $(".event-group").show();
+        generateGroupsList();
     });
     $("#triggers-select-none").click(function(){
         $(".trigger select").multiselect("deselectAll",false);
-        $(".trigger select").multiselect('updateButtonText')
+        $(".trigger select").multiselect('updateButtonText');
+        $(".event-group").each(function(){
+            hideGroup($(this));
+        });
+    });
+    $(document).on("change",".event-options input",function(){
+        saveEvents();
+    });
+    $(document).on("change",".event-options select",function(){
+        saveEvents();
+    });
+    $(document).on("change",".event-cond input",function(){
+        saveEvents();
+    });
+    $(document).on("change",".event-cond select",function(){
+        saveEvents();
     });
     
     
+    function showGroups(name,val){console.log(name,val)
+        var toShow = groupsList[name][val];
+        for(var i=0;i<toShow.length;i++){
+            var groupName = toShow[i];
+            var groupConds = flavour.groups[groupName][0];
+            //Remove other references to this group
+            for(var j=0;j<groupConds.length;j++){
+                var cond = groupConds[j];
+                groupsList[cond[0]][cond[1]].splice(groupsList[cond[0]][cond[1]].indexOf(groupName),1);
+            }
+            $(".group-name").each(function(){
+                if($(this).text()===groupName) $(this).parent().show();
+            });
+        }
+    };
+    function hideGroups(name,val){
+        $(".conds-cont").each(function(){
+            var found = false;
+            $(this).children(".event-cond").each(function(){
+                if($(this).children(".cond-groups").val()===name&&$(this).children(".cond-types").val()===val){
+                    found = true;
+                }
+            });
+            //Loop through each of the conds to see if everything is diabled
+            if(found){
+                var noneSelected = true;
+                $(this).children(".event-cond").each(function(){
+                    var triggerName = $(this).children(".cond-groups").val();
+                    var triggerVal = $(this).children(".cond-types").val();
+                    var select = $(".trigger").children("span").children("select[name='"+triggerName+"']");
+                    var selected = false;
+                    if($(select).children("optgroup").length){
+                        $(select).children("optgroup").children("option:selected").each(function(){
+                            if($(this).val()===triggerVal) selected = true;
+                        });
+                    } else {
+                        $(select).children("option:selected").each(function(){
+                            if($(this).val()===triggerVal) selected = true;
+                        });
+                    }
+                    if(selected&&noneSelected){
+                        noneSelected = false;
+                    }
+                });
+                if(noneSelected){
+                    hideGroup($(this).parent());
+                }
+            }
+        });
+    };
     $('.trigger select').multiselect({
         includeSelectAllOption: true,
         enableClickableOptGroups: true,
@@ -373,6 +550,50 @@ $(function(){
                 return labels.join(', ') + '';
             }
         },
-        selectAllNumber: true
+        selectAllNumber: true,
+        onChange:function(option, checked){
+            function change(opt){
+                var elm = $(opt);
+                if($(elm).parent().is("optgroup")){
+                    elm = $(opt).parent();
+                }
+                if(checked){
+                    showGroups($(elm).parent().attr("name"),$(opt).val());
+                } else {
+                    hideGroups($(elm).parent().attr("name"),$(opt).val());
+                }
+            }
+            if($.isArray(option)){
+                $(option).each(function(){
+                    change(this);
+                });
+            } else {
+                change(option);
+            }
+        },
+        onSelectAll:function(){
+            var name = $($(this)[0]["$select"][0]).attr("name");
+            if($($(this)[0]["$select"][0]).children("optgroup").length){
+                $($(this)[0]["$select"][0]).children("optgroup").children("option").each(function(){
+                    showGroups(name,$(this).val());
+                });
+            } else {
+                $($(this)[0]["$select"][0]).children("option").each(function(){
+                    showGroups(name,$(this).val());
+                });
+            }
+        },
+        onDeselectAll:function(){
+            var name = $($(this)[0]["$select"][0]).attr("name");
+            if($($(this)[0]["$select"][0]).children("optgroup").length){
+                $($(this)[0]["$select"][0]).children("optgroup").children("option").each(function(){
+                    hideGroups(name,$(this).val());
+                });
+            } else {
+                $($(this)[0]["$select"][0]).children("option").each(function(){
+                    hideGroups(name,$(this).val());
+                });
+            }
+        }
     });
 });

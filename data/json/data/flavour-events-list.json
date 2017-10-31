@@ -1,16 +1,25 @@
 {
-    "groups":[
-        [
+    "groups": {
+        "awf": [
             [
                 [
                     "Officer",
                     "Astraea"
-                ],
+                ]
+            ],
+            0,
+            [
+                "story"
+            ],
+            false
+        ],
+        "Group-2": [
+            [
                 [
-                    "Awards",
-                    "enemiesDefeated",
+                    "Derived Stats",
+                    "Magical Resistance",
                     "==",
-                    2
+                    6
                 ],
                 [
                     "Act",
@@ -56,9 +65,9 @@
                     "Vars",
                     "Scene",
                     "Act-1-1",
-                    "myVar",
+                    "test",
                     "==",
-                    "TEST"
+                    "hiya"
                 ],
                 [
                     "Vars",
@@ -68,12 +77,33 @@
                     138
                 ]
             ],
+            3,
+            [
+                "bs"
+            ],
+            "One"
+        ],
+        "r": [
+            [],
+            0,
+            [],
+            "One"
+        ],
+        "ee-e": [
+            [],
             0,
             [
-                "Event1",
-                "Event2"
+                "wfwffw"
+            ],
+            "One"
+        ],
+        "": [
+            [],
+            0,
+            [
+                "loc"
             ],
             "One"
         ]
-    ]
+    }
 }

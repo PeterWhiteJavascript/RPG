@@ -110,6 +110,7 @@ var start = function(){
         },
         
         getSceneVars:function(scenes,scene,type){
+            if(type==="Flavour") return {};
             return scenes[type].filter(function(s){return s.name===scene;})[0].vrs;
         },
         getEventsList:function(data){
@@ -802,7 +803,11 @@ var start = function(){
     
     $('#to-events').click( function(e) {
         if(confirm("Are you sure you want to go back without saving?")){
-            $.redirect('show-events.php', {'scene':sceneName, 'event':eventName, 'type':sceneType});
+            var to = "show-events.php";
+            if(sceneType==="Flavour"){
+                to = "show-flavour.php";
+            }
+            $.redirect(to, {'scene':sceneName, 'event':eventName, 'type':sceneType});
         }
     });
     //End editor-content buttons

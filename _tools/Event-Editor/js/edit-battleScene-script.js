@@ -1653,24 +1653,18 @@ $(document).on("click","#menu-test-event",function(e){
         dataType:'json'
     })
     .done(function(data){
-        var form = $('<form action="../../index.php" method="post"></form>');
-        form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-        form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-        form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-        form.append('<input type="text" name="testing" value="true">');
-        $("body").append(form);
-        form.submit();
+        $.redirect('../../index.php', {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text(), testing:true});
     })
     .fail(function(data){console.log("fail");console.log(data)});
 });
 $(document).on("click","#menu-go-back",function(e){
-    var form = $('<form action="show-events.php" method="post"></form>');
-    form.append('<input type="text" name="scene" value="'+$("#scene-name").text()+'">');
-    form.append('<input type="text" name="name" value="'+$("#editor-title").text()+'">');
-    form.append('<input type="text" name="type" value="'+$("#scene-type").text()+'">');
-    form.append('<input type="text" name="map" value="'+$("#event-map").text()+'">');
-    $("body").append(form);
-    form.submit();
+    if(confirm("Are you sure you want to go back without saving?")){
+        var to = "show-events.php";
+        if($("#scene-type").text()==="Flavour"){
+            to = "show-flavour.php";
+        }
+        $.redirect(to, {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text(), testing:true});
+    }
 });
 
 

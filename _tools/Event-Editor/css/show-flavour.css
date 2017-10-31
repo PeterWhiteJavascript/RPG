@@ -38,12 +38,12 @@
     height:20%;
     width:100%;
     margin-top:5px;
-}/*
+}
 .new-event-name input{
     width:90%;
     height:100%;
     font-size:22px;
-}*/
+}
 .new-event-type{
     width:90%;
     height:20%;
@@ -226,13 +226,36 @@
 }
 .event-group{
     width:30%;
-    height:280px;
+    height:300px;
     display:inline-block;
     margin-left:2.5%;
     margin-top:2.5%;
     border:2px solid black;
     border-radius:4px;
     background-color:lightgrey;
+    vertical-align: top;
+}
+.group-name{
+    width:100%;
+    height:20px;
+    font-size:18px;
+    background-color:lightgrey;
+    text-align:center;
+    padding:2px;
+    border:1px solid black;
+    user-select:none;
+    cursor:pointer;
+}
+.group-name-input{
+    width:100%;
+    height:20px;
+    font-size:18px;
+    background-color:lightgrey;
+    text-align:center;
+    padding:2px;
+    border:1px solid black;
+    user-select:none;
+    cursor:pointer;
 }
 .add-cond{
     width:100%;

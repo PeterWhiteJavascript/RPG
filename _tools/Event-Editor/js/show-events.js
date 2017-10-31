@@ -176,7 +176,7 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "location":
-                    newFile.bg = "";
+                    newFile.bg = "bg/castle-room.jpg";
                     newFile.disabledChoices = [];
                     newFile.pageList = ["start"];
                     newFile.onload = [];
@@ -184,13 +184,13 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "battleScene":
-                    newFile.map = "";
+                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.vrs = {};
                     break;
                 case "battle":
-                    newFile.map = "";
+                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
                     newFile.placementSquares = [];
                     newFile.maxAllies = 6;
                     newFile.events = [];
@@ -203,7 +203,7 @@ $(function(){
             $.ajax({
                 type:'POST',
                 url:'create-event.php',
-                data:{scene:scene,sceneType:type,data:JSON.stringify(newFile)},
+                data:{scene:scene,type:"Story",data:JSON.stringify(newFile)},
                 dataType:'json'
             })
             .done(function(data){console.log(data);changed=false;})

@@ -1,0 +1,9 @@
+{
+    "name": "eg",
+    "kind": "battleScene",
+    "music": "demo.mp3",
+    "map": "maps\/Venoria\/Venoria-Castle-Outside\/tmx",
+    "script": [],
+    "characters": [],
+    "vrs": []
+}

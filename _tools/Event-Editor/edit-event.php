@@ -8,7 +8,6 @@
         var scene = '<?php echo $_POST['scene'];?>';
         var event = '<?php echo $_POST['event'];?>';
         var type = '<?php echo $_POST['type'];?>';
-        console.log(type,scene,event)
         
         //Get the event file
         $.getJSON("../../data/json/story/events/"+type+"/"+scene+"/"+event+".json",function(data){

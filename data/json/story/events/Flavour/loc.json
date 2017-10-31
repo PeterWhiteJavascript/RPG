@@ -1,0 +1,13 @@
+{
+    "name": "loc",
+    "kind": "location",
+    "music": "demo.mp3",
+    "bg": "bg\/castle-room.jpg",
+    "disabledChoices": [],
+    "pageList": [
+        "start"
+    ],
+    "onload": [],
+    "actions": [],
+    "vrs": []
+}

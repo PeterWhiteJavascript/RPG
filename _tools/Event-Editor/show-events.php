@@ -16,7 +16,6 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             var scenes = <?php echo json_encode($scenes); ?>;
             var globalVars = <?php echo json_encode($globalVars); ?>;
             var scene = '<?php echo $_POST["scene"]; ?>';
-            var type = '<?php echo $_POST["type"]; ?>';
         </script>
         <div id="wrapper">
             <div class="full-screen-hider"></div>

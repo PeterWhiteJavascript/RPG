@@ -18,6 +18,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             var globalVars = <?php echo json_encode($globalVars); ?>;
             var flavour = <?php echo json_encode($flavour); ?>;
         </script>
+        <script src="js/show-flavour.js"></script>
         <div id="wrapper">
             <div class="full-screen-hider"></div>
             <div id="main-content">
@@ -27,7 +28,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         <div id="triggers-select-none" class="trigger-button">Select None</div>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-acts" multiple="multiple" title="Acts">
+                        <select id="trigger-acts" multiple="multiple" title="Act" name="Act">
                             <optgroup label="Act-1">
                                 <option value="Act-1-1">Act-1-1</option>
                                 <option value="Act-1-2">Act-1-2</option>
@@ -52,7 +53,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-officers" multiple="multiple" title="Officers">
+                        <select id="trigger-officers" multiple="multiple" title="Officer" name="Officer">
                             <option value="Astraea">Astraea</option>
                             <option value="Lysandra">Lysandra</option>
                             <option value="Gaios">Gaios</option>
@@ -65,7 +66,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-charClass"  multiple="multiple" title="Character Class">
+                        <select id="trigger-charClass"  multiple="multiple" title="Character Class" name="Character Class">
                             <option value="Legionnaire">Legionnaire</option>
                             <option value="Berserker">Berserker</option>
                             <option value="Vanguard">Vanguard</option>
@@ -78,7 +79,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-nationality" multiple="multiple" title="Nationality">
+                        <select id="trigger-nationality" multiple="multiple" title="Nationality" name="Nationality">
                             <option value="Venorian">Venorian</option>
                             <option value="Dardoian">Dardoian</option>
                             <option value="Aliudramilan">Aliudramilan</option>
@@ -87,21 +88,21 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-value"  multiple="multiple" title="Value">
+                        <select id="trigger-value"  multiple="multiple" title="Value" name="Value">
                             <option value="Egoist">Egoist</option>
                             <option value="Nepotist">Nepotist</option>
                             <option value="Altruist">Altruist</option>
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-methodology"  multiple="multiple" title="Methodology">
+                        <select id="trigger-methodology"  multiple="multiple" title="Methodology" name="Methodology">
                             <option value="Pragmatic">Pragmatic</option>
                             <option value="Intuitive">Intuitive</option>
                             <option value="Kind">Kind</option>
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-personality"  multiple="multiple" title="Personality">
+                        <select id="trigger-personality"  multiple="multiple" title="Personality" name="Personality">
                             <option value="Sensitive">Sensitive</option>
                             <option value="Impassive">Impassive</option>
                             <option value="Unmotivated">Unmotivated</option>
@@ -119,13 +120,13 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-gender"  multiple="multiple" title="Gender">
+                        <select id="trigger-gender"  multiple="multiple" title="Gender" name="Gender">
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-character-base-stats"  multiple="multiple" title="Base Stats">
+                        <select id="trigger-character-base-stats"  multiple="multiple" title="Base Stats" name="Base Stats">
                             <option value="str">str</option>
                             <option value="end">end</option>
                             <option value="dex">dex</option>
@@ -138,7 +139,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-character-derived-stats"  multiple="multiple" title="Derived Stats">
+                        <select id="trigger-character-derived-stats"  multiple="multiple" title="Derived Stats" name="Derived Stats">
                             <option value="Max Hit Points">Max Hit Points</option>
                             <option value="Max Technique Points">Max Technique Points</option>
                             <option value="Pain Tolerance">Pain Tolerance</option>
@@ -161,7 +162,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-character-awards"  multiple="multiple" title="Character Awards">
+                        <select id="trigger-character-awards"  multiple="multiple" title="Character Awards" name="Awards">
                             <option value="Enemies Defeated">Enemies Defeated</option>
                             <option value="Assisted">Assisted</option>
                             <option value="Battles Participated">Battles Participated</option>
@@ -178,7 +179,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                         </select>
                     </div>
                     <div class="trigger">
-                        <select id="trigger-vars"  multiple="multiple" title="Vars">
+                        <select id="trigger-vars"  multiple="multiple" title="Vars" name="Vars">
                             <option value="Scene">Scene</option>
                             <option value="Global">Global</option>
                         </select>
@@ -189,11 +190,13 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                 </div>
                 <div id="menu-cont">
                     <div class="menu-divider"></div>
+                    <div id="new-group" class="menu-button">New Group</div>
                     <div id="new-event" class="menu-button">New Event</div>
-                    <div id="new-event" class="menu-button">New Group</div>
+                    <div class="menu-divider"></div>
                     <div id="edit-event" class="menu-button">Edit Event</div>
-                    <div id="edit-event" class="menu-button">Change Trigger</div>
                     <div id="test-event" class="menu-button">Test Event</div>
+                    <div class="menu-divider"></div>
+                    <div id="delete-group" class="menu-button">Delete Group</div>
                     <div id="delete-event" class="menu-button">Delete Event</div>
                     <div class="menu-divider"></div>
                     <div id="save" class="menu-button">Save Events</div>
@@ -204,6 +207,5 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             </div>
                 
         </div>
-        <script src="js/show-flavour.js"></script>
     </body>
 </html>

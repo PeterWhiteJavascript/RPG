@@ -127,14 +127,17 @@ Q.newGame=function(options){
         if(Q.state.get("startSceneName")) Q.state.get("saveData").startSceneName = Q.state.get("startSceneName");
         if(Q.state.get("startEventName")) Q.state.get("saveData").startEventName = Q.state.get("startEventName");
         if(Q.state.get("startSceneType")) Q.state.get("saveData").startSceneType = Q.state.get("startSceneType");
-        //TO DO: save each scenes vars somewhere
-        Q.state.set(
-            "sceneVars",
-            Q.state.get("scenesList").Story.filter(function(sc){
-                return sc.name===Q.state.get("saveData").startSceneName;
-            })[0].vrs
-        );
-
+        if(Q.state.get("startSceneType")==="Flavour"){
+            Q.state.set("sceneVars",{});
+        } else {
+            //TO DO: save each scenes vars somewhere
+            Q.state.set(
+                "sceneVars",
+                Q.state.get("scenesList").Story.filter(function(sc){
+                    return sc.name===Q.state.get("saveData").startSceneName;
+                })[0].vrs
+            );
+        }
         //Start a scene
         Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
