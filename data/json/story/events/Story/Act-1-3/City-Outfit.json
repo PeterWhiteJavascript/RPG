@@ -46,7 +46,7 @@
                         "scope": "Event",
                         "vr": "visitedBlacksmith",
                         "operator": "==",
-                        "vl": true
+                        "vl": 1
                     }
                 ]
             ],
@@ -65,18 +65,14 @@
             "Blacksmith",
             "changePage",
             {
-                "type": "Story",
-                "scene": "Act-1-1",
-                "event": "Start"
+                "page": "blacksmith"
             }
         ],
         [
             "Calen's Blacksmith",
             "changePage",
             {
-                "type": "Story",
-                "scene": "Act-1-1",
-                "event": "Start"
+                "page": "calensBlacksmith"
             }
         ],
         [
@@ -84,14 +80,44 @@
             "changeEvent",
             {
                 "type": "Story",
-                "scene": "Act-1-1",
-                "event": "Start"
+                "scene": "Act-1-3",
+                "event": "After-equipping-and-recruiting"
             }
         ]
     ],
     "blacksmith": {
         "music": "the_usual.mp3",
         "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
+        "actions": [
+            [
+                "Buy",
+                "displayBuyItemsList",
+                {
+                    "list": [
+                        [
+                            "Weapons",
+                            "Short Sword",
+                            "Quality",
+                            "Brass"
+                        ]
+                    ]
+                }
+            ],
+            [
+                "Sell",
+                "displaySellItemsList",
+                {
+                    "allow": "Weapons"
+                }
+            ],
+            [
+                "Leave",
+                "changePage",
+                {
+                    "page": "start"
+                }
+            ]
+        ],
         "onload": [
             {
                 "effects": [
@@ -101,7 +127,7 @@
                             "scope": "Event",
                             "vr": "visitedBlacksmith",
                             "operator": "=",
-                            "vl": true
+                            "vl": 1
                         }
                     ]
                 ],
@@ -118,27 +144,26 @@
                 "Buy",
                 "displayBuyItemsList",
                 {
-                    "type": "Story",
-                    "scene": "Act-1-1",
-                    "event": "Start"
+                    "list": [
+                        [
+                            "Weapons",
+                            "Short Sword",
+                            "Shoddy",
+                            "Brass"
+                        ]
+                    ]
                 }
             ],
             [
                 "Sell",
                 "displaySellItemsList",
-                {
-                    "type": "Story",
-                    "scene": "Act-1-1",
-                    "event": "Start"
-                }
+                []
             ],
             [
                 "Leave",
                 "changePage",
                 {
-                    "type": "Story",
-                    "scene": "Act-1-1",
-                    "event": "Start"
+                    "page": "start"
                 }
             ]
         ],
@@ -151,7 +176,7 @@
                             "scope": "Event",
                             "vr": "visitedBlacksmith",
                             "operator": "=",
-                            "vl": true
+                            "vl": 1
                         }
                     ]
                 ],
@@ -161,5 +186,11 @@
         "disabledChoices": []
     },
     "scene": "Act-1-3",
-    "type": "Story"
+    "type": "Story",
+    "eventRefs": [
+        "After-equipping-and-recruiting"
+    ],
+    "sceneVarRefs": [
+        "helpedButler"
+    ]
 }

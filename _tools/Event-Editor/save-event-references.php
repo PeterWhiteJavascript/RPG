@@ -5,9 +5,9 @@
 if(!isset($_POST['scene'])){ return; }
 $sceneName = $_POST['scene'];
 $eventName = $_POST['name'];
-$eventRefs = $_POST['eventRefs'];
-$sceneVarRefs = $_POST['sceneVarRefs'];
-$globalVarRefs = $_POST['globalVvarRefs'];
+$eventRefs = isset($_POST['eventRefs']) ? $_POST['eventRefs'] : [];
+$sceneVarRefs = isset($_POST['sceneVarRefs']) ? $_POST['sceneVarRefs'] : [];
+$globalVarRefs = isset($_POST['globalVarRefs']) ? $_POST['globalVarRefs'] : [];
 
 $scenes = json_decode(file_get_contents('../../data/json/data/scenes-list.json'), true);
 

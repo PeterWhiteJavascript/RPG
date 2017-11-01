@@ -13,7 +13,7 @@ $(function(){
     var file;
     function confirmFlowchartPosition(){
         if(changed&&confirm("Save flowchart position?")){
-            $("#save-flowchart").trigger("click");
+            saveEvents();
         }
     };
     function adjustConnection(div){
@@ -115,6 +115,7 @@ $(function(){
 
     sceneData = file["Story"].find(function(itm){return itm.name===scene;});
     eventsInScene = sceneData.events;
+    console.log(eventsInScene)
     if(eventsInScene.length){
         showFlowchart();
     } else {
@@ -156,14 +157,16 @@ $(function(){
                 
             }
             //Create the event in story
-            sceneData.events.push({
+            var newEvent = {
                 events:[],
                 sceneVars:[],
                 globalVars:[],
                 name:newName,
                 left:"100px",
                 top:"100px"
-            });
+            };
+            eventsInScene.push(newEvent);
+            sceneData.events.push(newEvent);
             //Create the event file
             finishNewEvent();
             var newFile = {};
@@ -208,7 +211,10 @@ $(function(){
             })
             .done(function(data){console.log(data);changed=false;})
             .fail(function(data){console.log(data)});
-            $("#save-flowchart").trigger("click");
+            setTimeout(function(){
+                saveEvents();
+            });
+            
             
         });
         $(".full-screen-hider").click(function(){finishNewEvent();});
@@ -250,6 +256,7 @@ $(function(){
             .fail(function(data){console.log(data);});
             $(event).remove();
             saveEvents();
+            $(".event-button").last().trigger("click");
         }
     });
     $("#delete-group").click(function(){

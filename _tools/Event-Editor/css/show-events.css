@@ -81,7 +81,7 @@
     overflow:scroll;
 }
 .invalid-event-pointer{
-    background-color:red;
+    background-color:darkred !important;
 }
 
 .connection{

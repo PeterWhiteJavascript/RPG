@@ -70,22 +70,22 @@
             "name": "Act-1-2",
             "events": [
                 {
-                    "name": "Circus-Gates",
-                    "top": "200px",
-                    "left": "100px",
                     "events": [
-                        "Speared"
+                        "fff"
                     ],
                     "sceneVars": [],
-                    "globalVars": []
+                    "globalVars": [],
+                    "name": "TEST",
+                    "left": "328px",
+                    "top": "291px"
                 },
                 {
-                    "name": "Speared",
-                    "top": "512px",
-                    "left": "319px",
                     "events": [],
                     "sceneVars": [],
-                    "globalVars": []
+                    "globalVars": [],
+                    "name": "fff",
+                    "left": "666px",
+                    "top": "198px"
                 }
             ],
             "vrs": {
@@ -253,7 +253,9 @@
                     "name": "Arrive-in-Dardoine",
                     "top": "403px",
                     "left": "671px",
-                    "events": [],
+                    "events": [
+                        "In-Dardoine"
+                    ],
                     "sceneVars": [],
                     "globalVars": []
                 },

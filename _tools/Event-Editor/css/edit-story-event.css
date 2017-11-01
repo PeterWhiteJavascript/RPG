@@ -196,6 +196,7 @@ audio{
     font-size:22px;
     border-radius: 2px 2px 0px 0px;
     height:30px;
+    padding:8px;
 }
 .editor-descriptor-title{
     text-align:center;
@@ -220,12 +221,14 @@ audio{
     text-align:center;
     font-family:"Georgia";
     font-size:22px;
+    padding:8px;
 }
 .editor-descriptor-big{
     text-align:center;
     font-family:"Georgia";
     font-size:36px;
     border-radius: 2px 2px 0px 0px; 
+    padding:8px;
 }
 .light-gradient{
     font-family:"Calibri";
@@ -469,6 +472,7 @@ li{
     font-family:"Georgia";
     font-size:20px;
     background: linear-gradient(to bottom right, grey, white);
+    padding:4px;
 }
 #editor-main-content{
     height:100%;

@@ -63,3 +63,15 @@
 .remove-choice{
     width:7.5%;
 }
+.var-remove{
+    width:25%;
+}
+.remove-choice-deep{
+    width:7.5% !important;
+}
+.minimize-choice{
+    width:7.5% !important;
+}
+.display-text-descriptor{
+    width:85% !important;
+}

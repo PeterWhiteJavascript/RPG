@@ -684,10 +684,10 @@ $(function(){
                 case "changeEvent":
                     if(!props){props = {};
                         props.type = "Story";
-                        props.scene = scene;
-                        props.event = this.p.events[props.scene];
+                        props.scene = sceneName;
+                        props.event = this.p.events[props.scene][0];
                     }
-                    content = this.setUpEffectProp("select","Select an Event Type","type",{opts:this.typeOptions(),type:props.type});
+                    content = this.setUpEffectProp("select","Select a Type","type",{opts:this.typeOptions(),type:props.type});
                     content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.sceneOptions(props.type),scene:props.scene});
                     content += this.setUpEffectProp("select","Select an Event","event",{opts:this.eventOptions(props.scene),event:props.event});
                     break;
@@ -831,6 +831,30 @@ $(function(){
         },
         //Sets all of the pages and vrs for saving
         getSaveData:function(){
+            var eventRefs = [];
+            var sceneVarRefs = [];
+            var globalVarRefs = [];
+            function checkReference(opt){
+                switch(opt[0]){
+                    case "checkVar":
+                    case "setVar":
+                        if(opt[1].scope==="Scene"){
+                            if(sceneVarRefs.indexOf(opt[1].vr)===-1){
+                                sceneVarRefs.push(opt[1].vr);
+                            }
+                        } else if(opt[1].scope==="Global"){
+                            if(globalVarRefs.indexOf(opt[1].vr)===-1){
+                                globalVarRefs.push(opt[1].vr);
+                            }
+                        }
+                        break;
+                    case "changeEvent":
+                        if(eventRefs.indexOf(opt[1].event) === -1){
+                            eventRefs.push(opt[1].event);
+                        }
+                        break;
+                }
+            }
             var data = {};
             //Get all of the variables
             var v = this.getVars();
@@ -841,18 +865,56 @@ $(function(){
             //Get all of the pages
             var pages = [];
             $(this.p.pagesCont).children(".page").each(function(idx,itm){
+                var name = $(itm).text();
+                var music = $(itm).attr("music");
+                var bg = $(itm).attr("bg");
+                var text = $(itm).attr("text");
+                var choices = JSON.parse($(itm).attr("choices"));
+                var onload = JSON.parse($(itm).attr("onload"));
+                var modules = JSON.parse($(itm).attr("modules"));
+                var modulesVars = JSON.parse($(itm).attr("modulesVars"));
                 pages.push({
-                    name:$(itm).text(),
-                    music:$(itm).attr("music"),
-                    bg:$(itm).attr("bg"),
-                    text:$(itm).attr("text"),
-                    choices:JSON.parse($(itm).attr("choices")),
-                    onload:JSON.parse($(itm).attr("onload")),
-                    modules:JSON.parse($(itm).attr("modules")),
-                    modulesVars:JSON.parse($(itm).attr("modulesVars"))
+                    name:name,
+                    music:music,
+                    bg:bg,
+                    text:text,
+                    choices:choices,
+                    onload:onload,
+                    modules:modules,
+                    modulesVars:modulesVars
                 });
+                if(sceneType==="Story"){
+                    for(var i=0;i<onload.length;i++){
+                        for(var j=0;j<onload[i].conds.length;j++){
+                            checkReference(onload[i].conds[j]);
+                        }
+                        for(var j=0;j<onload[i].effects.length;j++){
+                            checkReference(onload[i].effects[j]);
+                        }
+                    }
+                    for(var i=0;i<choices.length;i++){
+                        for(var j=0;j<choices[i].groups.length;j++){
+                            for(var k=0;k<choices[i].groups[j].conds.length;k++){
+                                checkReference(choices[i].groups[j].conds[k]);
+                            }
+                            for(var k=0;k<choices[i].groups[j].effects.length;k++){
+                                checkReference(choices[i].groups[j].effects[k]);
+                            }
+                        }
+                    }
+                    var modulesVarsKeys = Object.keys(modulesVars);
+                    for(var i=0;i<modulesVarsKeys.length;i++){
+                        for(var j=1;j<modulesVars[modulesVarsKeys[i]].length;j++){
+                            var obj = modulesVars[modulesVarsKeys[i]][j];
+                            checkReference(["checkVar",{vr:obj[0],scope:obj[1]}]);
+                        }
+                    }
+                }
             });
             data.pages = pages;
+            data.eventRefs = eventRefs;
+            data.sceneVarRefs = sceneVarRefs;
+            data.globalVarRefs = globalVarRefs;
             return data;
         },
         //The user is asked if they would like to go back without saving.
@@ -1136,6 +1198,17 @@ $(function(){
         })
         .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
         .fail(function(data){console.log(data)});
+
+        if(sceneType==="Story"){
+            $.ajax({
+                type:'POST',
+                url:'save-event-references.php',
+                data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                dataType:'json'
+            })
+            .done(function(data){console.log(data)})
+            .fail(function(data){console.log(data)});
+        }
     });
     $("#test-event").click(function(){
         
@@ -1151,6 +1224,16 @@ $(function(){
         .done(function(data){console.log(data)})
         .fail(function(data){console.log(data)});
 
+        if(sceneType==="Story"){
+            $.ajax({
+                type:'POST',
+                url:'save-event-references.php',
+                data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                dataType:'json'
+            })
+            .done(function(data){console.log(data)})
+            .fail(function(data){console.log(data)});
+        }
         $.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});
     });
     $("#to-vars").click(function(){

@@ -2,10 +2,10 @@
     "name": "Arrive-in-Dardoine",
     "desc": "The party arrives in Dardoine.",
     "kind": "story",
-    "pointers":{
-        "events":[],
-        "sceneVars":[],
-        "globalVars":[]
+    "pointers": {
+        "events": [],
+        "sceneVars": [],
+        "globalVars": []
     },
     "pages": [
         {
@@ -41,8 +41,8 @@
                 }
             ],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
         },
         {
             "name": "Hallway",
@@ -55,12 +55,26 @@
                     "desc": "",
                     "page": "Start",
                     "disabled": "Enabled",
-                    "groups": []
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-1-3",
+                                        "event": "In-Dardoine"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
                 }
             ],
             "onload": [],
-            "modules": {},
-            "modulesVars": {}
+            "modules": [],
+            "modulesVars": []
         }
     ],
     "vrs": {}

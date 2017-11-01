@@ -564,7 +564,7 @@ Quintus.UIObjects=function(Q){
             this.emptyConts();
             this.p.currentPage = "start";
             this.p.action = 0;
-            this.displayList({actions:this.p.location.actions.concat([["Back","createMainMenu"]])});
+            this.displayList({actions:this.p.location.actions.concat([["Back","createMainMenu"]]),onload:this.p.location.onload,disabledChoices:this.p.location.disabledChoices});
         },
         displayQuantityToggle:function(p){
             var cont = this.p.menuCont;

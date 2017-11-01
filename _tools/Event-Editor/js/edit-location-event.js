@@ -66,7 +66,6 @@ var start = function(){
             var pageList = event.pageList;
             if(pageList.length){
                 this.addAction(pageList[0],event.music,event.bg,event.actions,event.onload,event.disabledChoices);
-                var actions = event.actions;
                 //Create the actions
                 for(var i=1;i<pageList.length;i++){
                     var p = event[pageList[i]];
@@ -91,14 +90,14 @@ var start = function(){
                     </div>\n\
                     <input class="display-text full-line" value="'+displayText+'">\n\
                     <select class="actions-select full-line" initial-value="'+func+'">'+this.getOptString(this.p.actionFuncs)+'</select>\n\
-                    <div class="btn btn-quarter full-line disable">'+(disabled==="Disabled"?"Disabled":"Enabled")+'</div>\n\
+                    <div class="btn btn-quarter full-line disable">'+(disabled?"Disabled":"Enabled")+'</div>\n\
                     <div class="effect-props">\n\
                         '+this.getEffect([func,props])+'\n\
                     </div>\n\
                     \n\
                 </li>'
             );
-            $(".actions-select").trigger("change");
+            
         },
         //Adds a var to the list
         addVar:function(name,val,fromSave){
@@ -461,7 +460,7 @@ var start = function(){
                         props.scene = sceneName;
                         props.event = this.p.events[props.scene][0];
                     }
-                    content = this.setUpEffectProp("select","Select an Type","type",{opts:this.getOptString(Object.keys(this.p.scenes)),type:props.type});
+                    content = this.setUpEffectProp("select","Select a Type","type",{opts:this.getOptString(Object.keys(this.p.scenes)),type:props.type});
                     content += this.setUpEffectProp("select","Select a Scene","scene",{opts:this.getOptString(this.p.scenes[props.type],"name"),scene:props.scene});
                     content += this.setUpEffectProp("select","Select an Event","event",{opts:this.getOptString(this.p.events[props.scene]),event:props.event});
                     break;
@@ -494,7 +493,7 @@ var start = function(){
                     if(!props){props = {};
                         props.allow = "all";
                     }
-                    content = this.setUpEffectProp("select","Sell Type","allow",{opts:'<option value="all">All</option><option value="weapons">Weapons</option><option value="consumables">Consumables</option>',allow:props.allow});
+                    content = this.setUpEffectProp("select","Sell Type","allow",{opts:'<option value="All">All</option><option value="Weapons">Weapons</option><option value="Consumables">Consumables</option>',allow:props.allow});
                     break;
             }
             return content;
@@ -538,7 +537,7 @@ var start = function(){
         },
         enableChoiceOptions:function(){
             var opts = '';
-            var actions = $(this.p.choicesCont).children(".choice-li").length;
+            var actions = 10;//$(this.p.choicesCont).children(".choice-li").length;
             for(var i=0;i<actions;i++){
                 opts+='<option value="'+i+'">'+i+'</option>';
             }
@@ -654,6 +653,30 @@ var start = function(){
         },
         //Sets all of the actions and vrs for saving
         getSaveData:function(){
+            var eventRefs = [];
+            var sceneVarRefs = [];
+            var globalVarRefs = [];
+            function checkReference(opt){
+                switch(opt[0]){
+                    case "checkVar":
+                    case "setVar":
+                        if(opt[1].scope==="Scene"){
+                            if(sceneVarRefs.indexOf(opt[1].vr)===-1){
+                                sceneVarRefs.push(opt[1].vr);
+                            }
+                        } else if(opt[1].scope==="Global"){
+                            if(globalVarRefs.indexOf(opt[1].vr)===-1){
+                                globalVarRefs.push(opt[1].vr);
+                            }
+                        }
+                        break;
+                    case "changeEvent":
+                        if(eventRefs.indexOf(opt[1].event) === -1){
+                            eventRefs.push(opt[1].event);
+                        }
+                        break;
+                }
+            }
             var data = {};
             //Get all of the variables
             var v = this.getVars();
@@ -665,26 +688,49 @@ var start = function(){
             var actions = [];
             var pageList = ["start"];
             $(this.p.actionsCont).children(".action").each(function(idx,itm){
+                var name = $(itm).text()
+                var music = $(itm).attr("music");
+                var bg = $(itm).attr("bg");
+                var actions = JSON.parse($(itm).attr("actions"));
+                var onload = JSON.parse($(itm).attr("onload"));
+                var disabledChoices = JSON.parse($(itm).attr("disabledChoices"));
                 if(idx>0){
                     pageList.push($(itm).text());   
                     actions.push({
-                        name:$(itm).text(),
-                        music:$(itm).attr("music"),
-                        bg:$(itm).attr("bg"),
-                        actions:JSON.parse($(itm).attr("actions")),
-                        onload:JSON.parse($(itm).attr("onload")),
-                        disabledChoices:JSON.parse($(itm).attr("disabledChoices"))
+                        name:name,
+                        music:music,
+                        bg:bg,
+                        actions:actions,
+                        onload:onload,
+                        disabledChoices:disabledChoices
                     });
                 } else {
-                    data.name = $(itm).text();
-                    data.music = $(itm).attr("music");
-                    data.bg = $(itm).attr("bg");
-                    data.actions = JSON.parse($(itm).attr("actions"));
-                    data.onload = JSON.parse($(itm).attr("onload"));
-                    data.disabledChoices = JSON.parse($(itm).attr("disabledChoices"));
+                    data.name = name;
+                    data.music = music;
+                    data.bg = bg;
+                    data.actions = actions;
+                    data.onload = onload;
+                    data.disabledChoices = disabledChoices;
+                }
+                
+                if(sceneType==="Story"){
+                    for(var i=0;i<onload.length;i++){
+                        for(var j=0;j<onload[i].conds.length;j++){
+                            checkReference(onload[i].conds[j]);
+                        }
+                        for(var j=0;j<onload[i].effects.length;j++){
+                            checkReference(onload[i].effects[j]);
+                        }
+                    }
+                    for(var i=0;i<actions.length;i++){
+                        checkReference([actions[i][1],actions[i][2]]);
+                    }
                 }
             });
             data.pageList = pageList;
+            data.eventRefs = eventRefs;
+            data.sceneVarRefs = sceneVarRefs;
+            data.globalVarRefs = globalVarRefs;
             actions.forEach(function(act){
                 data[act.name] = act;
                 delete(act.name);
@@ -768,6 +814,18 @@ var start = function(){
         })
         .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
         .fail(function(data){console.log(data)});
+
+        
+        if(sceneType==="Story"){
+            $.ajax({
+                type:'POST',
+                url:'save-event-references.php',
+                data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                dataType:'json'
+            })
+            .done(function(data){console.log(data)})
+            .fail(function(data){console.log(data)});
+        }
     });
     $("#test-event").click(function(){
         
@@ -786,13 +844,17 @@ var start = function(){
         .done(function(data){console.log(data)})
         .fail(function(data){console.log(data)});
 
-        var form = $('<form action="../../index.php" method="post"></form>');
-        form.append('<input type="text" name="name" value="'+eventName+'">');
-        form.append('<input type="text" name="scene" value="'+sceneName+'">');
-        form.append('<input type="text" name="type" value="'+sceneType+'">');
-        form.append('<input type="text" name="testing" value="true">');
-        $("body").append(form);
-        form.submit();
+        if(sceneType==="Story"){
+            $.ajax({
+                type:'POST',
+                url:'save-event-references.php',
+                data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                dataType:'json'
+            })
+            .done(function(data){console.log(data)})
+            .fail(function(data){console.log(data)});
+        }
+        $.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});
     });
     
     $("#to-vars").click(function(){
