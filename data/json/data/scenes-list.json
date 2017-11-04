@@ -220,8 +220,8 @@
                 },
                 {
                     "name": "Venoria-Forest-Clearing-Battle",
-                    "top": "629px",
-                    "left": "463px",
+                    "top": "643px",
+                    "left": "418px",
                     "events": [
                         "Forest-Clearing-Battle-Victory",
                         "Forest-Clearing-Battle-Defeat"

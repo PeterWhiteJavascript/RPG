@@ -51,7 +51,7 @@ $(function(){
     }
     function newCond(cond){
         var groupsString = createOptions(["Act","Officer","Character Class","Nationality","Value","Methodology","Personality","Gender","Base Stats","Derived Stats","Awards","Vars"]);            
-        var opString = createOptions(["==","!=","<",">","<=",">="]);   
+        var opString = createOptions(["==","!=","<",">","<=",">="]);
         var condType = cond[1] || condTypes[cond[0]][0];
         var condOp = cond[2] || "==";
         var condVal = cond[3] || "";
@@ -100,10 +100,13 @@ $(function(){
         if(!name.length){
             groupName = "<input class='group-name-input' placeholder='Please input a name'>";
         }
-        return "<div class='event-group'>"+groupName+"<div class='add-cond'>Add Cond</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
+        return "<div class='event-group'>"+groupName+"<div class='add-group'>Add Group</div><div class='conds-cont'></div><div class='event-cont'></div><div class='event-options'><span class='priority-desc'>Priority: </span><input type='number' min='0' value="+priority+"><span class='recur-desc'>Recur: </span><select initial-value='"+recur+"'><option value='One'>One</option><option value='false'>false</option><option value='true'>true</option></select></div>";
+    };
+    function newCondGroup(data){
+        return "<div class='cond-group'><span class='group-remove remove'>X</span><select class='cond-group-cond-type' initial-value='"+data+"'><option value='true'>All</option><option value='false'>Some</option></select><div class='add-cond'>Add Cond</div></div>";
     };
     function displayCond(data){
-        $(".event-group").last().children(".conds-cont").append(newCond(data));
+        $(".cond-group").last().append(newCond(data));
     };
     function displayEvent(data){
         $(".event-group").last().children(".event-cont").append(newEventButton(data));
@@ -111,7 +114,11 @@ $(function(){
     function displayEventGroup(name,data){
         $("#group-cont").append(newEventGroup(name,data[1],data[3]));
         for(var k=0;k<data[0].length;k++){
-            displayCond(data[0][k]);
+            $(".conds-cont").last().append(newCondGroup(data[0][k][0]));
+            //Start at 1 as 0 is reserved for "all" or "at least 1"
+            for(var l=1;l<data[0][k].length;l++){
+                displayCond(data[0][k][l]);
+            }
         }
         for(var j=0;j<data[2].length;j++){
             displayEvent(data[2][j]);
@@ -119,7 +126,7 @@ $(function(){
     };
     function hideGroup(group){
         var groupName = $(group).children(".group-name").text();
-        $(group).children(".conds-cont").children(".event-cond").each(function(){
+        $(group).children(".conds-cont").children(".cond-group").children(".event-cond").each(function(){
             groupsList[$(this).children(".cond-groups").val()][$(this).children(".cond-types").val()].push(groupName);
         });
         $(group).hide();
@@ -283,9 +290,10 @@ $(function(){
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
         var eventName = $(event).text();
+        var eventGroup = $(event).parent().parent().children(".group-name").text();
         if(confirm("Are you sure you want to delete "+eventName+"?")){
             //Remove the event file
-            var path = "../../data/json/story/events/Flavour/"+eventName+".json";
+            var path = "../../data/json/story/events/Flavour/"+eventGroup+"/"+eventName+".json";
             $.ajax({
                 type:'POST',
                 url:'delete-file.php',
@@ -315,58 +323,63 @@ $(function(){
         var groups = $(".event-group");
         var savedGroups = {};
         groups.each(function(){
-            var conds = $(this).children(".conds-cont").children(".event-cond");
+            var condGroups = $(this).children(".conds-cont").children(".cond-group");
             var saveConds = [];
-            conds.each(function(){
-                switch($(this).children(".cond-groups").val()){
-                    case "Act":
-                    case "Officer":
-                    case "Character Class":
-                    case "Nationality":
-                    case "Value":
-                    case "Methodology":
-                    case "Personality":
-                    case "Gender":
-                        saveConds.push([
-                            $(this).children(".cond-groups").val(),
-                            $(this).children(".cond-types").val()
-                        ]);
-                        break;
-                    case "Base Stats":
-                    case "Derived Stats":
-                    case "Awards":
-                        saveConds.push([
-                            $(this).children(".cond-groups").val(),
-                            $(this).children(".cond-types").val(),
-                            $(this).children(".cond-operator").val(),
-                            convertValue($(this).children(".cond-value").val())
-                        ]);
-                        break;
-                    case "Vars":
-                        switch($(this).children(".cond-types").val()){
-                            case "Scene":
-                                saveConds.push([
-                                    $(this).children(".cond-groups").val(),
-                                    $(this).children(".cond-types").val(),
-                                    $(this).children(".cond-act").val(),
-                                    $(this).children(".cond-scene-var").val(),
-                                    $(this).children(".cond-operator").val(),
-                                    convertValue($(this).children(".cond-var-value").val())
-                                ]);
-                                break;
-                            case "Global":
-                                saveConds.push([
-                                    $(this).children(".cond-groups").val(),
-                                    $(this).children(".cond-types").val(),
-                                    $(this).children(".cond-global-var").val(),
-                                    $(this).children(".cond-operator").val(),
-                                    convertValue($(this).children(".cond-var-value").val())
-                                ]);
-                                break;
-                        }
-                        break;
-                        
-                }
+            condGroups.each(function(){
+                var conds = $(this).children(".event-cond");
+                var saveCondGroup = [convertValue($(this).children(".cond-group-cond-type").val())];
+                conds.each(function(){
+                    switch($(this).children(".cond-groups").val()){
+                        case "Act":
+                        case "Officer":
+                        case "Character Class":
+                        case "Nationality":
+                        case "Value":
+                        case "Methodology":
+                        case "Personality":
+                        case "Gender":
+                            saveCondGroup.push([
+                                $(this).children(".cond-groups").val(),
+                                $(this).children(".cond-types").val()
+                            ]);
+                            break;
+                        case "Base Stats":
+                        case "Derived Stats":
+                        case "Awards":
+                            saveCondGroup.push([
+                                $(this).children(".cond-groups").val(),
+                                $(this).children(".cond-types").val(),
+                                $(this).children(".cond-operator").val(),
+                                convertValue($(this).children(".cond-value").val())
+                            ]);
+                            break;
+                        case "Vars":
+                            switch($(this).children(".cond-types").val()){
+                                case "Scene":
+                                    saveCondGroup.push([
+                                        $(this).children(".cond-groups").val(),
+                                        $(this).children(".cond-types").val(),
+                                        $(this).children(".cond-act").val(),
+                                        $(this).children(".cond-scene-var").val(),
+                                        $(this).children(".cond-operator").val(),
+                                        convertValue($(this).children(".cond-var-value").val())
+                                    ]);
+                                    break;
+                                case "Global":
+                                    saveCondGroup.push([
+                                        $(this).children(".cond-groups").val(),
+                                        $(this).children(".cond-types").val(),
+                                        $(this).children(".cond-global-var").val(),
+                                        $(this).children(".cond-operator").val(),
+                                        convertValue($(this).children(".cond-var-value").val())
+                                    ]);
+                                    break;
+                            }
+                            break;
+
+                    }
+                });
+                saveConds.push(saveCondGroup);
             });
             var events = $(this).children(".event-cont").children(".event-button");
             var saveEvents = [];
@@ -384,6 +397,7 @@ $(function(){
             ];
         });
         flavour.groups = savedGroups;
+        
         $.ajax({
             type:'POST',
             url:'save-flavour-groups.php',
@@ -442,8 +456,11 @@ $(function(){
         $(".event-group").removeClass("selected");
         $(this).addClass("selected");
     });
+    $(document).on("click",".add-group",function(){
+        $(this).parent().children(".conds-cont").append(newCondGroup(true));
+    });
     $(document).on("click",".add-cond",function(){
-        $(this).parent().children(".conds-cont").append(newCond(["Act","Act-1-1"]));
+        $(this).parent().append(newCond(["Act","Act-1-1"]));
     });
     $("#triggers-select-all").click(function(){
         $(".trigger select").multiselect("selectAll",false);
@@ -472,15 +489,19 @@ $(function(){
     });
     
     
-    function showGroups(name,val){console.log(name,val)
+    function showGroups(name,val){
         var toShow = groupsList[name][val];
         for(var i=0;i<toShow.length;i++){
             var groupName = toShow[i];
             var groupConds = flavour.groups[groupName][0];
             //Remove other references to this group
             for(var j=0;j<groupConds.length;j++){
-                var cond = groupConds[j];
-                groupsList[cond[0]][cond[1]].splice(groupsList[cond[0]][cond[1]].indexOf(groupName),1);
+                var conds = groupConds[j];
+                for(var k=1;k<conds.length;k++){
+                    var cond = conds[k];
+                    groupsList[cond[0]][cond[1]].splice(groupsList[cond[0]][cond[1]].indexOf(groupName),1);
+                }
+                
             }
             $(".group-name").each(function(){
                 if($(this).text()===groupName) $(this).parent().show();
@@ -490,7 +511,7 @@ $(function(){
     function hideGroups(name,val){
         $(".conds-cont").each(function(){
             var found = false;
-            $(this).children(".event-cond").each(function(){
+            $(this).children(".cond-group").children(".event-cond").each(function(){
                 if($(this).children(".cond-groups").val()===name&&$(this).children(".cond-types").val()===val){
                     found = true;
                 }
@@ -498,7 +519,7 @@ $(function(){
             //Loop through each of the conds to see if everything is diabled
             if(found){
                 var noneSelected = true;
-                $(this).children(".event-cond").each(function(){
+                $(this).children(".cond-group").children(".event-cond").each(function(){
                     var triggerName = $(this).children(".cond-groups").val();
                     var triggerVal = $(this).children(".cond-types").val();
                     var select = $(".trigger").children("span").children("select[name='"+triggerName+"']");

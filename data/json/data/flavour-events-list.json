@@ -1,107 +1,31 @@
 {
     "groups": {
-        "awf": [
-            [
-                [
-                    "Officer",
-                    "Astraea"
-                ]
-            ],
-            0,
-            [
-                "story"
-            ],
-            false
-        ],
         "Group-2": [
             [
                 [
-                    "Derived Stats",
-                    "Magical Resistance",
-                    "==",
-                    6
+                    true,
+                    [
+                        "Vars",
+                        "Global",
+                        "Gloobal",
+                        "==",
+                        "aaawf"
+                    ],
+                    [
+                        "Act",
+                        "Act-1-1"
+                    ]
                 ],
                 [
-                    "Act",
-                    "Act-1-1"
-                ],
-                [
-                    "Character Class",
-                    "Vanguard"
-                ],
-                [
-                    "Nationality",
-                    "Venorian"
-                ],
-                [
-                    "Value",
-                    "Egoist"
-                ],
-                [
-                    "Methodology",
-                    "Pragmatic"
-                ],
-                [
-                    "Personality",
-                    "Sensitive"
-                ],
-                [
-                    "Gender",
-                    "Female"
-                ],
-                [
-                    "Base Stats",
-                    "str",
-                    ">=",
-                    50
-                ],
-                [
-                    "Derived Stats",
-                    "Max Attack Damage",
-                    ">=",
-                    100
-                ],
-                [
-                    "Vars",
-                    "Scene",
-                    "Act-1-1",
-                    "test",
-                    "==",
-                    "hiya"
-                ],
-                [
-                    "Vars",
-                    "Global",
-                    "Gloobal",
-                    "==",
-                    138
+                    true
                 ]
             ],
-            3,
-            [
-                "bs"
-            ],
-            "One"
-        ],
-        "r": [
-            [],
-            0,
-            [],
-            "One"
-        ],
-        "ee-e": [
-            [],
             0,
             [
-                "wfwffw"
-            ],
-            "One"
-        ],
-        "": [
-            [],
-            0,
-            [
-                "loc"
+                "asd",
+                "bs",
+                "eg",
+                "fgg"
             ],
             "One"
         ]
