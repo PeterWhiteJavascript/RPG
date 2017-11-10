@@ -1,0 +1,148 @@
+#top-bar{
+    height:60px;
+    text-align:center;
+    margin:auto;
+}
+.top-bar-itm{
+    padding-top:22px;
+    height:100%;
+    width:20%;
+    float:left;
+    background-color:var(--main-color);
+    font-size:22px;
+    user-select:none;
+    border:1px solid black;
+}
+.top-bar-itm:not(:first-child):hover{
+    background-color:#f5f5f5;
+    cursor:pointer;
+}
+#editor-content{
+    width:100%;
+    height:100%;
+    position:absolute;
+}
+#editor-main-content{
+    padding:0;
+    margin:0;
+    padding-top:60px;
+    width:100%;
+    height:100%;
+    vertical-align:top;
+}
+#map-cont{
+    width:50%;
+    height:100%;
+    position:fixed;
+}
+.menu-box{
+    width:25%;
+    height:calc(50% - 30px);
+    overflow:auto;
+    position:fixed;
+    padding:20px;
+    background-color:var(--main-color);
+    border:1px solid black;
+}
+#event-chars-cont{
+    left:50%;
+}
+#char-files-cont{
+    left:75%;
+}
+
+
+.title-text{
+   border-top:1px solid black;
+   border-left:1px solid black;
+   border-right:1px solid black;
+   border-bottom:1px dashed black;
+   padding:2px;
+   margin-top:5px;
+   margin-bottom:5px;
+}
+#char-files-cont .file-groups{
+    margin-left:10px;
+    font-size:1.8vw;
+    user-select:none;
+    cursor:pointer;
+}
+.groups .file-chars{
+    margin-left:30px !important;
+    font-size:1.6vw !important;
+}
+.file-character{
+    font-size:1.4vw;
+}
+
+#cond-groups-cont{
+    left:50%;
+    top:calc(50% + 30px);
+}
+#initial-props-cont{
+    left:75%;
+    top:calc(50% + 30px);
+    font-size: 0;
+}
+#placement-squares-button:hover{
+    cursor:pointer;
+    background:grey;
+}
+
+.initial-props-item{
+    padding:10px;
+    width:100%;
+    height:auto;
+}
+.initial-props-item select{
+    display:inline-block;
+    font-size:1.2vw;
+    height:30px;
+    vertical-align:top;
+}
+.initial-props-item input{
+    display:inline-block;
+    font-size:1.2vw;
+    height:30px;
+    vertical-align:top;
+}
+.item-desc{
+    display:inline-block;
+    text-align:center;
+    background:linear-gradient(to bottom right, grey, white);
+    font-size:1.6vw;
+    height:30px;
+    vertical-align:top;
+    padding:6px;
+    user-select:none;
+}
+.quarter-width{
+    width:25%;
+}
+.half-width{
+    width:50%;
+}
+.full-width{
+    width:100%;
+}
+.minimize{
+    cursor:pointer;
+    font-size:24px;
+}
+.minimize-icon{
+    float:left;
+    font-size:100%;
+    padding-right:10px;
+    width:20px;
+}
+.minimize-icon-deep{
+    float:left;
+    font-size:100%;
+    padding-right:10px;
+    width:20px;
+}
+
+.selected{
+    background:transparent;
+    background-color:var(--secondary-color);
+}

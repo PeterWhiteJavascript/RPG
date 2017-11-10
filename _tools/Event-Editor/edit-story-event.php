@@ -38,6 +38,7 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
             var dataPages = <?php echo json_encode($pages); ?>;
             var dataVariables = <?php echo json_encode($variables); ?>;
         </script>
+        <script src="js/edit-story-event.js"></script>
         <div id="editor-content">
             <div id="top-bar">
                 <ul>
@@ -117,6 +118,5 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                 </div>
             </div>
         </div>
-        <script src="js/edit-story-event.js"></script>
     </body>
 </html>

@@ -3,64 +3,6 @@
         {
             "name": "Act-1-1",
             "events": [
-                {
-                    "name": "Start",
-                    "top": "200px",
-                    "left": "100px",
-                    "events": [
-                        "ACSSCAASCAS"
-                    ],
-                    "sceneVars": [],
-                    "globalVars": []
-                },
-                {
-                    "name": "Dothebadthing",
-                    "top": "269px",
-                    "left": "52px",
-                    "events": [
-                        "Nico-ANGERY"
-                    ],
-                    "sceneVars": [],
-                    "globalVars": []
-                },
-                {
-                    "name": "dontdothebadthing",
-                    "top": "92px",
-                    "left": "380px",
-                    "events": [
-                        "movingon"
-                    ],
-                    "sceneVars": [],
-                    "globalVars": []
-                },
-                {
-                    "name": "Nico-ANGERY",
-                    "top": "349px",
-                    "left": "149px",
-                    "events": [
-                        "movingon"
-                    ],
-                    "sceneVars": [],
-                    "globalVars": []
-                },
-                {
-                    "name": "movingon",
-                    "top": "299px",
-                    "left": "426px",
-                    "events": [
-                        "nextup"
-                    ],
-                    "sceneVars": [],
-                    "globalVars": []
-                },
-                {
-                    "name": "nextup",
-                    "top": "395px",
-                    "left": "793px",
-                    "events": [],
-                    "sceneVars": [],
-                    "globalVars": []
-                }
             ],
             "vrs": {
                 "test": 123
@@ -261,8 +203,8 @@
                 },
                 {
                     "name": "In-Dardoine",
-                    "top": "233px",
-                    "left": "658px",
+                    "top": "231px",
+                    "left": "691px",
                     "events": [],
                     "sceneVars": [],
                     "globalVars": []
@@ -278,76 +220,124 @@
             "name": "Act-1-4",
             "events": [
                 {
-                    "name": "Leaving-Home"
+                    "name": "Leaving-Home",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Forest-to-Candy-Store"
+                    "name": "Forest-to-Candy-Store",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Forest-Battle"
+                    "name": "Forest-Battle",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Forest-Battle-victory"
+                    "name": "Forest-Battle-victory",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Forest-Battle-defeat"
+                    "name": "Forest-Battle-defeat",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Alex-arrives-in-town"
+                    "name": "Alex-arrives-in-town",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Forest-battle-victory2"
+                    "name": "Forest-battle-victory2",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Inside-the-pub"
+                    "name": "Inside-the-pub",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Left-the-candy-shop"
+                    "name": "Left-the-candy-shop",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "After-candy-shop-battle"
+                    "name": "After-candy-shop-battle",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Candy-Battle-Victory"
+                    "name": "Candy-Battle-Victory",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "In-pub-with-Astraea"
+                    "name": "In-pub-with-Astraea",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Candy-Battle-Loss"
+                    "name": "Candy-Battle-Loss",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "On-the-way-home."
+                    "name": "On-the-way-home.",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Inside-Bandit's-Shop"
+                    "name": "Inside-Bandit's-Shop",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Buy-or-not-from-Bandits"
+                    "name": "Buy-or-not-from-Bandits",
+                    "top": "332px",
+                    "left": "102px"
                 },
                 {
-                    "name": "Did-not-buy"
+                    "name": "Did-not-buy",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "Bought-from-Bandits"
+                    "name": "Bought-from-Bandits",
+                    "top": "155px",
+                    "left": "151px"
                 },
                 {
-                    "name": "win-vs-police"
+                    "name": "win-vs-police",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "lose-vs-police"
+                    "name": "lose-vs-police",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "win-vs-bandits"
+                    "name": "win-vs-bandits",
+                    "top": "0px",
+                    "left": "0px"
                 },
                 {
-                    "name": "lose-vs-bandits"
+                    "name": "lose-vs-bandits",
+                    "top": "64px",
+                    "left": "209px"
                 },
                 {
-                    "name": "House"
+                    "name": "House",
+                    "top": "79px",
+                    "left": "130px"
                 },
                 {
-                    "name": "Town"
+                    "name": "Town",
+                    "top": "107px",
+                    "left": "269px"
                 }
             ],
             "vrs": {
