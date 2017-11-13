@@ -72,7 +72,7 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                 <div id="map-cont" class="menu-box">
                     
                 </div>
-                <div id="event-chars-cont" class="menu-box">
+                <div id="event-chars-cont" class="menu-box droppable">
                     
                 </div>
                 <div id="char-files-cont" class="menu-box">
@@ -81,7 +81,12 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                     </div>
                 </div>
                 <div id="cond-groups-cont" class="menu-box">
-                    
+                    <div class="cond-group-title-bar">
+                        <span class="add-group item-desc full-width">Add Group</span>
+                    </div>
+                    <div class="cond-groups">
+                        
+                    </div>
                 </div>
                 <div id="initial-props-cont" class="menu-box">
                     <div id="prop-map" class="initial-props-item">
@@ -105,16 +110,29 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
                         <span id="placement-squares-cont"></span>
                     </div>
                     <div id="prop-victory" class="initial-props-item">
-                        <span class="item-desc half-width">Victory</span>
-                        <select class="scene-type half-width"></select>
-                        <select class="scene-name half-width"></select>
-                        <select class="event-name half-width"></select>
+                        <span class="item-desc full-width">Victory</span>
+                        <select class="scene-type third-width"></select>
+                        <select class="scene-name third-width"></select>
+                        <select class="event-name third-width"></select>
+                        <div class="cond-group-title-bar">
+                            <span class="add-group item-desc full-width">Add Group</span>
+                        </div>
+                        <div class="cond-groups">
+
+                        </div>
                     </div>
+                    <br>
                     <div id="prop-defeat" class="initial-props-item">
-                        <span class="item-desc half-width">Defeat</span>
-                        <select class="scene-type half-width"></select>
-                        <select class="scene-name half-width"></select>
-                        <select class="event-name half-width"></select>
+                        <span class="item-desc full-width">Defeat</span>
+                        <select class="scene-type third-width"></select>
+                        <select class="scene-name third-width"></select>
+                        <select class="event-name third-width"></select>
+                        <div class="cond-group-title-bar">
+                            <span class="add-group item-desc full-width">Add Group</span>
+                        </div>
+                        <div class="cond-groups">
+
+                        </div>
                     </div>
                         
                 </div>
