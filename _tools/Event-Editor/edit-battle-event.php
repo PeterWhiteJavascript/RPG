@@ -30,6 +30,8 @@ foreach($places as $place_name){
 }
 
 $dataFiles = array_slice(scandir('../../data/json/data'),2);
+
+$images =  array_values(array_diff(scandir("../../images/story"), array('..', '.')));
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,10 +49,14 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
             var mapFileNames = <?php echo json_encode($map_obj)?>;
             var characterFiles = <?php echo json_encode($characters)?>;
             var dataFiles = <?php echo json_encode($dataFiles) ?>;
+            var imageAssets = <?php echo json_encode($images) ?>;
         </script>
+        <?php include 'quintus-lib.php'; ?>
+        <script src="../../js/music.js"></script>
         <script src="js/edit-battle-event.js"></script>
         
         <div id="editor-content">
+            <div id="full-screen-hider"></div>
             <div id="top-bar">
                 <div class="top-bar-itm">
                     <div id="canvas-coordinates">0,0</div>

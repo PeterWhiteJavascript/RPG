@@ -797,7 +797,6 @@ $(document).on("click",".char-remove",function(){
                 break;
         }
     });
-    
 });
 
 var selectedGroup;
@@ -1663,7 +1662,7 @@ $(document).on("click","#menu-go-back",function(e){
         if($("#scene-type").text()==="Flavour"){
             to = "show-flavour.php";
         }
-        $.redirect(to, {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text(), testing:true});
+        $.redirect(to, {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text()});
     }
 });
 

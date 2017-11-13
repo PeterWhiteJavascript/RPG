@@ -1,32 +1,51 @@
 {
     "name": "Training-Battle",
-    "desc": "The first battle in the castle training room.",
     "kind": "battle",
-    "map": "maps\/Venoria\/Venoria-Castle-Training-Area.tmx",
-    "music":"battle.mp3",
-    "placementSquares":[[7,15],[6,15],[8,15]],
-    "maxAllies":1,
-    "victory":{
-        "next":{
-            "type":"Story",
-            "scene":"Act-1-3",
-            "event":"Training-Battle-Victory"
-        }
-    },
-    "defeat":{
-        "next":{
-            "type":"Story",
-            "scene":"Act-1-3",
-            "event":"Training-Battle-Defeat"
-        }
-    },
-    "events":[
-        
+    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "music": "battle.mp3",
+    "placementSquares": [
+        [
+            6,
+            15
+        ],
+        [
+            8,
+            15
+        ]
     ],
+    "maxAllies": 1,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-3",
+            "Training-Battle-Victory"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-3",
+            "Training-Battle-Defeat"
+        ]
+    },
+    "events": [],
     "characters": [
         {
-            "file": "Act-1-3.json",
-            "group": "Training",
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                7,
+                15
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
             "handle": "Astraea",
             "uniqueId": 0,
             "loc": [

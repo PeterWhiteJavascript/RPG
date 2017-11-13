@@ -1,19 +1,454 @@
 $(function(){
+    var DC = {};
+    var FileSaver = {};
+    var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
+        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, Music")
+        .setup({development: true, width:$(document).width()/2-9,height:$(document).height()-60})
+        .touch().controls(true)
+        .enableSound();
+    Q.options.imagePath = "../../images/";
+    Q.options.audioPath = "../.././audio/";
+    Q.options.dataPath = ".././data/";
+
+    Q.tileW = 32;
+    Q.tileH = 32;
+    Q.SPRITE_CHARACTER  = 8;
+
+    Q.state.set("options",{
+        musicEnabled:true,
+        soundEnabled:true
+    });
+    var allowSpriteSelecting = true;
+    function startQuintusCanvas(){
+        //Sprites
+        var toSheet= [
+            ['archer','archer.png',24,24,0,0,192,72],
+            ['assassin','assassin.png',24,24,0,0,192,72],
+            ['berserker','berserker.png',24,24,0,0,192,72],
+            ['elementalist','elementalist.png',24,24,0,0,192,72],
+            ['healer','healer.png',24,24,0,0,192,72],
+            ['illusionist','illusionist.png',24,24,0,0,192,72],
+            ['legionnaire','legionnaire.png',24,24,0,0,192,72],
+            ['skirmisher','skirmisher.png',24,24,0,0,192,72],
+            ['vanguard','vanguard.png',24,24,0,0,192,72]
+        ];
+        for(j=0;j<toSheet.length;j++){
+            Q.sheet(toSheet[j][0],
+            "sprites/"+toSheet[j][1],
+            {
+               tilew:toSheet[j][2],
+               tileh:toSheet[j][3],
+               sx:toSheet[j][4],
+               sy:toSheet[j][5],
+               w:toSheet[j][6],
+               h:toSheet[j][7]
+            });
+        };
+        var standRate = 1/3;
+        var walkRate = 1/6;
+        var supafAst = 1/12;
+        var tooFast = 1/24;
+        Q.animations("Character", {
+            standingup:{ frames: [0,1], rate:standRate},
+            walkingup:{ frames: [0,1], rate:walkRate},
+            attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftup:{frames:[0,0,0],rate:standRate},
+            liftedup:{frames:[6],rate:standRate},
+            hurtup:{frames:[1],rate:standRate},
+            dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadup:{frames:[0],rate:standRate},
+
+            standingright:{ frames: [2,3], rate:standRate},
+            walkingright:{ frames: [2,3], rate:walkRate},
+            attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftright:{frames:[2,2,2],rate:standRate},
+            liftedright:{frames:[6],rate:standRate},
+            hurtright:{frames:[3],rate:standRate},
+            dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadright:{frames:[2],rate:standRate},
+
+            standingleft:{ frames: [4,5], rate:standRate},
+            walkingleft:{ frames: [4,5], rate:walkRate},
+            attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftleft:{frames:[4,4,4],rate:standRate},
+            liftedleft:{frames:[6],rate:standRate},
+            hurtleft:{frames:[5],rate:standRate},
+            dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadleft:{frames:[4],rate:standRate},
+
+            standingdown:{ frames: [6,7], rate:standRate},
+            walkingdown:{ frames: [6,7], rate:walkRate},
+            attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftdown:{frames:[6,6,6],rate:standRate},
+            lifteddown:{frames:[6],rate:standRate},
+            hurtdown:{frames:[7],rate:standRate},
+            dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deaddown:{frames:[6],rate:standRate},
+
+            levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
+        });
+
+        Q.scene("map",function(stage){
+            stage.finished = function(){};
+            Q.stageTMX(stage.options.map, stage);
+            Q.addViewport(stage);
+            
+            $("#map-select-place").on("change",function(){
+                var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
+                Q.loadTMX(map,function(){
+                    Q.load("sfx/cannot_do.mp3",function(){
+                        var characters = FileSaver.getCharacters();
+                        var placementSquares = FileSaver.getPlacementSquares();
+                        $("#event-chars-cont").empty();
+                        $("#placement-squares-cont").empty();
+                        Q.stageScene("map",0,{map:map,characters:characters,placementSquares:placementSquares});
+                    });
+                },{tmxImagePath:Q.options.imagePath.substring(3)});
+            });
+
+            Q.Grid = [];
+            var tilesX = stage.mapWidth;
+            var tilesY = stage.mapHeight;
+            for(var i=0;i<tilesY;i++){
+                Q.Grid[i]=[];
+                for(var j=0;j<tilesX;j++){
+                    Q.Grid[i][j]=false;
+                }
+            }
+            var characters = stage.options.characters;
+            for(var i=0;i<characters.length;i++){
+                var char = characters[i];
+                var charButton = DC.newCharacter(char);
+                $('#event-chars-cont').append(charButton);
+                var data = dataP.charFiles[char.file][char.group][char.handle];
+                Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:DC.getNextEmpty(char.loc),dir:char.dir,ref:$(charButton).children(".character")}));
+            }
+            $(".character").last().trigger("click");
+            var placementSquares = stage.options.placementSquares;
+            for(var i=0;i<placementSquares.length;i++){
+                DC.addPlacementSquare(placementSquares[i]);
+            }
+            Q.toCharSelection();
+            Q.stage(0).lists.TileLayer[0].p.z = 0;
+            Q.stage(0).lists.TileLayer[1].p.z = 1;
+        },{sort:true});
+        //Turn on clicking sprites/ground
+        Q.el.addEventListener("click",function(e){
+            //If we've dragged, don't click
+            if(dragged||!Q.stage()){
+                dragged = false;
+                return;
+            }
+            //Can't click sprite if placing one
+            if(allowSpriteSelecting){
+                var x = e.offsetX || e.layerX,
+                    y = e.offsetY || e.layerY,
+                    stage = Q.stage();
+
+                var stageX = Q.canvasToStageX(x, stage),
+                    stageY = Q.canvasToStageY(y, stage);
+                var locX = Math.floor(stageX/Q.tileW);
+                var locY = Math.floor(stageY/Q.tileH);
+                var objAt = Q.getSpriteAt([locX,locY]);
+                if(objAt){
+                    Q.stage(0).trigger("selectedCharacter",objAt);
+                } else {
+                    Q.stage(0).trigger("selectedLocation",[locX,locY]);
+                }
+            } else {
+                selectedCharacter.confirmPlacement();
+            }
+        });
+        Q.el.addEventListener("mousemove",function(e) {
+            if(!Q.stage()) return;
+            var x = e.offsetX || e.layerX,
+                y = e.offsetY || e.layerY,
+                stage = Q.stage();
+
+            var stageX = Q.canvasToStageX(x, stage),
+                stageY = Q.canvasToStageY(y, stage);
+            var locX = Math.floor(stageX/Q.tileW);
+            var locY = Math.floor(stageY/Q.tileH);
+            $("#canvas-coordinates").text(locX+","+locY);
+            $("#canvas-coordinates").attr("locX",locX);
+            $("#canvas-coordinates").attr("locY",locY);
+        });
+        var dragged = false;
+        Q.addViewport = function(stage){
+            stage.add("viewport");
+            var obj = Q.viewObj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
+            obj.p.x = obj.p.w/2;
+            obj.p.y = obj.p.h/2;
+            obj.drag = function(touch){
+                this.p.x = touch.origX - touch.dx;
+                this.p.y = touch.origY - touch.dy;
+                dragged = true;
+            };
+            obj.on("drag");
+            obj.on("touchEnd",function(){
+                setTimeout(function(){
+                    dragged = false;
+                });
+            });
+            obj.centerOn = function(loc){
+                var pos = Q.getXY(loc);
+                this.p.x = pos.x;
+                this.p.y = pos.y;
+            };
+            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+            stage.follow(obj,{x:true,y:true});
+        };
+
+        Q.getSpriteAt = function(loc){
+            return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
+        };
+        Q.getXY = function(loc){
+            return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
+        };
+        var selectedGroup = false;
+        var selectedCharacter = false;
+        
+        $(document).on("click",".char-remove",function(){
+            var charButton = $(this).parent().children(".character");
+            var char = Q.getSpriteAt([parseInt($(charButton).attr("locX")),parseInt($(charButton).attr("locY"))]);
+            if(Q.matchChars(selectedCharacter,char)){
+                selectedCharacter.destroySelectedBox();
+                selectedCharacter.off("step",selectedCharacter,"setDir");
+            }
+            char.removeFromExistence();
+        });
+        $(document).on("click",".character",function(){
+            $(".character.selected").removeClass("selected");
+            $(this).addClass("selected");
+            if(selectedCharacter){
+                selectedCharacter.destroySelectedBox();
+                selectedCharacter.off("step",selectedCharacter,"setDir");
+            }
+            selectedCharacter = Q.getSpriteAt([parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))]);
+            selectedCharacter.createSelectedBox();
+            selectedCharacter.on("step",selectedCharacter,"setDir");
+        });
+        Q.matchChars = function(a,b){
+            if(!a||!b) return false;
+            return a.p.handle===b.p.handle&&a.p.uniqueId===b.p.uniqueId;
+        };
+        Q.toCharSelection = function(){
+            selectedGroup = false;
+            //When a character is clicked on the map
+            Q.stage(0).on("selectedCharacter",function(obj){
+                //If the character is already selected
+                if(selectedCharacter&&Q.matchChars(selectedCharacter,obj)){
+                    selectedCharacter.destroySelectedBox();
+                    selectedCharacter.unconfirmPlacement();
+                    selectedCharacter.allowPlacement();
+                } 
+                //If the character is not already selected, select it.
+                else {
+                    $(obj.p.ref).trigger("click");
+                }
+            });
+            $("#event-script-box").removeClass("selected-background");
+            $("#script-item-box").removeClass("selected-background");
+            //Add the darker theme to the character boxes
+            $("#event-characters-box").addClass("selected-background");
+            $("#all-characters-box").addClass("selected-background");
+        };
+        Q.UI.Container.extend("SelectedSquare",{
+            init:function(p){
+                this._super(p,{
+                    w:Q.tileW,
+                    h:Q.tileH,
+                    border:1,
+                    opacity:0.8,
+                    fill:"black"
+                });
+                this.p.z = this.p.y-1;
+                if(this.p.num){
+                    this.on("inserted");
+                }
+            },
+            inserted:function(){
+                this.p.number = this.insert(new Q.Number({label:""+this.p.num,y:-this.p.h/2}));
+            }
+        });
+        Q.UI.Text.extend("Number",{
+            init:function(p){
+                this._super(p,{
+                    color:"white",
+                    z:3
+                });
+            }
+        });
+        Q.component("inGrid",{
+            added:function(){
+                Q.Grid[this.entity.p.loc[1]][this.entity.p.loc[0]] = this.entity;
+            },
+            extend:{
+                unconfirmPlacement:function(){
+                    Q.Grid[this.p.loc[1]][this.p.loc[0]] = false;
+                },
+                confirmPlacement:function(){
+                    if(isNaN(this.p.loc[0])||isNaN(this.p.loc[1])) this.p.loc = [0,0];
+                    if(this.p.loc[0]<0||this.p.loc[0]>Q.stage(0).mapWidth||this.p.loc[1]<0||this.p.loc[1]>Q.stage(0).mapHeight) return;
+                    if(!Q.Grid[this.p.loc[1]][this.p.loc[0]]){
+                        this.off("step",this,"stickToCursor");
+                        Q.Grid[this.p.loc[1]][this.p.loc[0]] = this;
+                        $(this.p.ref).attr("locX",this.p.loc[0]);
+                        $(this.p.ref).attr("locY",this.p.loc[1]);
+                        allowSpriteSelecting = true;
+                        var pos = Q.getXY(this.p.loc);
+                        this.p.x = pos.x;
+                        this.p.y = pos.y;
+                        this.p.z = pos.y;
+                        this.createSelectedBox();
+                        this.p.lastLoc = false;
+                    } else {
+                        Q.playSound("cannot_do.mp3");
+                    }
+                }
+            }
+        });
+        Q.Sprite.extend("CharacterSprite",{
+            init:function(p){
+                if(p.sheet==="random") p.sheet = "legionnaire";
+                this._super(p,{
+                    type:Q.SPRITE_CHARACTER,
+                    frame:0,
+                    sprite:"Character"
+                });
+                console.log(this)
+                var pos = Q.getXY(this.p.loc);
+                this.p.x = pos.x;
+                this.p.y = pos.y;
+                this.p.z = pos.y;
+                this.add("animation, inGrid");
+                this.on("destroy",function(){
+                    if(this.p.selectionBox){
+                        this.p.selectionBox.destroy();
+                    }
+                });
+                this.play("standing"+this.p.dir);
+            },
+            setDir:function(){
+                if(Q.inputs['left']){
+                    this.p.dir = 'left';
+                } else if(Q.inputs['right']){
+                    this.p.dir = 'right';
+                } else if(Q.inputs['down']){
+                    this.p.dir = 'down';
+                } else if(Q.inputs['up']){
+                    this.p.dir = 'up';
+                }
+                this.play("standing"+this.p.dir);
+            },
+            destroySelectedBox:function(){
+                if(this.p.selectedBox) this.p.selectedBox.destroy();
+            },
+            createSelectedBox:function(){
+                this.destroySelectedBox();
+                this.p.selectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:this.p.x,y:this.p.y,loc:this.p.loc,fill:"white"}));
+            },
+            removeFromExistence:function(){
+                if(selectedCharacter===this&&Q.locSelectedBox) Q.locSelectedBox.destroy();
+                if(!isNaN(this.p.loc[0])&&!isNaN(this.p.loc[1])) this.unconfirmPlacement();
+                this.destroy();
+            },
+            allowPlacement:function(){
+                allowSpriteSelecting = false;
+                this.on("step",this,"stickToCursor");
+                this.p.lastLoc = [this.p.loc[0],this.p.loc[1]];
+            },
+            stickToCursor:function(){
+                this.p.x = parseInt($("#canvas-coordinates").attr("locX"))*Q.tileW+Q.tileW/2;
+                this.p.y = parseInt($("#canvas-coordinates").attr("locY"))*Q.tileH+Q.tileH/2;
+                this.p.loc = [parseInt($("#canvas-coordinates").attr("locX")),parseInt($("#canvas-coordinates").attr("locY"))];
+                this.p.z = this.p.y;
+            }
+        });
+        var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
+        Q.loadTMX(map,function(){
+            Q.load("sfx/cannot_do.mp3",function(){
+                Q.stageScene("map",0,{map:map,characters:dataP.event.characters,placementSquares:dataP.event.placementSquares});
+                
+                //Using the file data, set up the page
+                var event = dataP.event;
+                $("#prop-music .music-select").val(event.music).trigger("change");
+                $("#prop-maxAllies input").val(event.maxAllies);
+                function showEventGroups(data,groupCont){
+                    console.log(groupCont)
+                    $(groupCont).children(".cond-group-title-bar").children(".add-group").trigger("click");
+                    for(var j=0;j<data.conds.length;j++){
+                        var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
+                        var func = data.conds[j][0];
+                        var props = data.conds[j][1];
+                        var required = data.required.toString();
+                        var cont = $(condsCont).children(".conditions").children(".cond-cont").append(DC.getCondFunc(func));
+                        DC.getCond(cont.children(".cond").last(),func,props);
+                        $(condsCont).children(".conditions").children(".required").val(required);
+                        DC.selectInitialValue($(cont).children(".cond").last());
+                        $(cont).children(".cond").last().children(".func").on("change",function(){
+                            $(this).nextAll().remove();
+                            DC.getCond($(this).parent(),$(this).parent().children(".func").val());
+                        });
+                    }
+                    for(var j=0;j<data.effects.length;j++){
+                        var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
+                        var func = data.effects[j][0];
+                        var props = data.effects[j][1];
+                        var cont = $(condsCont).children(".effects").children(".effect-cont").append(DC.getEffectFunc(func));
+                        DC.getEffect(cont.children(".effect").last(),func,props);
+                        DC.selectInitialValue($(cont).children(".effect").last());
+                        $(cont).children(".effect").last().children(".func").on("change",function(){
+                            $(this).nextAll().remove();
+                            DC.getEffect($(this).parent(),$(this).parent().children(".func").val());
+                        });
+                    }
+                };
+                function setUpEndBattle(which){
+                    $("#prop-"+which+" .scene-type").val(event[which].next[0]).trigger("change");
+                    $("#prop-"+which+" .scene-name").val(event[which].next[1]).trigger("change");
+                    $("#prop-"+which+" .event-name").val(event[which].next[2]);
+                    for(var i=0;i<event[which].events.length;i++){
+                        showEventGroups(event[which].events[i],$("#prop-"+which));
+                    }
+                }
+                setUpEndBattle("victory");
+                setUpEndBattle("defeat");
+                for(var i=0;i<event.events.length;i++){
+                    showEventGroups(event.events[i],$("#cond-groups-cont"));
+                }
+            });
+        },{tmxImagePath:Q.options.imagePath.substring(3)});
+    }
     
     var dataP = {
         mapFileNames:mapFileNames,
         mapFileGroups:Object.keys(mapFileNames),
         musicFileNames:musicFileNames,
         charFiles:characterFiles,
+        imageAssets:imageAssets,
         sceneTypes:["Story","Flavour"],
-        condFuncs:["rounds"],
-        effectFuncs:["setVar","spawnEnemy"],
+        condFuncs:["rounds","charHealth"],
+        effectFuncs:["setVar","spawnCharacter","showText","changeMusic"],
         scopes:["Global","Scene","Event"],
         conditionals:["==","!=",">=","<="],
         operators:["=","+=","-="],
-        directions:["down","left","up","right"]
+        directions:["down","left","up","right"],
+        charHealth:["deadOrFainted","dead","fainted","fullHealth","takenDamage","belowHalfHealth"]
     };
-    console.log(dataP)
     var numOfFiles = 1 + dataFiles.length;
     var setJSONData = function(url,name){
         $.getJSON(url)
@@ -75,7 +510,7 @@ $(function(){
         dataP.events = formatEvents();
         dataP.scene = dataP["scenes-list.json"].Story.find(function(sc){return sc.name===sceneName;});
         dataP.vrs = {Global:Object.keys(dataP["global-vars.json"].vrs),Scene:Object.keys(dataP.scene.vrs)};
-        var DC = {
+        DC = {
             getCondGroup:function(){
                 return '<div class="cond-group">\n\
                     <div class="cond-group-top">\n\
@@ -111,10 +546,13 @@ $(function(){
                 return "<span class='remove-choice group-text unobtrusive'>x</span>";
             },
             groupInput:function(text,val,type,min){
-                return "<span class='half-width'>"+text+"</span><input class='prop half-width' value='"+val+"' type='"+type+"' min='"+min+"'>";
+                return "<span class='quarter-width'>"+text+"</span><input class='prop three-quarter-width' value='"+val+"' type='"+type+"' min='"+min+"'>";
+            },
+            groupTextArea:function(text,val){
+                return "<span class='full-width'>"+text+"</span><textarea class='prop full-width group-text-area'>"+val+"</textarea>";
             },
             groupSelect:function(text,opts,value){
-                return "<span class='half-width'>"+text+"</span><select class='prop half-width' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
+                return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
             },
             getCondFunc:function(name){
                 name = name || "rounds";
@@ -125,11 +563,17 @@ $(function(){
             },
             getCond:function(content,name,props){
                 name = name || "rounds";
-                props = props || [1,0];
                 switch(name){
                     case "rounds":
+                        props = props || [1,0];
                         content.append(this.groupInput("Rounds",props[0],"number",1));
                         content.append(this.groupInput("Repeat",props[1],"number",0));
+                        break;
+                    case "charHealth":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],dataP.charHealth[0]];
+                        content.append(this.groupSelect("Char",chars,props[0]));
+                        content.append(this.groupSelect("Prop",dataP.charHealth,props[1]));
                         break;
                 }
                 return content;
@@ -149,11 +593,11 @@ $(function(){
                         content.append(this.groupSelect("Scope",dataP.scopes,props[0]));
                         content.append(this.groupSelect("Name",dataP.vrs[props[0]],props[1]));
                         DC.linkSelects($(content).children(".prop")[0],$(content).children(".prop")[1],dataP.vrs);
-                        content.append(this.groupSelect("Operator",dataP.operators,decodeURIComponent(props[2])));
+                        content.append(this.groupSelect("Opr",dataP.operators,decodeURIComponent(props[2])));
                         content.append(this.groupInput("Value",props[3],"text"));
                         
                         break;
-                    case "spawnEnemy":
+                    case "spawnCharacter":
                         props = props || ["Officers.json","Officers","Alex",[3,0],"down"];
                         var files = Object.keys(dataP.charFiles);
                         var groups = Object.keys(dataP.charFiles[props[0]]);
@@ -165,13 +609,46 @@ $(function(){
                         DC.linkSelects($(content).children(".prop")[1],$(content).children(".prop")[2],dataP.charFiles,[$(content).children(".prop")[0]]);
                         content.append(this.groupInput("X Loc",props[3][0],"number",0));
                         content.append(this.groupInput("Y Loc",props[3][1],"number",0));
-                        content.append(this.groupSelect("Direction",dataP.directions,props[4]));
+                        content.append(this.groupSelect("Dir",dataP.directions,props[4]));
+                        break;
+                    case "showText":
+                        props = props || ["",dataP.imageAssets[0],dataP.imageAssets[0]];
+                        content.append(this.groupTextArea("Text",props[0]));
+                        content.append(this.groupSelect("Left",dataP.imageAssets,props[1]));
+                        content.append(this.groupSelect("Right",dataP.imageAssets,props[2]));
+                        break;
+                    case "changeMusic":
+                        props = props || ["battle.mp3"];
+                        content.append(this.groupSelect("Music",dataP.musicFileNames,props[0]));
                         break;
                 }
                 return content;
             },
             newCharacter:function(char){
-                return "<div class='character-cont'><span class='character "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text'>x</span></div>";
+                return $("<div class='character-cont'><span class='character "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text char-remove'>x</span></div>");
+            },
+            addPlacementSquare:function(loc){
+                var objAt = Q.Grid[loc[1]][loc[0]];
+                if(!objAt){
+                    var pos = Q.getXY(loc);
+                    var square = Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc,fill:"blue"}));
+                    square.add("inGrid");
+                    $("#placement-squares-cont").append("<span class='placement-square' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</span>");
+                    $(".placement-square").last().on("click",function(){
+                        var loc = [parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))];
+                        Q.viewObj.centerOn(loc);
+                    });
+                } else if(objAt.isA("CharacterSprite")){
+                    Q.playSound("cannot_do.mp3");
+                } else {
+                    $(".placement-square").each(function(){
+                        if($(this).attr("locX")==loc[0]&&$(this).attr("locY")==loc[1]){
+                            $(this).remove();
+                        }
+                    });
+                    objAt.unconfirmPlacement();
+                    objAt.destroy();
+                }
             },
             //When sel1 changes, change all of the options of sel2 from the passed in object.
             //obj must be in this format: {myName:[itm1, itm2, ..]}
@@ -209,6 +686,23 @@ $(function(){
                 }
                 return id;
             },
+    
+            getNextEmpty:function(loc){
+                var occupied = true;
+                while(occupied){
+                    if(Q.Grid[loc[1]][loc[0]]){
+                        if(loc[0]>Q.stage(0).mapWidth){
+                            loc[0] = 0;
+                            loc[1]++;
+                        } else {
+                            loc[0]++;
+                        }
+                    } else {
+                        occupied = false;
+                    }
+                }
+                return loc;
+            },
             getDeepValue:function(obj, path){
                 for (var i=0, path=path.split('&'), len=path.length; i<len; i++){
                     obj = obj[path[i]];
@@ -234,7 +728,7 @@ $(function(){
                 });
             }
         };
-        var FileSaver = {
+        FileSaver = {
             processValue:function(value){
                 var val = parseInt(value);
                 if(isNaN(val)) val = encodeURIComponent(value);
@@ -283,6 +777,33 @@ $(function(){
                     });
                 });
                 return chars;
+            },
+            getPlacementSquares:function(){
+                var squares = [];
+                $(".placement-square").each(function(){
+                    squares.push([parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))]);
+                });
+                return squares;
+            },
+            getNewSaveFile:function(){
+                return JSON.stringify({
+                    name:dataP.event.name,
+                    kind:"battle",
+                    map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
+                    music:$("#prop-music .music-select").val(),
+                    placementSquares:FileSaver.getPlacementSquares(),
+                    maxAllies:FileSaver.processValue($("#prop-maxAllies input").val()),
+                    victory:{
+                        events:FileSaver.getGroups($("#prop-victory").children(".cond-groups")),
+                        next:[$("#prop-victory .scene-type").val(),$("#prop-victory .scene-name").val(),$("#prop-victory .event-name").val()]
+                    },
+                    defeat:{
+                        events:FileSaver.getGroups($("#prop-defeat").children(".cond-groups")),
+                        next:[$("#prop-defeat .scene-type").val(),$("#prop-defeat .scene-name").val(),$("#prop-defeat .event-name").val()]
+                    },
+                    events:FileSaver.getGroups($("#cond-groups-cont").children(".cond-groups")),
+                    characters:FileSaver.getCharacters()
+                });
             }
         };
 
@@ -308,8 +829,6 @@ $(function(){
                 }
             }
         }
-
-        
         
         $(document).on("click",".add-group",function(){
             $(this).parent().siblings(".cond-groups").append(DC.getCondGroup());
@@ -343,6 +862,13 @@ $(function(){
         
         $("#placement-squares-button").on("click",function(){
             $(this).toggleClass("selected");
+            if($(this).hasClass("selected")){
+                Q.stage(0).on("selectedLocation",function(loc){
+                    DC.addPlacementSquare(loc);
+                });
+            } else {
+                Q.stage(0).off("selectedLocation");
+            }
         });
         DC.linkSelects($("#prop-victory").children(".scene-type"),$("#prop-victory").children(".scene-name"),dataP.scenes);
         $("#prop-victory").children(".scene-type").append(DC.getOptString(dataP.sceneTypes));
@@ -373,35 +899,38 @@ $(function(){
             drop:function(event,ui){
                 var char = JSON.parse($(ui.draggable).attr("data"));
                 char.uniqueId = DC.genUniqueId(char.handle);
-                char.loc = [0,0];
+                char.loc = DC.getNextEmpty([0,0]);
                 char.dir = "down";
-                $(this).append(DC.newCharacter(char));
-                //Double click the last character for placement
-                $(".char-btn").last().trigger("click");
-                $(".char-btn").last().trigger("click");
+                var charButton = DC.newCharacter(char);
+                $(this).append(charButton);
+                var data = dataP.charFiles[char.file][char.group][char.handle];
+                Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                $(charButton).children(".character").trigger("click");
             }
         });
-        
+        $("#go-back").click(function(e){
+            if(confirm("Are you sure you want to go back without saving?")){
+                var to = "show-events.php";
+                if(sceneType==="Flavour"){
+                    to = "show-flavour.php";
+                }
+                $.redirect(to,  {'scene':sceneName, 'event':eventName, 'type':sceneType});
+            }
+        });
+        $("#test-file").click(function(e){
+            window.onbeforeunload = null;
+            var newFile = FileSaver.getNewSaveFile();
+            $.ajax({
+                type:'POST',
+                url:'save-battle.php',
+                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                dataType:'json'
+            })
+            .done(function(data){$.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});})
+            .fail(function(data){console.log(data)});
+        });
         $("#save-file").click(function(){
-            var newFile = JSON.stringify({
-                name:dataP.event.name,
-                kind:"battle",
-                map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
-                music:$("#prop-music .music-select").val(),
-                placementSquares:[],
-                maxAllies:FileSaver.processValue($("#prop-maxAllies input").val()),
-                victory:{
-                    events:FileSaver.getGroups($("#prop-victory").children(".cond-groups")),
-                    next:[$("#prop-victory .scene-type").val(),$("#prop-victory .scene-name").val(),$("#prop-victory .event-name").val()]
-                },
-                defeat:{
-                    events:FileSaver.getGroups($("#prop-defeat").children(".cond-groups")),
-                    next:[$("#prop-defeat .scene-type").val(),$("#prop-defeat .scene-name").val(),$("#prop-defeat .event-name").val()]
-                },
-                events:FileSaver.getGroups($("#cond-groups-cont").children(".cond-groups")),
-                characters:FileSaver.getCharacters()
-            });
-            console.log(newFile);
+            var newFile = FileSaver.getNewSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
@@ -411,47 +940,63 @@ $(function(){
             .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
             .fail(function(data){console.log(data)});
         });
+        $("#load-characters").click(function(){
+            if($("#load-chars-from-cont").length) return;
+            $("#full-screen-hider").show();
+            var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
+            var scType = DC.groupSelect("Type",dataP.sceneTypes,sceneType);
+            var scName = DC.groupSelect("SCName",dataP.scenes[sceneType],sceneName);
+            var evName = DC.groupSelect("EVName",dataP.events[sceneType][sceneName],eventName);
+            $(cont).append(scType);
+            $(cont).append(scName);
+            $(cont).append(evName);
+            DC.selectInitialValue(cont);
+            DC.linkSelects($(cont).children(".prop")[0],$(cont).children(".prop")[1],dataP.scenes);
+            DC.linkSelects($(cont).children(".prop")[1],$(cont).children(".prop")[2],dataP.events,[$(cont).children(".prop")[0]]);
+            
+            $(cont).append("<div id='load-chars-buttons'><span id='load-chars'>LOAD</span><span id='chars-cancel'>CANCEL</span></div>");
+            $("#editor-content").append(cont);
+            $("#load-chars").click(function(){
+                var url = "../../data/json/story/events/"+$($("#load-chars-from-cont").children(".prop")[0]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[1]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[2]).val()+".json";;
+                $.getJSON(url)
+                    .done(function(d){
+                        if(!d.characters){
+                            alert("This file is not a battle or battleScene!");
+                            return;      
+                        }
+                        $("#full-screen-hider").trigger("click");
+                        $("#event-chars-cont").empty();
+                        Q("CharacterSprite").each(function(){
+                            this.removeFromExistence();
+                        });
+                        for(var i=0;i<d.characters.length;i++){
+                            var char = d.characters[i];
+                            char.loc = DC.getNextEmpty(char.loc);
+                            var charButton = DC.newCharacter(char);
+                            $('#event-chars-cont').append(charButton);
+                            var data = dataP.charFiles[char.file][char.group][char.handle];
+                            Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                        }
+                        $(".character").last().trigger("click");
+                    }
+                );
+            });
+            $("#chars-cancel").click(function(){
+                $("#full-screen-hider").trigger("click");
+            });
+        });
+        $("#full-screen-hider").click(function(){
+            $(this).hide();
+            $("#load-chars-from-cont").remove();
+        });
         
-        //Using the file data, set up the page
-        console.log(dataP.event)
         var event = dataP.event;
         var map = event.map.split("/");
         $("#map-select-group").val(map[0]).trigger("change");
         $("#map-select-place").val(map[1]).trigger("change");
-        $("#prop-music .music-select").val(event.music).trigger("change");
-        $("#prop-maxAllies input").val(event.maxAllies);
-        function setUpEndBattle(which){
-            $("#prop-"+which+" .scene-type").val(event[which].next[0]).trigger("change");
-            $("#prop-"+which+" .scene-name").val(event[which].next[1]).trigger("change");
-            $("#prop-"+which+" .event-name").val(event[which].next[2]);
-            for(var i=0;i<event[which].events.length;i++){
-                $("#prop-"+which+" .cond-group-title-bar span").trigger("click");
-                for(var j=0;j<event[which].events[i].conds.length;j++){
-                    var condsCont = $("#prop-"+which+" .cond-groups .cond-group").last();
-                    var func = event[which].events[i].conds[j][0];
-                    var props = event[which].events[i].conds[j][1];
-                    var required = event[which].events[i].required.toString();
-                    var cont = $(condsCont).children(".conditions").children(".cond-cont").append(DC.getCondFunc(func));
-                    DC.getCond(cont.children(".cond").last(),func,props);
-                    $(condsCont).children(".conditions").children(".required").val(required);
-                    DC.selectInitialValue($(cont).children(".cond").last());
-                }
-                for(var j=0;j<event[which].events[i].effects.length;j++){
-                    var condsCont = $("#prop-"+which+" .cond-groups .cond-group").last();
-                    var func = event[which].events[i].effects[j][0];
-                    var props = event[which].events[i].effects[j][1];
-                    var cont = $(condsCont).children(".effects").children(".effect-cont").append(DC.getEffectFunc(func));
-                    DC.getEffect(cont.children(".effect").last(),func,props);
-                    DC.selectInitialValue($(cont).children(".effect").last());
-                }
-            }
-        }
-        //TODO PLACEMENTSQUARES
-        setUpEndBattle("victory");
-        setUpEndBattle("defeat");
-        for(var i=0;i<event.characters.length;i++){
-            $('#event-chars-cont').append(DC.newCharacter(event.characters[i]));
-        }
+        Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
+            startQuintusCanvas();
+        });
     };
     
     

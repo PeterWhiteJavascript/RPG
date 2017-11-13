@@ -1,21 +1,27 @@
 {
     "name": "TEST",
     "kind": "battle",
-    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "map": "Venoria\/Venoria-Forest-Clearing.tmx",
     "music": "demo.mp3",
-    "placementSquares": [],
+    "placementSquares": [
+        [
+            "16",
+            "12"
+        ],
+        [
+            "15",
+            "14"
+        ],
+        [
+            "17",
+            "15"
+        ]
+    ],
     "maxAllies": 1,
     "victory": {
         "events": [
             {
                 "conds": [
-                    [
-                        "rounds",
-                        [
-                            3,
-                            0
-                        ]
-                    ],
                     [
                         "rounds",
                         [
@@ -52,18 +58,77 @@
             "fff"
         ]
     },
-    "events": [],
+    "events": [
+        {
+            "conds": [],
+            "effects": [
+                [
+                    "showText",
+                    [
+                        "asdasdasdasdsadasawfawfawfawfawfawfawfawf",
+                        "empty.png",
+                        "empty.png"
+                    ]
+                ]
+            ],
+            "required": "true"
+        }
+    ],
     "characters": [
         {
             "file": "test_level1.json",
             "group": "Main",
-            "handle": "Bandit-Archer",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                9
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 1,
+            "loc": [
+                14,
+                7
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Sjrna",
             "uniqueId": 0,
             "loc": [
                 15,
                 7
             ],
-            "dir": "left"
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Lysandra",
+            "uniqueId": 0,
+            "loc": [
+                15,
+                8
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Eko",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                8
+            ],
+            "dir": "down"
         }
     ]
 }
