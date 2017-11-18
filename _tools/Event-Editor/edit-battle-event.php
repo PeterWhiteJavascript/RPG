@@ -1,16 +1,8 @@
 <?php
 include("php-config.php");
-
-if(isset($_POST['scene'])){
-    $scene = addDashes($_POST['scene']);
-    $type = $_POST['type'];
-    $name = addDashes($_POST['event']);
-} else {
-    $scene = "Act-1-1";
-    $type = "Story";
-    $name = "Test";
-}
-
+$scene = addDashes($_POST['scene']);
+$type = $_POST['type'];
+$name = addDashes($_POST['event']);
 
 $characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
 $characters = (object)[];
@@ -68,10 +60,10 @@ $images =  array_values(array_diff(scandir("../../images/story"), array('..', '.
                     <div id="test-file" class="bar-button">TEST</div>
                 </div>
                 <div class="top-bar-itm">
-                    <div id="go-back" class="bar-button">BACK</div>
+                    <div id="load-characters" class="bar-button">LOAD CHARS</div>
                 </div>
                 <div class="top-bar-itm">
-                    <div id="load-characters" class="bar-button">LOAD CHARS</div>
+                    <div id="go-back" class="bar-button">BACK</div>
                 </div>
             </div>
             <div id="editor-main-content">

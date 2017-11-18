@@ -1,14 +1,6 @@
 {
     "name": "Training-Battle-Victory",
-    "desc": "If Alex beats Astraea in the training battle.",
     "kind": "battleScene",
-    "pointers": {
-        "events": [
-            "City-Recruit"
-        ],
-        "sceneVars": [],
-        "globalVars": []
-    },
     "script": [
         [
             "Initial",
@@ -115,5 +107,6 @@
             "dir": "down"
         }
     ],
-    "map": "maps\/Venoria\/Venoria-Forest-Clearing.tmx"
+    "map": "Venoria\/Venoria-Forest-Clearing.tmx",
+    "music": "demo.mp3"
 }

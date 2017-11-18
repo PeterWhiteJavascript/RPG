@@ -4,15 +4,6 @@
     "desc": "First time in town. Goal is to recruit people.",
     "bg": "bg\/fantasy_castle_by_jbrown67-d7mu200.jpg",
     "music": "homeland.mp3",
-    "pointers": {
-        "events": [
-            "Return-from-recruiting"
-        ],
-        "sceneVars": [
-            "startVicantiAsk"
-        ],
-        "globalVars": []
-    },
     "disabledChoices": [
         0
     ],

@@ -2,11 +2,6 @@
     "name": "Arrive-in-Dardoine",
     "desc": "The party arrives in Dardoine.",
     "kind": "story",
-    "pointers": {
-        "events": [],
-        "sceneVars": [],
-        "globalVars": []
-    },
     "pages": [
         {
             "name": "Start",

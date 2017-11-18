@@ -3,6 +3,42 @@
         {
             "name": "Act-1-1",
             "events": [
+                {
+                    "events": [
+                        "LOCATION"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "STORY",
+                    "left": "336px",
+                    "top": "237px"
+                },
+                {
+                    "events": [
+                        "BATTLE-SCENE"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "LOCATION",
+                    "left": "459px",
+                    "top": "239px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "BATTLE-SCENE",
+                    "left": "605px",
+                    "top": "239px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "BATTLE",
+                    "left": "527px",
+                    "top": "312px"
+                }
             ],
             "vrs": {
                 "test": 123

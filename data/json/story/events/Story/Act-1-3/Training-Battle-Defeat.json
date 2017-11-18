@@ -1,92 +1,82 @@
 {
     "name": "Training-Battle-Defeat",
-    "desc": "When Astraea beats Alex in the training battle.",
     "kind": "battleScene",
-    "pointers":{
-        "events":["City-Recruit"],
-        "sceneVars":[],
-        "globalVars":[]
-    },
+    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "music": "demo.mp3",
     "script": [
         [
-            "Initial",
-            {
-                "func": "setView",
-                "props": [
-                    [
-                        "Astraea",
-                        0
-                    ]
+            [
+                "centerViewChar",
+                [
+                    "Astraea 0",
+                    0
                 ]
-            },
-            {
-                "func": "changeMusic",
-                "props": [
+            ],
+            [
+                "changeMusic",
+                [
                     "the_usual.mp3"
                 ]
-            },
-            {
-                "text": [
-                    "Hmm, you still need more training!",
-                    "I will make sure that you get much stronger on our journey to Dardoine!",
-                    "Now, go find some capable recruits!"
-                ],
-                "asset1": "story\/pyro.png",
-                "asset2": "story\/skirm.png",
-                "pos": "Left",
-                "autoCycle": 0,
-                "noCycle": "No"
-            },
-            {
-                "func": "centerView",
-                "props": [
-                    [
-                        "Alex",
-                        0
-                    ]
+            ],
+            [
+                "text",
+                [
+                    "Hmm, you still need more training!\n\n I will make sure that you get much stronger on our journey to Dardoine!\n\n Now, go find some capable recruits!",
+                    "pyro.png",
+                    "skirm.png",
+                    false,
+                    0,
+                    false
                 ]
-            },
-            {
-                "func": "moveAlong",
-                "props": [
-                    [
-                        "Alex",
-                        0
-                    ],
+            ],
+            [
+                "centerViewChar",
+                [
+                    "Alex 0",
+                    0
+                ]
+            ],
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "down",
+                    true,
                     [
                         [
                             7,
                             22
                         ]
-                    ],
-                    "down",
-                    true
+                    ]
                 ]
-            },
-            {
-                "func": "fadeChar",
-                "props": [
-                    [
-                        "Alex",
-                        0
-                    ],
-                    "out"
+            ],
+            [
+                "fadeChar",
+                [
+                    "Alex 0",
+                    "out",
+                    "medium"
                 ]
-            },
-            {
-                "func": "waitTime",
-                "props": [
-                    "1000"
+            ],
+            [
+                "waitTime",
+                [
+                    1000
                 ]
-            },
-            {
-                "func": "changeEvent",
-                "props": [
-                    "Story",
-                    "Act-1-3",
-                    "City-Recruit"
+            ]
+        ],
+        [
+            [
+                "text",
+                [
+                    "asd",
+                    "empty.png",
+                    "empty.png",
+                    true,
+                    0,
+                    false
                 ]
-            }
+            ]
         ]
     ],
     "characters": [
@@ -112,6 +102,5 @@
             ],
             "dir": "down"
         }
-    ],
-    "map": "maps\/Venoria\/Venoria-Castle-Training-Area.tmx"
+    ]
 }

@@ -1,0 +1,13 @@
+{
+    "name": "BATTLE",
+    "kind": "battle",
+    "music": "demo.mp3",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "placementSquares": [],
+    "maxAllies": 6,
+    "events": [],
+    "characters": [],
+    "victory": [],
+    "defeat": [],
+    "vrs": []
+}

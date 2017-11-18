@@ -19,6 +19,7 @@ $(function(){
         soundEnabled:true
     });
     var allowSpriteSelecting = true;
+    var selectedCharacter = false;
     function startQuintusCanvas(){
         //Sprites
         var toSheet= [
@@ -218,8 +219,6 @@ $(function(){
         Q.getXY = function(loc){
             return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
         };
-        var selectedGroup = false;
-        var selectedCharacter = false;
         
         $(document).on("click",".char-remove",function(){
             var charButton = $(this).parent().children(".character");
@@ -292,6 +291,8 @@ $(function(){
                 });
             }
         });
+      
+
         Q.component("inGrid",{
             added:function(){
                 Q.Grid[this.entity.p.loc[1]][this.entity.p.loc[0]] = this.entity;
@@ -303,21 +304,22 @@ $(function(){
                 confirmPlacement:function(){
                     if(isNaN(this.p.loc[0])||isNaN(this.p.loc[1])) this.p.loc = [0,0];
                     if(this.p.loc[0]<0||this.p.loc[0]>Q.stage(0).mapWidth||this.p.loc[1]<0||this.p.loc[1]>Q.stage(0).mapHeight) return;
-                    if(!Q.Grid[this.p.loc[1]][this.p.loc[0]]){
-                        this.off("step",this,"stickToCursor");
-                        Q.Grid[this.p.loc[1]][this.p.loc[0]] = this;
-                        $(this.p.ref).attr("locX",this.p.loc[0]);
-                        $(this.p.ref).attr("locY",this.p.loc[1]);
-                        allowSpriteSelecting = true;
-                        var pos = Q.getXY(this.p.loc);
-                        this.p.x = pos.x;
-                        this.p.y = pos.y;
-                        this.p.z = pos.y;
-                        this.createSelectedBox();
-                        this.p.lastLoc = false;
-                    } else {
-                        Q.playSound("cannot_do.mp3");
+                    if(Q.Grid[this.p.loc[1]][this.p.loc[0]]){
+                        if(Q.Grid[this.p.loc[1]][this.p.loc[0]] !== this){
+                            this.p.loc = DC.getNextEmpty(this.p.loc);
+                        }
                     }
+                    this.off("step",this,"stickToCursor");
+                    Q.Grid[this.p.loc[1]][this.p.loc[0]] = this;
+                    $(this.p.ref).attr("locX",this.p.loc[0]);
+                    $(this.p.ref).attr("locY",this.p.loc[1]);
+                    allowSpriteSelecting = true;
+                    var pos = Q.getXY(this.p.loc);
+                    this.p.x = pos.x;
+                    this.p.y = pos.y;
+                    this.p.z = pos.y;
+                    this.createSelectedBox();
+                    this.p.lastLoc = false;
                 }
             }
         });
@@ -598,7 +600,7 @@ $(function(){
                         
                         break;
                     case "spawnCharacter":
-                        props = props || ["Officers.json","Officers","Alex",[3,0],"down"];
+                        props = props || ["Officers.json","Officers","Alex",3,0,"down"];
                         var files = Object.keys(dataP.charFiles);
                         var groups = Object.keys(dataP.charFiles[props[0]]);
                         var chars = Object.keys(dataP.charFiles[props[0]][props[1]]);
@@ -607,9 +609,9 @@ $(function(){
                         DC.linkSelects($(content).children(".prop")[0],$(content).children(".prop")[1],dataP.charFiles);
                         content.append(this.groupSelect("Char",chars,props[2]));
                         DC.linkSelects($(content).children(".prop")[1],$(content).children(".prop")[2],dataP.charFiles,[$(content).children(".prop")[0]]);
-                        content.append(this.groupInput("X Loc",props[3][0],"number",0));
-                        content.append(this.groupInput("Y Loc",props[3][1],"number",0));
-                        content.append(this.groupSelect("Dir",dataP.directions,props[4]));
+                        content.append(this.groupInput("X Loc",props[3],"number",0));
+                        content.append(this.groupInput("Y Loc",props[4],"number",0));
+                        content.append(this.groupSelect("Dir",dataP.directions,props[5]));
                         break;
                     case "showText":
                         props = props || ["",dataP.imageAssets[0],dataP.imageAssets[0]];
@@ -897,6 +899,7 @@ $(function(){
             accept:".file-character",
             //Create a character element
             drop:function(event,ui){
+                if(selectedCharacter) selectedCharacter.confirmPlacement();
                 var char = JSON.parse($(ui.draggable).attr("data"));
                 char.uniqueId = DC.genUniqueId(char.handle);
                 char.loc = DC.getNextEmpty([0,0]);
@@ -904,8 +907,9 @@ $(function(){
                 var charButton = DC.newCharacter(char);
                 $(this).append(charButton);
                 var data = dataP.charFiles[char.file][char.group][char.handle];
-                Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                var character = Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
                 $(charButton).children(".character").trigger("click");
+                Q.stage(0).trigger("selectedCharacter",character);
             }
         });
         $("#go-back").click(function(e){

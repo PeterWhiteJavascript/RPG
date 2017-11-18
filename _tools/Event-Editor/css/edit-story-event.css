@@ -159,10 +159,10 @@ audio{
     width:100%;
 }
 .selected-color{
-    border-color:red;
+    border-color:red !important;
 }
 .selected-fill{
-    background-color:#EBEBEB;
+    background-color:#EBEBEB !important;
 }
 .condition{
     width:100%;
@@ -204,6 +204,7 @@ audio{
     font-size:22px;
     border-radius: 2px 2px 0px 0px;
     height:30px;
+    padding:5px;
 }
 .editor-descriptor-quarter{
     width:25%;

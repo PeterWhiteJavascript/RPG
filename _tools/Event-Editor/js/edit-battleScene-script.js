@@ -1,709 +1,208 @@
-window.addEventListener("load", function() {    
-    $(document).scrollTop(0);
-$( ".sortable" ).sortable({
-    axis: "y"
-});
-$( ".sortable" ).disableSelection();
-var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
+$(function(){
+    var DC = {};
+    var FileSaver = {};
+    var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, Music")
-        .setup({development: true, width:$(document).width()/2,height:$(document).height()-40})
+        .setup({development: true, width:$(document).width()/2-9,height:$(document).height()-60})
         .touch().controls(true)
         .enableSound();
-$("#new-item-box").css({left:$(document).width()/2});
-Q.options.imagePath = "../../images/";
-Q.options.audioPath = "../.././audio/";
-Q.options.dataPath = ".././data/";
+    Q.options.imagePath = "../../images/";
+    Q.options.audioPath = "../.././audio/";
+    Q.options.dataPath = ".././data/";
 
-Q.tileW = 32;
-Q.tileH = 32;
-Q.SPRITE_CHARACTER  = 8;
+    Q.tileW = 32;
+    Q.tileH = 32;
+    Q.SPRITE_CHARACTER  = 8;
 
-Q.state.set("options",{
-    musicEnabled:true,
-    soundEnabled:true
-});
-
-
-//Wraps the text to fit inside a container.
-//Really useful for long descriptions
-//Automatically run when the label is changed and the text is inside a container
-//label is the new incoming label
-//maxWidth is either the textWidth property of the container that the text is in, or it is the container's w
-//I might delete this if we only use css for this display.
-Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
-    var ctx = Q.ctx;
-    var split = label.split(' ');
-    var newLabel = '';
-    var tempLabel = '';
-    var spaceWidth = ctx.measureText(" ").width;
-    var spaces = 0;
-    //Loop through the array of the split label
-    for(var i=0;i<split.length;i++){
-        //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
-        //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
-        split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
-        //The upcoming width for this word
-        var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
-        for(var j=0;j<split[i].length;j++){
-            var measured = ctx.measureText(tempLabel);
-            //Move to a new line
-            if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
-                newLabel+="\n";
-                tempLabel = '';
-                spaces = 0;
-            } else {
-                tempLabel+=split[i][j];
-            }
-        }
-        newLabel+=split[i];
-        if(i!==split.length-1){
-            newLabel+=" ";
-        }
-        spaces++;
-    }
-    return newLabel;
-};
-
-var allowSpriteSelecting = true;
-var creatingScriptItem = false;
-
-var map = "../../data/"+$("#event-map").text();
-var imageAssets = [];
-$("#images-holder").children("option").each(function(i,itm){
-    imageAssets.push($(this).val());
-});
-
-//Load all of the character sprites
-Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
-    //Sprites
-    var toSheet= [
-        ['archer','archer.png',24,24,0,0,192,72],
-        ['assassin','assassin.png',24,24,0,0,192,72],
-        ['berserker','berserker.png',24,24,0,0,192,72],
-        ['elementalist','elementalist.png',24,24,0,0,192,72],
-        ['healer','healer.png',24,24,0,0,192,72],
-        ['illusionist','illusionist.png',24,24,0,0,192,72],
-        ['legionnaire','legionnaire.png',24,24,0,0,192,72],
-        ['skirmisher','skirmisher.png',24,24,0,0,192,72],
-        ['vanguard','vanguard.png',24,24,0,0,192,72],
-    ];
-    for(j=0;j<toSheet.length;j++){
-        Q.sheet(toSheet[j][0],
-        "sprites/"+toSheet[j][1],
-        {
-           tilew:toSheet[j][2],
-           tileh:toSheet[j][3],
-           sx:toSheet[j][4],
-           sy:toSheet[j][5],
-           w:toSheet[j][6],
-           h:toSheet[j][7]
-        });
-    };
-    var standRate = 1/3;
-    var walkRate = 1/6;
-    var supafAst = 1/12;
-    var tooFast = 1/24;
-    Q.animations("Character", {
-        standingup:{ frames: [0,1], rate:standRate},
-        walkingup:{ frames: [0,1], rate:walkRate},
-        attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-        missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneMissed"},
-        counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
-        liftup:{frames:[0,0,0],rate:standRate},
-        liftedup:{frames:[6],rate:standRate},
-        hurtup:{frames:[1],rate:standRate},
-        dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
-        faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-        deadup:{frames:[0],rate:standRate},
-        
-        standingright:{ frames: [2,3], rate:standRate},
-        walkingright:{ frames: [2,3], rate:walkRate},
-        attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-        missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneMissed"},
-        counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
-        liftright:{frames:[2,2,2],rate:standRate},
-        liftedright:{frames:[6],rate:standRate},
-        hurtright:{frames:[3],rate:standRate},
-        dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
-        faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-        deadright:{frames:[2],rate:standRate},
-        
-        standingleft:{ frames: [4,5], rate:standRate},
-        walkingleft:{ frames: [4,5], rate:walkRate},
-        attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-        missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneMissed"},
-        counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
-        liftleft:{frames:[4,4,4],rate:standRate},
-        liftedleft:{frames:[6],rate:standRate},
-        hurtleft:{frames:[5],rate:standRate},
-        dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
-        faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-        deadleft:{frames:[4],rate:standRate},
-        
-        standingdown:{ frames: [6,7], rate:standRate},
-        walkingdown:{ frames: [6,7], rate:walkRate},
-        attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-        misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneMissed"},
-        counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
-        liftdown:{frames:[6,6,6],rate:standRate},
-        lifteddown:{frames:[6],rate:standRate},
-        hurtdown:{frames:[7],rate:standRate},
-        dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
-        faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-        deaddown:{frames:[6],rate:standRate},
-        
-        levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
-    });
-    //Load the json data
-    Q.load("../../data/json/data/character-generation.json",function(){
-        Q.loadTMX(map,function(){
-            Q.load("sfx/cannot_do.mp3",function(){
-                Q.stageScene("map",0,{map:map});
-                DC.init();    
-            });
-        },{tmxImagePath:Q.options.imagePath.substring(3)});
-    });
-});
-Q.UI.Container.extend("SelectedSquare",{
-    init:function(p){
-        this._super(p,{
-            w:Q.tileW,
-            h:Q.tileH,
-            border:1,
-            opacity:0.8,
-            fill:"black"
-        });
-        this.p.z = this.p.y-1;
-        if(this.p.num){
-            this.on("inserted");
-        }
-    },
-    inserted:function(){
-        this.p.number = this.insert(new Q.Number({label:""+this.p.num,y:-this.p.h/2}));
-    }
-});
-Q.UI.Text.extend("Number",{
-    init:function(p){
-        this._super(p,{
-            color:"white",
-            z:3
-        });
-    }
-});
-Q.Sprite.extend("CharacterSprite",{
-    init:function(p){
-        this._super(p,{
-            type:Q.SPRITE_CHARACTER,
-            frame:0,
-            sprite:"Character"
-        });
-        var pos = Q.getXY(this.p.loc);
-        this.p.x = pos.x;
-        this.p.y = pos.y;
-        this.p.z = pos.y;
-        console.log(this.p)
-        DC.grid[this.p.loc[1]][this.p.loc[0]] = this;
-        this.add("animation");
-        this.on("destroy",function(){
-            if(this.p.selectionBox){
-                this.p.selectionBox.destroy();
-            }
-        });
-        this.play("standing"+this.p.dir);
-    },
-    setDir:function(){
-        if(Q.inputs['left']){
-            this.p.dir = 'left';
-        } else if(Q.inputs['right']){
-            this.p.dir = 'right';
-        } else if(Q.inputs['down']){
-            this.p.dir = 'down';
-        } else if(Q.inputs['up']){
-            this.p.dir = 'up';
-        }
-        this.play("standing"+this.p.dir);
-    },
-    removeFromExistence:function(){
-        if(DC.p.selectedChars[0]===this&&Q.locSelectedBox) Q.locSelectedBox.destroy();
-        if(!isNaN(this.p.loc[0])&&!isNaN(this.p.loc[1])) this.unconfirmPlacement();
-        this.destroy();
-    },
-    allowPlacement:function(){
-        allowSpriteSelecting = false;
-        this.on("step",this,"stickToCursor");
-        this.p.lastLoc = [this.p.loc[0],this.p.loc[1]];
-    },
-    stickToCursor:function(){
-        this.p.x = parseInt($("#canvas-coordinates").attr("locX"))*Q.tileW+Q.tileW/2;
-        this.p.y = parseInt($("#canvas-coordinates").attr("locY"))*Q.tileH+Q.tileH/2;
-        this.p.loc = [parseInt($("#canvas-coordinates").attr("locX")),parseInt($("#canvas-coordinates").attr("locY"))];
-        this.p.z = this.p.y;
-    },
-    unconfirmPlacement:function(){
-        DC.grid[this.p.loc[1]][this.p.loc[0]] = false;
-    },
-    confirmPlacement:function(){
-        if(isNaN(this.p.loc[0])||isNaN(this.p.loc[1])) this.p.loc = [0,0];
-        if(this.p.loc[0]<0||this.p.loc[0]>Q.stage(0).mapWidth||this.p.loc[1]<0||this.p.loc[1]>Q.stage(0).mapHeight) return;
-        if(!DC.grid[this.p.loc[1]][this.p.loc[0]]){
-            this.off("step",this,"stickToCursor");
-            DC.grid[this.p.loc[1]][this.p.loc[0]] = this;
-            allowSpriteSelecting = true;
-            var pos = Q.getXY(this.p.loc);
-            this.p.x = pos.x;
-            this.p.y = pos.y;
-            this.p.z = pos.y;
-            this.p.selectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:this.p.x,y:this.p.y,loc:this.p.loc,fill:"white"}));
-            this.p.lastLoc = false;
-        } else {
-            Q.playSound("cannot_do.mp3");
-        }
-    }
-});
-
-//Dynamic content controller
-var DC = {
-    init:function(){
-        //Set up the impassableGrid
-        this.grid = [];
-        var tilesX = Q.stage(0).mapWidth;
-        var tilesY = Q.stage(0).mapHeight;
-        for(var i=0;i<tilesY;i++){
-            this.grid[i]=[];
-            for(var j=0;j<tilesX;j++){
-                this.grid[i][j]=false;
-            }
-        }
-        
-        //Show the list of character files
-        var fileNames = Object.keys(this.p.characters);
-        var cont = $("#files");
-        for(var i=0;i<fileNames.length;i++){
-            var groups = Object.keys(this.p.characters[fileNames[i]]);
-            $(cont).append('<div class="file-groups"><div class="minimize-icon">-</div><div class="title-text minimizable">'+fileNames[i]+'</div><div class="groups minimize"></div></div>');
-            for(var j=0;j<groups.length;j++){
-                var chars = Object.keys(this.p.characters[fileNames[i]][groups[j]]);
-                $(cont).children(".file-groups").children(".groups").last().append('<div class="file-chars"><div class="minimize-icon">-</div><div class="title-text minimizable">'+groups[j]+'</div><div class="chars minimize"></div></div>');
-                for(var k=0;k<chars.length;k++){
-                    var char = this.p.characters[fileNames[i]][groups[j]][chars[k]];
-                    char.file = fileNames[i];
-                    char.group = groups[j];
-                    $(cont).children(".file-groups").last().children(".groups").children(".file-chars").last().children(".chars").append("<div class='file-character draggable' data='"+JSON.stringify(char)+"'>"+char.handle+"</div>");
-                }
-            }
-        }
-        $('.draggable').draggable({helper: "clone"});
-        $('.droppable').droppable({
-            accept:".file-character",
-            //Create a character element
-            drop:function(event,ui){
-                var alreadySelected = DC.p.selectedChars[0];
-                if(alreadySelected&&alreadySelected.p.lastLoc){
-                    alreadySelected.p.loc = DC.getNextEmpty([alreadySelected.p.lastLoc[0],alreadySelected.p.lastLoc[1]]);
-                    alreadySelected.confirmPlacement();
-                }
-                var char = JSON.parse($(ui.draggable).attr("data"));
-                var data = {
-                    file:char.file,
-                    uniqueId:DC.genUniqueId(char.handle),
-                    handle:char.handle,
-                    group:char.group
-                };
-                DC.addCharacterToList(data);
-                //Double click the last character for placement
-                $(".char-btn").last().trigger("click");
-                $(".char-btn").last().trigger("click");
-            }
-        });
-        
-        //Add the characters that are in the event
-        for(var i=0;i<this.p.eventData.characters.length;i++){
-            this.addCharacterToList(this.p.eventData.characters[i]);
-        }
-        $(".char-btn").first().trigger("click");
-        
-        //Set up the script functions box
-        var funcs = Object.keys(this.setUpFuncs);
-        var cont = ("#script-item-box");
-        $(cont).append('<div class="script-item-div"><p class="info-text script-instruction">Select a Function</p><select id="script-select-func"></select></div>');
-        $("#script-select-func").append("<option></option>");
-        for(var i=0;i<funcs.length;i++){
-            $("#script-select-func").append('<option value="'+funcs[i]+'">'+funcs[i]+'</option>');
-        }
-        
-        var script = this.p.eventData.script;
-        //Set some default script items (music, viewport, etc...)
-        if(!script.length){
-            //Create a new group
-            $("#menu-create-group").trigger("click");
-            //Name the group 'Initial'
-            $(".script-list-group").children(".script-group-title").children(".nameable").last().val("Initial");
-            $(".script-list-group").children(".script-group-title").children(".nameable").last().trigger("focusout");
-            //Create the options
-            var group = this.getScriptItemGroup("Initial");
-            $(group).children(".script-items").append("<div class='script-item func' func='setView' props='"+JSON.stringify([[Math.floor(Q.stage(0).mapWidth/2),Math.floor(Q.stage(0).mapHeight/2)]])+"'><div class='script-item-name'>setView</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-            $(group).children(".script-items").append("<div class='script-item func' func='changeMusic' props='"+JSON.stringify(["demo.mp3"])+"'><div class='script-item-name'>changeMusic</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-            
-            $(group).children(".script-items").children(".script-item").first().trigger("click");
-        } 
-        //Show the groups and select the top item
-        else {
-            //For each of the groups.
-            for(var i=0;i<script.length;i++){
-                //Create a group
-                $("#menu-create-group").trigger("click");
-                //Name the group
-                $(".script-list-group").children(".script-group-title").children(".nameable").last().val(script[i][0]);
-                $(".script-list-group").children(".script-group-title").children(".nameable").last().trigger("focusout");
-                
-                var group = this.getScriptItemGroup(script[i][0]);
-                //For each of the script items in each group
-                //Start at 1 because 0 is the group name.
-                for(var j=1;j<script[i].length;j++){
-                    var itm = script[i][j];
-                    //The script item is text
-                    if(itm.text){
-                        var text = itm.text[0].slice(0,20);
-                        $(group).children(".script-items").append("<div class='script-item text' props='"+JSON.stringify(itm).replace(/'/g, "&#39;")+"'><div class='script-item-name'>"+text+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-                    } 
-                    //Otherwise it is a func
-                    else if(itm.func){
-                        $(group).children(".script-items").append("<div class='script-item func' func='"+itm.func+"' props='"+JSON.stringify(itm.props).replace(/'/g, "&#39;")+"'><div class='script-item-name'>"+itm.func+"</div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-                    }
-                }
-            }
-            //$(group).children(".script-items").children(".script-item").first().trigger("click");
-        }
-                $(".minimize-icon").trigger("click");
-    },
-    genUniqueId:function(handle){
-        var id = 0;
-        var sameHandle = this.p.saveCharacters.filter(function(obj){
-            return obj.handle===handle;
-        });
-        if(sameHandle.length){
-            //Match the unique ids
-            do {
-                var found = false;
-                //Check if the ids match
-                for(var i=0;i<sameHandle.length;i++){
-                    if(sameHandle[i].uniqueId===id){
-                        id++;
-                        found=true;
-                    }
-                }
-            } while(found);
-        }
-        return id;
-    },
-    addCharacterToList:function(data){
-        $("#characters-list").append("<li class='event-character' data='"+JSON.stringify(data)+"'><div class='char-btn'>"+data.handle+" "+data.uniqueId+"</div><div class='btn btn-group center char-remove remove-choice'>x</div></li>");
-        var charClass = DC.p.characters[data.file][data.group][data.handle].charClass;
-        if(charClass==="Random") charClass =  "Legionnaire";
-        var loc = data.loc?data.loc:this.getNextEmpty([0,0]);
-        var dir = data.dir?data.dir:"down";
-        this.p.saveCharacters.push(data);
-        return Q.stage(0).insert(new Q.CharacterSprite({sheet:charClass.toLowerCase(),file:data.file,handle:data.handle,uniqueId:data.uniqueId,loc:loc,dir:dir}));
-    },
-    getNextEmpty:function(loc){
-        var occupied = true;
-        while(occupied){
-            if(Q.getSpriteAt(loc)){
-                if(loc[0]>Q.stage(0).mapWidth){
-                    loc[0] = 0;
-                    loc[1]++;
+    Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
+        var ctx = Q.ctx;
+        var split = label.split(' ');
+        var newLabel = '';
+        var tempLabel = '';
+        var spaceWidth = ctx.measureText(" ").width;
+        var spaces = 0;
+        //Loop through the array of the split label
+        for(var i=0;i<split.length;i++){
+            //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
+            //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
+            split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
+            //The upcoming width for this word
+            var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
+            for(var j=0;j<split[i].length;j++){
+                var measured = ctx.measureText(tempLabel);
+                //Move to a new line
+                if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
+                    newLabel+="\n";
+                    tempLabel = '';
+                    spaces = 0;
                 } else {
-                    loc[0]++;
+                    tempLabel+=split[i][j];
                 }
-            } else {
-                occupied = false;
             }
+            newLabel+=split[i];
+            if(i!==split.length-1){
+                newLabel+=" ";
+            }
+            spaces++;
         }
-        return loc;
-    },
-    getCharacter:function(handle,id){
-        return Q.stage(0).lists["CharacterSprite"].filter(function(obj){
-            return obj.p.handle===handle&&obj.p.uniqueId===id;
-        })[0];
-    },
-    getSaveCharacter:function(handle,id){
-        return this.p.saveCharacters.filter(function(obj){
-            return obj.uniqueId===id&&obj.handle===handle;
-        })[0];
-    },
-    //Accepts a character sprite
-    getCharButton:function(char){
-        var button;
-        $(".event-character").each(function(idx){
-            var data = JSON.parse($(this).attr("data"));
-            if(char.p.uniqueId===data.uniqueId&&char.p.handle===data.handle){
-                button = $(this).children(".char-btn");
-            };
-        }); 
-        return button;
-    },
-    //Uses the group name to return the group
-    getScriptItemGroup:function(name){
-        return $(".script-list-group").children(".script-group-title").children(".script-group-name:contains("+name+")").parent().parent();
-    },
-    appendTextOptions:function(obj){
-        //Set the text of the instruction
-        $("#script-item-box").children(".script-item-div").children(".info-text").text("Set the Text");
-        //Make sure the function select is hidden
-        $("#script-item-box").children(".script-item-div").children("#script-select-func").hide();
-        $("#script-item-box").children(".script-item-div").children("#script-select-func").nextAll().remove();
-        
-        var cont = $("#script-item-box").children(".script-item-div");
-        var data = obj?obj:{text:[""],asset1:"story/empty.png",asset2:"story/empty.png",pos:"Left",autoCycle:"0",noCycle:"No"};
-        $(cont).append('<button id="add-new-text">Add New Text</button><ul class="text-sortable"></ul>');
-        for(var i=0;i<data.text.length;i++){
-            $(cont).children("ul").append('<li class="script-text-dragger"><textarea class="script-text new-script-item">'+data.text[i]+'</textarea><div class="btn btn-group center remove-choice">x</div></li>');
-        }
-        $(cont).append("<div id='asset-spacer'></div>");
-        $(cont).children("#asset-spacer").append('<select id="script-asset1" class="script-asset1 new-script-item"></select><select id="script-asset2" class="script-asset2 new-script-item"></select><div class="img-spacer"><img class="new-script-img"></div><div class="img-spacer"><img class="new-script-img"></div>');
-        $(cont).append('<div id="scroll-from" class="script-instruction">Scroll From</div><button id="script-pos" class="script-pos new-script-item">'+data.pos+'</button>');
-        $(cont).append('<div id="auto-cycle-after" class="script-instruction">Auto Cycle (ms)</div><input id="script-autoCycle" class="script-autoCycle new-script-item" value="'+data.autoCycle+'" type="number">');
-        $(cont).append('<div id="disable-cycle" class="script-instruction">Disable Cycle</div><button id="script-noCycle" class="script-noCycle new-script-item">'+data.noCycle+'</button>');
-        for(var i=0;i<imageAssets.length;i++){
-            $("#script-asset1").append('<option value="'+imageAssets[i]+'">'+imageAssets[i]+'</option>');
-            $("#script-asset2").append('<option value="'+imageAssets[i]+'">'+imageAssets[i]+'</option>');
-        }
-        $("#script-asset1").val(data.asset1);
-        $("#script-asset2").val(data.asset2);
+        return newLabel;
+    };
 
-        $("#script-asset1").change(function(e){
-            if(!$(this).val()){
-                $(this).parent().children(".img-spacer").children("img").first().css("display","none");
-            } else {
-                $(this).parent().children(".img-spacer").children("img").first().attr("src","../../images/"+$(this).val());
-            }
-            DC.saveTextScriptItem();
+    Q.state.set("options",{
+        musicEnabled:true,
+        soundEnabled:true
+    });
+    var allowSpriteSelecting = true;
+    var selectedCharacter = false;
+    var selectedLocs = [];
+    function startQuintusCanvas(){
+        //Sprites
+        var toSheet= [
+            ['archer','archer.png',24,24,0,0,192,72],
+            ['assassin','assassin.png',24,24,0,0,192,72],
+            ['berserker','berserker.png',24,24,0,0,192,72],
+            ['elementalist','elementalist.png',24,24,0,0,192,72],
+            ['healer','healer.png',24,24,0,0,192,72],
+            ['illusionist','illusionist.png',24,24,0,0,192,72],
+            ['legionnaire','legionnaire.png',24,24,0,0,192,72],
+            ['skirmisher','skirmisher.png',24,24,0,0,192,72],
+            ['vanguard','vanguard.png',24,24,0,0,192,72]
+        ];
+        for(j=0;j<toSheet.length;j++){
+            Q.sheet(toSheet[j][0],
+            "sprites/"+toSheet[j][1],
+            {
+               tilew:toSheet[j][2],
+               tileh:toSheet[j][3],
+               sx:toSheet[j][4],
+               sy:toSheet[j][5],
+               w:toSheet[j][6],
+               h:toSheet[j][7]
+            });
+        };
+        var standRate = 1/3;
+        var walkRate = 1/6;
+        var supafAst = 1/12;
+        var tooFast = 1/24;
+        Q.animations("Character", {
+            standingup:{ frames: [0,1], rate:standRate},
+            walkingup:{ frames: [0,1], rate:walkRate},
+            attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftup:{frames:[0,0,0],rate:standRate},
+            liftedup:{frames:[6],rate:standRate},
+            hurtup:{frames:[1],rate:standRate},
+            dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadup:{frames:[0],rate:standRate},
+
+            standingright:{ frames: [2,3], rate:standRate},
+            walkingright:{ frames: [2,3], rate:walkRate},
+            attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftright:{frames:[2,2,2],rate:standRate},
+            liftedright:{frames:[6],rate:standRate},
+            hurtright:{frames:[3],rate:standRate},
+            dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadright:{frames:[2],rate:standRate},
+
+            standingleft:{ frames: [4,5], rate:standRate},
+            walkingleft:{ frames: [4,5], rate:walkRate},
+            attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftleft:{frames:[4,4,4],rate:standRate},
+            liftedleft:{frames:[6],rate:standRate},
+            hurtleft:{frames:[5],rate:standRate},
+            dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deadleft:{frames:[4],rate:standRate},
+
+            standingdown:{ frames: [6,7], rate:standRate},
+            walkingdown:{ frames: [6,7], rate:walkRate},
+            attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
+            misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneMissed"},
+            counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
+            liftdown:{frames:[6,6,6],rate:standRate},
+            lifteddown:{frames:[6],rate:standRate},
+            hurtdown:{frames:[7],rate:standRate},
+            dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
+            faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
+            deaddown:{frames:[6],rate:standRate},
+
+            levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
         });
-        $("#script-asset2").change(function(e){
-            if(!$(this).val()){
-                $(this).parent().children(".img-spacer").children("img").last().css("display","none");
-            } else {
-                $(this).parent().children(".img-spacer").children("img").last().attr("src","../../images/"+$(this).val());
-            }
-            DC.saveTextScriptItem();
-        });
-        
-        $("#script-asset1").trigger("change");
-        $("#script-asset2").trigger("change");
-        $("#script-autoCycle").change(function(){
-            DC.saveTextScriptItem();
-        });
-        
-        $(cont).children("li").children("select").on("change",function(){
-            DC.saveTextScriptItem();
-        });
-        var lastIdx;
-        $( ".text-sortable" ).sortable({
-            axis: "y",
-            //Save the last index so we can check if the top has changed
-            start: function( event, ui ) {
-                lastIdx = $(ui.item[0]).index();
-            },
-            stop:function(event,ui){
-                //Check if the position of the top element has changed
-                if(lastIdx===0||$(ui.item[0]).index()===0){
-                    $(".script-text").first().trigger("focusout");
+
+        Q.scene("map",function(stage){
+            stage.finished = function(){};
+            Q.stageTMX(stage.options.map, stage);
+            Q.addViewport(stage);
+            
+            $("#map-select-place").on("change",function(){
+                var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
+                Q.loadTMX(map,function(){
+                    Q.load("sfx/cannot_do.mp3",function(){
+                        var characters = FileSaver.getCharacters();
+                        $("#event-chars-cont").empty();
+                        Q.stageScene("map",0,{map:map,characters:characters});
+                    });
+                },{tmxImagePath:Q.options.imagePath.substring(3)});
+            });
+
+            Q.Grid = [];
+            var tilesX = stage.mapWidth;
+            var tilesY = stage.mapHeight;
+            for(var i=0;i<tilesY;i++){
+                Q.Grid[i]=[];
+                for(var j=0;j<tilesX;j++){
+                    Q.Grid[i][j]=false;
                 }
             }
-        });
-        $( ".text-sortable" ).disableSelection();
-        
-    },
-    appendFuncOptions:function(obj){
-        //Set the text of the instruction
-        $("#script-item-box").children(".script-item-div").children(".info-text").text("Select a Function");
-        //Make sure the function select is shown
-        $("#script-item-box").children(".script-item-div").children("#script-select-func").show();
-        $("#script-item-box").children(".script-item-div").children("#script-select-func").nextAll().remove();
-        if(obj){
-            $("#script-select-func").val(obj.func);
-            DC.setUpFuncs[obj.func][0](obj.props);
-        } else {
-            $("#script-select-func").val("");
-            $("#script-select-func").trigger("change");
-        }
-    },
-    saveTextScriptItem:function(){
-        $(".selected-script-item").attr("props",JSON.stringify(DC.getTextProps()));
-    },
-    getTextProps:function(){
-        //text, asset1, asset2, pos, autoCycle, noCycle
-        var props = {
-            text:[]
-        };
-        $(".new-script-item").each(function(idx,itm){
-            var prop = $(this).attr("class").split(" ")[0].split("-")[1];
-            if(prop==="text"){
-                props[prop].push($(this).val());
-            } else {
-                props[prop] = $(this).val()?$(this).val():$(this).text();
+            var characters = stage.options.characters;
+            for(var i=0;i<characters.length;i++){
+                var char = characters[i];
+                var charButton = DC.newCharacter(char);
+                $('#event-chars-cont').append(charButton);
+                var data = dataP.charFiles[char.file][char.group][char.handle];
+                Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:DC.getNextEmpty(char.loc),dir:char.dir,ref:$(charButton).children(".character")}));
             }
-        });
-        props.autoCycle = parseInt(props.autoCycle);
-        return props;
-    },
-    saveFuncScriptItem:function(){
-        $(".selected-script-item").attr("props",JSON.stringify(DC.getFuncProps()));
-    },
-    getFuncProps:function(){
-        var props = [];
-        $(".script-func").each(function(i,itm){
-            var value = $(this).attr("val");
-            if(!value) value = $(this).val();
-            if(!value){
-                props.push(value);
+            Q.toCharSelection();
+            $(".character").last().trigger("click");
+            Q.stage(0).lists.TileLayer[0].p.z = 0;
+            Q.stage(0).lists.TileLayer[1].p.z = 1;
+        },{sort:true});
+        //Turn on clicking sprites/ground
+        Q.el.addEventListener("click",function(e){
+            //If we've dragged, don't click
+            if(dragged||!Q.stage()){
+                dragged = false;
                 return;
             }
-            var dataType = $(this).attr("dataType");
-            if(dataType==="float") value = parseFloat(value);
-            else if(dataType==="integer") value=parseInt(value);
-            else if(dataType==="array") value=JSON.parse(value);
-            else if(dataType==="boolean"){ 
-                if(value==='true') value = true;
-                else value = false;
+            //Can't click sprite if placing one
+            if(allowSpriteSelecting){
+                var x = e.offsetX || e.layerX,
+                    y = e.offsetY || e.layerY,
+                    stage = Q.stage();
+
+                var stageX = Q.canvasToStageX(x, stage),
+                    stageY = Q.canvasToStageY(y, stage);
+                var locX = Math.floor(stageX/Q.tileW);
+                var locY = Math.floor(stageY/Q.tileH);
+                var objAt = Q.getSpriteAt([locX,locY]);
+                if(objAt){
+                    Q.stage(0).trigger("selectedCharacter",objAt);
+                } else {
+                    Q.stage(0).trigger("selectedLocation",[locX,locY]);
+                }
+            } else {
+                selectedCharacter.confirmPlacement();
             }
-            props.push(value);
         });
-        return props;
-    },
-    
-    selectChar:function(char){
-        this.p.selectedChars.push(char);
-        if(char.p.selectedBox) char.p.selectedBox.destroy();
-        char.p.selectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:char.p.x,y:char.p.y,loc:char.p.loc,fill:"white"}));
-        char.on("step",char,"setDir");
-    },
-    deselectChar:function(char){
-        //If the character is already selected, deselect it
-        if(char){
-            char.off("step",char,"setDir");
-            char.p.selectedBox.destroy();
-            //Match the character and then remove it
-            this.p.selectedChars.forEach(function(obj,i){
-                if(DC.matchChars(obj,char)){ 
-                    DC.p.selectedChars.splice(i,1);
-                }
-            });
-        } 
-        //If there's no passed in char, empty the array
-        else {
-            this.p.selectedChars.forEach(function(obj){
-                obj.off("step",obj,"setDir");
-                if(obj.p.lastLoc){
-                    obj.p.loc = [obj.p.lastLoc[0],obj.p.lastLoc[1]];
-                    var pos = Q.getXY(obj.p.loc);
-                    obj.p.x = pos.x;
-                    obj.p.y = pos.y;
-                    obj.p.z = pos.y;
-                    obj.confirmPlacement();
-                }
-                obj.p.selectedBox.destroy();
-            });
-            this.p.selectedChars = [];
-        }
-    },
-    matchChars:function(a,b){
-        if(!a||!b) return false;
-        return a.p.handle===b.p.handle&&a.p.uniqueId===b.p.uniqueId;
-    },
-    matches:function(a,b){
-        return a===b;
-    },
-    p:{
-        characters:JSON.parse($("#all-characters").text()),
-        sceneTypes:JSON.parse($("#all-scene-types").text()),
-        sceneNames:JSON.parse($("#all-scene-names").text()),
-        eventNames:JSON.parse($("#all-event-names").text()),
-        musicNames:JSON.parse($("#all-music-names").text()),
-        soundNames:JSON.parse($("#all-sound-names").text()),
-        
-        eventMap:$("#event-map").text(),
-        eventData:JSON.parse($("#event-data").text()),
-        
-        saveCharacters:[],
-        grid:[],
-        
-        selectedChars:[]
-    }
-};
-//Keep track if we have dragged. This makes it so we don't click while dragging.
-var dragged = false;
-Q.addViewport = function(stage){
-    stage.add("viewport");
-    var obj = Q.viewObj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
-    obj.p.x = obj.p.w/2;
-    obj.p.y = obj.p.h/2;
-    obj.drag = function(touch){
-        this.p.x = touch.origX - touch.dx;
-        this.p.y = touch.origY - touch.dy;
-        dragged = true;
-    };
-    obj.on("drag");
-    obj.on("touchEnd",function(){
-        dragged = false;
-    });
-    stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-    stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-    stage.follow(obj,{x:true,y:true});
-};
-function moveSelection(e) {
-    var x = e.offsetX || e.layerX,
-        y = e.offsetY || e.layerY,
-        stage = Q.stage();
-
-    var stageX = Q.canvasToStageX(x, stage),
-        stageY = Q.canvasToStageY(y, stage);
-    Q.selectionBox.p.x = Math.floor(stageX-stageX%Q.tileW);
-    Q.selectionBox.p.y = Math.floor(stageY-stageY%Q.tileH);
-}
-
-Q.getSpriteAt = function(loc){
-    return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
-};
-//Run to allow for character selection
-Q.toCharSelection = function(){
-    selectedGroup = false;
-    //When a character is clicked on the map
-    Q.stage(0).on("selectedCharacter",function(obj){
-        var selectedCharacter = DC.p.selectedChars[0];
-        //If the character is already selected
-        if(selectedCharacter&&selectedCharacter===obj){
-            selectedCharacter.p.selectedBox.destroy();
-            selectedCharacter.unconfirmPlacement();
-            selectedCharacter.allowPlacement();
-        } 
-        //If the character is not already selected, select it.
-        else {
-            $(DC.getCharButton(obj)).trigger("click");
-        }
-    });
-    $("#event-script-box").removeClass("selected-background");
-    $("#script-item-box").removeClass("selected-background");
-    //Add the darker theme to the character boxes
-    $("#event-characters-box").addClass("selected-background");
-    $("#all-characters-box").addClass("selected-background");
-};
-
-
-Q.scene("map",function(stage){
-    stage.finished = function(){};
-    Q.stageTMX(stage.options.map, stage);
-    Q.addViewport(stage);
-    
-    //Turn on clicking sprites/ground
-    Q.el.addEventListener("click",function(e){
-        //If we've dragged, don't click
-        if(dragged){
-            dragged = false;
-            return;
-        }
-        //Can't click sprite if placing one
-        if(allowSpriteSelecting){
+        Q.el.addEventListener("mousemove",function(e) {
+            if(!Q.stage()) return;
             var x = e.offsetX || e.layerX,
                 y = e.offsetY || e.layerY,
                 stage = Q.stage();
@@ -712,960 +211,911 @@ Q.scene("map",function(stage){
                 stageY = Q.canvasToStageY(y, stage);
             var locX = Math.floor(stageX/Q.tileW);
             var locY = Math.floor(stageY/Q.tileH);
-            var objAt = Q.getSpriteAt([locX,locY]);
-            if(objAt){
-                Q.stage(0).trigger("selectedCharacter",objAt);
-            } else {
-                Q.stage(0).trigger("selectedLocation",[locX,locY]);
-            }
-        } else {
-            DC.p.selectedChars[0].confirmPlacement();
-        }
-    });
-    Q.el.addEventListener("mousemove",function(e) {
-        var x = e.offsetX || e.layerX,
-            y = e.offsetY || e.layerY,
-            stage = Q.stage();
-
-        var stageX = Q.canvasToStageX(x, stage),
-            stageY = Q.canvasToStageY(y, stage);
-        var locX = Math.floor(stageX/Q.tileW);
-        var locY = Math.floor(stageY/Q.tileH);
-        $("#canvas-coordinates").text(locX+","+locY);
-        $("#canvas-coordinates").attr("locX",locX);
-        $("#canvas-coordinates").attr("locY",locY);
-    });
-    Q.toCharSelection();
-    Q.stage(0).lists.TileLayer[0].p.z = 0;
-    Q.stage(0).lists.TileLayer[1].p.z = 1;
-},{sort:true});
-
-$(document).on("click",".char-btn",function(){
-    //Make sure to remove the selected from the previous script item
-    $(".selected-script-item").removeClass("selected-script-item");
-    $(".selected-group").removeClass("selected-group");
-    $(".script-item-div").hide();
-    var data = JSON.parse($(this).parent().attr("data"));
-    var handle = data.handle;
-    var id = data.uniqueId;
-    var newChar = DC.getCharacter(handle,id);
-    $(".char-btn").removeClass("selected-button");
-    $(this).addClass("selected-button");
-    if(creatingScriptItem){
-        creatingScriptItem = false;
-        Q.stage(0).finished();
-        DC.deselectChar();
-    }
-    //Old selectedChar
-    var selectedCharacter = DC.p.selectedChars[0];
-    //If we're selecting that character that is already selected, allow moving it.
-    if(DC.matchChars(newChar,selectedCharacter)){
-        if(allowSpriteSelecting){
-            selectedCharacter.p.selectedBox.destroy();
-            selectedCharacter.unconfirmPlacement();
-            selectedCharacter.allowPlacement();
-        }
-    } else {
-        DC.deselectChar();
-        DC.selectChar(newChar);
-    }
-    Q.stage(0).off("selectedCharacter");
-    Q.toCharSelection();
-});
-
-$(document).on("click",".char-remove",function(){
-    var dataToRemove = JSON.parse($(this).parent().attr("data"));
-    var characterSprite = DC.getCharacter(dataToRemove.handle,dataToRemove.uniqueId);
-    var saveCharacter = DC.getSaveCharacter(dataToRemove.handle,dataToRemove.uniqueId);
-    characterSprite.removeFromExistence();
-    var funcs = $(".script-items").children(".func");
-    $(funcs).each(function(){
-        //Check all of the functions that can include a character
-        var func = $(this).attr("func");
-        var props = JSON.parse($(this).attr("props"));
-        switch(func){
-            case "setView":
-            case "centerView":
-            case "moveAlong":
-            case "fadeChar":
-            case "changeMoveSpeed":
-            case "playAnim":
-                //This contains a reference to this character
-                if(saveCharacter.handle===props[0][0]&&saveCharacter.uniqueId===props[0][1]){
-                    $(this).children(".remove-choice").trigger("click");
-                }
-                break;
-        }
-    });
-});
-
-var selectedGroup;
-var groupCounter = 0;
-$(document).on("click","#menu-create-group",function(e){
-    $("#script-list").append("<div class='script-list-group'><div class='script-group-title'><div class='minimize-icon-deep'>-</div><input class='nameable' placeholder='New Group "+groupCounter+"' value=''><div class='btn btn-group center remove-nameable remove-choice'>x</div></div><div class='script-items minimize sortable'></div></div>");
-    
-    $( ".sortable" ).sortable({
-        axis: "y"
-    });
-    $(".nameable").on("focusout",function(){
-        var name = $(this).val();
-        var group = $(this).parent();
-        if(name.length){
-            $(this).replaceWith("<div class='script-group-name minimizable'>"+name+"</div>");
-        }
-        $(group).children(".script-group-name").trigger("click");
-    });
-    groupCounter++;
-});
-
-$(document).on("click","#menu-add-text-item",function(e){
-    if(!selectedGroup) return;
-    var group = DC.getScriptItemGroup($(".selected-group").text());
-    $(group).children(".script-items").append("<div class='script-item text'><div class='script-item-name'></div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-
-    $(group).children(".script-items").children(".script-item").last().trigger("click");
-});
-
-$(document).on("click","#menu-add-func-item",function(e){
-    if(!selectedGroup) return;
-    //Add a new func to the script
-    var group = DC.getScriptItemGroup($(".selected-group").text());
-    $(group).children(".script-items").append("<div class='script-item func'><div class='script-item-name'></div><div class='btn btn-group remove-script-item remove-choice'>x</div></div>");
-
-    $(group).children(".script-items").children(".script-item").last().trigger("click");
-});
-
-$(document).on("change keyup paste",".script-text",function(){
-    //If the script text is at the top, change the name that appears in the script
-    if($(".script-text").index(this)===0){
-        $(".selected-script-item").children(".script-item-name").text($(this).val().slice(0,20));
-    }
-    DC.saveTextScriptItem();
-});
-
-$(document).on("click",".minimize-icon",function(){
-    var content = $(this).parent().children(".minimize");
-    if($(content).css("display")==="none"){
-        $(content).show();
-        $(this).parent().children(".minimize-icon").text("-");
-    } else {
-        $(content).hide();
-        $(this).parent().children(".minimize-icon").text("+");
-    }
-});
-$(document).on("click",".minimize-icon-deep",function(){
-    var content = $(this).parent().parent().children(".minimize");
-    if($(content).css("display")==="none"){
-        $(content).show();
-        $(this).parent().children(".minimize-icon-deep").text("-");
-    } else {
-        $(content).hide();
-        $(this).parent().children(".minimize-icon-deep").text("+");
-    }
-});
-
-
-$(document).on("click",".script-item",function(e){
-    //If this script item is already selected, return
-    if($(this).hasClass("selected-script-item")) return;
-    
-    //Make sure the group is selected
-    if($(this).parent().parent().children(".script-group-title").children(".script-group-name").text()!==$(selectedGroup).text()){
-        $(this).parent().parent().children(".script-group-title").children(".script-group-name").trigger("click");
-    }
-    //Clear any selected squares
-    Q("SelectedSquare",0).items.forEach(function(square){
-        square.destroy();
-    });
-    DC.deselectChar();
-    if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-    $(".char-btn").removeClass("selected-button");
-    
-    creatingScriptItem = true;
-    Q.stage(0).off("selectedCharacter");
-    Q.stage(0).off("selectedLocation");
-    
-    $(".script-item").removeClass("selected-script-item");
-    $(this).addClass("selected-script-item");
-    var type = $(this).attr("class").split(" ")[1];
-    if(type==="text"){
-        var props = $(this).attr("props");
-        var args;
-        if(props){
-            props = JSON.parse(props);
-            args = {text:props.text,asset1:props.asset1,asset2:props.asset2,pos:props.pos,autoCycle:props.autoCycle,noCycle:props.noCycle};
-        } else {
-            props = null;
-            args = false;
-        }
-        DC.appendTextOptions(args);
-    } else if(type==="func"){
-        var props = $(this).attr("props");
-        var args;
-        if(props){ 
-            props = JSON.parse(props);
-            args = {func:$(this).attr("func"),props:props};
-        } else {
-            props = null;
-            args = false;
-        }
-        DC.appendFuncOptions(args);
-    }
-    
-    $("#event-script-box").addClass("selected-background");
-    $("#script-item-box").addClass("selected-background");
-    $(".script-item-div").show();
-    //Add the darker theme to the character boxes
-    $("#event-characters-box").removeClass("selected-background");
-    $("#all-characters-box").removeClass("selected-background");
-});
-
-$(document).on("click",".script-group-name",function(){
-    //Allow for renaming the group
-    if(selectedGroup===this){
-        $(this).parent().attr("oldName",$(this).text());
-        $(this).replaceWith("<input class='new-group-name' placeholder='"+$(this).parent().attr("oldName")+"' value=''>");
-        $(".new-group-name").last().focus();
-        groupCounter++;
-        $(".new-group-name").on("focusout",function(){
-            var name = $(this).val();
-            var group = $(this).parent();
-            if(name.length){
-                $(this).replaceWith("<div class='script-group-name minimizable'>"+name+"</div>");
-            } else {
-                $(this).replaceWith("<div class='script-group-name minimizable'>"+$(this).parent().attr("oldName")+"</div>");
-            }
-            $(group).children(".script-group-name").trigger("click");
+            $("#canvas-coordinates").text(locX+","+locY);
+            $("#canvas-coordinates").attr("locX",locX);
+            $("#canvas-coordinates").attr("locY",locY);
         });
-    } 
-    //Otherwise, select the group.
-    else {
-        selectedGroup = this;
-        $(".script-group-name").removeClass("selected-group");
-        $(this).addClass("selected-group");
-        //Select the first item
-        $(this).parent().parent().children(".script-items").children(".script-item").first().trigger("click");
-    }
-});
-
-//When changing the function of a func item
-$(document).on("change","#script-select-func",function(e){
-    //Deselect any characters
-    DC.deselectChar();
-    //Remove loc selected box if it exists
-    if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-    
-    //Turn off triggers
-    Q.stage(0).off("selectedCharacter");
-    Q.stage(0).off("selectedLocation");
-    
-    
-    //If the functions are different, reset the props and set the new function
-    if($(".selected-script-item").attr("func")!==$(this).val()){
-        //Forget any properties that have been set
-        $(".selected-script-item").attr("props",null);
-        $(".selected-script-item").attr("func",$(this).val());
-        $(".selected-script-item").children(".script-item-name").text($(this).val());
-    }
-    //Clear whatever's there
-    $("#script-item-box").children(".script-item-div").children("#script-select-func").nextAll().remove();
-    
-    //If we've selected nothing, return
-    if($(this).val()==="") return;
-    //Set up the new function form
-    DC.setUpFuncs[$(this).val()][0]();
-});
-
-
-
-
-
-Q.getXY = function(loc){
-    return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
-};
-
-
-DC.setUpFuncs = {
-    setView:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a location in the stage to tween the view to. Selecting a character (on the stage or from the list) will set the view to it upon arrival.</p><div id='view-character-selected' class='script-func'></div>");
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:obj.p.x,y:obj.p.y,loc:obj.p.loc,fill:"white"}));
-                
-                $("#view-character-selected").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#view-character-selected").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#view-character-selected").attr("dataType","array");
-                DC.saveFuncScriptItem();
+        var dragged = false;
+        Q.addViewport = function(stage){
+            stage.add("viewport");
+            var obj = Q.viewObj = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI}));
+            obj.p.x = obj.p.w/2;
+            obj.p.y = obj.p.h/2;
+            obj.drag = function(touch){
+                if(this.p.x === touch.origX - touch.dx && this.p.y === touch.origY - touch.dy) return;
+                this.p.x = touch.origX - touch.dx;
+                this.p.y = touch.origY - touch.dy;
+                dragged = true;
+            };
+            obj.on("drag");
+            obj.on("touchEnd",function(){
+                setTimeout(function(){
+                    dragged = false;
+                });
             });
-            Q.stage(0).on("selectedLocation",function(loc){
-                //show the selected box on the location
+            obj.centerOn = function(loc){
                 var pos = Q.getXY(loc);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc}));
-                //If there is a character selected, deselect it.
-                DC.deselectChar();
-
-                $("#view-character-selected").text("Location: "+loc[0]+","+loc[1]);
-                $("#view-character-selected").attr("val",JSON.stringify(loc));
-                $("#view-character-selected").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                if(Q._isNumber(val[0][0])){
-                    var loc = [val[0][0],val[0][1]];
-                    Q.stage(0).trigger("selectedLocation",loc);
-                    Q.viewObj.p.x = loc[0]*Q.tileW+Q.tileW/2;
-                    Q.viewObj.p.y = loc[1]*Q.tileH+Q.tileH/2;
-                } else {
-                    var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                    Q.stage(0).trigger("selectedCharacter",sprite);
-                    Q.viewObj.p.x = sprite.p.x;
-                    Q.viewObj.p.y = sprite.p.y;
-                }
-                //if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                //Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:Q.viewObj.p.x,y:Q.viewObj.p.y}));
-            }
-            Q.stage(0).finished = function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("selectedLocation");
-                $(".script-item").removeClass("selected-script-item");
-                Q.stage(0).finished = function(){};
-                Q("SelectedSquare",0).items.forEach(function(square){
-                    square.destroy();
-                });
-                Q.toCharSelection();
+                this.p.x = pos.x;
+                this.p.y = pos.y;
             };
-        }
-    ],
-    centerView:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a location in the stage to tween the view to. Selecting a character (on the stage or from the list) will set the view to it upon arrival.</p><div id='view-character-selected' class='script-func'></div>");
-            allowSpriteSelecting = true;
+            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+            stage.follow(obj,{x:true,y:true});
+        };
+        
+        Q.getSpriteByName = function(name){
+            return Q("CharacterSprite").items.filter(function(char){ return char.p.handle+" "+char.p.uniqueId===name; })[0];
+        };
+        Q.getSpriteAt = function(loc){
+            return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
+        };
+        Q.getXY = function(loc){
+            return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
+        };
+        
+        $(document).on("click",".char-remove",function(){
+            var charButton = $(this).parent().children(".character");
+            var char = Q.getSpriteAt([parseInt($(charButton).attr("locX")),parseInt($(charButton).attr("locY"))]);
+            if(Q.matchChars(selectedCharacter,char)){
+                selectedCharacter.destroySelectedBox();
+                selectedCharacter.off("step",selectedCharacter,"setDir");
+            }
+            char.removeFromExistence();
+            DC.updateCharSelects();
+        });
+        Q.matchChars = function(a,b){
+            if(!a||!b) return false;
+            return a.p.handle===b.p.handle&&a.p.uniqueId===b.p.uniqueId;
+        };
+        Q.toCharSelection = function(){
+            //When a character is clicked on the map
             Q.stage(0).on("selectedCharacter",function(obj){
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:obj.p.x,y:obj.p.y,loc:obj.p.loc,fill:"white"}));
-                
-                $("#view-character-selected").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#view-character-selected").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#view-character-selected").attr("dataType","array");
-                DC.saveFuncScriptItem();
+                //If the character is already selected
+                if(selectedCharacter&&Q.matchChars(selectedCharacter,obj)){
+                    selectedCharacter.destroySelectedBox();
+                    selectedCharacter.unconfirmPlacement();
+                    selectedCharacter.allowPlacement();
+                } 
+                //If the character is not already selected, select it.
+                else {
+                    $(obj.p.ref).trigger("click");
+                }
             });
-            Q.stage(0).on("selectedLocation",function(loc){
-                //show the selected box on the location
-                var pos = Q.getXY(loc);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc}));
-                //If there is a character selected, deselect it.
-                DC.deselectChar();
+        };
+        Q.UI.Container.extend("SelectedSquare",{
+            init:function(p){
+                this._super(p,{
+                    w:Q.tileW,
+                    h:Q.tileH,
+                    border:1,
+                    opacity:0.8,
+                    fill:"black"
+                });
+                var pos = Q.getXY(this.p.loc);
+                this.p.x = pos.x;
+                this.p.y = pos.y;
+                this.p.z = this.p.y-1;
+                if(this.p.num){
+                    this.on("inserted");
+                }
+            },
+            inserted:function(){
+                this.p.number = this.insert(new Q.Number({label:""+this.p.num,y:-this.p.h/2}));
+            }
+        });
+        Q.UI.Text.extend("Number",{
+            init:function(p){
+                this._super(p,{
+                    color:"white",
+                    z:3
+                });
+            }
+        });
+      
 
-                $("#view-character-selected").text("Location: "+loc[0]+","+loc[1]);
-                $("#view-character-selected").attr("val",JSON.stringify(loc));
-                $("#view-character-selected").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                if(Q._isNumber(val[0][0])){
-                    var loc = [val[0][0],val[0][1]];
-                    Q.stage(0).trigger("selectedLocation",loc);
-                    Q.viewObj.p.x = loc[0]*Q.tileW+Q.tileW/2;
-                    Q.viewObj.p.y = loc[1]*Q.tileH+Q.tileH/2;
-                } else {
-                    var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                    Q.stage(0).trigger("selectedCharacter",sprite);
-                    Q.viewObj.p.x = sprite.p.x;
-                    Q.viewObj.p.y = sprite.p.y;
-                }
-                //if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                //Q.locSelectedBox = Q.stage(0).insert(new Q.SelectedSquare({x:Q.viewObj.p.x,y:Q.viewObj.p.y}));
-            }
-            Q.stage(0).finished = function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("selectedLocation");
-                $(".script-item").removeClass("selected-script-item");
-                Q.stage(0).finished = function(){};
-                Q("SelectedSquare",0).items.forEach(function(square){
-                    square.destroy();
-                });
-                Q.toCharSelection();
-            };
-        }
-    ],
-    moveAlong:[
-        //Select the character
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a character to move.</p><div id='view-character-selected' class='script-func'></div>");
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                DC.selectChar(obj);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                if($("#view-character-selected").text()===""){
-                    Q.stage(0).off("selectedCharacter");
-                    DC.setUpFuncs.moveAlong[1](val);
-                }
-                $("#view-character-selected").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#view-character-selected").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#view-character-selected").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
-                Q.stage(0).trigger("selectedCharacter",sprite);
-            }
-            Q.stage(0).finished = function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("selectedLocation");
-                $(".script-item").removeClass("selected-script-item");
-                Q.stage(0).finished = function(){};
-                Q("SelectedSquare",0).items.forEach(function(square){
-                    square.destroy();
-                });
-                Q.toCharSelection();
-            };
-        },
-        //Select the path
-        function(val){
-            //The locations that have been selected for the path
-            var selectedLocs = [];
-            //The initial index of the dragged item
-            var initialIdx;
-            var saveLocs = function(){
-                var locs = [];
-                for(var i=0;i<selectedLocs.length;i++){
-                    locs.push(selectedLocs[i].p.loc);
-                }
-                $("#move-locations").attr("val",JSON.stringify(locs));
-            };
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select one or more locations to show the movement path.</p><div id='move-locations' class='script-func sortable' dataType='array'></div>");
-            $( "#move-locations" ).sortable({
-                start: function( event, ui ) {
-                    initialIdx = $(ui.item[0]).index();
+        Q.component("inGrid",{
+            added:function(){
+                Q.Grid[this.entity.p.loc[1]][this.entity.p.loc[0]] = this.entity;
+            },
+            extend:{
+                unconfirmPlacement:function(){
+                    Q.Grid[this.p.loc[1]][this.p.loc[0]] = false;
                 },
-                stop:function(event,ui){
-                    if(initialIdx!==$(ui.item[0]).index()){
-                        //Move the position of the item
-                        var itm = selectedLocs[initialIdx];
-                        selectedLocs.splice(initialIdx,1);
-                        selectedLocs.splice($(ui.item[0]).index(),0,itm);
-                        //Change any of the next selectedLocs's labels
-                        for(var j=0;j<selectedLocs.length;j++){
-                            selectedLocs[j].p.number.p.label = ""+(j+1);
+                confirmPlacement:function(){
+                    if(isNaN(this.p.loc[0])||isNaN(this.p.loc[1])) this.p.loc = [0,0];
+                    if(this.p.loc[0]<0||this.p.loc[0]>Q.stage(0).mapWidth||this.p.loc[1]<0||this.p.loc[1]>Q.stage(0).mapHeight) [0,0];
+                    if(Q.Grid[this.p.loc[1]][this.p.loc[0]]){
+                        if(Q.Grid[this.p.loc[1]][this.p.loc[0]] !== this){
+                            this.p.loc = DC.getNextEmpty(this.p.loc);
                         }
-                        saveLocs();
-                        DC.saveFuncScriptItem();
                     }
+                    this.off("step",this,"stickToCursor");
+                    Q.Grid[this.p.loc[1]][this.p.loc[0]] = this;
+                    $(this.p.ref).attr("locX",this.p.loc[0]);
+                    $(this.p.ref).attr("locY",this.p.loc[1]);
+                    allowSpriteSelecting = true;
+                    var pos = Q.getXY(this.p.loc);
+                    this.p.x = pos.x;
+                    this.p.y = pos.y;
+                    this.p.z = pos.y;
+                    this.createSelectedBox();
+                    this.p.lastLoc = false;
+                }
+            }
+        });
+        Q.Sprite.extend("CharacterSprite",{
+            init:function(p){
+                if(p.sheet==="random") p.sheet = "legionnaire";
+                this._super(p,{
+                    type:Q.SPRITE_CHARACTER,
+                    frame:0,
+                    sprite:"Character"
+                });
+                var pos = Q.getXY(this.p.loc);
+                this.p.x = pos.x;
+                this.p.y = pos.y;
+                this.p.z = pos.y;
+                this.add("animation, inGrid");
+                this.on("destroy",function(){
+                    if(this.p.selectionBox){
+                        this.p.selectionBox.destroy();
+                    }
+                });
+                this.play("standing"+this.p.dir);
+            },
+            setDir:function(){
+                if(Q.inputs['left']){
+                    this.p.dir = 'left';
+                } else if(Q.inputs['right']){
+                    this.p.dir = 'right';
+                } else if(Q.inputs['down']){
+                    this.p.dir = 'down';
+                } else if(Q.inputs['up']){
+                    this.p.dir = 'up';
+                }
+                this.play("standing"+this.p.dir);
+            },
+            destroySelectedBox:function(){
+                if(this.p.selectedBox) this.p.selectedBox.destroy();
+            },
+            createSelectedBox:function(){
+                this.destroySelectedBox();
+                this.p.selectedBox = Q.stage(0).insert(new Q.SelectedSquare({loc:this.p.loc,fill:"white"}));
+            },
+            removeFromExistence:function(){
+                if(selectedCharacter===this&&Q.locSelectedBox) Q.locSelectedBox.destroy();
+                if(!isNaN(this.p.loc[0])&&!isNaN(this.p.loc[1])) this.unconfirmPlacement();
+                this.destroy();
+            },
+            allowPlacement:function(){
+                allowSpriteSelecting = false;
+                this.on("step",this,"stickToCursor");
+                this.p.lastLoc = [this.p.loc[0],this.p.loc[1]];
+            },
+            stickToCursor:function(){
+                this.p.x = parseInt($("#canvas-coordinates").attr("locX"))*Q.tileW+Q.tileW/2;
+                this.p.y = parseInt($("#canvas-coordinates").attr("locY"))*Q.tileH+Q.tileH/2;
+                this.p.loc = [parseInt($("#canvas-coordinates").attr("locX")),parseInt($("#canvas-coordinates").attr("locY"))];
+                this.p.z = this.p.y;
+            }
+        });
+        var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
+        Q.loadTMX(map,function(){
+            Q.load("sfx/cannot_do.mp3",function(){
+                Q.stageScene("map",0,{map:map,characters:dataP.event.characters});
+                
+                //Using the file data, set up the page
+                var event = dataP.event;
+                $("#prop-music .music-select").val(event.music).trigger("change");
+                
+                //Loop through script
+                for(var i=0;i<dataP.event.script.length;i++){
+                    var group = dataP.event.script[i];
+                    var groupCont = DC.getScriptItemGroup();
+                    for(var j=0;j<group.length;j++){
+                        var event = group[j];
+                        var content = DC.getScriptItemFunc($("<div class='script-item-cont selectable'></div>"),event[0]);
+                        content.append(DC.getScriptItem($("<div class='script-item minimize'></div>"),event[0],event[1]));
+                        groupCont.children(".script-items-cont").append(content);
+                        DC.selectInitialValue($(content));
+                        DC.selectInitialValue($(content).children(".script-item"));
+                        $(content).children(".func").on("change",function(){
+                            $(this).next().nextAll().remove(); //After the 'x' remove all
+                            $(this).siblings(".minimize-icon").text("-");
+                            $(this).parent().append(DC.getScriptItem($("<div class='script-item minimize'></div>"),$(this).parent().children(".func").val()));
+                        });
+                    }
+                    $("#script-item-box").children(".script-groups").append(groupCont);
+                    $(groupCont).children(".script-item-group-top").children(".minimize-icon-deep").trigger("click");
+                    $(groupCont).children(".script-items-cont").children(".script-item-cont").children(".minimize-icon").trigger("click");
                 }
             });
-            $( ".sortable" ).disableSelection();
-            Q.stage(0).on("selectedLocation",function(loc){
-                //If the loc is already in the array, remove it.
+        },{tmxImagePath:Q.options.imagePath.substring(3)});
+    }
+    
+    var dataP = {
+        mapFileNames:mapFileNames,
+        mapFileGroups:Object.keys(mapFileNames),
+        soundFileNames:soundFileNames,
+        musicFileNames:musicFileNames,
+        charFiles:characterFiles,
+        imageAssets:imageAssets,
+        sceneTypes:["Story","Flavour"],
+        groupFuncs:["text","centerViewChar","centerViewLoc","moveAlong","changeDir","modDialogueBox","waitTime","fadeChar","changeMusic","playSound","changeMoveSpeed","playAnim","changeEvent"],
+        scopes:["Global","Scene","Event"],
+        conditionals:["==","!=",">=","<="],
+        operators:["=","+=","-="],
+        directions:["down","left","up","right"],
+        speeds:["fast","medium","slow"],
+        inOut:["out","in"],
+        animations:["walking","attacking","countering","lift","lifted","hurt","dying","fainting","dead","levelup"]
+        
+    };
+    var numOfFiles = 1 + dataFiles.length;
+    var setJSONData = function(url,name){
+        $.getJSON(url)
+            .done(function(data){
+                dataP[name] = data;
+                numOfFiles--;
+                if(numOfFiles<=0){
+                    start();
+                }
+            }
+        );
+    };
+    
+    var formatScenes = function(){
+        var story = dataP["scenes-list.json"];
+        var flavour = dataP["flavour-events-list.json"];
+        var newScenes = {
+            Story:[],
+            Flavour:[]
+        };
+        for(var i=0;i<story.Story.length;i++){
+            newScenes["Story"].push(story.Story[i].name);
+        }
+        var groups = Object.keys(flavour.groups);
+        for(var i=0;i<groups.length;i++){
+            newScenes["Flavour"].push(groups[i]);
+        }
+        
+        return newScenes;
+    };
+    var formatEvents = function(){
+        var story = dataP["scenes-list.json"];
+        var flavour = dataP["flavour-events-list.json"];
+        var newEvents = {
+            Story:{},
+            Flavour:{}
+        };
+        for(var i=0;i<story.Story.length;i++){
+            newEvents.Story[story.Story[i].name] = story.Story[i].events.map(function(itm){return itm.name;});
+        }
+        var groups = Object.keys(flavour.groups);
+        for(var i=0;i<groups.length;i++){
+            newEvents.Flavour[groups[i]] = flavour.groups[groups[i]][2];
+        }
+        return newEvents;
+    };
+    
+    //Set the event
+    setJSONData("../../data/json/story/events/"+sceneType+"/"+sceneName+"/"+eventName+".json","event");
+
+    $.getJSON("../../data/json/story/global-vars.json",function(data){
+        dataP["global-vars.json"] = data;
+        //Set all of the data files
+        dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
+    });
+    
+    var start = function(){
+        dataP.scenes = formatScenes();
+        dataP.events = formatEvents();
+        dataP.scene = dataP["scenes-list.json"].Story.find(function(sc){return sc.name===sceneName;});
+        dataP.vrs = {Global:Object.keys(dataP["global-vars.json"].vrs),Scene:Object.keys(dataP.scene.vrs)};
+        DC = {
+            getScriptItemGroup:function(){
+                return $(
+                    '<div class="script-item-group">\n\
+                        <div class="script-item-group-top">\n\
+                            <span class="minimize-icon-deep group-text">-</span>\n\
+                            <span class="add-script-item">Add Item</span>\n\
+                            <span class="remove-choice-deep group-text">x</span>\n\
+                        </div>\n\
+                        <div class="script-items-cont minimize"></div>\n\
+                    </div>');
+            },
+            groupMinimize:function(){
+              return "<span class='minimize-icon group-text'>-</span>";  
+            },
+            groupTop:function(func){
+                return "<select class='func eighty-width' initial-value='"+func+"'>"+DC.getOptString(dataP.groupFuncs)+"</select>";
+            },
+            groupRemove:function(){
+                return "<span class='remove-choice group-text'>x</span>";
+            },
+            groupInput:function(text,val,type,min){
+                return "<span class='quarter-width'>"+text+"</span><input class='prop three-quarter-width' value='"+val+"' type='"+type+"' min='"+min+"'>";
+            },
+            groupCheckbox:function(text,val){
+                var box = $("<span class='three-quarter-width'>"+text+"</span><input class='prop quarter-width' type='checkbox'>");
+                $(box).prop("checked",val);
+                return box;
+            },
+            groupTextArea:function(text,val){
+                return "<span class='full-width'>"+text+"</span><textarea class='prop full-width group-text-area'>"+val+"</textarea>";
+            },
+            groupContainer:function(text,data){
+                return "<span class='full-width'>"+text+"</span><div class='prop full-width' data="+JSON.stringify(data)+"></div>";
+            },
+            groupSelect:function(text,opts,value,cl){
+                return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
+            },
+            getScriptItemFunc:function(content,name){
+                name = name || "text";
+                content.append(DC.groupMinimize());
+                content.append(DC.groupTop(name));
+                content.append(DC.groupRemove());
+                return content;
+            },
+            getScriptItem:function(content,name,props){
+                name = name || "text";
+                switch(name){
+                    case "text":
+                        props = props || ["","empty.png","empty.png",false,0,false];
+                        content.append(this.groupTextArea("Text",props[0]));
+                        content.append(this.groupSelect("<-Img",dataP.imageAssets,props[1]));
+                        content.append("<div class='img-div'><img src='../../images/story/"+props[1]+"'></div>");
+                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("div").first().children("img")[0],"../../images/story/");
+                        content.append(this.groupSelect("Img->",dataP.imageAssets,props[2]));
+                        content.append("<div class='img-div'><img src='../../images/story/"+props[2]+"'></div>");
+                        DC.linkSelectToSrc($(content).children("select")[1],$(content).children("div").last().children("img")[0],"../../images/story/");
+                        content.append(this.groupCheckbox("Inverted Text Cycle",props[3]));
+                        content.append(this.groupInput("Cyc(ms)",props[4],"number",0));
+                        content.append(this.groupCheckbox("NoCycle",props[5]));
+                        
+                    break;
+                    case "centerViewChar":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],0];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupInput("Speed",props[1],"number",0));
+                        break;
+                    case "centerViewLoc":
+                        props = props || [0,0];
+                        content.append(this.groupInput("LocX",props[0],"number",0));
+                        content.append(this.groupInput("LocY",props[1],"number",0));
+                        break;
+                    case "moveAlong":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],dataP.directions[0],true,[]];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupSelect("Dir",dataP.directions,props[1]));
+                        content.append(this.groupCheckbox("Cycle Text On Arrival",props[2]));
+                        content.append(this.groupContainer("Move Path",props[3]));
+                        for(var i=0;i<props[3].length;i++){
+                            var loc = props[3][i];
+                            $(content).children("div").append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
+                        }
+                        break;
+                    case "changeDir":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],"down"];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupSelect("Dir",dataP.directions,props[1]));
+                        break;
+                    case "modDialogueBox":
+                        props = props || [true];
+                        content.append(this.groupCheckbox("Show Dialogue Box",props[0]));
+                        break;
+                    case "waitTime":
+                        props = props || [1000];
+                        content.append(this.groupInput("Wait(ms)",props[0],"number",0));
+                        break;
+                    case "fadeChar":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],"out","fast"];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupSelect("InOut",dataP.inOut,props[1]));
+                        content.append(this.groupSelect("Speed",dataP.speeds,props[2]));
+                        break;
+                    case "changeMusic":
+                        props = props || [dataP.musicFileNames[0]];
+                        content.append(this.groupSelect("Music",dataP.musicFileNames,props[0]));
+                        content.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/bgm/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
+                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("audio")[0],"../../audio/bgm/");
+                        break;
+                    case "playSound":
+                        props = props || [dataP.soundFileNames[0]];
+                        content.append(this.groupSelect("Sound",dataP.soundFileNames,props[0]));
+                        content.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/sfx/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
+                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("audio")[0],"../../audio/sfx/");
+                        break;
+                    case "changeMoveSpeed":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],300];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupInput("Spd(ms)",props[1],"number",0));
+                        break;
+                    case "playAnim":
+                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        props = props || [chars[0],"attacking","down"];
+                        content.append(this.groupSelect("Char",chars,props[0],"char"));
+                        content.append(this.groupSelect("Anim",dataP.animations,props[1]));
+                        content.append(this.groupSelect("Dir",dataP.directions,props[2]));
+                        break;
+                    case "changeEvent":
+                        props = props || [sceneType,sceneName,eventName];
+                        content.append(this.groupSelect("ScType",dataP.sceneTypes,props[0]));
+                        content.append(this.groupSelect("ScName",dataP.scenes[props[0]],props[1]));
+                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2]));
+                        DC.linkSelects($(content).children("select")[0],$(content).children("select")[1],dataP.scenes);
+                        DC.linkSelects($(content).children("select")[1],$(content).children("select")[2],dataP.events,[$(content).children("select")[0]]);
+                        $($(content).children("select")[0]).trigger("change");
+                        $($(content).children("select")[1]).trigger("change");
+                        break;
+                }
+                return content;
+            },
+            newCharacter:function(char){
+                return $("<div class='character-cont'><span class='character selectable "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text char-remove'>x</span></div>");
+            },
+            checkSelectedLoc:function(loc){
                 for(var i=0;i<selectedLocs.length;i++){
                     if(selectedLocs[i].p.loc[0]===loc[0]&&selectedLocs[i].p.loc[1]===loc[1]){
                         $("#move-locations").children("div:nth-child("+(i+1)+")").remove();
-                        
+
+                        $(selectedLocs[i].p.cont).children(".loc-display").each(function(){
+                            var locX = $(this).attr("locX");
+                            var locY = $(this).attr("locY");
+                            if(locX==loc[0]&&locY==loc[1]) $(this).remove();
+                        });
                         selectedLocs[i].destroy();
                         selectedLocs.splice(i,1);
                         //Change any of the next selectedLocs's labels
                         for(var j=i;j<selectedLocs.length;j++){
                             selectedLocs[j].p.number.p.label = ""+(j+1);
                         }
-                        saveLocs();
-                        //Don't do the selectedLocs placement code
-                        return;
+                        return true;
                     }
                 }
-                //show the selected box on the location
-                var pos = Q.getXY(loc);
-                selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({x:pos.x,y:pos.y,loc:loc,num:selectedLocs.length+1})));
-                $("#move-locations").append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
-                $(".loc-li").on("click",function(){
-                    Q.viewObj.p.x = $(this).attr("locX")*Q.tileW+Q.tileW/2;
-                    Q.viewObj.p.y = $(this).attr("locY")*Q.tileH+Q.tileH/2;
+            },
+            updateCharSelects:function(){
+                var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                var opts = DC.getOptString(chars);
+                $(".char").empty().append(opts); 
+            },
+            //When sel1 changes, change all of the options of sel2 from the passed in object.
+            //obj must be in this format: {myName:[itm1, itm2, ..]}
+            //myName would be equal to the sel1's value.
+            //deepArray allows multiple selects to 'chain' changes
+            linkSelects:function(sel1,sel2,obj,deepArray){
+                $(sel1).on("change",function(){
+                    $(sel2).empty();
+                    if(deepArray){
+                        var props = [];
+                        $(deepArray).each(function(){props.push($(this).val());});
+                        props.push($(this).val());
+                        $(sel2).append(DC.getOptString(DC.getDeepValue(obj,props.join("&"))));
+                    } else {
+                        $(sel2).append(DC.getOptString(obj[$(this).val()]));
+                    }
+                    $(sel2).trigger("change");
                 });
-                saveLocs();
-            });
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select the direction on arrival.</p><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select></div><div id='cycle-text-on-arrival' class='menu-button btn btn-default script-func' val='true' dataType='boolean'>Cycle Text On Arrival</div>");
-            
-            $("#dir-on-arrival").val("up");
-            $("#dir-on-arrival").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            var changeCycle = function(){
-                if($("#cycle-text-on-arrival").attr("val")==="true"){
-                    $("#cycle-text-on-arrival").text("Cycle Text Instantly");
-                    $("#cycle-text-on-arrival").attr("val","false");
-                } else {
-                    $("#cycle-text-on-arrival").text("Cycle Text On Arrival");
-                    $("#cycle-text-on-arrival").attr("val","true");
-                }
-            };
-            $("#cycle-text-on-arrival").on("click",function(){
-                changeCycle();
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                initial = false;
-                for(var i=0;i<val[1].length;i++){
-                    Q.stage(0).trigger("selectedLocation",val[1][i]);
-                }
-                $("#dir-on-arrival").val(val[2]);
-                $("#cycle-text-on-arrival").attr("val",val[3]);
-                if(val[3]===true){
-                    $("#cycle-text-on-arrival").text("Cycle Text On Arrival");
-                } else {
-                    $("#cycle-text-on-arrival").text("Cycle Text Instantly");
-                }
-            }
-            //Turn on saving for placing individual locations
-            Q.stage(0).on("selectedLocation",function(){
-                DC.saveFuncScriptItem();
-            });
-            Q.stage(0).finished = function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("selectedLocation");
-                $(".script-item").removeClass("selected-script-item");
-                Q.stage(0).finished = function(){};
-                Q("SelectedSquare",0).items.forEach(function(square){
-                    square.destroy();
+            },
+            linkSelectToSrc:function(select,srcObj,path){
+                $(select).on("change",function(){
+                    $(srcObj).attr("src",path+$(select).val());
                 });
-                Q.toCharSelection();
-            };
-        }
-    ],
-    changeDir:[
-        //Select a character
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Character.</p><div id='change-dir-char' class='script-func sortable' dataType='array'></div>");
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                DC.selectChar(obj);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                if($("#change-dir-char").text()===""){
-                    Q.stage(0).off("selectedCharacter");
-                    DC.setUpFuncs.changeDir[1](val);
+            },
+            linkSelectedCharToSelect:function(select){
+                Q.stage(0).on("selectedCharacter",function(char){
+                    if(selectedCharacter){
+                        selectedCharacter.destroySelectedBox();
+                    }
+                    selectedCharacter = char;
+                    selectedCharacter.createSelectedBox();
+                    $(select).val(char.p.handle+" "+char.p.uniqueId);
+                });
+                Q.stage(0).trigger("selectedCharacter",Q.getSpriteByName($(select).val()));
+            },
+            linkSelectedLocToInputs:function(locX,locY){
+                Q.stage(0).on("selectedLocation",function(loc){
+                    if(selectedLocs.length) selectedLocs[0].destroy();
+                    selectedLocs = [];
+                    selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:selectedLocs.length+1})));
+                    $(locX).val(loc[0]);
+                    $(locY).val(loc[1]);
+                });
+                Q.stage(0).trigger("selectedLocation",[$(locX).val(),$(locY).val()]);
+            },
+            genUniqueId:function(handle){
+                var id = 0;
+                var sameHandle = $("."+handle);
+                if(sameHandle.length){
+                    //Match the unique ids
+                    do {
+                        var found = false;
+                        //Check if the ids match
+                        for(var i=0;i<sameHandle.length;i++){
+                            if($(sameHandle[i]).attr("uniqueId")==id){
+                                id++;
+                                found=true;
+                            }
+                        }
+                    } while(found);
                 }
-                $("#change-dir-char").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#change-dir-char").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#change-dir-char").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
-                Q.stage(0).trigger("selectedCharacter",sprite);
-            }
-            Q.stage(0).on("finished",function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("finished");
-            });
-        },
-        //Select a direction
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select the Direction of the Character.</p><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select>");
-            $("#dir-on-arrival").val("up");
-            $("#dir-on-arrival").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            if(val){
-                $("#dir-on-arrival").val(val[1]);
-            }
-        }
-    ],
-    modDialogueBox:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Hide/Show the Dialogue Box.</p><select id='mod-dialogue-box' class='script-func'><option>hide</option><option>show</option></select>");
-            
-            $("#mod-dialogue-box").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#mod-dialogue-box").val(val[0]);
-            } else {
-                $("#mod-dialogue-box").val("hide");
-            }
-            DC.saveFuncScriptItem();
-        }
-    ],
-    waitTime:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Wait time (in milliseconds)</p><input type='number' min='1' id='waiting-time' class='script-func' value='1000'>");
-            
-            $("#waiting-time").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#waiting-time").val(parseInt(val[0]));
-            } else {
-                $("#waiting-time").val(0);
-            }
-            DC.saveFuncScriptItem();
-        }
-    ],
-    fadeChar:[
-        //Select a character
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Target Character: </p><div id='fade-char' class='script-func'></div>");
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                DC.selectChar(obj);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                if($("#fade-char").text()===""){
-                    Q.stage(0).off("selectedCharacter");
-                    DC.setUpFuncs.fadeChar[1](val);
+                return id;
+            },
+    
+            getNextEmpty:function(loc){
+                var occupied = true;
+                while(occupied){
+                    if(Q.Grid[loc[1]][loc[0]]){
+                        if(loc[0]>Q.stage(0).mapWidth){
+                            loc[0] = 0;
+                            loc[1]++;
+                        } else {
+                            loc[0]++;
+                        }
+                    } else {
+                        occupied = false;
+                    }
                 }
-                $("#fade-char").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#fade-char").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#fade-char").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
-                Q.stage(0).trigger("selectedCharacter",sprite);
+                return loc;
+            },
+            getDeepValue:function(obj, path){
+                for (var i=0, path=path.split('&'), len=path.length; i<len; i++){
+                    obj = obj[path[i]];
+                };
+                return obj;
+            },
+            getOptString:function(arr,prop){
+                var opts = '';
+                //If an object is passed in
+                if(!$.isArray(arr)) arr = Object.keys(arr);
+                arr.forEach(function(itm){
+                    if(prop){
+                        opts += '<option value="' + itm[prop] + '">' + itm[prop] + '</option>';
+                    } else {
+                        opts += '<option value="'+itm+'">'+itm+'</option>';
+                    }
+                });
+                return opts;
+            },
+            selectInitialValue:function(cont){
+                $(cont).children("select").each(function(){
+                    $(this).val($(this).attr("initial-value"));
+                });
             }
-            Q.stage(0).on("finished",function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("finished");
-            });
-        },
-        //Get if it should fade in or out.
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Fade in or out.</p><select id='fade-inout' class='script-func'><option>out</option><option>in</option></select>");
-            
-            $("#fade-inout").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            $("#fade-inout").val("out");
-            if(val){
-                $("#fade-inout").val(val[1]);
-            }
-        }
-    ],
-    changeMusic:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Choose a music file to play.</p><select id='play-music' class='script-func'></select><audio controls id='music-preview'><source type='audio/mp3' src=''>Sorry, your browser does not support HTML5 audio.</audio>");
-            
-            $.each(DC.p.musicNames, function(key, value) {
-                $('#play-music')
-                    .append($('<option>', { value : value })
-                    .text(value)); 
-            });
-            $("#play-music").change(function(){
-                $("#music-preview").attr("src","../../audio/bgm/"+$("#play-music").val());
-                    DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#play-music").val(val[0]);
-                $("#play-music").trigger("change");
-            } else {
-                $("#play-music").val($("#play-music option:first").val());
-                $("#play-music").trigger("change");
-            }
-        }
-    ],
-    playSound:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Choose a sound file to play.</p><select id='play-sound' class='script-func'></select><audio controls id='sound-preview'><source type='audio/mp3' src=''>Sorry, your browser does not support HTML5 audio.</audio>");
-            
-            $.each(DC.p.soundNames, function(key, value) {
-                $('#play-sound')
-                    .append($('<option>', { value : value })
-                    .text(value)); 
-            });
-            $("#play-sound").change(function(){
-                $("#sound-preview").attr("src","../../audio/sfx/"+$("#play-sound").val());
-                    DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#play-sound").val(val[0]);
-                $("#play-sound").trigger("change");
-            } else {
-                $("#play-sound").val($("#play-sound option:first").val());
-                $("#play-sound").trigger("change");
-            }
-        }
-    ],
-    changeMoveSpeed:[
-        //Select a character
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Target Character: </p><div id='change-move-speed' class='script-func'></div>");
-            
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                DC.selectChar(obj);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                if($("#change-move-speed").text()===""){
-                    Q.stage(0).off("selectedCharacter");
-                    DC.setUpFuncs.changeMoveSpeed[1](val);
+        };
+        FileSaver = {
+            processValue:function(value){
+                var val = parseInt(value);
+                if(isNaN(val)){
+                    if(/[+=]/g.test(value) == true) {
+                        val = encodeURIComponent(value);
+                    } else {
+                        val = value;
+                    }
                 }
-                $("#change-move-speed").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#change-move-speed").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#change-move-speed").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
-                Q.stage(0).trigger("selectedCharacter",sprite);
+                if(!val && isNaN(val)) val = (value === 'true');
+                return val;
+            },
+            getGroups:function(cont){
+                var groups = [];
+                $(cont).children(".group-cont").each(function(){
+                    var group = {};
+                    groups.push(group);
+                });
+                return groups;
+            },
+            getCharacters:function(){
+                var chars = [];
+                $(".character").each(function(){
+                    var char = $(this);
+                    chars.push({
+                        file:char.attr("file"),
+                        group:char.attr("group"),
+                        handle:char.attr("class").split(" ")[2],
+                        uniqueId:FileSaver.processValue(char.attr("uniqueId")),
+                        loc:[FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
+                        dir:char.attr("dir")
+                    });
+                });
+                return chars;
+            },
+            getScript:function(){
+                var script = [];
+                $(".script-item-group").each(function(){
+                    var group = [];
+                    $(this).children(".script-items-cont").children(".script-item-cont").each(function(){
+                        var func = $(this).children(".func").val();
+                        var props = [];
+                        $(this).children(".script-item").children(".prop").each(function(){
+                            if($(this).is("div")){
+                                props.push(JSON.parse($(this).attr("data")));
+                            }
+                            else if($(this).attr("type")==="checkbox"){
+                                props.push(this.checked);
+                            } else {
+                                props.push(FileSaver.processValue($(this).val()));
+                            }
+                        });
+                        group.push([func,props]);
+                    });
+                    script.push(group);
+                });
+                return script;
+            },
+            getNewSaveFile:function(){
+                return JSON.stringify({
+                    name:dataP.event.name,
+                    kind:"battleScene",
+                    map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
+                    music:$("#prop-music .music-select").val(),
+                    script:FileSaver.getScript(),
+                    characters:FileSaver.getCharacters()
+                });
             }
-            Q.stage(0).on("finished",function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("finished");
-            });
-        },
-        //Type a movement speed
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Movement Speed: </p><input type='number' step='0.01' min='0.01' id='move-speed' class='script-func' value='0.30' dataType='float'>");
-            
-            $("#move-speed").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#move-speed").val(parseFloat(val[1]).toFixed(2));
+        };
+        
+        DC.linkSelectToSrc($("#prop-music").children(".music-select"),$("#prop-music").children("audio"),"../../audio/bgm/");
+        //Fill the char-files container with the files. This only needs to be done once at runtime as it will not change until the page is refreshed after a new character file has been created.
+        var fileNames = Object.keys(dataP.charFiles);
+        var cont = $("#char-files");
+        for(var i=0;i<fileNames.length;i++){
+            var groups = Object.keys(dataP.charFiles[fileNames[i]]);
+            $(cont).append('<div class="file-groups"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+fileNames[i]+'</span><div class="groups minimize"></div></div>');
+            for(var j=0;j<groups.length;j++){
+                var chars = Object.keys(dataP.charFiles[fileNames[i]][groups[j]]);
+                $(cont).children(".file-groups").children(".groups").last().append('<div class="file-chars"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+groups[j]+'</span><div class="chars minimize"></div></div>');
+                for(var k=0;k<chars.length;k++){
+                    var char = dataP.charFiles[fileNames[i]][groups[j]][chars[k]];
+                    char.file = fileNames[i];
+                    char.group = groups[j];
+                    $(cont).children(".file-groups").last().children(".groups").children(".file-chars").last().children(".chars").append("<div class='file-character draggable' data='"+JSON.stringify(char)+"'>"+char.handle+"</div>");
+                }
             }
         }
-    ],
-    playAnim:[
-        function(val){
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Target Character: </p><div id='play-anim-char' class='script-func'></div>");
-            
-            allowSpriteSelecting = true;
-            Q.stage(0).on("selectedCharacter",function(obj){
-                DC.selectChar(obj);
-                if(Q.locSelectedBox) Q.locSelectedBox.destroy();
-                if($("#play-anim-char").text()===""){
-                    Q.stage(0).off("selectedCharacter");
-                    DC.setUpFuncs.playAnim[1](val);
+        $(document).on("click",".add-group",function(){
+            var cont = DC.getScriptItemGroup();
+            $(this).parent().siblings(".script-groups").append(cont);
+        });
+        $(document).on("click",".add-script-item",function(){
+            var content = DC.getScriptItemFunc($("<div class='script-item-cont selectable'></div>"));
+            content.append(DC.getScriptItem($("<div class='script-item minimize'></div>")));
+            $(this).parent().parent().children(".script-items-cont").append(content);
+            DC.selectInitialValue($(content));
+            $(content).children(".func").on("change",function(){
+                $(this).next().nextAll().remove(); //After the 'x' remove all
+                $(this).siblings(".minimize-icon").text("-");
+                $(this).parent().append(DC.getScriptItem($("<div class='script-item minimize'></div>"),$(this).parent().children(".func").val()));
+            });
+        });
+        /* start initial props code */
+        
+        
+        DC.linkSelects($("#map-select-group"),$("#map-select-place"),dataP.mapFileNames);
+        $("#map-select-group").append(DC.getOptString(dataP.mapFileGroups));
+        $("#map-select-group").trigger("change");
+        $(".music-select").append(DC.getOptString(dataP.musicFileNames));
+        
+        DC.linkSelects($("#prop-finished").children(".scene-type"),$("#prop-finished").children(".scene-name"),dataP.scenes);
+        $("#prop-finished").children(".scene-type").append(DC.getOptString(dataP.sceneTypes));
+        DC.linkSelects($("#prop-finished").children(".scene-name"),$("#prop-finished").children(".event-name"),dataP.events,[$("#prop-finished").children(".scene-type")]);
+        $("#prop-finished").children(".scene-type").trigger("change");
+        $("#prop-finished").children(".scene-name").trigger("change");
+        
+        /* end initial props code */
+
+        function toggleSelected(sel){
+            if(selectedLocs.length){
+                var locs = [];
+                for(var i=0;i<selectedLocs.length;i++){
+                    locs.push([selectedLocs[i].p.loc[0],selectedLocs[i].p.loc[1]]);
                 }
-                $("#play-anim-char").text("Selected: "+obj.p.handle+" "+obj.p.uniqueId);
-                $("#play-anim-char").attr("val",JSON.stringify([obj.p.handle,obj.p.uniqueId]));
-                $("#play-anim-char").attr("dataType","array");
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                var sprite = DC.getCharacter(val[0][0],val[0][1]);
-                Q.viewObj.p.x = sprite.p.x;
-                Q.viewObj.p.y = sprite.p.y;
-                Q.stage(0).trigger("selectedCharacter",sprite);
+                if(selectedLocs[0].p.cont) $(selectedLocs[0].p.cont).attr("data",JSON.stringify(locs));
+                for(var i=selectedLocs.length-1;i>=0;i--){
+                    selectedLocs[i].destroy();
+                }
+                selectedLocs = [];
             }
-            Q.stage(0).on("finished",function(){
-                Q.stage(0).off("selectedCharacter");
-                Q.stage(0).off("finished");
-            });
-        },
-        function(val){
-            var anims = ["Stand","Walk","Attack","Counter","Miss","Lift","Lifted","Hurt","Dying","LevelUp","SonicBoom","Whirlwind","Piercing"];
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Play Animation </p><select id='anims' class='script-func'></select>");
+            //Stop selecting that character
+            if(selectedCharacter){
+                selectedCharacter.destroySelectedBox();
+                selectedCharacter.off("step",selectedCharacter,"setDir");
+            }
             
-            $.each(anims, function(key, value) {
-                $('#anims')
-                    .append($('<option>', { value : value })
-                    .text(value)); 
-            });
+            $(".selected").removeClass("selected");
+            $(sel).toggleClass("selected");
+            Q.stage(0).off("selectedCharacter");
+            Q.stage(0).off("selectedLocation");
             
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select the direction of the character.</p><select id='dir-on-arrival' class='script-func'><option>up</option><option>right</option><option>down</option><option>left</option></select>");
+        };
+        $(document).on("click",".character",function(){
+            toggleSelected(this);
+            Q.toCharSelection();
+            selectedCharacter = Q.getSpriteAt([parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))]);
+            selectedCharacter.createSelectedBox();
+            selectedCharacter.on("step",selectedCharacter,"setDir");
             
-            $("#dir-on-arrival").val("up");
-            
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Choose a sound file to play.</p><select id='play-sound' class='script-func'></select><audio controls id='sound-preview'><source type='audio/mp3' src=''>Sorry, your browser does not support HTML5 audio.</audio>");
-            
-            $.each(DC.p.soundNames, function(key, value) {
-                $('#play-sound')
-                    .append($('<option>', { value : value })
-                    .text(value)); 
-            });
-            $("#anims").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            $("#dir-on-arrival").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            $("#play-sound").change(function(){
-                $("#sound-preview").attr("src","../../audio/sfx/"+$("#play-sound").val());
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#anims").val(val[1]);
+        });
+        $(document).on("click",".script-item-cont",function(){
+            toggleSelected(this);
+            //Any funcs that use selectedCharacter or selectedLocation
+            var func = $(this).children(".func").val();
+            switch(func){
+                case "centerViewLoc":
+                    DC.linkSelectedLocToInputs($(this).children(".script-item").children("input")[0],$(this).children(".script-item").children("input")[1]);
+                    break;
+                case "changeMoveSpeed":
+                case "playAnim":
+                case "changeDir":
+                case "fadeChar":
+                case "centerViewChar":
+                    DC.linkSelectedCharToSelect($(this).children(".script-item").children("select")[0]);
+                    break;
+                case "moveAlong":
+                    DC.linkSelectedCharToSelect($(this).children(".script-item").children("select")[0]);
+                    var locsCont = $(this).children(".script-item").children("div");
+                    Q.stage(0).on("selectedLocation",function(loc){
+                        if(DC.checkSelectedLoc(loc)) return;
+                        selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:selectedLocs.length+1,cont:locsCont})));
+                        $(locsCont).append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
+                    });
+                    var locs = JSON.parse($(locsCont).attr("data"));
+                    for(var i=0;i<locs.length;i++){
+                        selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:locs[i],num:selectedLocs.length+1,cont:locsCont})));
+                    }
+                    break;
+            }
+        });
+
+        $(".music-select").trigger("change");
+        $(".file-groups").children(".minimize-icon").trigger("click");
+        
+        
+        $('.file-character').draggable({
+            cursorAt: { top: 10, left: 20 },
+            helper: "clone",
+            appendTo: "body"
+        });
+        $('#event-chars-cont').droppable({
+            accept:".file-character",
+            //Create a character element
+            drop:function(event,ui){
+                if(selectedCharacter) selectedCharacter.confirmPlacement();
+                var char = JSON.parse($(ui.draggable).attr("data"));
+                char.uniqueId = DC.genUniqueId(char.handle);
+                char.loc = DC.getNextEmpty([0,0]);
+                char.dir = "down";
+                var charButton = DC.newCharacter(char);
+                $(this).append(charButton);
+                var data = dataP.charFiles[char.file][char.group][char.handle];
+                var character = Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                $(charButton).children(".character").trigger("click");
+                Q.stage(0).trigger("selectedCharacter",character);
                 
-                $("#dir-on-arrival").val(val[2]);
-                
-                $("#play-sound").val(val[3]);
+                DC.updateCharSelects();
             }
-            $("#play-sound").trigger("change");
-        }
-    ],
-    changeEvent:[
-        //Select an event from the list of events/scenes
-        function(val){
-            var sceneTypes = ["Character","Officer","Other","Story"];
-            var scenes = JSON.parse($("#all-scene-names").text());
-            var events = JSON.parse($("#all-event-names").text());
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Type.</p><select id='scene-types' class='script-func'></select>");
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select a Scene.</p><select id='scene-names' class='script-func'></select>");
-            $("#script-item-box").children(".script-item-div").append("<p class='script-instruction'>Select an Event.</p><select id='event-names' class='script-func'></select>");
-            
-            $.each(sceneTypes, function(key, value) {
-                $('#scene-types')
-                    .append($('<option>', { value : value })
-                    .text(value));
-            });
-            $("#scene-types").on("change",function(key,value){
-                $("#scene-names").empty();
-                $("#event-names").empty();
-                var scene = scenes[$(this).prop("selectedIndex")];
-                $.each(scene, function(key, value) {
-                    $('#scene-names')
-                        .append($('<option>', { value :value})
-                        .text(value)); 
-                });
-                $("#scene-names").val($("#scene-names option:first").val());
-                $("#scene-names").trigger("change");
-            });
-            
-            //Fill the events select
-            $("#scene-names").on("change",function(){
-                $("#event-names").empty();
-                var event = events[$(this).val()];
-                $.each(event, function(key, value) {
-                    $('#event-names')
-                        .append($('<option>', { value :value})
-                        .text(value)); 
-                });
-                $("#event-names").val($("#event-names option:first").val());
-                DC.saveFuncScriptItem();
-            });
-            $("#event-names").on("change",function(){
-                DC.saveFuncScriptItem();
-            });
-            if(val!==undefined){
-                $("#scene-types").val(val[0]);
-                $("#scene-types").trigger("change");
-                $("#scene-names").val(val[1]);
-                $("#scene-names").trigger("change");
-                $("#event-names").val(val[2]);
-            } else {
-                $("#scene-types").val($("#scene-types option:first").val());
-                $("#scene-names").trigger("change");
-                $("#scene-names").val($("#scene-names option:first").val());
-                $("#scene-names").trigger("change");
-                $("#event-names").val($("#scene-names option:first").val());
+        });
+        $("#go-back").click(function(e){
+            if(confirm("Are you sure you want to go back without saving?")){
+                var to = "show-events.php";
+                if(sceneType==="Flavour"){
+                    to = "show-flavour.php";
+                }
+                $.redirect(to,  {'scene':sceneName, 'event':eventName, 'type':sceneType});
             }
-            DC.saveFuncScriptItem();
-        }
-    ]
-};
-
-
-$(document).on("click","#script-pos",function(e){
-    if($(this).text()==="Left"){
-        $(this).text("Right");
-    } else {
-        $(this).text("Left");
-    }
-    DC.saveTextScriptItem();
-});
-$(document).on("click","#script-noCycle",function(e){
-    if($(this).text()==="No"){
-        $(this).text("Yes");
-    } else {
-        $(this).text("No");
-    }
-    DC.saveTextScriptItem();
-});
-$(document).on("click",".remove-choice",function(e){
-    $(this).parent().remove();
-    $(".script-item").removeClass("selected-fill");
-});
-
-$(document).on("click","#add-new-text",function(e){
-    $(this).parent().children("ul").append('<li class="script-text-dragger"><textarea class="script-text new-script-item"></textarea><div class="btn btn-group center remove-choice">x</div></li>');
-});
-
-var getSaveData = function(form){
-    var data = {
-        scriptData:[],
-        characters:[]
+        });
+        $("#test-file").click(function(e){
+            window.onbeforeunload = null;
+            var newFile = FileSaver.getNewSaveFile();
+            $.ajax({
+                type:'POST',
+                url:'save-battle.php',
+                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                dataType:'json'
+            })
+            .done(function(data){$.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});})
+            .fail(function(data){console.log(data)});
+        });
+        $("#save-file").click(function(){
+            var newFile = FileSaver.getNewSaveFile();
+            $.ajax({
+                type:'POST',
+                url:'save-battle.php',
+                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                dataType:'json'
+            })
+            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+            .fail(function(data){console.log(data)});
+        });
+        $("#load-characters").click(function(){
+            if($("#load-chars-from-cont").length) return;
+            $("#full-screen-hider").show();
+            var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
+            var scType = DC.groupSelect("Type",dataP.sceneTypes,sceneType);
+            var scName = DC.groupSelect("SCName",dataP.scenes[sceneType],sceneName);
+            var evName = DC.groupSelect("EVName",dataP.events[sceneType][sceneName],eventName);
+            $(cont).append(scType);
+            $(cont).append(scName);
+            $(cont).append(evName);
+            DC.selectInitialValue(cont);
+            DC.linkSelects($(cont).children(".prop")[0],$(cont).children(".prop")[1],dataP.scenes);
+            DC.linkSelects($(cont).children(".prop")[1],$(cont).children(".prop")[2],dataP.events,[$(cont).children(".prop")[0]]);
+            
+            $(cont).append("<div id='load-chars-buttons'><span id='load-chars'>LOAD</span><span id='chars-cancel'>CANCEL</span></div>");
+            $("#editor-content").append(cont);
+            $("#load-chars").click(function(){
+                var url = "../../data/json/story/events/"+$($("#load-chars-from-cont").children(".prop")[0]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[1]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[2]).val()+".json";;
+                $.getJSON(url)
+                    .done(function(d){
+                        if(!d.characters){
+                            alert("This file is not a battle or battleScene!");
+                            return;      
+                        }
+                        $("#full-screen-hider").trigger("click");
+                        $("#event-chars-cont").empty();
+                        Q("CharacterSprite").each(function(){
+                            this.removeFromExistence();
+                        });
+                        for(var i=0;i<d.characters.length;i++){
+                            var char = d.characters[i];
+                            char.loc = DC.getNextEmpty(char.loc);
+                            var charButton = DC.newCharacter(char);
+                            $('#event-chars-cont').append(charButton);
+                            var data = dataP.charFiles[char.file][char.group][char.handle];
+                            Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                        }
+                        $(".character").last().trigger("click");
+                    }
+                );
+            });
+            $("#chars-cancel").click(function(){
+                $("#full-screen-hider").trigger("click");
+            });
+        });
+        $("#full-screen-hider").click(function(){
+            $(this).hide();
+            $("#load-chars-from-cont").remove();
+        });
+        
+        var event = dataP.event;
+        var map = event.map.split("/");
+        $("#map-select-group").val(map[0]).trigger("change");
+        $("#map-select-place").val(map[1]).trigger("change");
+        Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
+            startQuintusCanvas();
+        });
     };
-    //Get the script
-    var groups = $(".script-list-group");
-    $(groups).each(function(i,itm){
-        var items = $(itm).children(".script-items").children(".script-item");
-        //Start off with the name in the array
-        var group = [$(itm).children(".script-group-title").children(".script-group-name").text()];
-        $(items).each(function(j,itm2){
-            var type = $(itm2).attr("class").split(" ")[1];
-            if(type==="text"){
-                var props = JSON.parse($(itm2).attr("props"));
-                group.push({
-                    text:props.text,
-                    asset1:props.asset1,
-                    asset2:props.asset2,
-                    pos:props.pos,
-                    autoCycle:props.autoCycle,
-                    noCycle:props.noCycle
-                });
-            } else if(type==="func"){
-                group.push({func:$(itm2).attr("func"),props:JSON.parse($(itm2).attr("props"))});
-            }
-        });
-        data.scriptData.push(group);
-    });
-    //Get the characters
-    $(".event-character").each(function(){
-        var props = JSON.parse($(this).attr("data"));
-        //Get the character sprite
-        var sprite = DC.getCharacter(props.handle,props.uniqueId);
-        data.characters.push({
-            file:props.file,
-            group:props.group,
-            handle:props.handle,
-            uniqueId:props.uniqueId,
-            loc:sprite.p.loc,
-            dir:sprite.p.dir
-        });
-    });
-    var json = JSON.stringify(data);
-    return json;
-};
-$(document).on("click","#menu-save-file",function(e){
-    $.ajax({
-        type:'POST',
-        url:'save-battleScene-script.php',
-        data:{data:getSaveData(),name:$("#editor-title").text(),scene:$("#scene-name").text(),type:$("#scene-type").text()},
-        dataType:'json'
-    })
-    .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-    .fail(function(data){console.log(data)});
-});
-$(document).on("click","#menu-test-event",function(e){
-    window.onbeforeunload = null;
-    $.ajax({
-        type:'POST',
-        url:'save-battleScene-script.php',
-        data:{data:getSaveData(),name:$("#editor-title").text(),scene:$("#scene-name").text(),type:$("#scene-type").text()},
-        dataType:'json'
-    })
-    .done(function(data){
-        $.redirect('../../index.php', {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text(), testing:true});
-    })
-    .fail(function(data){console.log("fail");console.log(data)});
-});
-$(document).on("click","#menu-go-back",function(e){
-    if(confirm("Are you sure you want to go back without saving?")){
-        var to = "show-events.php";
-        if($("#scene-type").text()==="Flavour"){
-            to = "show-flavour.php";
+    
+    
+    $(document).on("click",".minimize-icon, .minimizable",function(){
+        var content = $(this).parent().children(".minimize");
+        if($(content).css("display")==="none"){
+            $(content).show();
+            $(this).parent().children(".minimize-icon").text("-");
+        } else {
+            $(content).hide();
+            $(this).parent().children(".minimize-icon").text("+");
         }
-        $.redirect(to, {'scene':$("#scene-name").text(), 'event':$("#editor-title").text(), 'type':$("#scene-type").text()});
-    }
+    });
+    $(document).on("click",".minimize-icon-deep, .minimizable-deep",function(){
+        var content = $(this).parent().parent().children(".minimize");
+        if($(content).css("display")==="none"){
+            $(content).show();
+            $(this).parent().children(".minimize-icon-deep").text("-");
+        } else {
+            $(content).hide();
+            $(this).parent().children(".minimize-icon-deep").text("+");
+        }
+    });
+    $(document).on("click",".remove-choice",function(e){
+        $(this).parent().remove();
+    });
+    $(document).on("click",".remove-choice-deep",function(e){
+        $(this).parent().parent().remove();
+    });
 });
-
-
-
-});
+    

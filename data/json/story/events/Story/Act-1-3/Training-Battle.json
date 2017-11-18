@@ -1,16 +1,20 @@
 {
     "name": "Training-Battle",
     "kind": "battle",
-    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "map": "Venoria\/Venoria-Forest-Clearing.tmx",
     "music": "battle.mp3",
     "placementSquares": [
         [
             6,
-            15
+            16
+        ],
+        [
+            7,
+            16
         ],
         [
             8,
-            15
+            16
         ]
     ],
     "maxAllies": 1,
@@ -30,7 +34,30 @@
             "Training-Battle-Defeat"
         ]
     },
-    "events": [],
+    "events": [
+        {
+            "conds": [
+                [
+                    "rounds",
+                    [
+                        1,
+                        2
+                    ]
+                ]
+            ],
+            "effects": [
+                [
+                    "showText",
+                    [
+                        "",
+                        "empty.png",
+                        "empty.png"
+                    ]
+                ]
+            ],
+            "required": "true"
+        }
+    ],
     "characters": [
         {
             "file": "Officers.json",
@@ -51,6 +78,17 @@
             "loc": [
                 7,
                 12
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                0,
+                0
             ],
             "dir": "down"
         }
