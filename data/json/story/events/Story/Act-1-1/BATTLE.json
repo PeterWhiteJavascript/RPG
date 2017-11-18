@@ -1,13 +1,42 @@
 {
     "name": "BATTLE",
     "kind": "battle",
-    "music": "demo.mp3",
     "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "demo.mp3",
     "placementSquares": [],
     "maxAllies": 6,
-    "events": [],
-    "characters": [],
-    "victory": [],
-    "defeat": [],
-    "vrs": []
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "BATTLE"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "BATTLE"
+        ]
+    },
+    "events": [
+        {
+            "conds": [],
+            "effects": [
+                [
+                    "setVar",
+                    [
+                        "Scene",
+                        "test",
+                        "%2B%3D",
+                        1000
+                    ]
+                ]
+            ],
+            "required": "true"
+        }
+    ],
+    "characters": []
 }

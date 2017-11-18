@@ -24,7 +24,9 @@
                     "top": "239px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        "BATTLE"
+                    ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "BATTLE-SCENE",
@@ -32,12 +34,16 @@
                     "top": "239px"
                 },
                 {
-                    "events": [],
-                    "sceneVars": [],
+                    "events": [
+                        "BATTLE"
+                    ],
+                    "sceneVars": [
+                        "test"
+                    ],
                     "globalVars": [],
                     "name": "BATTLE",
-                    "left": "527px",
-                    "top": "312px"
+                    "left": "755px",
+                    "top": "318px"
                 }
             ],
             "vrs": {

@@ -1,7 +1,7 @@
 {
     "name": "Training-Battle",
     "kind": "battle",
-    "map": "Venoria\/Venoria-Forest-Clearing.tmx",
+    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
     "music": "battle.mp3",
     "placementSquares": [
         [
@@ -78,17 +78,6 @@
             "loc": [
                 7,
                 12
-            ],
-            "dir": "down"
-        },
-        {
-            "file": "test_level1.json",
-            "group": "Main",
-            "handle": "Bandit-Legionnaire",
-            "uniqueId": 0,
-            "loc": [
-                0,
-                0
             ],
             "dir": "down"
         }

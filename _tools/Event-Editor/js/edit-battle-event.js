@@ -331,7 +331,6 @@ $(function(){
                     frame:0,
                     sprite:"Character"
                 });
-                console.log(this)
                 var pos = Q.getXY(this.p.loc);
                 this.p.x = pos.x;
                 this.p.y = pos.y;
@@ -390,7 +389,6 @@ $(function(){
                 $("#prop-music .music-select").val(event.music).trigger("change");
                 $("#prop-maxAllies input").val(event.maxAllies);
                 function showEventGroups(data,groupCont){
-                    console.log(groupCont)
                     $(groupCont).children(".cond-group-title-bar").children(".add-group").trigger("click");
                     for(var j=0;j<data.conds.length;j++){
                         var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
@@ -420,9 +418,9 @@ $(function(){
                     }
                 };
                 function setUpEndBattle(which){
-                    $("#prop-"+which+" .scene-type").val(event[which].next[0]).trigger("change");
-                    $("#prop-"+which+" .scene-name").val(event[which].next[1]).trigger("change");
-                    $("#prop-"+which+" .event-name").val(event[which].next[2]);
+                    $("#prop-"+which+" .scene-type").val(event[which].next[0] || sceneType).trigger("change");
+                    $("#prop-"+which+" .scene-name").val(event[which].next[1] || sceneName).trigger("change");
+                    $("#prop-"+which+" .event-name").val(event[which].next[2] || eventName);
                     for(var i=0;i<event[which].events.length;i++){
                         showEventGroups(event[which].events[i],$("#prop-"+which));
                     }
@@ -445,7 +443,7 @@ $(function(){
         sceneTypes:["Story","Flavour"],
         condFuncs:["rounds","charHealth"],
         effectFuncs:["setVar","spawnCharacter","showText","changeMusic"],
-        scopes:["Global","Scene","Event"],
+        scopes:["Global","Scene"],
         conditionals:["==","!=",">=","<="],
         operators:["=","+=","-="],
         directions:["down","left","up","right"],
@@ -553,8 +551,8 @@ $(function(){
             groupTextArea:function(text,val){
                 return "<span class='full-width'>"+text+"</span><textarea class='prop full-width group-text-area'>"+val+"</textarea>";
             },
-            groupSelect:function(text,opts,value){
-                return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
+            groupSelect:function(text,opts,value,cl){
+                return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
             },
             getCondFunc:function(name){
                 name = name || "rounds";
@@ -592,8 +590,8 @@ $(function(){
                 switch(name){
                     case "setVar":
                         props = props || ["Global","money","+=",1000];
-                        content.append(this.groupSelect("Scope",dataP.scopes,props[0]));
-                        content.append(this.groupSelect("Name",dataP.vrs[props[0]],props[1]));
+                        content.append(this.groupSelect("Scope",dataP.scopes,props[0],"var-scope"));
+                        content.append(this.groupSelect("Name",dataP.vrs[props[0]],props[1],"var-handle"));
                         DC.linkSelects($(content).children(".prop")[0],$(content).children(".prop")[1],dataP.vrs);
                         content.append(this.groupSelect("Opr",dataP.operators,decodeURIComponent(props[2])));
                         content.append(this.groupInput("Value",props[3],"text"));
@@ -787,25 +785,54 @@ $(function(){
                 });
                 return squares;
             },
-            getNewSaveFile:function(){
-                return JSON.stringify({
-                    name:dataP.event.name,
-                    kind:"battle",
-                    map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
-                    music:$("#prop-music .music-select").val(),
-                    placementSquares:FileSaver.getPlacementSquares(),
-                    maxAllies:FileSaver.processValue($("#prop-maxAllies input").val()),
-                    victory:{
-                        events:FileSaver.getGroups($("#prop-victory").children(".cond-groups")),
-                        next:[$("#prop-victory .scene-type").val(),$("#prop-victory .scene-name").val(),$("#prop-victory .event-name").val()]
-                    },
-                    defeat:{
-                        events:FileSaver.getGroups($("#prop-defeat").children(".cond-groups")),
-                        next:[$("#prop-defeat .scene-type").val(),$("#prop-defeat .scene-name").val(),$("#prop-defeat .event-name").val()]
-                    },
-                    events:FileSaver.getGroups($("#cond-groups-cont").children(".cond-groups")),
-                    characters:FileSaver.getCharacters()
+            getEventRefs:function(){
+                var refs = [];
+                $(".event-name").each(function(){
+                    var event = $(this).val(); 
+                    if(refs.indexOf(event) === -1){
+                        refs.push($(this).val());
+                    }
                 });
+                return refs;
+            },
+            getVarRefs:function(){
+                var refs = {sceneVarRefs:[],globalVarRefs:[]};
+                $(".var-scope").each(function(){
+                    var scope = $(this).val();
+                    var name = $(this).siblings(".var-handle").val();
+                    if(scope==="Global"){
+                        refs.globalVarRefs.push(name);
+                    } else if(scope==="Scene"){
+                        refs.sceneVarRefs.push(name);
+                    }
+                });
+                return refs;
+            },
+            getNewSaveFile:function(){
+                var varRefs = FileSaver.getVarRefs();
+                return {
+                    file:JSON.stringify({
+                        name:dataP.event.name,
+                        kind:"battle",
+                        map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
+                        music:$("#prop-music .music-select").val(),
+                        placementSquares:FileSaver.getPlacementSquares(),
+                        maxAllies:FileSaver.processValue($("#prop-maxAllies input").val()),
+                        victory:{
+                            events:FileSaver.getGroups($("#prop-victory").children(".cond-groups")),
+                            next:[$("#prop-victory .scene-type").val(),$("#prop-victory .scene-name").val(),$("#prop-victory .event-name").val()]
+                        },
+                        defeat:{
+                            events:FileSaver.getGroups($("#prop-defeat").children(".cond-groups")),
+                            next:[$("#prop-defeat .scene-type").val(),$("#prop-defeat .scene-name").val(),$("#prop-defeat .event-name").val()]
+                        },
+                        events:FileSaver.getGroups($("#cond-groups-cont").children(".cond-groups")),
+                        characters:FileSaver.getCharacters()
+                    }),
+                    eventRefs:FileSaver.getEventRefs(),
+                    sceneVarRefs:varRefs.sceneVarRefs,
+                    globalVarRefs:varRefs.globalVarRefs
+                };
             }
         };
 
@@ -923,26 +950,48 @@ $(function(){
         });
         $("#test-file").click(function(e){
             window.onbeforeunload = null;
-            var newFile = FileSaver.getNewSaveFile();
+            var data = FileSaver.getNewSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
                 dataType:'json'
             })
             .done(function(data){$.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});})
             .fail(function(data){console.log(data)});
+            
+            if(sceneType==="Story"){
+                $.ajax({
+                    type:'POST',
+                    url:'save-event-references.php',
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    dataType:'json'
+                })
+                .done(function(data){console.log(data)})
+                .fail(function(data){console.log(data)});
+            }
         });
         $("#save-file").click(function(){
-            var newFile = FileSaver.getNewSaveFile();
+            var data = FileSaver.getNewSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
                 dataType:'json'
             })
             .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
             .fail(function(data){console.log(data)});
+            
+            if(sceneType==="Story"){
+                $.ajax({
+                    type:'POST',
+                    url:'save-event-references.php',
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    dataType:'json'
+                })
+                .done(function(data){console.log(data)})
+                .fail(function(data){console.log(data)});
+            }
         });
         $("#load-characters").click(function(){
             if($("#load-chars-from-cont").length) return;

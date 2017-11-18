@@ -645,9 +645,9 @@ $(function(){
                         break;
                     case "changeEvent":
                         props = props || [sceneType,sceneName,eventName];
-                        content.append(this.groupSelect("ScType",dataP.sceneTypes,props[0]));
-                        content.append(this.groupSelect("ScName",dataP.scenes[props[0]],props[1]));
-                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2]));
+                        content.append(this.groupSelect("ScType",dataP.sceneTypes,props[0],"scene-type"));
+                        content.append(this.groupSelect("ScName",dataP.scenes[props[0]],props[1],"scene-name"));
+                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2],"event-name"));
                         DC.linkSelects($(content).children("select")[0],$(content).children("select")[1],dataP.scenes);
                         DC.linkSelects($(content).children("select")[1],$(content).children("select")[2],dataP.events,[$(content).children("select")[0]]);
                         $($(content).children("select")[0]).trigger("change");
@@ -847,15 +847,30 @@ $(function(){
                 });
                 return script;
             },
-            getNewSaveFile:function(){
-                return JSON.stringify({
-                    name:dataP.event.name,
-                    kind:"battleScene",
-                    map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
-                    music:$("#prop-music .music-select").val(),
-                    script:FileSaver.getScript(),
-                    characters:FileSaver.getCharacters()
+            getEventRefs:function(){
+                var refs = [];
+                $(".event-name").each(function(){
+                    var event = $(this).val(); 
+                    if(refs.indexOf(event) === -1){
+                        refs.push($(this).val());
+                    }
                 });
+                return refs;
+            },
+            getNewSaveFile:function(){
+                return {
+                    file:JSON.stringify({
+                        name:dataP.event.name,
+                        kind:"battleScene",
+                        map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
+                        music:$("#prop-music .music-select").val(),
+                        script:FileSaver.getScript(),
+                        characters:FileSaver.getCharacters()
+                    }),
+                    eventRefs:FileSaver.getEventRefs(),
+                    sceneVarRefs:[],
+                    globalVarRefs:[]
+                };
             }
         };
         
@@ -1010,26 +1025,48 @@ $(function(){
         });
         $("#test-file").click(function(e){
             window.onbeforeunload = null;
-            var newFile = FileSaver.getNewSaveFile();
+            var data = FileSaver.getNewSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
                 dataType:'json'
             })
             .done(function(data){$.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});})
             .fail(function(data){console.log(data)});
+    
+            if(sceneType==="Story"){
+                $.ajax({
+                    type:'POST',
+                    url:'save-event-references.php',
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    dataType:'json'
+                })
+                .done(function(data){console.log(data)})
+                .fail(function(data){console.log(data)});
+            }
         });
         $("#save-file").click(function(){
-            var newFile = FileSaver.getNewSaveFile();
+            var data = FileSaver.getNewSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:newFile,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
                 dataType:'json'
             })
             .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
             .fail(function(data){console.log(data)});
+    
+            if(sceneType==="Story"){
+                $.ajax({
+                    type:'POST',
+                    url:'save-event-references.php',
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    dataType:'json'
+                })
+                .done(function(data){console.log(data)})
+                .fail(function(data){console.log(data)});
+            }
         });
         $("#load-characters").click(function(){
             if($("#load-chars-from-cont").length) return;
