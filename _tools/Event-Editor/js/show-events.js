@@ -115,7 +115,6 @@ $(function(){
 
     sceneData = file["Story"].find(function(itm){return itm.name===scene;});
     eventsInScene = sceneData.events;
-    console.log(eventsInScene)
     if(eventsInScene.length){
         showFlowchart();
     } else {
@@ -154,6 +153,7 @@ $(function(){
                         changed = true;
                     }
                 });
+                $(".event-button").last().trigger("click");
                 
             }
             //Create the event in story
@@ -198,8 +198,14 @@ $(function(){
                     newFile.maxAllies = 6;
                     newFile.events = [];
                     newFile.characters = [];
-                    newFile.victory = {};
-                    newFile.defeat = {};
+                    newFile.victory = {
+                        next:["Story",scene,newName],
+                        events:[]
+                    };
+                    newFile.defeat = {
+                        next:["Story",scene,newName],
+                        events:[]
+                    };
                     newFile.vrs = {};
                     break;
             }
@@ -228,6 +234,7 @@ $(function(){
     });
     $("#edit-event").click(function(){
         confirmFlowchartPosition();
+        
         $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story"});
     });
     $("#edit-vars").click(function(){
@@ -288,7 +295,7 @@ $(function(){
         alert("Saved!");
     });
     $("#test-event").click(function(){
-        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':type, testing:true});
+        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
     });
 
     $("#back").click(function(){

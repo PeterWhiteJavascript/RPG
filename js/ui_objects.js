@@ -1508,7 +1508,7 @@ Quintus.UIObjects=function(Q){
                 textNum:0,
                 //Start on the first entry
                 groupNum:0,
-                scriptNum:1,
+                scriptNum:0,
                 
                 //Which character we're on for the text
                 textIndex:0,
@@ -1544,44 +1544,49 @@ Quintus.UIObjects=function(Q){
         },
         cycleText:function(){
             if(!this.p.script[this.p.groupNum]||!this.p.script[this.p.groupNum][this.p.scriptNum]) return;
-            if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length-1){
+            if(this.p.textIndex>this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum].length-1){
                 this.p.nextTextTri = this.stage.insert(new Q.NextTextTri({x:this.p.x+this.p.w/2,y:this.p.y+this.p.h}));
                 this.off("step",this,"cycleText");
                 return;
             }
             //Q.playSound("text_stream.mp3");
-            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum][this.p.textIndex]);
+            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum][this.p.textIndex]);
             this.p.textIndex++;
         },
         next:function(){
             if(this.p.scriptNum>=this.p.script[this.p.groupNum].length){
                 this.p.groupNum++;
-                this.p.scriptNum = 1;
+                this.p.scriptNum = 0;
+            }
+            if(!this.p.script[this.p.groupNum]){
+                this.changeEvent(this.p.next[0],this.p.next[1],this.p.next[2]);
+                return;
             }
             var data = this.p.script[this.p.groupNum][this.p.scriptNum];
             //If it's text
-            if(data.text){
+            if(data[0]==="text"){
+                this.p.script[this.p.groupNum][this.p.scriptNum][1][0] = this.p.script[this.p.groupNum][this.p.scriptNum][1][0].split("\n\n");
                 this.p.textNum = 0;
                 this.p.textIndex = 0;
-                $(this.p.leftImage).attr("src","images/"+data.asset1);
-                $(this.p.rightImage).attr("src","images/"+data.asset2);
+                $(this.p.leftImage).attr("src","images/story/"+data[1][1]);
+                $(this.p.rightImage).attr("src","images/story/"+data[1][2]);
                 $(this.p.textBox).text("");
                 
-                if(data.autoCycle>0){
+                if(data[1][4]>0){
                     this.off("step",this,"checkInputs");
-                    this.p.inputsTimer = data.autoCycle;
+                    this.p.inputsTimer = data[1][4];
                     this.on("step",this,"waitForInputsTimer");
                     this.on("inputsTimerComplete",this,"activateAutoCycle");
                 } else {
                     this.on("step",this,"cycleText");
                 }
-                if("noCycle"==="Yes") this.p.noCycle = true;
+                if(data[1][5]) this.p.noCycle = true;
                 this.modDialogueBox("show");
             } 
             //If it's a function
             else {
                 //Do the function
-                if(this[data.func].apply(this,data.props)){return;};
+                if(this[data[0]](this,data[1])){return;};
                 //Go to the next script entry
                 this.p.scriptNum++;
                 this.next();
@@ -1591,7 +1596,7 @@ Quintus.UIObjects=function(Q){
         nextText:function(){
             this.p.textNum++;
             //If we're at the end of the text array
-            if(this.p.textNum>=this.p.script[this.p.groupNum][this.p.scriptNum].text.length){
+            if(this.p.textNum>=this.p.script[this.p.groupNum][this.p.scriptNum][1][0].length){
                 this.p.scriptNum++;
                 this.next();
                 this.modDialogueBox("hide");
@@ -1613,14 +1618,14 @@ Quintus.UIObjects=function(Q){
         checkInputs:function(){
             if(Q.inputs['confirm']){
                 if(!this.p.cantCycle&&!this.p.noCycle){
-                    if(!this.p.script[this.p.groupNum][this.p.scriptNum].text) return;
+                    if(this.p.script[this.p.groupNum][this.p.scriptNum][0]!=="text") return;
                     //Check if the text is complete
-                    if($(this.p.textBox).text().length===this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length){
+                    if($(this.p.textBox).text().length===this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum].length){
                         if(this.p.nextTextTri) this.p.nextTextTri.destroy();
                         this.nextText();
                     } else {
-                        $(this.p.textBox).text(this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum]);
-                        this.p.textIndex = this.p.script[this.p.groupNum][this.p.scriptNum].text[this.p.textNum].length;
+                        $(this.p.textBox).text(this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum]);
+                        this.p.textIndex = this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum].length;
                     }
                     /*this.p.inputsTimer=this.p.inputsTime;
                     this.off("step",this,"checkInputs");
@@ -1714,23 +1719,14 @@ Quintus.UIObjects=function(Q){
             $(this.p.container).css("display","block");
         },
         //Sets the viewport at a location or object
-        setView:function(obj,flash){
+        centerViewLoc:function(obj,loc){
             var spr = Q.stage(0).viewSprite;
-            //Follow object
-            if(Q._isString(obj[0])){
-                spr.followObj(this.getStoryCharacter(obj[0],obj[1]));
-            }
-            //Go to location
-            else {
-                spr.p.loc = obj;
-                Q.BatCon.setXY(spr);
-            }
-            if(flash){
-                Q.stageScene("fader",11);
-            }
+            spr.p.loc = loc;
+            Q.BatCon.setXY(spr);
+            //TO DO: Speed
         },
         //Tweens the viewport to the location
-        centerView:function(obj,speed){
+        centerViewChar:function(obj,speed){
             this.p.cantCycle = true;
             this.p.noCycle = true;
             

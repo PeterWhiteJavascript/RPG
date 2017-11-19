@@ -246,19 +246,25 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "battleScene":
-                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
+                    newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.vrs = {};
                     break;
                 case "battle":
-                    newFile.map = "maps/Venoria/Venoria-Castle-Outside.tmx";
+                    newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
                     newFile.placementSquares = [];
                     newFile.maxAllies = 6;
                     newFile.events = [];
                     newFile.characters = [];
-                    newFile.victory = {};
-                    newFile.defeat = {};
+                    newFile.victory = {
+                        next:[],
+                        events:[]
+                    };
+                    newFile.defeat = {
+                        next:[],
+                        events:[]
+                    };
                     newFile.vrs = {};
                     break;
             }

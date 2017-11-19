@@ -498,6 +498,9 @@ var start = function(){
             }
             return content;
         },
+        removeAction:function(){
+            $(".action-button.selected-color").parent().remove();
+        },
         getOptString:function(arr,prop){
             var opts = '';
             arr.forEach(function(itm){
@@ -685,10 +688,10 @@ var start = function(){
             }
             data.vrs = data.vrs || {};
             //Get all of the actions
-            var actions = [];
+            var allActions = [];
             var pageList = ["start"];
             $(this.p.actionsCont).children(".action").each(function(idx,itm){
-                var name = $(itm).text()
+                var name = $(itm).text();
                 var music = $(itm).attr("music");
                 var bg = $(itm).attr("bg");
                 var actions = JSON.parse($(itm).attr("actions"));
@@ -696,7 +699,7 @@ var start = function(){
                 var disabledChoices = JSON.parse($(itm).attr("disabledChoices"));
                 if(idx>0){
                     pageList.push($(itm).text());   
-                    actions.push({
+                    allActions.push({
                         name:name,
                         music:music,
                         bg:bg,
@@ -705,14 +708,14 @@ var start = function(){
                         disabledChoices:disabledChoices
                     });
                 } else {
-                    data.name = name;
+                    data.name = eventName;
                     data.music = music;
                     data.bg = bg;
                     data.actions = actions;
                     data.onload = onload;
                     data.disabledChoices = disabledChoices;
+                    data.kind = "location";
                 }
-                
                 if(sceneType==="Story"){
                     for(var i=0;i<onload.length;i++){
                         for(var j=0;j<onload[i].conds.length;j++){
@@ -728,14 +731,16 @@ var start = function(){
                 }
             });
             data.pageList = pageList;
-            data.eventRefs = eventRefs;
-            data.sceneVarRefs = sceneVarRefs;
-            data.globalVarRefs = globalVarRefs;
-            actions.forEach(function(act){
+            var refs = {
+                eventRefs:eventRefs,
+                sceneVarRefs:sceneVarRefs,
+                globalVarRefs:globalVarRefs
+            }
+            allActions.forEach(function(act){
                 data[act.name] = act;
                 delete(act.name);
             });
-            return data;
+            return {file:JSON.stringify(data),refs:refs};
         }
     };
     DC.init();
@@ -785,13 +790,10 @@ var start = function(){
         DC.removeAction();
     });
     
-    $("#copy-action").click(function(){
-        DC.copyAction();
-    });
-    
     $("#add-new-choice").click(function(){
         var action = $(DC.p.actionsCont).children(".action:eq("+DC.p.selectedAction+")");
-        DC.addChoice("","",action.name,"Enabled",[]);
+        DC.addChoice("","",action.name,false,[]);
+        $(".choice-li").children(".actions-select").last().trigger("change");
     });
     $("#add-new-module").click(function(){
         DC.addModule([{text:""}],"");
@@ -803,13 +805,11 @@ var start = function(){
         //Save the current action
         DC.saveAction();
         var data = DC.getSaveData();
-        data.name = eventName;
-        data.scene = sceneName;
-        data.type = sceneType;
+        console.log(data);
         $.ajax({
             type:'POST',
             url:'save-location.php',
-            data:data,
+            data:{file:data.file,sceneType:sceneType,sceneName:sceneName,eventName:eventName},
             dataType:'json'
         })
         .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
@@ -820,7 +820,7 @@ var start = function(){
             $.ajax({
                 type:'POST',
                 url:'save-event-references.php',
-                data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                data:{eventRefs:data.refs.eventRefs,sceneVarRefs:data.refs.sceneVarRefs,globalVarRefs:data.refs.globalVarRefs,name:eventName,scene:sceneName},
                 dataType:'json'
             })
             .done(function(data){console.log(data)})
@@ -1059,10 +1059,10 @@ var start = function(){
         }
     });
     
-    
+    /*
     $( ".sortable" ).sortable({
         axis: "y"
     });
-    $( ".sortable" ).disableSelection();
+    $( ".sortable" ).disableSelection();*/
 };
 });

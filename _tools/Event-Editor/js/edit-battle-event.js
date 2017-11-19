@@ -418,9 +418,9 @@ $(function(){
                     }
                 };
                 function setUpEndBattle(which){
-                    $("#prop-"+which+" .scene-type").val(event[which].next[0] || sceneType).trigger("change");
-                    $("#prop-"+which+" .scene-name").val(event[which].next[1] || sceneName).trigger("change");
-                    $("#prop-"+which+" .event-name").val(event[which].next[2] || eventName);
+                    $("#prop-"+which+" .scene-type").val(event[which] ? event[which].next[0] : sceneType).trigger("change");
+                    $("#prop-"+which+" .scene-name").val(event[which] ? event[which].next[1] : sceneName).trigger("change");
+                    $("#prop-"+which+" .event-name").val(event[which] ? event[which].next[2] : eventName);
                     for(var i=0;i<event[which].events.length;i++){
                         showEventGroups(event[which].events[i],$("#prop-"+which));
                     }

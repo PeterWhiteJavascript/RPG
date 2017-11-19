@@ -1,0 +1,27 @@
+{
+    "name": "After-battle",
+    "kind": "battleScene",
+    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "music": "dragon_quest_4_in_brass_09_-_sea_breeze-tx.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "heya",
+                    "empty.png",
+                    "empty.png",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Fin"
+    ]
+}

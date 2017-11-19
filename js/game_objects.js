@@ -1034,8 +1034,10 @@ Quintus.GameObjects=function(Q){
             Q.state.get("allies").forEach(function(char){
                 char.placedOnMap = false;
             });
+            //TODO: checks
+            var events = props.events;
             //Start the next scene
-            Q.startScene(props.next.type,props.next.scene,props.next.event);
+            Q.startScene(props.next[0],props.next[1],props.next[2]);
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){

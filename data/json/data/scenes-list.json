@@ -5,45 +5,62 @@
             "events": [
                 {
                     "events": [
-                        "LOCATION"
+                        "Battle-Scene",
+                        "Location"
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "STORY",
-                    "left": "336px",
-                    "top": "237px"
+                    "name": "Start",
+                    "left": "442px",
+                    "top": "123px"
                 },
                 {
                     "events": [
-                        "BATTLE-SCENE"
+                        "Battle"
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "LOCATION",
-                    "left": "459px",
+                    "name": "Battle-Scene",
+                    "left": "566px",
                     "top": "239px"
                 },
                 {
                     "events": [
-                        "BATTLE"
+                        "Battle-Scene"
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "BATTLE-SCENE",
-                    "left": "605px",
-                    "top": "239px"
+                    "name": "Location",
+                    "left": "585px",
+                    "top": "363px"
                 },
                 {
                     "events": [
-                        "BATTLE"
+                        "After-battle"
                     ],
-                    "sceneVars": [
-                        "test"
-                    ],
+                    "sceneVars": [],
                     "globalVars": [],
-                    "name": "BATTLE",
-                    "left": "755px",
-                    "top": "318px"
+                    "name": "Battle",
+                    "left": "718px",
+                    "top": "236px"
+                },
+                {
+                    "events": [
+                        "Fin"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "After-battle",
+                    "left": "768px",
+                    "top": "294px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fin",
+                    "left": "798px",
+                    "top": "370px"
                 }
             ],
             "vrs": {

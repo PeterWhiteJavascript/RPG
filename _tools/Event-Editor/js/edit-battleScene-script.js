@@ -824,6 +824,10 @@ $(function(){
                 });
                 return chars;
             },
+            getFinishedEvent:function(){
+                var cont = $("#prop-finished");
+                return [$(cont).children(".scene-type").val(),$(cont).children(".scene-name").val(),$(cont).children(".event-name").val()]
+            },
             getScript:function(){
                 var script = [];
                 $(".script-item-group").each(function(){
@@ -865,7 +869,8 @@ $(function(){
                         map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
                         music:$("#prop-music .music-select").val(),
                         script:FileSaver.getScript(),
-                        characters:FileSaver.getCharacters()
+                        characters:FileSaver.getCharacters(),
+                        finished:FileSaver.getFinishedEvent()
                     }),
                     eventRefs:FileSaver.getEventRefs(),
                     sceneVarRefs:[],
@@ -918,8 +923,11 @@ $(function(){
         DC.linkSelects($("#prop-finished").children(".scene-type"),$("#prop-finished").children(".scene-name"),dataP.scenes);
         $("#prop-finished").children(".scene-type").append(DC.getOptString(dataP.sceneTypes));
         DC.linkSelects($("#prop-finished").children(".scene-name"),$("#prop-finished").children(".event-name"),dataP.events,[$("#prop-finished").children(".scene-type")]);
+        $("#prop-finished").children(".scene-type").val(dataP.event.finished[0]);
         $("#prop-finished").children(".scene-type").trigger("change");
+        $("#prop-finished").children(".scene-name").val(dataP.event.finished[1]);
         $("#prop-finished").children(".scene-name").trigger("change");
+        $("#prop-finished").children(".event-name").val(dataP.event.finished[2]);
         
         /* end initial props code */
 

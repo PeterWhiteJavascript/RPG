@@ -1,9 +1,10 @@
 <?php
 include("php-config.php");
-$name = addDashes($_POST['name']);
-$scene = addDashes($_POST['scene']);
-$type = $_POST['type'];
+$name = addDashes($_POST['eventName']);
+$scene = addDashes($_POST['sceneName']);
+$type = $_POST['sceneType'];
 
+/*
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 
 foreach($_POST as $key => $value)
@@ -13,7 +14,7 @@ foreach($_POST as $key => $value)
 
 function checkBool($string){
     $string = strtolower($string);
-    return (in_array($string, array("true", "false"/*, "1", "0", "yes", "no"*/), true));
+    return (in_array($string, array("true", "false", "1", "0", "yes", "no"), true));
 }
 
 function adjustDisabled($obj){
@@ -64,12 +65,13 @@ foreach($file['vrs'] as $key => $value){
 $file['disabledChoices'] = adjustDisabled($file['disabledChoices']);
 $file['onload'] = adjustValues($file['onload']);
 for($k=1;$k<count($file['pageList']);$k++){
+    $file[$file['pageList'][$k]] = [];
     $file[$file['pageList'][$k]]['onload'] = adjustValues($file[$file['pageList'][$k]]['onload']);
     $file[$file['pageList'][$k]]['disabledChoices'] = 
             isset($file[$file['pageList'][$k]]['disabledChoices']) ? 
             adjustDisabled($file[$file['pageList'][$k]]['disabledChoices']) : 
             [];
-}
-file_put_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json', json_encode($file,JSON_PRETTY_PRINT));
+}*/
+file_put_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json', json_encode(json_decode($_POST['file']),JSON_PRETTY_PRINT));
 
-echo json_encode($file);
+echo json_encode($_POST['file']);

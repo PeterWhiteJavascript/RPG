@@ -24,8 +24,7 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("script",function(stage){
         Q.inputs['confirm'] = false;
         var scriptData = stage.options.scriptData = stage.options.data;
-        Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.script}));
-        
+        Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.script,next:scriptData.finished}));
     }); 
     Q.scene("location",function(stage){
         var data = stage.options.data;
@@ -105,11 +104,12 @@ Quintus.SceneFuncs=function(Q){
         Q.stageScene("fader",11);
         //Get the data to play out this scene
         var data = stage.options.data;
-        Q.loadTMX(data.map, function() {
+        var map = "maps/"+data.map;
+        Q.loadTMX(map, function() {
             //Display the tmx tile map
             //If one is not passed in, we are re-using the map from the previous battle
-            if(data.map){
-                Q.stageTMX(data.map, stage);
+            if(map){
+                Q.stageTMX(map, stage);
             }
             stage.lists.TileLayer[0].p.z = 0;
             stage.lists.TileLayer[1].p.z = 1;
@@ -133,11 +133,12 @@ Quintus.SceneFuncs=function(Q){
         $("#loading-screen").show();
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
-        Q.loadTMX(battleData.map, function() {
+        var map = "maps/"+battleData.map;
+        Q.loadTMX(map, function() {
             Q.stageScene("fader",11);
             Q.playMusic(battleData.music,function(){
                 //Display the tmx tile map
-                Q.stageTMX(battleData.map, stage);
+                Q.stageTMX(map, stage);
                 stage.lists.TileLayer[0].p.z = -5;
                 stage.lists.TileLayer[1].p.z = -4;
                 stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
