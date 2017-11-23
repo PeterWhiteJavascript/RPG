@@ -1,0 +1,54 @@
+{
+    "name": "Battle-Scene-2",
+    "kind": "battleScene",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "l.jpg",
+                    "l.jpg",
+                    "hi",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        {
+            "file": "Officers.json",
+            "group": "Officers",
+            "handle": "Alex",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                3
+            ],
+            "dir": "down"
+        },
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                7
+            ],
+            "dir": "up"
+        }
+    ],
+    "finished": [
+        "Story",
+        "Act-2-1",
+        "Location"
+    ],
+    "viewLoc": [
+        5,
+        6
+    ]
+}

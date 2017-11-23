@@ -71,7 +71,7 @@ $(function(){
         $(flowchart).css("height",$(flowchart).parent().height());
         for(var i=0;i<eventsInScene.length;i++){
             var event = eventsInScene[i];
-            $(flowchart).append(newEventButton(event.name));
+            $(flowchart).append(newEventButton(event.name,event.type));
             $(".event-button").last().addClass("absolute-event-button");
             $(".event-button").last().css({"top":event.top,"left":event.left});
             
@@ -107,8 +107,8 @@ $(function(){
             $(".event-button").last().trigger("click");
         });
     };
-    function newEventButton(text){
-        return "<div id='"+text+"' class='event-button'>"+text+"</div>";
+    function newEventButton(text,type){
+        return "<div id='"+text+"' type='"+type+"' class='event-button'>"+text+"</div>";
     };
     file = scenes;
     $("#events-flowchart-cont").prepend("<div id='flowchart'></div>")
@@ -142,7 +142,7 @@ $(function(){
                 alert("Please set a name");
                 return;
             } else {
-                $("#flowchart").append(newEventButton(newName));
+                $("#flowchart").append(newEventButton(newName,newType));
                 $(".event-button").last().addClass("absolute-event-button");
                 $(".event-button").last().draggable({
                     containment:$("#events-flowchart-cont"),
@@ -162,6 +162,7 @@ $(function(){
                 sceneVars:[],
                 globalVars:[],
                 name:newName,
+                type:newType,
                 left:"100px",
                 top:"100px"
             };
@@ -190,7 +191,9 @@ $(function(){
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
                     newFile.script = [];
                     newFile.characters = [];
+                    newFile.finished = ["Story",scene,newName];
                     newFile.vrs = {};
+                    newFile.viewLoc = [0,0];
                     break;
                 case "battle":
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
@@ -234,7 +237,6 @@ $(function(){
     });
     $("#edit-event").click(function(){
         confirmFlowchartPosition();
-        
         $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story"});
     });
     $("#edit-vars").click(function(){
@@ -313,10 +315,7 @@ $(function(){
     $(document).on("click",".event-button",function(){
         $(".event-button").removeClass("selected");
         $(this).addClass("selected");
-    });
-    $(document).on("click",".event-group",function(){
-        $(".event-group").removeClass("selected");
-        $(this).addClass("selected");
+        $("#scene-type-display").text($(this).attr("type"));
     });
     $(document).on("click",".add-cond",function(){
         $(this).parent().children(".conds-cont").append(newCond("character","name","==",""));

@@ -1,0 +1,55 @@
+{
+    "name": "Battle",
+    "kind": "battle",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "demo.mp3",
+    "placementSquares": [
+        [
+            15,
+            3
+        ],
+        [
+            15,
+            4
+        ],
+        [
+            14,
+            4
+        ],
+        [
+            14,
+            3
+        ]
+    ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-1",
+            "Battle-Scene-2"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-1",
+            "Battle-Scene-2"
+        ]
+    },
+    "events": [],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                7
+            ],
+            "dir": "up"
+        }
+    ]
+}

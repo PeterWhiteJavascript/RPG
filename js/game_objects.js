@@ -1022,6 +1022,12 @@ Quintus.GameObjects=function(Q){
                 if(!char) return;
                 char.exp = ally.p.exp;
                 char.level = ally.p.level;
+                //TEMP - IF ALEX, SET HP TO FULL AND NOT WOUNDED
+                if(char.name==="Alex"){
+                    char.combatStats.hp = char.combatStats.maxHp;
+                    char.combatStats.tp = char.combatStats.maxTp;
+                    return;
+                }
                 //TEMP for now set hp to 1 after battle if dead.
                 char.combatStats.hp = ally.p.combatStats.hp || 1;
                 char.combatStats.tp = ally.p.combatStats.tp;
@@ -1419,7 +1425,7 @@ Quintus.GameObjects=function(Q){
                 //Level up the character if they are at or over 100
                 if(obj.p.exp>=100){
                     leveledUp = true;
-                    obj.p.baseStats = Q.charGen.levelUp(obj.p.baseStats,obj.p.primaryStat,obj.p.lean);
+                    obj.p.baseStats = Q.charGen.levelUp(obj.p.baseStats,obj.p.primaryStat,obj.p.primaryCoordinate,obj.p.lean);
                     var hp = obj.p.combatStats.hp;
                     var tp = obj.p.combatStats.tp;
                     obj.p.combatStats = Q.charGen.getCombatStats(obj.p);

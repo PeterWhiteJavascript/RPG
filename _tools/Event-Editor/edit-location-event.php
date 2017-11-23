@@ -30,6 +30,16 @@ foreach($characterFiles as $charFile){
     <head>
         <?php include 'config.php';?>
         <link rel="stylesheet" href="css/edit-location.css">
+    </head>
+</html>
+
+
+
+<!--
+<html>
+    <head>
+        <?php include 'config.php';?>
+        <link rel="stylesheet" href="css/edit-location.css">
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
@@ -111,4 +121,4 @@ foreach($characterFiles as $charFile){
         </div>
         <script src="js/edit-location-event.js"></script>
     </body>
-</html>
+</html>-->

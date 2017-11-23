@@ -1,0 +1,43 @@
+{
+    "name": "Battle-Scene-1",
+    "kind": "battleScene",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "knight.png",
+                    "shini.jpg",
+                    "Hiyo\n\nIiie",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        {
+            "file": "test_level1.json",
+            "group": "Main",
+            "handle": "Bandit-Legionnaire",
+            "uniqueId": 0,
+            "loc": [
+                14,
+                7
+            ],
+            "dir": "up"
+        }
+    ],
+    "finished": [
+        "Story",
+        "Act-2-1",
+        "Battle"
+    ],
+    "viewLoc": [
+        16,
+        15
+    ]
+}

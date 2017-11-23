@@ -1,0 +1,18 @@
+{
+    "name": "quest-1-after-battle",
+    "kind": "battleScene",
+    "music": "demo.mp3",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "script": [],
+    "characters": [],
+    "finished": [
+        "Story",
+        "Act-2-2",
+        "quest-1-after-battle"
+    ],
+    "vrs": [],
+    "viewLoc": [
+        0,
+        0
+    ]
+}

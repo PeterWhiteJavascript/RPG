@@ -344,6 +344,7 @@ $(function(){
                 this.play("standing"+this.p.dir);
             },
             setDir:function(){
+                var lastDir = this.p.dir;
                 if(Q.inputs['left']){
                     this.p.dir = 'left';
                 } else if(Q.inputs['right']){
@@ -353,7 +354,10 @@ $(function(){
                 } else if(Q.inputs['up']){
                     this.p.dir = 'up';
                 }
-                this.play("standing"+this.p.dir);
+                if(lastDir!==this.p.dir){
+                    this.play("standing"+this.p.dir);
+                    $(this.p.ref).attr("dir",this.p.dir);
+                }
             },
             destroySelectedBox:function(){
                 if(this.p.selectedBox) this.p.selectedBox.destroy();

@@ -1,9 +1,6 @@
 Quintus.Animations=function(Q){
-Q.setUpAnimations=function(){
-    //UI Objects
-    Q.compileSheets("ui/ui_objects.png","json/data/ui_objects.json");
-    
-    
+Q.setUpAnimations=function(path){
+    path = path || "";
     //Sprites
     var toSheet= [
         ['archer','archer.png',24,24,0,0,192,72],
@@ -20,7 +17,7 @@ Q.setUpAnimations=function(){
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
-        "sprites/"+toSheet[j][1],
+        path+"sprites/"+toSheet[j][1],
         {
            tilew:toSheet[j][2],
            tileh:toSheet[j][3],
@@ -39,7 +36,7 @@ Q.setUpAnimations=function(){
     ];
     for(j=0;j<toSheet.length;j++){
         Q.sheet(toSheet[j][0],
-        "animations/"+toSheet[j][1],
+        path+"animations/"+toSheet[j][1],
         {
            tilew:toSheet[j][2],
            tileh:toSheet[j][3],
@@ -49,7 +46,7 @@ Q.setUpAnimations=function(){
            h:toSheet[j][7]
         });
     };
-        
+
     var standRate = 1/3;
     var walkRate = 1/6;
     var supafAst = 1/12;
@@ -66,7 +63,7 @@ Q.setUpAnimations=function(){
         dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
         faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
         deadup:{frames:[0],rate:standRate},
-        
+
         standingright:{ frames: [2,3], rate:standRate},
         walkingright:{ frames: [2,3], rate:walkRate},
         attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
@@ -78,7 +75,7 @@ Q.setUpAnimations=function(){
         dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
         faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
         deadright:{frames:[2],rate:standRate},
-        
+
         standingleft:{ frames: [4,5], rate:standRate},
         walkingleft:{ frames: [4,5], rate:walkRate},
         attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
@@ -90,7 +87,7 @@ Q.setUpAnimations=function(){
         dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
         faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
         deadleft:{frames:[4],rate:standRate},
-        
+
         standingdown:{ frames: [6,7], rate:standRate},
         walkingdown:{ frames: [6,7], rate:walkRate},
         attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
@@ -102,7 +99,7 @@ Q.setUpAnimations=function(){
         dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
         faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
         deaddown:{frames:[6],rate:standRate},
-        
+
         levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
     });
     Q.animations("SonicBoom",{
@@ -119,7 +116,7 @@ Q.setUpAnimations=function(){
         frostGoingOut:{frames:[0,1,2,3,4,5],rate:1/16,loop:false,trigger:"doneOut"},
         frostExploding:{frames:[6,7,6,7],rate:1/6,loop:false,trigger:"finished"}
     });
-    
+
     Q.animations("mirage",{
         doingItsThing:{frames:[0,0,0,0,1,2,3,3,2,1],rate:standRate}
     });

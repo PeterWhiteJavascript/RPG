@@ -1,79 +1,61 @@
 {
-    "startSceneName":"Act-1-1",
-    "startSceneType":"Battle",
-    "startEventName":"fullbattletest",
-    "day":10,
-    "gold":1000,
-    "allies":[
-        {
-            "name": "Alex",
-            "level":1,
-            "gender":"Male",
-            "equipment":{
-                "righthand":["Average","Brass","Short Sword"],
-                "lefthand":["Average","Wood","Small Shield"],
-                "armour":["Average","Soft Leather","Shirt"],
-                "footwear":["Average","Wood","Shoes"],
-                "accessory":false
-            },
-            "baseStats":{
-                "str":15,
-                "end":15,
-                "dex":5,
-                "wsk":5,
-                "rfl":10,
-                "ini":10,
-                "enr":10,
-                "skl":10,
-                "eff":10
-            },
-            "techniques":[
-                "Forced March",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ],
-            "nationality":"Venorian",
-            "charClass":"Legionnaire",
-            "exp":0,
-            "primaryStat":"str",
-            "secondaryStat":"end",
-            "officer":true
-        }
-    ],
-    "inventory":{
-        "consumable":[
+    "characters":{
+        "story":[
             
         ],
-        "weapon":[
-            
-        ],
-        "shield":[
-            
-        ],
-        "body":[
-            
-        ],
-        "feet":[
-            
-        ],
-        "accessory":[
-            
-        ],
-        "key":[
+        "rand":[
             
         ]
     },
+    "inventory":{
+        "Consumables":[
+            
+        ],
+        "Weapons":[
+            
+        ],
+        "Shields":[
+            
+        ],
+        "Armour":[
+            
+        ],
+        "Footwear":[
+            
+        ],
+        "Accessories":[
+            
+        ],
+        "Key":[
+            
+        ]
+    },
+    "money":0,
+    "week":1,
+        
+    "influence":{
+        "Egoist":10,
+        "Nepotist":10,
+        "Altruist":10,
+        "Pragmatic":10,
+        "Intuitive":10,
+        "Kind":10
+    },
+    "relations":{
+        "Venoriae":[50,50],
+        "Dardoine":[50,50],
+        "Aljudramil":[50,50],
+        "Nomads":[50,50],
+        "Talumpatua":[50,50]
+    },
+    "startSceneName":"Act-1-1",
+    "startSceneType":"Story",
+    "startEventName":"Start",
+    
+    "act":"1-1",
+    "applicationsRoster":[],
     
     "options":{
-        "musicEnabled":false,
-        "musicVolume":20,
-        "soundEnabled":true,
-        "soundVolume":100,
-        "textSpeed":3,
-        "autoScroll":true,
-        "cursorSpeed":3
+        
     }
 }

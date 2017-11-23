@@ -21,6 +21,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             <div class="full-screen-hider"></div>
             <div id="main-content">
                 <div id="scene-title"></div>
+                <div id="scene-type-display"></div>
                 <div id="events-flowchart-cont">
                     
                 </div>

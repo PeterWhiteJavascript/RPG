@@ -405,15 +405,178 @@
         },
         {
             "name": "Act-2-1",
-            "events": [],
+            "events": [
+                {
+                    "events": [
+                        "Battle-Scene-1"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Story",
+                    "left": "29px",
+                    "top": "61px"
+                },
+                {
+                    "events": [
+                        "Story"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Location",
+                    "left": "431px",
+                    "top": "62px"
+                },
+                {
+                    "events": [
+                        "Battle-Scene-2"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle",
+                    "left": "308px",
+                    "top": "139px"
+                },
+                {
+                    "events": [
+                        "Location"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-2",
+                    "left": "431px",
+                    "top": "129px"
+                },
+                {
+                    "events": [
+                        "Battle"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-1",
+                    "left": "26px",
+                    "top": "135px"
+                }
+            ],
             "vrs": {
                 "test": true
             }
         },
         {
             "name": "Act-2-2",
-            "events": [],
-            "vrs": []
+            "events": [
+                {
+                    "events": [
+                        "quest-1-story",
+                        "quest-2-story",
+                        "quest-3-story",
+                        "train"
+                    ],
+                    "sceneVars": [
+                        "didQuest1",
+                        "didQuest2",
+                        "didTraining"
+                    ],
+                    "globalVars": [],
+                    "name": "Arrive-in-village",
+                    "type": "location",
+                    "left": "92px",
+                    "top": "327px"
+                },
+                {
+                    "events": [
+                        "quest-1-battle-scene"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-story",
+                    "type": "story",
+                    "left": "3px",
+                    "top": "216px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-2-story",
+                    "type": "story",
+                    "left": "37px",
+                    "top": "449px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-3-story",
+                    "type": "story",
+                    "left": "301px",
+                    "top": "324px"
+                },
+                {
+                    "events": [
+                        "quest-1-battle-scene"
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-battle-scene",
+                    "type": "battleScene",
+                    "left": "0px",
+                    "top": "146px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-2-battle-scene",
+                    "type": "battleScene",
+                    "left": "7px",
+                    "top": "544px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-battle",
+                    "type": "battle",
+                    "left": "278px",
+                    "top": "146px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-after-battle",
+                    "type": "battleScene",
+                    "left": "295px",
+                    "top": "202px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-after-battle-story",
+                    "type": "story",
+                    "left": "241px",
+                    "top": "262px"
+                },
+                {
+                    "events": [
+                        "Arrive-in-village"
+                    ],
+                    "sceneVars": [
+                        "didTraining"
+                    ],
+                    "globalVars": [],
+                    "name": "train",
+                    "type": "battle",
+                    "left": "8px",
+                    "top": "327px"
+                }
+            ],
+            "vrs": {
+                "didQuest1": false,
+                "didQuest2": false,
+                "didTraining": 0
+            }
         },
         {
             "name": "Act-2-3",

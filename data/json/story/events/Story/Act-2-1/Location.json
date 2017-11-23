@@ -1,0 +1,57 @@
+{
+    "vrs": {
+        "hi": "dfg"
+    },
+    "name": "Location",
+    "music": "demo.mp3",
+    "bg": "bg\/castle-room.jpg",
+    "actions": [
+        [
+            "Nextggh",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-2-1",
+                "event": "Story"
+            }
+        ],
+        [
+            "other",
+            "changePage",
+            {
+                "page": "Page 2"
+            }
+        ]
+    ],
+    "onload": [],
+    "disabledChoices": [],
+    "kind": "location",
+    "pageList": [
+        "start",
+        "Page 2"
+    ],
+    "Page 2": {
+        "music": "demo.mp3",
+        "bg": "bg\/castle-room.jpg",
+        "actions": [
+            [
+                "hi",
+                "changeEvent",
+                {
+                    "type": "Story",
+                    "scene": "Act-2-1",
+                    "event": "Story"
+                }
+            ],
+            [
+                "Back",
+                "changePage",
+                {
+                    "page": "start"
+                }
+            ]
+        ],
+        "onload": [],
+        "disabledChoices": []
+    }
+}

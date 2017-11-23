@@ -1,0 +1,79 @@
+{
+    "name": "quest-1-story",
+    "kind": "story",
+    "music": "demo.mp3",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "demo.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "Quest 1 Story...",
+            "choices": [
+                {
+                    "displayText": "Go to next event",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-2-2",
+                                        "event": "quest-1-battle-scene"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "displayText": "Go to other page",
+                    "desc": "",
+                    "page": "Page 2",
+                    "disabled": "Enabled",
+                    "groups": []
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        },
+        {
+            "name": "Page 2",
+            "music": "battle.mp3",
+            "bg": "bg\/CircusCircus_1.jpg",
+            "text": "Other Page",
+            "choices": [
+                {
+                    "displayText": "Go to next event",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-2-2",
+                                        "event": "quest-1-battle-scene"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": [],
+            "modulesVars": []
+        }
+    ],
+    "vrs": {}
+}

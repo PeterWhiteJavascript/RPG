@@ -881,7 +881,6 @@ Quintus.Objects=function(Q){
         },
         updateTileEffect:function(loc){
             var tile = Q.BatCon.getTileType(loc);
-            console.log(tile)
             var data = Q.state.get("tileTypes")[tile];
             this.p.tileEffect = data.effect;
         },
@@ -963,6 +962,7 @@ Quintus.Objects=function(Q){
                 dir:"left",
                 combatStats:{hp:100}
             });
+            if(this.p.charClass==="Random") this.p.charClass = "Legionnaire";
             this.p.sheet = this.p.charClass.toLowerCase();
             //Quintus components
             this.add("2d, animation, tween");

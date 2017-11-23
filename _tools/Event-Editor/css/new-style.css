@@ -230,6 +230,48 @@ body {
 }
 
 
+.editor-descriptor{
+    text-align:center;
+    font-family:"Georgia";
+    font-size:22px;
+    border-radius: 2px 2px 0px 0px;
+    height:30px;
+}
+.editor-descriptor-title{
+    text-align:center;
+    font-family:"Georgia";
+    font-size:22px;
+    border-radius: 2px 2px 0px 0px;
+    height:30px;
+    overflow:hidden;
+}
+.editor-descriptor-quarter{
+    width:25%;
+    height:30px;
+    float:left;
+    text-align:center;
+    font-family:"Georgia";
+    font-size:22px;
+    border-radius: 2px 2px 0px 0px; 
+    overflow:hidden;
+}
+.editor-descriptor-half{
+    width:50%;
+    height:30px;
+    float:left;
+    text-align:center;
+    font-family:"Georgia";
+    font-size:22px;
+    overflow:hidden;
+}
+.editor-descriptor-big{
+    text-align:center;
+    font-family:"Georgia";
+    font-size:36px;
+    padding:2px;
+    border-radius: 2px 2px 0px 0px; 
+    overflow:hidden;
+}
 
 
 /* Classes that are added to an element for visual cues*/

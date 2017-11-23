@@ -1,10 +1,10 @@
 Quintus.SceneFuncs=function(Q){
     
     Q.startScene = function(type,scene,event,char){
-        Q.state.set("currentEvent",{type:type,scene:scene,event:event});
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
             var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
+            Q.state.set("currentEvent",{type:type,scene:scene,event:event,data:data});
             //TODO: come up with a way to save the previous vars (maybe won't be necessary if we won't be going back to events and also the vars will re-evaluate when going back)
             Q.state.set("eventVars",data.vrs);
             Q.stageScene(data.kind,0,{data:data,char:char});
@@ -120,9 +120,11 @@ Quintus.SceneFuncs=function(Q){
             //The invisible sprite that the viewport follows
             stage.viewSprite = stage.insert(new Q.ViewSprite());
             Q.viewFollow(stage.viewSprite,stage);
+            
+            stage.viewSprite.animateTo(Q.BatCon.getXY(data.viewLoc));
+            
             //Set the batcon's stage
             Q.BatCon.stage = stage;
-
             Q.placeCharacters(data.characters,stage);
 
             //DialogueController holds the functions for the battleScene
@@ -175,11 +177,7 @@ Quintus.SceneFuncs=function(Q){
                 
             });
         },{
-            progressCallback:function(loaded,total){
-                if(loaded===total){
-                    $("#loading-screen").hide();
-                }
-            },
+            progressCallback:Q.progressCallback,
             tmxImagePath:"../images/"
         });
         

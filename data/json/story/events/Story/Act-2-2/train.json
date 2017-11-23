@@ -1,0 +1,89 @@
+{
+    "name": "train",
+    "kind": "battle",
+    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
+    "music": "demo.mp3",
+    "placementSquares": [
+        [
+            6,
+            13
+        ],
+        [
+            7,
+            13
+        ],
+        [
+            8,
+            13
+        ]
+    ],
+    "maxAllies": 3,
+    "victory": {
+        "events": [
+            {
+                "conds": [],
+                "effects": [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "didTraining",
+                            "%2B%3D",
+                            1
+                        ]
+                    ]
+                ],
+                "required": "true"
+            }
+        ],
+        "next": [
+            "Story",
+            "Act-2-2",
+            "Arrive-in-village"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-2",
+            "Arrive-in-village"
+        ]
+    },
+    "events": [],
+    "characters": [
+        {
+            "file": "Act-2-2.json",
+            "group": "Dummies",
+            "handle": "Legion",
+            "uniqueId": 0,
+            "loc": [
+                7,
+                12
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Act-2-2.json",
+            "group": "Dummies",
+            "handle": "Legion",
+            "uniqueId": 1,
+            "loc": [
+                6,
+                12
+            ],
+            "dir": "up"
+        },
+        {
+            "file": "Act-2-2.json",
+            "group": "Dummies",
+            "handle": "Legion",
+            "uniqueId": 2,
+            "loc": [
+                8,
+                12
+            ],
+            "dir": "up"
+        }
+    ]
+}

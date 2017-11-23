@@ -1,0 +1,104 @@
+{
+    "vrs": {},
+    "name": "Arrive-in-village",
+    "music": "the_usual.mp3",
+    "bg": "bg\/Pumpkins.jpg",
+    "actions": [
+        [
+            "Go to Quest 1",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-2-2",
+                "event": "quest-1-story"
+            }
+        ],
+        [
+            "Go to Quest 2",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-2-2",
+                "event": "quest-2-story"
+            }
+        ],
+        [
+            "Go to Quest 3",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-2-2",
+                "event": "quest-3-story"
+            }
+        ],
+        [
+            "Train",
+            "changeEvent",
+            {
+                "type": "Story",
+                "scene": "Act-2-2",
+                "event": "train"
+            }
+        ]
+    ],
+    "onload": [
+        {
+            "conds": [
+                [
+                    "checkVar",
+                    {
+                        "scope": "Scene",
+                        "vr": "didQuest1",
+                        "operator": "==",
+                        "vl": "true"
+                    }
+                ],
+                [
+                    "checkVar",
+                    {
+                        "scope": "Scene",
+                        "vr": "didQuest2",
+                        "operator": "==",
+                        "vl": "true"
+                    }
+                ]
+            ],
+            "effects": [
+                [
+                    "enableChoice",
+                    {
+                        "choice": 2
+                    }
+                ]
+            ]
+        },
+        {
+            "conds": [
+                [
+                    "checkVar",
+                    {
+                        "scope": "Scene",
+                        "vr": "didTraining",
+                        "operator": ">=",
+                        "vl": 1
+                    }
+                ]
+            ],
+            "effects": [
+                [
+                    "enableChoice",
+                    {
+                        "choice": 0
+                    }
+                ]
+            ]
+        }
+    ],
+    "disabledChoices": [
+        2
+    ],
+    "kind": "location",
+    "pageList": [
+        "start"
+    ]
+}

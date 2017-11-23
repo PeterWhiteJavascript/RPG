@@ -39,22 +39,14 @@ Quintus.QFunctions=function(Q){
     //Loads all unique assets that are used in a scene
     Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];
-        var bgAssets = [];
         for(var i=0;i<data.length;i++){
             if(musicAssets.indexOf("bgm/"+data[i].music)<0) {
                 musicAssets.push("bgm/"+data[i].music);
             }
-            if(bgAssets.indexOf(data[i].bg)<0){
-                bgAssets.push(data[i].bg);
-            }
         }
         $("#loading-screen").show();
-        Q.load(musicAssets.concat(bgAssets),callback,{
-            progressCallback:function(loaded,total){
-                if(loaded===total){
-                    $("#loading-screen").hide();
-                }
-            }
+        Q.load(musicAssets,callback,{
+            progressCallback:Q.progressCallback
         });
     };
     //Value scale of 1-100

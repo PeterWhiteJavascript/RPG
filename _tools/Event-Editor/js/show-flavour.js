@@ -250,6 +250,8 @@ $(function(){
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.vrs = {};
+                    newFile.finished = ["Flavour",scene,newName];
+                    newFile.viewLoc = [0,0];
                     break;
                 case "battle":
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
@@ -258,11 +260,11 @@ $(function(){
                     newFile.events = [];
                     newFile.characters = [];
                     newFile.victory = {
-                        next:[],
+                        next:["Flavour",scene,newName],
                         events:[]
                     };
                     newFile.defeat = {
-                        next:[],
+                        next:["Flavour",scene,newName],
                         events:[]
                     };
                     newFile.vrs = {};

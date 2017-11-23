@@ -1,0 +1,32 @@
+{
+    "name": "quest-1-battle-scene",
+    "kind": "battleScene",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [],
+        [
+            [
+                "text",
+                [
+                    "knight.png",
+                    "l.jpg",
+                    "",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [],
+    "finished": [
+        "Story",
+        "Act-2-2",
+        "quest-1-battle-scene"
+    ],
+    "viewLoc": [
+        0,
+        0
+    ]
+}

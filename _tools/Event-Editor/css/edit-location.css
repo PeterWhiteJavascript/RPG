@@ -1,4 +1,106 @@
 
+#editor-content{
+    width:100%;
+    height:100%;
+    position:absolute;
+}
+#editor-main-content{
+    height:100%;
+    width:100%;
+    top:40px;
+    left:10%;
+    position:absolute;
+}
+
+#editor-page-options{
+    padding:10px;
+    width:90%;
+    height:10%;
+}
+#music-select{
+    width:15%;
+    height:100%;
+    padding-right:15px;
+    padding-left:15px;
+    float:left;
+    border-left:thick double;
+    border-right:thick double;
+}
+#music-select select{
+    width:100%;
+}
+#music-select audio{
+    width:100%;
+}
+#bg-select{
+    width:35%;
+    padding-left:15px;
+    padding-right:15px;
+    float:left;
+}
+#bg-select select{
+    width:100%;
+}
+#bg-preview{
+    width:120px;
+    height:auto;
+    max-height:80px;
+    display:block;
+    margin:0 auto;
+}
+#text-select{
+    width:50%;
+    float:left;
+    padding-right:15px;
+}
+#text-select textarea{
+    height:100px;
+}
+#bg-preview{
+    width:120px;
+    height:auto;
+    max-height:80px;
+    display:block;
+    margin:0 auto;
+}
+#onload{
+    width:33.33%;
+    float:left;
+    padding-right:1%;
+    border-right:thick double;
+    height:100%;
+}
+#choices{
+    padding-left:1%;
+    padding-right:1%;
+    width:33.33%;
+    float:left;
+    height:100%;
+}
+#bottom-page-options{
+    float:left;
+    height:100%;
+    padding:10px;
+    width:90%;
+    top:150px;
+    border-right:thick double;
+}
+.menu-button{
+    width: 100%;
+    cursor: pointer;
+    border-width: initial;
+    border-style: groove;
+    border-color: grey;
+    border-image: initial;
+    background-color:#DDD;
+    border-radius:0;
+    margin:0;
+    overflow:hidden;
+}
+.menu-button-modify{
+    width:100%;
+    height:50%;
+}
 .editor-left-menu{
     width:10%;
     height:100%;

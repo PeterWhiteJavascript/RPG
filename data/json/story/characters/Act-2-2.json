@@ -1,0 +1,56 @@
+{
+    "Dummies": {
+        "Legion": {
+            "handle": "Legion",
+            "name": "Dummy",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Random",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "None",
+                    "None"
+                ],
+                "lefthand": [
+                    "Default",
+                    "None",
+                    "None"
+                ],
+                "armour": [
+                    "Default",
+                    "None",
+                    "None"
+                ],
+                "footwear": [
+                    "Default",
+                    "None",
+                    "None"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": {
+                "str": 1,
+                "end": 1,
+                "dex": 1,
+                "wsk": 1,
+                "rfl": 1,
+                "ini": 1,
+                "enr": 1,
+                "skl": 1,
+                "eff": 1
+            },
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Random",
+            "charClass": "Legionnaire"
+        }
+    }
+}

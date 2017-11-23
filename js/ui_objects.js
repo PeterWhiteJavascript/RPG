@@ -98,7 +98,7 @@ Quintus.UIObjects=function(Q){
                 this.p.lastPage = this.p.currentPage;
                 this.p.currentPage = p.page;
                 this.emptyConts();
-                if(p.page==="start") return this.displayList(this.p.location);
+                if(p.page==="start") return this.createActionsMenu();
                 this.displayList(this.p.location[p.page]);
             },
             changeEvent:function(p){
@@ -369,6 +369,7 @@ Quintus.UIObjects=function(Q){
             this.trigger("cycleWeek");
         },
         addToPotentialEvents:function(char,prop){
+            /* OLD FLAVOUR EVENTS CODE. WILL NEED TO BE COMPLETELY REDONE
             var evaluateProp = function(d,char){
                 if(!d) return true;
                 var success = true;
@@ -417,7 +418,7 @@ Quintus.UIObjects=function(Q){
                     if(data) potentialEvents.push(data);
                 }
             }
-            Q.state.set("potentialEvents",Q.state.get("potentialEvents").concat(potentialEvents));
+            Q.state.set("potentialEvents",Q.state.get("potentialEvents").concat(potentialEvents));*/
         },
         createDistributeGearMenu:function(){
             this.emptyConts();
@@ -1550,14 +1551,20 @@ Quintus.UIObjects=function(Q){
                 return;
             }
             //Q.playSound("text_stream.mp3");
-            $(this.p.textBox).text($(this.p.textBox).text()+this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum][this.p.textIndex]);
+            $(this.p.textBox).text($(this.p.textBox).text()+this.p.text[this.p.textNum]);
             this.p.textIndex++;
         },
         next:function(){
+            //Case that there are no actions (skip to the next event). This should not happen exept for testing as why would you even have an empty battleScene?
+            if(!this.p.script.length){
+                this.changeEvent(this.p.next[0],this.p.next[1],this.p.next[2]);
+                return;
+            } 
             if(this.p.scriptNum>=this.p.script[this.p.groupNum].length){
                 this.p.groupNum++;
                 this.p.scriptNum = 0;
             }
+            //If we're finished
             if(!this.p.script[this.p.groupNum]){
                 this.changeEvent(this.p.next[0],this.p.next[1],this.p.next[2]);
                 return;
@@ -1565,11 +1572,11 @@ Quintus.UIObjects=function(Q){
             var data = this.p.script[this.p.groupNum][this.p.scriptNum];
             //If it's text
             if(data[0]==="text"){
-                this.p.script[this.p.groupNum][this.p.scriptNum][1][0] = this.p.script[this.p.groupNum][this.p.scriptNum][1][0].split("\n\n");
+                this.p.text = this.p.script[this.p.groupNum][this.p.scriptNum][1][2].split("\n\n")
                 this.p.textNum = 0;
                 this.p.textIndex = 0;
-                $(this.p.leftImage).attr("src","images/story/"+data[1][1]);
-                $(this.p.rightImage).attr("src","images/story/"+data[1][2]);
+                $(this.p.leftImage).attr("src","images/story/"+data[1][0]);
+                $(this.p.rightImage).attr("src","images/story/"+data[1][1]);
                 $(this.p.textBox).text("");
                 
                 if(data[1][4]>0){
@@ -1596,7 +1603,7 @@ Quintus.UIObjects=function(Q){
         nextText:function(){
             this.p.textNum++;
             //If we're at the end of the text array
-            if(this.p.textNum>=this.p.script[this.p.groupNum][this.p.scriptNum][1][0].length){
+            if(this.p.textNum>=this.p.text.length){
                 this.p.scriptNum++;
                 this.next();
                 this.modDialogueBox("hide");
@@ -1620,12 +1627,12 @@ Quintus.UIObjects=function(Q){
                 if(!this.p.cantCycle&&!this.p.noCycle){
                     if(this.p.script[this.p.groupNum][this.p.scriptNum][0]!=="text") return;
                     //Check if the text is complete
-                    if($(this.p.textBox).text().length===this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum].length){
+                    if($(this.p.textBox).text().length===this.p.text[this.p.textNum].length){
                         if(this.p.nextTextTri) this.p.nextTextTri.destroy();
                         this.nextText();
                     } else {
-                        $(this.p.textBox).text(this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum]);
-                        this.p.textIndex = this.p.script[this.p.groupNum][this.p.scriptNum][1][0][this.p.textNum].length;
+                        $(this.p.textBox).text(this.p.text[this.p.textNum]);
+                        this.p.textIndex = this.p.text[this.p.textNum].length;
                     }
                     /*this.p.inputsTimer=this.p.inputsTime;
                     this.off("step",this,"checkInputs");
@@ -1669,9 +1676,8 @@ Quintus.UIObjects=function(Q){
             return this.p[prop];
         },
         //Battle Scene Below
-        changeMusic:function(music){
-            var t = this;
-            Q.playMusic(music,function(){t.forceCycle();});
+        changeMusic:function(obj,props){
+            Q.playMusic(props[0],function(){obj.forceCycle();});
             return true;
         },
         checkAddCharacter:function(name){
@@ -1692,17 +1698,20 @@ Quintus.UIObjects=function(Q){
                 })[0];
             }
         },
+        getChar:function(str){
+            var id = str.split(" ");
+            return this.getStoryCharacter(id[0],parseInt(id[1]));
+        },
         //Get all characters on a certain team
         getStoryTeamCharacters:function(team){
             return Q.stage(0).lists.StoryCharacter.filter(function(char){
                return char.p.team===team; 
             });
         },
-        waitTime:function(time){
-            var t = this;
+        waitTime:function(obj,props){
             setTimeout(function(){
-                t.forceCycle();
-            },time);
+                obj.forceCycle();
+            },props[0]);
             this.p.noCycle = true;
             //Don't cycle until the time is up
             return true;
@@ -1719,80 +1728,80 @@ Quintus.UIObjects=function(Q){
             $(this.p.container).css("display","block");
         },
         //Sets the viewport at a location or object
-        centerViewLoc:function(obj,loc){
+        centerViewLoc:function(obj,props){
             var spr = Q.stage(0).viewSprite;
-            spr.p.loc = loc;
-            Q.BatCon.setXY(spr);
-            //TO DO: Speed
+            spr.p.loc = [props[0],props[1]];
+            var speed = props[2];
+            if(!speed){
+                Q.BatCon.setXY(spr);
+            } else {
+                var pos = Q.BatCon.getXY(spr.p.loc);
+                spr.animateTo(pos,speed/1000,function(){obj.forceCycle();});
+            }
+            return true;
         },
         //Tweens the viewport to the location
-        centerViewChar:function(obj,speed){
+        centerViewChar:function(obj,props){
             this.p.cantCycle = true;
             this.p.noCycle = true;
             
             //Set the viewsprite to the current object that the viewport is following
             var spr = Q.stage(0).viewSprite;
             spr.p.obj = false;
-            var t = this;
-            //Follow object
-            if(Q._isString(obj[0])){
-                var to = this.getStoryCharacter(obj[0],obj[1]);
-                spr.animate({x:to.p.x,y:to.p.y},speed?speed:1,Q.Easing.Quadratic.InOut,{callback:function(){
-                    spr.followObj(to);
-                    t.forceCycle();
-                }});
-            } 
-            //Go to location
-            else {
-                var pos = Q.BatCon.getXY(obj);
-                spr.animate({x:pos.x,y:pos.y},1,Q.Easing.Quadratic.InOut,{callback:function(){
-                    t.forceCycle();
-                }});
+            var to = this.getChar(props[0]);
+            if(!props[1]){
+                spr.p.loc = to.p.loc;
+                Q.BatCon.setXY(spr);
+                spr.followObj(to);
+                obj.forceCycle();
+            } else {
+                spr.animateTo(to.p,props[1]/1000,function(){this.followObj(to);obj.forceCycle();});
             }
             return true;
             
         },
         //Changes the direction of a story character
-        changeDir:function(id,dir){
-            var obj = this.getStoryCharacter(id[0],id[1]);
-            obj.playStand(dir);
+        changeDir:function(obj,props){
+            var obj = this.getChar(props[0]);
+            obj.playStand(props[1]);
         },
-        playAnim:function(id,anim,dir,sound){
-            Q.playSound(sound);
-            this.getStoryCharacter(id[0],id[1])["play"+anim](dir);
+        playAnim:function(obj,props){
+            Q.playSound(props[0]);
+            this.getChar(props[0]);["play"+anim](dir);
         },
-        changeMoveSpeed:function(id,speed){
-            var obj = this.getStoryCharacter(id[0],id[1]);
-            obj.p.stepDelay = speed;
+        changeMoveSpeed:function(obj,props){
+            var obj = this.getChar(props[0]);
+            obj.p.stepDelay = props[1]/1000;
         },
         //Moves a character along a path
-        moveAlong:function(id,path,dir,allowCycle){
-            var obj = this.getStoryCharacter(id[0],id[1]);
+        moveAlong:function(obj,props){
+            var obj = this.getChar(props[0]);
             //If the is a function that should be played once the object reaches its destination
             obj.on("doneAutoMove",obj,function(){
                 //If we have a new path, do it!
-                this.playStand(dir);
+                this.playStand(props[1]);
                 //If we're cycling on arrival
-                if(allowCycle){
+                if(props[2]){
                     Q.dialogueController.p.scriptNum++;
                     Q.dialogueController.next();
                 }
                 //Allow cycling to the next script item
                 Q.dialogueController.p.noCycle = false;
             });
-            obj.moveAlongPath(path);
+            obj.moveAlongPath(props[3]);
             this.p.noCycle = true;
             //If we're waiting on arrival
-            return allowCycle;
+            return props[2];
         },
         //Fades a character in or out
-        fadeChar:function(id,inout){
-            var obj = this.getStoryCharacter(id[0],id[1]);
-            if(inout==="in"){
-                obj.animate({opacity:1},1,Q.Easing.Linear);
+        fadeChar:function(obj,props){
+            var obj = this.getChar(props[0]);
+            var speed = props[2]/1000;
+            if(props[1]==="in"){
+                obj.animate({opacity:1},speed,Q.Easing.Linear);
                 obj.show();
-            } else if(inout==="out"){
-                obj.animate({opacity:0},1,Q.Easing.Linear);
+            } else if(props[1]==="out"){
+                obj.animate({opacity:0},speed,Q.Easing.Linear);
             }
         },
         /*
@@ -1904,6 +1913,21 @@ Quintus.UIObjects=function(Q){
                 y:0
             });
             this.add("animation, tween");
+        },
+        animateTo:function(to,speed,callback){
+            if(this.p.obj){
+                this.p.obj = false;
+                this.off("step","follow");
+            }
+            if(!speed){
+                this.p.x = to.x;
+                this.p.y = to.y;
+                if(callback){
+                    callback();
+                }
+            } else {
+                this.animate({x:to.x,y:to.y},speed,Q.Easing.Quadratic.InOut,{callback:callback || function(){} });
+            }
         },
         followObj:function(obj){
             this.p.obj = obj;
