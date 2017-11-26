@@ -16,7 +16,13 @@ foreach($places as $place_name){
 }
 
 $bg_directory = '../../images/bg';
-$bgs = array_diff(scandir($bg_directory), array('..', '.'));
+$bgs = array_values(array_diff(scandir($bg_directory), array('..', '.')));
+
+$sprites_directory = '../../images/sprites';
+$sprites_imgs = array_values(array_diff(scandir($sprites_directory), array('..', '.')));
+
+$anims_directory = '../../images/animations';
+$anims_imgs = array_values(array_diff(scandir($anims_directory), array('..', '.')));
 
 $music_directory = '../../audio/bgm';
 $music = array_values(array_diff(scandir($music_directory), array('..', '.')));
@@ -47,6 +53,7 @@ while($file = readdir($dh)) {
 $globalName = "global-vars.json";
 $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story/global-vars.json'));
 ?>
+<?php include 'quintus-lib.php'; ?>
 <script>
     var GDATA = {
         event: <?php echo json_encode($event);?>,
@@ -60,7 +67,11 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
         mapFileNames: <?php echo json_encode($map_obj);?>,
         characterFiles: <?php echo json_encode($characters);?>,
         dataFiles: <?php echo json_encode($dataFiles); ?>,
-        imageAssets: <?php echo json_encode($images); ?>  
+        imageAssets: <?php echo json_encode($images); ?>,
+        spritesImgs: <?php echo json_encode($sprites_imgs); ?>,
+        animsImgs: <?php echo json_encode($anims_imgs); ?>,
+        bgFiles:<?php echo json_encode($bgs); ?>
     };
+    
     console.log(GDATA)
 </script>

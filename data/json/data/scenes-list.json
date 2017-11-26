@@ -466,15 +466,30 @@
             "events": [
                 {
                     "events": [
-                        "quest-1-story",
-                        "quest-2-story",
-                        "quest-3-story",
-                        "train"
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-1-story"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-2-story"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-3-story"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "train"
+                        ]
                     ],
                     "sceneVars": [
                         "didQuest1",
-                        "didQuest2",
-                        "didTraining"
+                        "didQuest2"
                     ],
                     "globalVars": [],
                     "name": "Arrive-in-village",
@@ -490,8 +505,8 @@
                     "globalVars": [],
                     "name": "quest-1-story",
                     "type": "story",
-                    "left": "3px",
-                    "top": "216px"
+                    "left": "4px",
+                    "top": "215px"
                 },
                 {
                     "events": [],
@@ -513,14 +528,18 @@
                 },
                 {
                     "events": [
-                        "quest-1-battle-scene"
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-1-battle"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-battle-scene",
                     "type": "battleScene",
                     "left": "0px",
-                    "top": "146px"
+                    "top": "134px"
                 },
                 {
                     "events": [],
@@ -530,15 +549,6 @@
                     "type": "battleScene",
                     "left": "7px",
                     "top": "544px"
-                },
-                {
-                    "events": [],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "quest-1-battle",
-                    "type": "battle",
-                    "left": "278px",
-                    "top": "146px"
                 },
                 {
                     "events": [],
@@ -570,6 +580,26 @@
                     "type": "battle",
                     "left": "8px",
                     "top": "327px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "Arrive-in-village"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "Arrive-in-village"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "quest-1-battle",
+                    "type": "battle",
+                    "left": "120px",
+                    "top": "187px"
                 }
             ],
             "vrs": {

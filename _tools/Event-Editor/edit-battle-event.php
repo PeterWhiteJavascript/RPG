@@ -1,52 +1,12 @@
 <?php
-include("php-config.php");
-$scene = addDashes($_POST['scene']);
-$type = $_POST['type'];
-$name = addDashes($_POST['event']);
 
-$characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
-$characters = (object)[];
-foreach($characterFiles as $charFile){
-    $characters -> $charFile = json_decode(file_get_contents('../../data/json/story/characters/'.$charFile), true);
-}
-
-$music_directory = '../../audio/bgm';
-$music = array_values(array_diff(scandir($music_directory), array('..', '.')));
-
-$maps_directory = '../../data/maps';
-$places = array_diff(scandir($maps_directory), array('..', '.'));
-$map_obj = (object)[];
-foreach($places as $place_name){
-    $place = array_diff(scandir($maps_directory."/".$place_name), array('..', '.'));
-    $map_obj -> $place_name = array_values($place);
-}
-
-$dataFiles = array_slice(scandir('../../data/json/data'),2);
-
-$images =  array_values(array_diff(scandir("../../images/story"), array('..', '.')));
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <?php include 'config.php';?>
         <link href="css/edit-battle-event.css" rel="stylesheet">
     </head>
     <body>
-        <script>
-            var sceneName = '<?php echo $scene; ?>';
-            var sceneType = '<?php echo $type; ?>';
-            var eventName = '<?php echo $name; ?>'; 
-            
-            var musicFileNames = <?php echo json_encode($music)?>;
-            var mapFileNames = <?php echo json_encode($map_obj)?>;
-            var characterFiles = <?php echo json_encode($characters)?>;
-            var dataFiles = <?php echo json_encode($dataFiles) ?>;
-            var imageAssets = <?php echo json_encode($images) ?>;
-        </script>
-        <?php include 'quintus-lib.php'; ?>
-        <script src="../../js/music.js"></script>
-        <script src="js/edit-battle-event.js"></script>
-        
         <div id="editor-content">
             <div id="full-screen-hider"></div>
             <div id="top-bar">
@@ -136,5 +96,12 @@ $images =  array_values(array_diff(scandir("../../images/story"), array('..', '.
                 </div>
             </div>
         </div>
+        
+        <?php include 'GameDataLoader.php';?>
+        <?php include 'config.php';?>
+        <?php include 'quintus-lib.php'; ?>
+        <script src="../../js/music.js"></script>
+        <script src="../../js/animations.js"></script>
+        <script src="js/edit-battle-event.js"></script>
     </body>
 </html>

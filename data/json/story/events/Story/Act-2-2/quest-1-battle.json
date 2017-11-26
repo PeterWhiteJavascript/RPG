@@ -1,27 +1,35 @@
 {
     "name": "quest-1-battle",
     "kind": "battle",
-    "music": "demo.mp3",
     "map": "Venoria\/Venoria-Castle-Outside.tmx",
-    "placementSquares": [],
+    "music": "demo.mp3",
+    "placementSquares": [
+        [
+            14,
+            9
+        ],
+        [
+            15,
+            9
+        ]
+    ],
     "maxAllies": 6,
-    "events": [],
-    "characters": [],
     "victory": {
+        "events": [],
         "next": [
             "Story",
             "Act-2-2",
-            "quest-1-battle"
-        ],
-        "events": []
+            "Arrive-in-village"
+        ]
     },
     "defeat": {
+        "events": [],
         "next": [
             "Story",
             "Act-2-2",
-            "quest-1-battle"
-        ],
-        "events": []
+            "Arrive-in-village"
+        ]
     },
-    "vrs": []
+    "events": [],
+    "characters": []
 }

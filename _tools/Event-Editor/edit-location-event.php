@@ -1,36 +1,84 @@
 <?php
-include("php-config.php");
-$scene = addDashes($_POST['scene']);
-$name = addDashes($_POST['event']);
-$type = $_POST['type'];
-
-
-$bg_directory = '../../images/bg';
-$bgs = array_diff(scandir($bg_directory), array('..', '.'));
-
-$music_directory = '../../audio/bgm';
-$music = array_diff(scandir($music_directory), array('..', '.'));
-
-
-$directory = '../../data/json/story/events';
-$scenes = array_diff(scandir($directory), array('..', '.'));
-
-$dataFiles = array_slice(scandir('../../data/json/data'),2);
-
-//Load all of the character files
-$characterFiles = array_values(array_diff(scandir('../../data/json/story/characters'),array('..','.')));
-$characters = (object)[];
-foreach($characterFiles as $charFile){
-    $characters -> $charFile = json_decode(file_get_contents('../../data/json/story/characters/'.$charFile), true);
-}
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
-        <?php include 'config.php';?>
         <link rel="stylesheet" href="css/edit-location.css">
     </head>
+    <body>
+        <div id="editor-content">
+            <div id="top-bar">
+                <div class="top-bar-itm">
+                    <div class="bar-button">-</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="save-file" class="bar-button">SAVE</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="test-file" class="bar-button">TEST</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div class="bar-button">-</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="go-back" class="bar-button">BACK</div>
+                </div>
+            </div>
+            <div class="editor-left-menu" id="action-vars">
+                <div id="add-action">Add Action</div>
+                <div class="centered-title">ACTIONS</div>
+                <div id="editor-actions">
+                    <div id="actions-cont" class="sortable">
+
+                    </div>
+                </div>
+                <div id="add-var">Add Var</div>
+                <div class="centered-title">VARS</div>
+                <div id="editor-variables">
+                    <div id="variables-cont">
+                        
+                    </div>
+                </div>
+            </div>
+            <div id="editor-main-content">
+                <div id="editor-page-options">
+                    <div id="music-select">
+                        <span class="item-desc">Music</span>
+                        <select class="music-select"></select>
+                        <audio controls class="music-preview full-width">
+                            <source type="audio/mp3" src="">Sorry, your browser does not support HTML5 audio.
+                        </audio>
+                    </div>
+                    <div id="bg-select">
+                        <p class="item-desc">Background</p>
+                        <select class="bg-select">
+                        </select>
+                        <img>
+                    </div>
+                </div>
+                <div id="bottom-page-options">
+                    <div id="onload">
+                        <p class="editor-descriptor-big dark-gradient">On Load</p>
+                        <div class="btn btn-default" id="add-new-onload-group">Add Group</div>
+                        <div id="onload-cont">
+                            
+                        </div>
+                    </div>
+                    <div id="choices">
+                        <p class="editor-descriptor-big dark-gradient">Choices</p>
+                        <div class="btn btn-default" id="add-new-choice">Add Choices</div>
+                        <div id="choices-cont" class="sortable">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php include 'GameDataLoader.php'; ?>
+        <?php include 'config.php';?>
+        <script src="js/edit-location-event.js"></script>
+    </body>
 </html>
 
 
@@ -38,7 +86,6 @@ foreach($characterFiles as $charFile){
 <!--
 <html>
     <head>
-        <?php include 'config.php';?>
         <link rel="stylesheet" href="css/edit-location.css">
         <link rel="stylesheet" href="css/style.css">
     </head>

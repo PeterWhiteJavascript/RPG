@@ -14,40 +14,6 @@ $(function(){
     Q.tileH = 32;
     Q.SPRITE_CHARACTER  = 8;
     
-    Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
-        var ctx = Q.ctx;
-        var split = label.split(' ');
-        var newLabel = '';
-        var tempLabel = '';
-        var spaceWidth = ctx.measureText(" ").width;
-        var spaces = 0;
-        //Loop through the array of the split label
-        for(var i=0;i<split.length;i++){
-            //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
-            //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
-            split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
-            //The upcoming width for this word
-            var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
-            for(var j=0;j<split[i].length;j++){
-                var measured = ctx.measureText(tempLabel);
-                //Move to a new line
-                if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
-                    newLabel+="\n";
-                    tempLabel = '';
-                    spaces = 0;
-                } else {
-                    tempLabel+=split[i][j];
-                }
-            }
-            newLabel+=split[i];
-            if(i!==split.length-1){
-                newLabel+=" ";
-            }
-            spaces++;
-        }
-        return newLabel;
-    };
-
     var allowSpriteSelecting = true;
     var selectedCharacter = false;
     var selectedLocs = [];
@@ -372,8 +338,6 @@ $(function(){
         speeds:["fast","medium","slow"],
         inOut:["out","in"],
         animations:["walking","attacking","countering","lift","lifted","hurt","dying","fainting","dead","levelingUp"]
-        
-        
     };
     
     var formatScenes = function(){
@@ -570,13 +534,14 @@ $(function(){
                         props = props || [GDATA.eventPointer.type,GDATA.eventPointer.scene,GDATA.eventPointer.event];
                         content.append(this.groupSelect("ScType",dataP.sceneTypes,props[0],"scene-type"));
                         content.append(this.groupSelect("ScName",dataP.scenes[props[0]],props[1],"scene-name"));
-                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2],"event-name"));
+                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2],"event-name"));$($(content).children("select")[0]).trigger("change");
+                        $($(content).children("select")[1]).trigger("change");
                         DC.linkSelects($(content).children("select")[0],$(content).children("select")[1],dataP.scenes);
                         DC.linkSelects($(content).children("select")[1],$(content).children("select")[2],dataP.events,[$(content).children("select")[0]]);
-                        $($(content).children("select")[0]).trigger("change");
-                        $($(content).children("select")[1]).trigger("change");
+                        
                         break;
                 }
+                DC.selectInitialValue(content);
                 return content;
             },
             newCharacter:function(char){
@@ -780,10 +745,7 @@ $(function(){
             getEventRefs:function(){
                 var refs = [];
                 $(".event-name").each(function(){
-                    var event = $(this).val(); 
-                    if(refs.indexOf(event) === -1){
-                        refs.push($(this).val());
-                    }
+                    refs.push([$(this).siblings(".scene-type").val(),$(this).siblings(".scene-name").val(),$(this).val()]);
                 });
                 return refs;
             },
@@ -972,7 +934,7 @@ $(function(){
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:data.file,name:eventName,scene:sceneName,type:GDATA.eventPointer.type},
+                data:{data:data.file,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene,type:GDATA.eventPointer.type},
                 dataType:'json'
             })
             .done(function(data){$.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});})
@@ -1067,7 +1029,16 @@ $(function(){
         $("#map-select-place").val(map[1]).trigger("change");
         startQuintusCanvas();
     };
-    start();
+    function addPath(arr,path){
+        return arr.map(function(itm){
+            return path+itm;
+        });
+    }
+    var toLoad = addPath(GDATA.spritesImgs,"sprites/").concat(addPath(GDATA.imageAssets,"story/")).concat(addPath(GDATA.animsImgs,"animations/"));
+    Q.load(toLoad,function(){
+        start();
+    });
+    
     $(document).on("click",".minimize-icon, .minimizable",function(){
         var content = $(this).parent().children(".minimize");
         if($(content).css("display")==="none"){

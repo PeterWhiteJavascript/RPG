@@ -1,21 +1,13 @@
 <?php
-include 'GameDataLoader.php';
 
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
-        <?php include 'config.php';?>
         <link rel="stylesheet" href="css/edit-battleScene.css">
     </head>
     <body>
-        <?php include 'quintus-lib.php'; ?>
-        <script src="js/edit-battleScene-script.js"></script>
-        <script src="../../js/music.js"></script>
-        <script src="../../js/animations.js"></script>
-        <!--<script src="lib/ask-before-redirect.js"></script>-->
-        
         <div id="editor-content">
             <div id="full-screen-hider"></div>
             <div id="top-bar">
@@ -83,5 +75,12 @@ include 'GameDataLoader.php';
                 </div>
             </div>
         </div>
+        
+        <?php include 'GameDataLoader.php';?>
+        <?php include 'config.php';?>
+        <script src="js/edit-battleScene-script.js"></script>
+        <script src="../../js/music.js"></script>
+        <script src="../../js/animations.js"></script>
+        <!--<script src="lib/ask-before-redirect.js"></script>-->
     </body>
 </html>

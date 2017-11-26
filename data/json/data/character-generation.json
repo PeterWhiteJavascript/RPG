@@ -16,7 +16,7 @@
         ["ini","dex","rfl"],
         ["skl","eff","enr"]
     ],
-    
+    "derivedStats":["Max Hit Points","Max Technique Points","Pain Tolerance","Damage Reduction","Physical Resistance","Mental Resistance","Magical Resistance","Attack Range","Max Attack Damage","Encumbrance Threshold","Total Weight","Encumbrance Penalty","Defensive Ability","Attack Accuracy","Critical Chance","Counter Chance","Attack Speed","Move Speed"],
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{

@@ -2,7 +2,7 @@ $(function(){
     var DC = {};
     var FileSaver = {};
     var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
-        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, Music")
+        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, Music, Animations")
         .setup({development: true, width:$(document).width()/2-9,height:$(document).height()-60})
         .touch().controls(true)
         .enableSound();
@@ -21,86 +21,7 @@ $(function(){
     var allowSpriteSelecting = true;
     var selectedCharacter = false;
     function startQuintusCanvas(){
-        //Sprites
-        var toSheet= [
-            ['archer','archer.png',24,24,0,0,192,72],
-            ['assassin','assassin.png',24,24,0,0,192,72],
-            ['berserker','berserker.png',24,24,0,0,192,72],
-            ['elementalist','elementalist.png',24,24,0,0,192,72],
-            ['healer','healer.png',24,24,0,0,192,72],
-            ['illusionist','illusionist.png',24,24,0,0,192,72],
-            ['legionnaire','legionnaire.png',24,24,0,0,192,72],
-            ['skirmisher','skirmisher.png',24,24,0,0,192,72],
-            ['vanguard','vanguard.png',24,24,0,0,192,72]
-        ];
-        for(j=0;j<toSheet.length;j++){
-            Q.sheet(toSheet[j][0],
-            "sprites/"+toSheet[j][1],
-            {
-               tilew:toSheet[j][2],
-               tileh:toSheet[j][3],
-               sx:toSheet[j][4],
-               sy:toSheet[j][5],
-               w:toSheet[j][6],
-               h:toSheet[j][7]
-            });
-        };
-        var standRate = 1/3;
-        var walkRate = 1/6;
-        var supafAst = 1/12;
-        var tooFast = 1/24;
-        Q.animations("Character", {
-            standingup:{ frames: [0,1], rate:standRate},
-            walkingup:{ frames: [0,1], rate:walkRate},
-            attackingup:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-            missedup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneMissed"},
-            counteringup:{frames:[0,2,6,4],rate:supafAst,loop:false,trigger:"doneCounter"},
-            liftup:{frames:[0,0,0],rate:standRate},
-            liftedup:{frames:[6],rate:standRate},
-            hurtup:{frames:[1],rate:standRate},
-            dyingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneDying"},
-            faintingup:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-            deadup:{frames:[0],rate:standRate},
-
-            standingright:{ frames: [2,3], rate:standRate},
-            walkingright:{ frames: [2,3], rate:walkRate},
-            attackingright:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-            missedright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneMissed"},
-            counteringright:{frames:[2,6,4,0],rate:supafAst,loop:false,trigger:"doneCounter"},
-            liftright:{frames:[2,2,2],rate:standRate},
-            liftedright:{frames:[6],rate:standRate},
-            hurtright:{frames:[3],rate:standRate},
-            dyingright:{frames:[2,6,4,0],rate:walkRate,loop:false,trigger:"doneDying"},
-            faintingright:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-            deadright:{frames:[2],rate:standRate},
-
-            standingleft:{ frames: [4,5], rate:standRate},
-            walkingleft:{ frames: [4,5], rate:walkRate},
-            attackingleft:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-            missedleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneMissed"},
-            counteringleft:{frames:[6,4,0,2],rate:supafAst,loop:false,trigger:"doneCounter"},
-            liftleft:{frames:[4,4,4],rate:standRate},
-            liftedleft:{frames:[6],rate:standRate},
-            hurtleft:{frames:[5],rate:standRate},
-            dyingleft:{frames:[6,4,0,2],rate:walkRate,loop:false,trigger:"doneDying"},
-            faintingleft:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-            deadleft:{frames:[4],rate:standRate},
-
-            standingdown:{ frames: [6,7], rate:standRate},
-            walkingdown:{ frames: [6,7], rate:walkRate},
-            attackingdown:{ frames: [0,2,6,4], rate:tooFast, loop:false,trigger:"doneAttack"},
-            misseddown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneMissed"},
-            counteringdown:{frames:[4,0,2,6],rate:supafAst,loop:false,trigger:"doneCounter"},
-            liftdown:{frames:[6,6,6],rate:standRate},
-            lifteddown:{frames:[6],rate:standRate},
-            hurtdown:{frames:[7],rate:standRate},
-            dyingdown:{frames:[4,0,2,6],rate:walkRate,loop:false,trigger:"doneDying"},
-            faintingdown:{frames:[0,2,6,4],rate:walkRate,loop:false,trigger:"doneFainting"},
-            deaddown:{frames:[6],rate:standRate},
-
-            levelingUp:{frames:[4,0,2,6,4,0,2,6],rate:standRate,loop:false,trigger:"doneLevelingUp"}
-        });
-
+        Q.setUpAnimations("../../");
         Q.scene("map",function(stage){
             stage.finished = function(){};
             Q.stageTMX(stage.options.map, stage);
@@ -109,13 +30,11 @@ $(function(){
             $("#map-select-place").on("change",function(){
                 var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
                 Q.loadTMX(map,function(){
-                    Q.load("sfx/cannot_do.mp3",function(){
-                        var characters = FileSaver.getCharacters();
-                        var placementSquares = FileSaver.getPlacementSquares();
-                        $("#event-chars-cont").empty();
-                        $("#placement-squares-cont").empty();
-                        Q.stageScene("map",0,{map:map,characters:characters,placementSquares:placementSquares});
-                    });
+                    var characters = FileSaver.getCharacters();
+                    var placementSquares = FileSaver.getPlacementSquares();
+                    $("#event-chars-cont").empty();
+                    $("#placement-squares-cont").empty();
+                    Q.stageScene("map",0,{map:map,characters:characters,placementSquares:placementSquares});
                 },{tmxImagePath:Q.options.imagePath.substring(3)});
             });
 
@@ -385,65 +304,65 @@ $(function(){
         });
         var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
         Q.loadTMX(map,function(){
-            Q.load("sfx/cannot_do.mp3",function(){
-                Q.stageScene("map",0,{map:map,characters:dataP.event.characters,placementSquares:dataP.event.placementSquares});
-                
-                //Using the file data, set up the page
-                var event = dataP.event;
-                $("#prop-music .music-select").val(event.music).trigger("change");
-                $("#prop-maxAllies input").val(event.maxAllies);
-                function showEventGroups(data,groupCont){
-                    $(groupCont).children(".cond-group-title-bar").children(".add-group").trigger("click");
-                    for(var j=0;j<data.conds.length;j++){
-                        var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
-                        var func = data.conds[j][0];
-                        var props = data.conds[j][1];
-                        var required = data.required.toString();
-                        var cont = $(condsCont).children(".conditions").children(".cond-cont").append(DC.getCondFunc(func));
-                        DC.getCond(cont.children(".cond").last(),func,props);
-                        $(condsCont).children(".conditions").children(".required").val(required);
-                        DC.selectInitialValue($(cont).children(".cond").last());
-                        $(cont).children(".cond").last().children(".func").on("change",function(){
-                            $(this).nextAll().remove();
-                            DC.getCond($(this).parent(),$(this).parent().children(".func").val());
-                        });
-                    }
-                    for(var j=0;j<data.effects.length;j++){
-                        var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
-                        var func = data.effects[j][0];
-                        var props = data.effects[j][1];
-                        var cont = $(condsCont).children(".effects").children(".effect-cont").append(DC.getEffectFunc(func));
-                        DC.getEffect(cont.children(".effect").last(),func,props);
-                        DC.selectInitialValue($(cont).children(".effect").last());
-                        $(cont).children(".effect").last().children(".func").on("change",function(){
-                            $(this).nextAll().remove();
-                            DC.getEffect($(this).parent(),$(this).parent().children(".func").val());
-                        });
-                    }
-                };
-                function setUpEndBattle(which){
-                    $("#prop-"+which+" .scene-type").val(event[which] ? event[which].next[0] : sceneType).trigger("change");
-                    $("#prop-"+which+" .scene-name").val(event[which] ? event[which].next[1] : sceneName).trigger("change");
-                    $("#prop-"+which+" .event-name").val(event[which] ? event[which].next[2] : eventName);
-                    for(var i=0;i<event[which].events.length;i++){
-                        showEventGroups(event[which].events[i],$("#prop-"+which));
-                    }
+            Q.stageScene("map",0,{map:map,characters:dataP.event.characters,placementSquares:dataP.event.placementSquares});
+
+            //Using the file data, set up the page
+            var event = dataP.event;
+            $("#prop-music .music-select").val(event.music).trigger("change");
+            $("#prop-maxAllies input").val(event.maxAllies);
+            function showEventGroups(data,groupCont){
+                $(groupCont).children(".cond-group-title-bar").children(".add-group").trigger("click");
+                for(var j=0;j<data.conds.length;j++){
+                    var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
+                    var func = data.conds[j][0];
+                    var props = data.conds[j][1];
+                    var required = data.required.toString();
+                    var cont = $(condsCont).children(".conditions").children(".cond-cont").append(DC.getCondFunc(func));
+                    DC.getCond(cont.children(".cond").last(),func,props);
+                    $(condsCont).children(".conditions").children(".required").val(required);
+                    DC.selectInitialValue($(cont).children(".cond").last());
+                    $(cont).children(".cond").last().children(".func").on("change",function(){
+                        $(this).nextAll().remove();
+                        DC.getCond($(this).parent(),$(this).parent().children(".func").val());
+                    });
                 }
-                setUpEndBattle("victory");
-                setUpEndBattle("defeat");
-                for(var i=0;i<event.events.length;i++){
-                    showEventGroups(event.events[i],$("#cond-groups-cont"));
+                for(var j=0;j<data.effects.length;j++){
+                    var condsCont = $(groupCont).children(".cond-groups").children(".cond-group").last();
+                    var func = data.effects[j][0];
+                    var props = data.effects[j][1];
+                    var cont = $(condsCont).children(".effects").children(".effect-cont").append(DC.getEffectFunc(func));
+                    DC.getEffect(cont.children(".effect").last(),func,props);
+                    DC.selectInitialValue($(cont).children(".effect").last());
+                    $(cont).children(".effect").last().children(".func").on("change",function(){
+                        $(this).nextAll().remove();
+                        DC.getEffect($(this).parent(),$(this).parent().children(".func").val());
+                    });
                 }
-            });
+            };
+            function setUpEndBattle(which){
+                $("#prop-"+which+" .scene-type").val(event[which] ? event[which].next[0] : GDATA.eventPointer.type).trigger("change");
+                $("#prop-"+which+" .scene-name").val(event[which] ? event[which].next[1] : GDATA.eventPointer.scene).trigger("change");
+                $("#prop-"+which+" .event-name").val(event[which] ? event[which].next[2] : GDATA.eventPointer.event);
+                for(var i=0;i<event[which].events.length;i++){
+                    showEventGroups(event[which].events[i],$("#prop-"+which));
+                }
+            }
+            setUpEndBattle("victory");
+            setUpEndBattle("defeat");
+            for(var i=0;i<event.events.length;i++){
+                showEventGroups(event.events[i],$("#cond-groups-cont"));
+            }
         },{tmxImagePath:Q.options.imagePath.substring(3)});
     }
     
     var dataP = {
-        mapFileNames:mapFileNames,
-        mapFileGroups:Object.keys(mapFileNames),
-        musicFileNames:musicFileNames,
-        charFiles:characterFiles,
-        imageAssets:imageAssets,
+        mapFileNames:GDATA.mapFileNames,
+        mapFileGroups:Object.keys(GDATA.mapFileNames),
+        soundFileNames:GDATA.soundFileNames,
+        musicFileNames:GDATA.musicFileNames,
+        charFiles:GDATA.characterFiles,
+        imageAssets:GDATA.imageAssets,
+        event:GDATA.event,
         sceneTypes:["Story","Flavour"],
         condFuncs:["rounds","charHealth"],
         effectFuncs:["setVar","spawnCharacter","showText","changeMusic"],
@@ -453,22 +372,18 @@ $(function(){
         directions:["down","left","up","right"],
         charHealth:["deadOrFainted","dead","fainted","fullHealth","takenDamage","belowHalfHealth"]
     };
-    var numOfFiles = 1 + dataFiles.length;
-    var setJSONData = function(url,name){
-        $.getJSON(url)
-            .done(function(data){
-                dataP[name] = data;
-                numOfFiles--;
-                if(numOfFiles<=0){
-                    start();
-                }
-            }
-        );
-    };
-    
+    function addPath(arr,path){
+        return arr.map(function(itm){
+            return path+itm;
+        });
+    }
+    var toLoad = addPath(GDATA.spritesImgs,"sprites/").concat(addPath(GDATA.imageAssets,"story/")).concat(addPath(GDATA.animsImgs,"animations/"));
+    Q.load(toLoad,function(){
+        start();
+    });
     var formatScenes = function(){
-        var story = dataP["scenes-list.json"];
-        var flavour = dataP["flavour-events-list.json"];
+        var story = GDATA.dataFiles["scenes-list.json"];
+        var flavour = GDATA.dataFiles["flavour-events-list.json"];
         var newScenes = {
             Story:[],
             Flavour:[]
@@ -484,8 +399,8 @@ $(function(){
         return newScenes;
     };
     var formatEvents = function(){
-        var story = dataP["scenes-list.json"];
-        var flavour = dataP["flavour-events-list.json"];
+        var story = GDATA.dataFiles["scenes-list.json"];
+        var flavour = GDATA.dataFiles["flavour-events-list.json"];
         var newEvents = {
             Story:{},
             Flavour:{}
@@ -499,21 +414,11 @@ $(function(){
         }
         return newEvents;
     };
-    
-    //Set the event
-    setJSONData("../../data/json/story/events/"+sceneType+"/"+sceneName+"/"+eventName+".json","event");
-
-    $.getJSON("../../data/json/story/global-vars.json",function(data){
-        dataP["global-vars.json"] = data;
-        //Set all of the data files
-        dataFiles.forEach( function(f){ setJSONData("../../data/json/data/"+f,f); });
-    });
-    
     var start = function(){
         dataP.scenes = formatScenes();
         dataP.events = formatEvents();
-        dataP.scene = dataP["scenes-list.json"].Story.find(function(sc){return sc.name===sceneName;});
-        dataP.vrs = {Global:Object.keys(dataP["global-vars.json"].vrs),Scene:Object.keys(dataP.scene.vrs)};
+        dataP.scene = GDATA.dataFiles["scenes-list.json"].Story.find(function(sc){return sc.name===GDATA.eventPointer.scene;});
+        dataP.vrs = {Global:Object.keys(GDATA.dataFiles["global-vars.json"].vrs),Scene:Object.keys(dataP.scene.vrs)};
         DC = {
             getCondGroup:function(){
                 return '<div class="cond-group">\n\
@@ -642,8 +547,6 @@ $(function(){
                         var loc = [parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))];
                         Q.viewObj.centerOn(loc);
                     });
-                } else if(objAt.isA("CharacterSprite")){
-                    Q.playSound("cannot_do.mp3");
                 } else {
                     $(".placement-square").each(function(){
                         if($(this).attr("locX")==loc[0]&&$(this).attr("locY")==loc[1]){
@@ -792,10 +695,7 @@ $(function(){
             getEventRefs:function(){
                 var refs = [];
                 $(".event-name").each(function(){
-                    var event = $(this).val(); 
-                    if(refs.indexOf(event) === -1){
-                        refs.push($(this).val());
-                    }
+                    refs.push([$(this).siblings(".scene-type").val(),$(this).siblings(".scene-name").val(),$(this).val()]);
                 });
                 return refs;
             },
@@ -946,10 +846,10 @@ $(function(){
         $("#go-back").click(function(e){
             if(confirm("Are you sure you want to go back without saving?")){
                 var to = "show-events.php";
-                if(sceneType==="Flavour"){
+                if(GDATA.eventPointer.type==="Flavour"){
                     to = "show-flavour.php";
                 }
-                $.redirect(to,  {'scene':sceneName, 'event':eventName, 'type':sceneType});
+                $.redirect(to,  {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
             }
         });
         $("#test-file").click(function(e){
@@ -958,17 +858,17 @@ $(function(){
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene,type:GDATA.eventPointer.type},
                 dataType:'json'
             })
-            .done(function(data){$.redirect('../../index.php', {'scene':sceneName, 'event':eventName, 'type':sceneType, testing:true});})
+            .done(function(data){$.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});})
             .fail(function(data){console.log(data)});
             
-            if(sceneType==="Story"){
+            if(GDATA.eventPointer.type==="Story"){
                 $.ajax({
                     type:'POST',
                     url:'save-event-references.php',
-                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene},
                     dataType:'json'
                 })
                 .done(function(data){console.log(data)})
@@ -980,17 +880,17 @@ $(function(){
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
-                data:{data:data.file,name:eventName,scene:sceneName,type:sceneType},
+                data:{data:data.file,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene,type:GDATA.eventPointer.type},
                 dataType:'json'
             })
             .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
             .fail(function(data){console.log(data)});
             
-            if(sceneType==="Story"){
+            if(GDATA.eventPointer.type==="Story"){
                 $.ajax({
                     type:'POST',
                     url:'save-event-references.php',
-                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:eventName,scene:sceneName},
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene},
                     dataType:'json'
                 })
                 .done(function(data){console.log(data)})
@@ -1001,9 +901,9 @@ $(function(){
             if($("#load-chars-from-cont").length) return;
             $("#full-screen-hider").show();
             var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
-            var scType = DC.groupSelect("Type",dataP.sceneTypes,sceneType);
-            var scName = DC.groupSelect("SCName",dataP.scenes[sceneType],sceneName);
-            var evName = DC.groupSelect("EVName",dataP.events[sceneType][sceneName],eventName);
+            var scType = DC.groupSelect("Type",dataP.GDATA.eventPointer.types,GDATA.eventPointer.type);
+            var scName = DC.groupSelect("SCName",dataP.scenes[GDATA.eventPointer.type],GDATA.eventPointer.scene);
+            var evName = DC.groupSelect("EVName",dataP.events[GDATA.eventPointer.type][GDATA.eventPointer.scene],GDATA.eventPointer.event);
             $(cont).append(scType);
             $(cont).append(scName);
             $(cont).append(evName);
@@ -1051,9 +951,7 @@ $(function(){
         var map = event.map.split("/");
         $("#map-select-group").val(map[0]).trigger("change");
         $("#map-select-place").val(map[1]).trigger("change");
-        Q.load("sprites/archer.png,sprites/assassin.png,sprites/berserker.png,sprites/elementalist.png,sprites/healer.png,sprites/illusionist.png,sprites/legionnaire.png,sprites/skirmisher.png,sprites/vanguard.png",function(){
-            startQuintusCanvas();
-        });
+        startQuintusCanvas();
     };
     
     

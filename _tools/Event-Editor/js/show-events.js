@@ -180,7 +180,7 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "location":
-                    newFile.bg = "bg/castle-room.jpg";
+                    newFile.bg = "castle-room.jpg";
                     newFile.disabledChoices = [];
                     newFile.pageList = ["start"];
                     newFile.onload = [];

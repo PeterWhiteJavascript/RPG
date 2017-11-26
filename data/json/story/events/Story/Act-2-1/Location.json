@@ -4,23 +4,23 @@
     },
     "name": "Location",
     "music": "demo.mp3",
-    "bg": "bg\/castle-room.jpg",
+    "bg": "castle-room.jpg",
     "actions": [
         [
             "Nextggh",
             "changeEvent",
-            {
-                "type": "Story",
-                "scene": "Act-2-1",
-                "event": "Story"
-            }
+            [
+                "Story",
+                "Act-2-1",
+                "Story"
+            ]
         ],
         [
             "other",
             "changePage",
-            {
-                "page": "Page 2"
-            }
+            [
+                "Page 2"
+            ]
         ]
     ],
     "onload": [],
@@ -37,18 +37,18 @@
             [
                 "hi",
                 "changeEvent",
-                {
-                    "type": "Story",
-                    "scene": "Act-2-1",
-                    "event": "Story"
-                }
+            [
+                "Story",
+                "Act-2-1",
+                "Story"
+            ]
             ],
             [
                 "Back",
                 "changePage",
-                {
-                    "page": "start"
-                }
+                [
+                    "start"
+                ]
             ]
         ],
         "onload": [],

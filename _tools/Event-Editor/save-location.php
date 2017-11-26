@@ -1,8 +1,8 @@
 <?php
 include("php-config.php");
-$name = addDashes($_POST['eventName']);
-$scene = addDashes($_POST['sceneName']);
-$type = $_POST['sceneType'];
+$name = addDashes($_POST['event']);
+$scene = addDashes($_POST['scene']);
+$type = $_POST['type'];
 
 /*
 $file = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
