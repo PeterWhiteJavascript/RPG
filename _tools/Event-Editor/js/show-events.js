@@ -94,11 +94,11 @@ $(function(){
             for(var i=0;i<eventsInScene.length;i++){
                 var event = eventsInScene[i];
                 for(var j=0;j<event.events.length;j++){
-                    $("#"+event.name).connections({to:"#"+event.events[j],class:'connection '+event.name+' '+event.events[j]+'',id:event.name+"-TO-"+event.events[j]});
-                    var elm = $("#"+event.name+"-TO-"+event.events[j]);
+                    $("#"+event.name).connections({to:"#"+event.events[j][2],class:'connection '+event.name+' '+event.events[j][2]+'',id:event.name+"-TO-"+event.events[j][2]});
+                    var elm = $("#"+event.name+"-TO-"+event.events[j][2]);
                     if(elm.length){
                         elm.append("<div class='end-arrow'></div>");
-                        adjustConnection("#"+event.name+"-TO-"+event.events[j]);
+                        adjustConnection("#"+event.name+"-TO-"+event.events[j][2]);
                     } else {
                         $("#"+event.name).addClass("invalid-event-pointer");
                     }

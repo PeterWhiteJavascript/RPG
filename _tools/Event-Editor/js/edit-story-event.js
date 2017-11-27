@@ -849,9 +849,8 @@ $(function(){
                         }
                         break;
                     case "changeEvent":
-                        if(eventRefs.indexOf(opt[1].event) === -1){
-                            eventRefs.push(opt[1].event);
-                        }
+                        eventRefs.push([opt[1].type,opt[1].scene,opt[1].event]);
+                        
                         break;
                 }
             }

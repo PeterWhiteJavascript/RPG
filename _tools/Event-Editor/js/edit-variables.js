@@ -1,4 +1,5 @@
-var fileData;
+var fileData = {};
+var scenesList;
 var changed = false;
 function showVar(key,value){
     if(key===undefined){
@@ -13,14 +14,27 @@ function showVar(key,value){
         updateMenuOptions("variable");
         var refs = [];
         var val = $(this).children("input").first().val();
-        //Get the references
-        fileData.events.forEach(function(event){
-            if(event.sceneVars.find(function(obj){return obj===val;})){
-                refs.push(event);
+        if(fileData.events){
+            //Get the references
+            fileData.events.forEach(function(event){
+                if(event.sceneVars.find(function(obj){return obj===val;})){
+                    refs.push({event:event,scene:""});
+                }
+            });
+        } else {
+            for(var i=0;i<scenesList.Story.length;i++){
+                var scene = scenesList.Story[i];
+                for(var j=0;j<scene.events.length;j++){
+                    var event = scene.events[j];
+                    if(event.globalVars.find(function(obj){return obj===val;})){
+                        
+                        refs.push({event:event,scene:scene.name+" -> "});
+                    }
+                }
             }
-        });
+        }
         refs.forEach(function(ref){
-            $("#ref-cont").append("<div class='reference'>"+ref.name+"</div>");
+            $("#ref-cont").append("<div class='reference'><span>"+ref.scene+ref.event.name+"</span></div>");
         });
         $(".reference").off().on("click",function(){
             $(".reference").removeClass("selected");
@@ -97,7 +111,10 @@ function updateMenuOptions(type){
         if(changed&&confirm("Save vars before leaving?")){
             $("#save-vars").trigger("click");
         }
-        $.redirect('edit-event.php', {'scene':scene, 'event':$(".reference.selected").text(), 'type':'Story'});
+        var text = $(".reference.selected").text().split(" -> ");
+        var event = text[1] || text[0];
+        var scene = fileData.name || text[0];
+        $.redirect('edit-event.php', {'scene':scene, 'event':event, 'type':'Story'});
     });
     $("#show-story-events").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
@@ -117,29 +134,30 @@ function updateMenuOptions(type){
 };
 
 $(function(){
-    if(scene){
-        $("#scene-title").append("<div>"+scene+"</div>");
-        $.getJSON("../../data/json/data/scenes-list.json",function(data){
-            fileData = data["Story"].find(function(elm){return elm.name===scene});
-            var keys = Object.keys(fileData.vrs);
-            keys.forEach(function(key){
-                showVar(key,fileData.vrs[key]);
+    $.getJSON("../../data/json/data/scenes-list.json",function(data){
+        scenesList = data;
+        if(scene){
+            $("#scene-title").append("<div>"+scene+"</div>");
+                fileData = data["Story"].find(function(elm){return elm.name===scene});
+                var keys = Object.keys(fileData.vrs);
+                keys.forEach(function(key){
+                    showVar(key,fileData.vrs[key]);
+                });
+                if(!keys.length) showVar();
+                $(".variable").first().trigger("click");
+
+        } else {
+            $("#scene-title").append("<div>Global</div>");
+            $.getJSON("../../data/json/story/global-vars.json",function(data){
+                fileData = data;
+                var keys = Object.keys(data.vrs);
+                keys.forEach(function(key){
+                    showVar(key,data.vrs[key]);
+                });
+                if(!keys.length) showVar();
+                $(".variable").first().trigger("click");
             });
-            if(!keys.length) showVar();
-            $(".variable").first().trigger("click");
-        });
-        
-    } else {
-        $("#scene-title").append("<div>Global</div>");
-        $.getJSON("../../data/json/story/global-vars.json",function(data){
-            fileData = data;
-            var keys = Object.keys(data.vrs);
-            keys.forEach(function(key){
-                showVar(key,data.vrs[key]);
-            });
-            if(!keys.length) showVar();
-            $(".variable").first().trigger("click");
-        });
-    }
+        }
+    });
     
 });

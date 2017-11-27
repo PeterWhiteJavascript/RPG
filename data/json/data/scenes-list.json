@@ -278,126 +278,6 @@
         {
             "name": "Act-1-4",
             "events": [
-                {
-                    "name": "Leaving-Home",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Forest-to-Candy-Store",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Forest-Battle",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Forest-Battle-victory",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Forest-Battle-defeat",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Alex-arrives-in-town",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Forest-battle-victory2",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Inside-the-pub",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Left-the-candy-shop",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "After-candy-shop-battle",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Candy-Battle-Victory",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "In-pub-with-Astraea",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Candy-Battle-Loss",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "On-the-way-home.",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Inside-Bandit's-Shop",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Buy-or-not-from-Bandits",
-                    "top": "332px",
-                    "left": "102px"
-                },
-                {
-                    "name": "Did-not-buy",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "Bought-from-Bandits",
-                    "top": "155px",
-                    "left": "151px"
-                },
-                {
-                    "name": "win-vs-police",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "lose-vs-police",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "win-vs-bandits",
-                    "top": "0px",
-                    "left": "0px"
-                },
-                {
-                    "name": "lose-vs-bandits",
-                    "top": "64px",
-                    "left": "209px"
-                },
-                {
-                    "name": "House",
-                    "top": "79px",
-                    "left": "130px"
-                },
-                {
-                    "name": "Town",
-                    "top": "107px",
-                    "left": "269px"
-                }
             ],
             "vrs": {
                 "tookTooLongInBattle": "false"
@@ -488,8 +368,7 @@
                         ]
                     ],
                     "sceneVars": [
-                        "didQuest1",
-                        "didQuest2"
+                        "didQuest1"
                     ],
                     "globalVars": [],
                     "name": "Arrive-in-village",
@@ -499,7 +378,16 @@
                 },
                 {
                     "events": [
-                        "quest-1-battle-scene"
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-1-battle-scene"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "quest-1-battle-scene"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
@@ -570,7 +458,16 @@
                 },
                 {
                     "events": [
-                        "Arrive-in-village"
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "Arrive-in-village"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-2",
+                            "Arrive-in-village"
+                        ]
                     ],
                     "sceneVars": [
                         "didTraining"
@@ -598,8 +495,8 @@
                     "globalVars": [],
                     "name": "quest-1-battle",
                     "type": "battle",
-                    "left": "120px",
-                    "top": "187px"
+                    "left": "128px",
+                    "top": "175px"
                 }
             ],
             "vrs": {

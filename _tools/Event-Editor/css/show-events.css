@@ -89,7 +89,9 @@
 .invalid-event-pointer{
     background-color:darkred !important;
 }
-
+.end-arrow{
+    z-index:1;
+}
 .connection{
     pointer-events: none;
 }

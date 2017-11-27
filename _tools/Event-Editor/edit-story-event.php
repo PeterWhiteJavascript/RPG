@@ -40,16 +40,29 @@ $dataFiles = array_slice(scandir('../../data/json/data'),2);
         </script>
         <script src="js/edit-story-event.js"></script>
         <div id="editor-content">
+            
             <div id="top-bar">
-                <ul>
-                    <li class="top-bar-btn"><div id="add-new-page" class="menu-button btn btn-default">Add New Page</div></li>
-                    <li class="top-bar-btn"><div id="add-new-variable" class="menu-button btn btn-default">Add New Variable</div></li>
-                    <li class="top-bar-btn"><div id="remove-page" class="menu-button btn btn-default">Remove Page</div></li>
-                    <li class="top-bar-btn"><div id="save-event" class="menu-button btn btn-default">Save Event</div></li>
-                    <li class="top-bar-btn"><div id="test-event" class="menu-button btn btn-default">Test Event</div></li>
-                    <li class="top-bar-btn"><div id="to-vars" class="menu-button btn btn-default">To Vars</div></li>
-                    <li class="top-bar-btn"><div id="to-events" class="menu-button btn btn-default">To Events</div></li>
-                </ul>
+                <div class="top-bar-itm">
+                    <div id="add-new-page" class="bar-button">New Page</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="add-new-variable" class="bar-button">New Var</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="remove-page" class="bar-button">Remove Page</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="save-event" class="bar-button">Save</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="test-event" class="bar-button">Test Event</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="to-vars" class="bar-button">To Vars</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="to-events" class="bar-button">To Events</div>
+                </div>
             </div>
             
             <div class="editor-left-menu" id="page-vars">

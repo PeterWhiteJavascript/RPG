@@ -78,7 +78,6 @@ var start = function(){
     };
     dataP.scenes = formatScenes();
     dataP.events = formatEvents();
-    console.log(dataP)
     var DC = {
         init:function(){
             var event = GDATA.event;
@@ -86,7 +85,7 @@ var start = function(){
             //Create the vrs
             var keys = Object.keys(vrs);
             for(var i=0;i<keys.length;i++){
-                this.addVar(keys[i],vrs[keys[i]],true);
+                this.addVar(keys[i],decodeURIComponent(vrs[keys[i]]));
             }
             var pageList = event.pageList;
             if(!pageList.length) pageList = ["start"];
@@ -127,11 +126,11 @@ var start = function(){
             
         },
         //Adds a var to the list
-        addVar:function(name,val,fromSave){
-            if(fromSave){
-                $("#variables-cont").append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><div class='var-name'>"+name+"</div><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
+        addVar:function(name,val){
+            if(name){
+                $("#variables-cont").append("<div class='var-button'><div class='var-remove remove-choice'><span>x</span></div><div class='var-name'>"+name+"</div><input class='var-value' value="+(val?val:0)+"></div>");
             } else {
-                $("#variables-cont").append("<div class='var-button menu-button'><div class='btn btn-group center var-remove remove-choice'>x</div><input class='var-name' value='"+name+"'><textarea class='var-value'>"+(val?val:0)+"</textarea></div>");
+                $("#variables-cont").append("<div class='var-button'><div class='var-remove remove-choice'><span>x</span></div><input class='var-name' placeholder='VARNAME'><input class='var-value' value='false'></div>");
             }
         },
         //Changes the value of a vr
@@ -142,18 +141,6 @@ var start = function(){
         addAction:function(cont,name){
             $(cont).append("<div id='"+name+"' class='action'><div class='action-button list-item'>"+name+"</div><div class='remove-choice'>x</div></div>");
             dataP.uniqueActions++;
-        },
-        processValue:function(value){
-            var val = parseInt(value);
-            if(isNaN(val)){
-                if(/[+=]/g.test(value) == true) {
-                    val = encodeURIComponent(value);
-                } else {
-                    val = value;
-                }
-            }
-            if(!val && isNaN(val)) val = (value === 'true');
-            return val;
         },
         selectAction:function(name){
             $(".action.selected").removeClass("selected");
@@ -349,11 +336,11 @@ var start = function(){
                 case "createHuntMenu":
                     //No extra props
                     break;
-                case "createBuyItemsList":
-                    
+                case "displayBuyItemsList":
+                    //TODO
                     break;
-                case "createSellItemsList":
-                    
+                case "displaySellItemsList":
+                    //TODO
                     break;
             }
             return content;
@@ -406,39 +393,20 @@ var start = function(){
             $(cont).children("select").each(function(){
                 $(this).val($(this).attr("initial-value"));
             });
-        },
-        createItemInList:function(item){
-            var type = item[0];
-            var gear = item[1];
-            var content = "";
-            switch(type){
-                case "Consumables":
-                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.items))+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
-                    break;
-                case "Accessories":
-                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.equipment[type]))+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
-                    break;
-                default:
-                    var quality = item[2];
-                    var material = item[3];
-                    content = "<div class='buy-item-cont effect-prop-arr'><select class='arr-prop item-type' initial-value='"+type+"'>"+this.getOptString(this.p.equipmentTypes)+"</select><select class='arr-prop item-gear' initial-value='"+gear+"'>'"+this.getOptString(Object.keys(this.p.equipment[type]))+"'</select><select class='arr-prop item-quality' initial-value='"+quality+"'>"+this.getOptString(Object.keys(this.p.equipment.Quality))+"</select><select class='arr-prop item-material' initial-value='"+material+"'>'"+this.getOptString(this.p.equipment[type][decodeURIComponent(gear)].materials)+"'</select><div class='btn btn-group center remove-choice'>x</div></div>";
-                    break;
-            }
-            return content;
-        },
-        setUpBuyList:function(list){
-            var opts = "";
-            for(var i=0;i<list.length;i++){
-                opts += this.createItemInList(list[i]);
-            }
-            return opts;
         }
     };
     var FileSaver = {
         processValue:function(value){
             var val = parseInt(value);
-            if(isNaN(val)) val = encodeURIComponent(value);
+            if(isNaN(val)){
+                if(/[+=]/g.test(value) == true) {
+                    val = encodeURIComponent(value);
+                } else {
+                    val = value;
+                }
+            }
             if(!val && isNaN(val)) val = (value === 'true');
+            if(value == 'false') val = false;
             return val;
         },
         saveAction:function(name){
@@ -488,7 +456,6 @@ var start = function(){
                 GDATA.event["actions"] = actions;
                 GDATA.event["onload"] = groups;
             } else {
-                console.log(name)
                 GDATA.event[name]["music"] = music;
                 GDATA.event[name]["bg"] = bg;
                 GDATA.event[name]["actions"] = actions;
@@ -562,8 +529,8 @@ var start = function(){
     //BG and Music selects end
     
     //Start editor-content buttons
-    $("#add-variable").click(function(){
-        DC.addVar("Var"+$(DC.p.varsCont).children(".var-button").length);
+    $("#add-var").click(function(){
+        DC.addVar();
     });
     $("#add-action").click(function(){
         var name = "Action "+dataP.uniqueActions;
@@ -577,9 +544,6 @@ var start = function(){
         GDATA.event.pageList.push(name);
     });
     
-    $("#remove-action").click(function(){
-        $(".action.selected").remove();
-    });
     $("#add-new-module").click(function(){
         DC.addModule([{text:""}],"");
     });
@@ -750,18 +714,23 @@ var start = function(){
         }
     });
     $(document).on("click",".action-button",function(e){
-        if($(".action.selected").attr("id")===$(this).parent().attr("id")){
+        $(".action.selected").children("input").trigger("focusout");
+        var id = $(this).parent().attr("id");
+        if($(".action.selected").attr("id")===id){
             if($(this).parent().attr("id")==="start") return;
-            var input = $("<input class='list-item' value='"+$(this).parent().attr("id")+"'>");
+            var input = $("<input class='list-item' value='"+id+"'>");
             $(this).replaceWith(input);
-            $(input).on("change",function(){
-                var oldID = $(this).parent().attr("id");
-                $(this).parent().attr("id",$(this).val());
-                GDATA.event[$(this).parent().attr("id")] = GDATA.event[oldID];
-                delete (GDATA.event[oldID]);
-                GDATA.event.pageList.splice(GDATA.event.pageList.indexOf(oldID),1,$(this).parent().attr("id"));
+            $(input).on("focusout",function(){ 
+                if($(this).val()!==id){
+                    var oldID = $(this).parent().attr("id");
+                    $(this).parent().attr("id",$(this).val());
+                    GDATA.event[$(this).parent().attr("id")] = GDATA.event[oldID];
+                    delete (GDATA.event[oldID]);
+                    GDATA.event.pageList.splice(GDATA.event.pageList.indexOf(oldID),1,$(this).parent().attr("id"));
+                }
                 $(this).replaceWith("<div class='action-button list-item'>"+$(this).val()+"</div>");
             });
+            $(input).focus();
             return;
         }
         FileSaver.saveAction($(".action.selected").attr("id"));
@@ -809,6 +778,27 @@ var start = function(){
         $(this).parent().children(".item-material").append(DC.getOptString(DC.p.equipment[type][gear].materials));
     });
     
+    $(document).on("click",".var-remove",function(){
+        var name = $(this).siblings(".var-name").text();
+        delete GDATA.event.vrs[name];
+    });
+    $(document).on("change",".var-name",function(){
+        var name = $(this).val();
+        if(name.length){
+            var matched = false;
+            $(".var-name").each(function(){
+                if(name===$(this).text()) matched = true;
+            });
+            if(!matched){
+                GDATA.event.vrs[name] = FileSaver.processValue($(this).siblings(".var-value").val());
+                $(this).replaceWith("<div class='var-name'>"+name+"</div>");
+            }
+        }
+    });
+    $(document).on("change",".var-value",function(){
+        if(!$(this).val().length||$(this).siblings(".var-name").is("input")) return;
+        GDATA.event.vrs[$(this).siblings(".var-name").text()] = FileSaver.processValue($(this).val());
+    });
     
     //Change the type of the check
     $(document).on("change",".check-types",function(e){

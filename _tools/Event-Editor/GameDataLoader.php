@@ -72,6 +72,7 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
         animsImgs: <?php echo json_encode($anims_imgs); ?>,
         bgFiles:<?php echo json_encode($bgs); ?>
     };
-    
+    //Makes sure empty object is not converted to array (not sure what is really happening here).
+    if(Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
     console.log(GDATA)
 </script>

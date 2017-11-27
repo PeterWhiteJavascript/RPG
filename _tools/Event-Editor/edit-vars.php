@@ -7,7 +7,7 @@
     </head>
     <body>
         <script>
-            var scene = '<?php echo $_POST['scene']; ?>';
+            var scene = '<?php if(isset($_POST['scene'])){ echo $_POST['scene']; }?>';
         </script>
         <div id="wrapper">
             <div id="main-content">

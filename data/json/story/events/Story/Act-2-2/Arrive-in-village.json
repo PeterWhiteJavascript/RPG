@@ -1,5 +1,7 @@
 {
-    "vrs": [],
+    "vrs": {
+        "w": "false with"
+    },
     "name": "Arrive-in-village",
     "music": "the_usual.mp3",
     "bg": "Pumpkins.jpg",
@@ -60,8 +62,8 @@
                 [
                     "checkVar",
                     [
-                        "Scene",
-                        "didQuest2",
+                        "Event",
+                        "w",
                         "==",
                         "true"
                     ]
@@ -69,9 +71,11 @@
             ],
             "effects": [
                 [
-                    "enableChoice",
+                    "addToRoster",
                     [
-                        "Go to Quest 3"
+                        "Act-2-2.json",
+                        "Dummies",
+                        "Legion"
                     ]
                 ]
             ]

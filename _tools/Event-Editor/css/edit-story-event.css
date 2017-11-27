@@ -10,6 +10,9 @@ select{
     display:block;
     /*margin:0 auto;*/
 }
+.top-bar-itm{
+    width:14.2863%;
+}
 
 #music-select{
     width:15%;
@@ -416,7 +419,7 @@ li{
     overflow:hidden;
 }
 #page-vars{
-    top:48px;
+    top:60px;
     height:100%;
     position:fixed;
 }
@@ -477,7 +480,7 @@ li{
 #editor-main-content{
     height:100%;
     width:100%;
-    top:40px;
+    top:60px;
     left:10%;
     position:absolute;
 }
