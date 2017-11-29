@@ -27,7 +27,6 @@ function showVar(key,value){
                 for(var j=0;j<scene.events.length;j++){
                     var event = scene.events[j];
                     if(event.globalVars.find(function(obj){return obj===val;})){
-                        
                         refs.push({event:event,scene:scene.name+" -> "});
                     }
                 }
@@ -47,21 +46,38 @@ function updateMenuOptions(type){
     function button(c,t){
         return "<div id='"+c+"' class='menu-button'>"+t+"</div>";
     }
-    if(type==="variable"){
-        $("#menu-cont").empty();
-        $("#menu-cont").append(button("add-var","Add New Var"));
-        $("#menu-cont").append(button("remove-var","Remove Var"));
-        $("#menu-cont").append(button("save-vars","Save"));
-        $("#menu-cont").append(button("show-story-events","Story Events"));
-        $("#menu-cont").append(button("back","To Scenes"));
-    } else if(type==="reference"){
-        $("#menu-cont").empty();
-        $("#menu-cont").append(button("add-var","Add New Var"));
-        $("#menu-cont").append(button("remove-var","Remove Var"));
-        $("#menu-cont").append(button("save-vars","Save"));
-        $("#menu-cont").append(button("show-story-events","Story Events"));
-        $("#menu-cont").append(button("back","To Scenes"));
-        $("#menu-cont").append(button("go-to-event","Go To Event"));
+    if(fileData.events){
+        if(type==="variable"){
+            $("#menu-cont").empty();
+            $("#menu-cont").append(button("add-var","Add New Var"));
+            $("#menu-cont").append(button("remove-var","Remove Var"));
+            $("#menu-cont").append(button("save-vars","Save"));
+            $("#menu-cont").append(button("show-story-events","Story Events"));
+            $("#menu-cont").append(button("back","To Scenes"));
+        } else if(type==="reference"){
+            $("#menu-cont").empty();
+            $("#menu-cont").append(button("add-var","Add New Var"));
+            $("#menu-cont").append(button("remove-var","Remove Var"));
+            $("#menu-cont").append(button("save-vars","Save"));
+            $("#menu-cont").append(button("show-story-events","Story Events"));
+            $("#menu-cont").append(button("back","To Scenes"));
+            $("#menu-cont").append(button("go-to-event","Go To Event"));
+        }
+    } else {
+        if(type==="variable"){
+            $("#menu-cont").empty();
+            $("#menu-cont").append(button("add-var","Add New Var"));
+            $("#menu-cont").append(button("remove-var","Remove Var"));
+            $("#menu-cont").append(button("save-vars","Save"));
+            $("#menu-cont").append(button("back","Back"));
+        } else if(type==="reference"){
+            $("#menu-cont").empty();
+            $("#menu-cont").append(button("add-var","Add New Var"));
+            $("#menu-cont").append(button("remove-var","Remove Var"));
+            $("#menu-cont").append(button("save-vars","Save"));
+            $("#menu-cont").append(button("back","Back"));
+            $("#menu-cont").append(button("go-to-event","Go To Event"));
+        }
     }
     $("#add-var").click(function(){
         showVar();

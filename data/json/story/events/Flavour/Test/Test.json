@@ -1,0 +1,18 @@
+{
+    "name": "Test",
+    "kind": "story",
+    "music": "demo.mp3",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "battle.mp3",
+            "bg": "bg\/959396-river.jpg",
+            "text": "hi",
+            "choices": [],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}

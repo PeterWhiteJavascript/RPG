@@ -1,28 +1,18 @@
 {
     "groups": {
-        "Group-2": [
+        "Test": [
             [
                 [
-                    true,
+                    false,
                     [
-                        "Vars",
-                        "Global",
-                        "Gloobal",
-                        "==",
-                        "aaawf"
-                    ],
-                    [
-                        "Act",
-                        "Act-1-1"
+                        "Character Class",
+                        "Legionnaire"
                     ]
                 ]
             ],
             0,
             [
-                "asd",
-                "bs",
-                "eg",
-                "fgg"
+                "Test"
             ],
             "One"
         ]
