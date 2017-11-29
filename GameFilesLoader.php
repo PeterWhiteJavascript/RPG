@@ -53,6 +53,7 @@ $data -> game -> $globalName = json_decode(file_get_contents("data/json/story/gl
 <script src="lib/astar.js"></script>
 <script src="lib/jquery-3.1.1.js"></script>
 <script src="lib/jquery-ui.min.js"></script>
+<script src="lib/jquery.redirect.min.js"></script>
 <?php
 foreach($data -> js as $file ){
 ?>

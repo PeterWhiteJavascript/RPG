@@ -44,7 +44,8 @@ $(function(){
             }
             var characters = stage.options.characters;
             for(var i=0;i<characters.length;i++){
-                var char = characters[i];
+                var charData = characters[i];
+                var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
                 var charButton = DC.newCharacter(char);
                 $('#event-chars-cont').append(charButton);
                 var data = dataP.charFiles[char.file][char.group][char.handle];
@@ -418,14 +419,14 @@ $(function(){
                 return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
             },
             getScriptItemFunc:function(content,name){
-                name = name || "text";
+                name = name || "moveAlong";
                 content.append(DC.groupMinimize());
                 content.append(DC.groupTop(name));
                 content.append(DC.groupRemove());
                 return content;
             },
             getScriptItem:function(content,name,props){
-                name = name || "text";
+                name = name || "moveAlong";
                 switch(name){
                     case "text":
                         props = props || ["empty.png","empty.png","",false,0,false];
@@ -444,7 +445,7 @@ $(function(){
                         content.append(this.groupCheckbox("NoCycle",props[5]));
                     break;
                     case "centerViewChar":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],1000];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupInput("Spd(ms)",props[1],"number",0));
@@ -456,7 +457,7 @@ $(function(){
                         content.append(this.groupInput("Spd(ms)",props[2],"number",0));
                         break;
                     case "moveAlong":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],dataP.directions[0],true,[]];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupSelect("Dir",dataP.directions,props[1]));
@@ -468,7 +469,7 @@ $(function(){
                         }
                         break;
                     case "changeDir":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],"down"];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupSelect("Dir",dataP.directions,props[1]));
@@ -482,7 +483,7 @@ $(function(){
                         content.append(this.groupInput("Wait(ms)",props[0],"number",0));
                         break;
                     case "fadeChar":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],"out",1000];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupSelect("InOut",dataP.inOut,props[1]));
@@ -501,13 +502,13 @@ $(function(){
                         DC.linkSelectToSrc($(content).children("select")[0],$(content).children("audio")[0],"../../audio/sfx/");
                         break;
                     case "changeMoveSpeed":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],300];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupInput("Spd(ms)",props[1],"number",0));
                         break;
                     case "playAnim":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],"attacking","down",dataP.soundFileNames[0]];
                         content.append(this.groupSelect("Char",chars,props[0],"char"));
                         content.append(this.groupSelect("Anim",dataP.animations,props[1]));
@@ -701,14 +702,14 @@ $(function(){
                 var chars = [];
                 $(".character").each(function(){
                     var char = $(this);
-                    chars.push({
-                        file:char.attr("file"),
-                        group:char.attr("group"),
-                        handle:char.attr("class").split(" ")[2],
-                        uniqueId:FileSaver.processValue(char.attr("uniqueId")),
-                        loc:[FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
-                        dir:char.attr("dir")
-                    });
+                    chars.push([
+                        char.attr("file"),
+                        char.attr("group"),
+                        char.attr("class").split(" ")[2],
+                        FileSaver.processValue(char.attr("uniqueId")),
+                        [FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
+                        char.attr("dir")
+                    ]);
                 });
                 return chars;
             },
@@ -1003,7 +1004,8 @@ $(function(){
                             this.removeFromExistence();
                         });
                         for(var i=0;i<d.characters.length;i++){
-                            var char = d.characters[i];
+                            var charData = d.characters[i];
+                            var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
                             char.loc = DC.getNextEmpty(char.loc);
                             var charButton = DC.newCharacter(char);
                             $('#event-chars-cont').append(charButton);

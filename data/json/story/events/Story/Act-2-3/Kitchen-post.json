@@ -1,0 +1,54 @@
+{
+    "name": "Kitchen-post",
+    "kind": "battleScene",
+    "map": "Test\/Kitchen.tmx",
+    "music": "homeland.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "skirm.png",
+                    "empty.png",
+                    "Nice work! Why don't you go back to town now?",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                15,
+                11
+            ],
+            "left"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Astraea",
+            0,
+            [
+                14,
+                11
+            ],
+            "right"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-2-3",
+        "Base-Camp"
+    ],
+    "viewLoc": [
+        15,
+        11
+    ]
+}

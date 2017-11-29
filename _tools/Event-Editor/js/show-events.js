@@ -181,7 +181,6 @@ $(function(){
                     break;
                 case "location":
                     newFile.bg = "castle-room.jpg";
-                    newFile.disabledChoices = [];
                     newFile.pageList = ["start"];
                     newFile.onload = [];
                     newFile.actions = [];

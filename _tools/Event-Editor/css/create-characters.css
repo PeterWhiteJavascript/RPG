@@ -1,9 +1,11 @@
  input{
     height:30px;
 }
-
+.top-bar-itm{
+    width:33.33%;
+}
 .menu-box{
-    top:48px;
+    top:60px;
     position:absolute;
     height:calc(100% - 40px);
 }

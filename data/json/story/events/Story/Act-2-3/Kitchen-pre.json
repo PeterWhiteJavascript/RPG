@@ -1,0 +1,150 @@
+{
+    "name": "Kitchen-pre",
+    "kind": "battleScene",
+    "map": "Test\/Kitchen.tmx",
+    "music": "homeland.mp3",
+    "script": [
+        [
+            [
+                "centerViewChar",
+                [
+                    "Alex 0",
+                    0
+                ]
+            ],
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "up",
+                    true,
+                    [
+                        [
+                            14,
+                            19
+                        ],
+                        [
+                            14,
+                            16
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "changeMusic",
+                [
+                    "prebattle.mp3"
+                ]
+            ],
+            [
+                "text",
+                [
+                    "skirm.png",
+                    "empty.png",
+                    "Oh, Alex! I need your help.\n\nI was preparing some burgers, but I need help chopping them up.\n\nPlease slice them all up.",
+                    false,
+                    0,
+                    false
+                ]
+            ],
+            [
+                "changeDir",
+                [
+                    "Astraea 0",
+                    "up"
+                ]
+            ],
+            [
+                "centerViewLoc",
+                [
+                    14,
+                    10,
+                    1000
+                ]
+            ],
+            [
+                "waitTime",
+                [
+                    1000
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                0,
+                19
+            ],
+            "right"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Astraea",
+            0,
+            [
+                14,
+                11
+            ],
+            "right"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            0,
+            [
+                14,
+                8
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Lettuce",
+            0,
+            [
+                15,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Bun",
+            0,
+            [
+                14,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Patty",
+            0,
+            [
+                15,
+                8
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-2-3",
+        "Kitchen-b"
+    ],
+    "viewLoc": [
+        0,
+        19
+    ]
+}

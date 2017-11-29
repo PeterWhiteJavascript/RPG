@@ -106,8 +106,9 @@ pre{
 }
 #back-button{
     position:absolute;
-    top:10px;
+    bottom:10px;
     left:10px;
+    z-index:10000;
 }
 #back-button2{
     position:absolute;

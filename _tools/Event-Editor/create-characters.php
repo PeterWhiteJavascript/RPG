@@ -31,16 +31,17 @@ $equipment = file_get_contents('../../data/json/data/equipment.json');
         <div id="technique-info" hidden><?php echo $techniques?></div>
         <div id="equipment" hidden><?php echo $equipment?></div>
         <div id="editor-content">
+            
             <div id="top-bar">
-                <ul>
-                    <li class="top-bar-btn"><div id="menu-create-group" class="menu-button btn btn-default">Create Group</div></li>
-                    <li class="top-bar-btn"><div class="menu-button btn btn-default">-</div></li>
-                    <li class="top-bar-btn"><div class="menu-button btn btn-default">-</div></li>
-                    <li class="top-bar-btn"><div id="menu-save-file" class="menu-button btn btn-default" filename="<?php echo $filename?>">Save File</div></li>
-                    <li class="top-bar-btn"><div class="menu-button btn btn-default">-</div></li>
-                    <li class="top-bar-btn"><div class="menu-button btn btn-default">-</div></li>
-                    <li class="top-bar-btn"><a href="select-characters-file.php"><div class="menu-button btn btn-default">Go Back</div></a></li>
-                </ul>
+                <div class="top-bar-itm">
+                    <div id="menu-create-group" class="bar-button">Create Group</div>
+                </div>
+                <div class="top-bar-itm">
+                    <div id="menu-save-file" class="bar-button">Save File</div>
+                </div>
+                <div class="top-bar-itm">
+                    <a href="select-characters-file.php"><div class="bar-button">Go Back</div></a>
+                </div>
             </div>
             <div id="group-menu" class="menu-box">
                 <div class="dark-gradient char-title">Characters</div>

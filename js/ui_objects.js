@@ -87,7 +87,7 @@ Quintus.UIObjects=function(Q){
         extend:{
             doAction:function(p){
                 if(!p) return this.createMainMenu();
-                this[p[1]](p[2]);
+                this[p[2]](p[3]);
             },
             goBack:function(data){
                 //this.changePage({page:this.p.currentPage});
@@ -103,7 +103,7 @@ Quintus.UIObjects=function(Q){
             },
             changeEvent:function(p){
                 this.fullDestroy();
-                Q.startScene(p.type,p.scene,p.event);
+                Q.startScene(p[0],p[1],p[2]);
             },
             goToAnchorEvent:function(){
                 this.fullDestroy();
@@ -129,7 +129,7 @@ Quintus.UIObjects=function(Q){
                             break;
                     }
                 });
-                this.displayList({actions:newList.concat([["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]])});
+                this.displayList({actions:newList.concat([["Back",false,"goBack",["changePage",[this.p.currentPage]]]])});
                 this.p.list = list;
             },
             askBuyQuantity:function(p){
@@ -143,10 +143,10 @@ Quintus.UIObjects=function(Q){
                 var quantity = parseInt(props.quantity);
                 if(money>=quantity*props.p.item.cost){
                     $(".mid-cont").text("Purchase "+quantity+" "+props.p.text+" for "+(quantity*props.p.item.cost)+" money?"+" You have "+money+" money.");
-                    this.displayList({actions:[["Purchase","buyItem",{quantity:quantity,item:props.p.item,text:props.p.text}],["Back","goBack",{to:"askBuyQuantity",props:props.p}]]});
+                    this.displayList({actions:[["Purchase",false,"buyItem",[quantity,props.p.item,props.p.text]],["Back",false,"goBack",["askBuyQuantity",[props.p]]]]});
                 } else {
                     $(".mid-cont").append("You don't have enough money!");
-                    this.displayList({actions:[["Back","goBack",{to:"askBuyQuantity",props:props.p}]]});
+                    this.displayList({actions:[["Back",false,"goBack",["askBuyQuantity",[props.p]]]]});
                 }
             },
             buyItem:function(p){
@@ -154,7 +154,7 @@ Quintus.UIObjects=function(Q){
                 Q.state.get("Bag").addItem(p.item.kind,{amount:p.quantity,gear:p.item.name,material:p.item.material,quality:p.item.quality});
                 Q.state.get("saveData").money -= p.quantity*p.item.cost;
                 $(".mid-cont").text("You purchased the "+p.text+" for "+(p.quantity*p.item.cost)+" money.");
-                this.displayList({actions:[["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]]});
+                this.displayList({actions:[["Back",false,"goBack",["changePage",[this.p.currentPage]]]]});
             },
             displaySellItemsList:function(p){
                 this.emptyConts();
@@ -180,7 +180,7 @@ Quintus.UIObjects=function(Q){
                     var text = itm.quality ? itm.quality+" "+itm.material+" "+itm.name : itm.name;
                     newList.push([text,"askSellQuantity",{item:itm,text:text}]);
                 });
-                this.displayList({actions:newList.concat([["Back","goBack",{to:"changePage",props:{page:this.p.currentPage}}]])});
+                this.displayList({actions:newList.concat([["Back",false,"goBack",["changePage",[this.p.currentPage]]]])});
             },
             askSellQuantity:function(p){
                 this.emptyConts();
@@ -190,7 +190,7 @@ Quintus.UIObjects=function(Q){
                 this.emptyConts();
                 var quantity = parseInt(props.quantity);
                 $(".mid-cont").text("Sell "+quantity+" "+props.p.text+" for "+Math.floor(quantity*props.p.item.cost/2)+"?");
-                this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back","goBack",{to:"askSellQuantity",props:props.p}]]});
+                this.displayList({actions:[["Sell","sellItems",{quantity:parseInt(quantity),item:props.p.item}],["Back",false,"goBack",["askSellQuantity",[props.p]]]]});
             },
             sellItems:function(p){
                 this.emptyConts();
@@ -198,18 +198,85 @@ Quintus.UIObjects=function(Q){
                 Q.state.get("saveData").money += Math.floor(p.item.cost*p.quantity/2);
                 this.changePage({page:this.p.currentPage});
             },
+            
+            checkConds:function(cond){
+                var condsMet = true;
+                if(cond){
+                    for(var i=0;i<cond.length;i++){
+                        condsMet = this["condFuncs"][cond[i][0]](cond[i][1]);
+                        if(!condsMet) return condsMet;
+                    }
+                }
+                return condsMet;
+            },
+            executeEffects:function(effects,p){
+                for(var i=0;i<effects.length;i++){
+                    this["effectFuncs"][effects[i][0]](effects[i][1],p);
+                }
+            },
+            condFuncs:{
+                checkVar:function(obj){
+                    var varValue;
+                    switch(obj[0]){
+                        case "Event":
+                            varValue = Q.state.get("eventVars")[obj[1]];
+                            break;
+                        case "Scene":
+                            varValue = Q.state.get("sceneVars")[obj[1]];
+                            break;
+                        case "Global":
+                            varValue = Q.state.get("globalVars")[obj[1]];
+                            break;
+                    }
+                    return Q.textModules.evaluateStringOperator(varValue,obj[2],obj[3]);
+                },
+                checkCharProp:function(obj){
+                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
+                    return Q.textModules.evaluateStringOperator(char[obj[1]],obj[2],obj[3]);
+                },
+                checkCharStat:function(obj){
+                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
+                    if(char){
+                        var prop;
+                        switch(obj[1]){
+                            case "Base Stats":
+                                prop = char.baseStats[obj[2]];
+                                break;
+                            case "Derived Stats":
+                                prop = char.combatStats[Q.convertCombatStat(obj[2])];
+                                break;
+                        }
+                        return Q.textModules.evaluateStringOperator(prop,obj[3],obj[4]);
+                    }
+                },
+                checkKeyword:function(obj){
+                    switch(obj[0]){
+                        case "partySize":
+                            var size = Q.state.get("allies").length;
+                            return Q.textModules.evaluateStringOperator(size,obj[1],obj[2]);
+                    }
+                }
+            },
             effectFuncs:{
-                setVar:function(t,obj){
-                    Q.textModules.effectFuncs.setVar(t,obj);
+                setVar:function(obj){
+                    Q.textModules.effectFuncs.setVar(obj);
                 },
-                enableChoice:function(t,obj){
-                    //Remove the action from the disabled array (It's not really enabling, as it's not disabling).
-                    if(t.p.currentPage==="start") t.p.location.disabledChoices.splice(t.p.location.disabledChoices.indexOf(obj.choice),1);
-                    else t.p.location[t.p.currentPage].disabledChoices.splice(t.p.location[t.p.currentPage].disabledChoices.indexOf(obj.choice),1);
+                changePage:function(obj){
+                    Q.locationController.changePage(obj[0]);
                 },
-                addToRoster:function(t,obj){
+                changeEvent:function(obj){
+                    Q.startScene(obj[0],obj[1],obj[2]);
+                },
+                addToRoster:function(obj){
                     var char = Q.charGen.generateCharacter(obj,"rosterFromFile");
                     Q.state.get("saveData").applicationsRoster.push(char);
+                },
+                enableChoice:function(obj,p){
+                    for(var i=0;i<p.actions.length;i++){
+                        if(p.actions[i][0]===obj[0]){
+                            p.actions[i][1] = false;
+                        }
+                    }
                 }
             }
         }
@@ -565,7 +632,7 @@ Quintus.UIObjects=function(Q){
             this.emptyConts();
             this.p.currentPage = "start";
             this.p.action = 0;
-            this.displayList({actions:this.p.location.actions.concat([["Back","createMainMenu"]]),onload:this.p.location.onload,disabledChoices:this.p.location.disabledChoices});
+            this.displayList({actions:this.p.location.actions.concat([["Back",false,"createMainMenu",[]]]),onload:this.p.location.onload});
         },
         displayQuantityToggle:function(p){
             var cont = this.p.menuCont;
@@ -583,30 +650,22 @@ Quintus.UIObjects=function(Q){
             });
         },
         displayList:function(p){
-            var actions = p.actions.slice();
             if(p.onload){
-                var disableClone;
-                //Clone this so we can reset it after.
-                if(p.disabledChoices) disableClone = p.disabledChoices.slice();
+                for(var i=0;i<p.onload.length;i++){
+                    var group = p.onload[i];
+                    if(this.checkConds(group.conds)){
+                        this.executeEffects(group.effects,p);
+                    };
+                }
                 
-                //Figure out if we need to enable an action
-                Q.textModules.processCondEffects(this,p.onload);
-                var disabled = p.disabledChoices;
-                if(disabled){
-                    for(var i=disabled.length-1;i>=0;i--){
-                        actions.splice(disabled[i],1);
-                    }
-                }
-                if(disabled){
-                    //Reset the disabled
-                    if(this.p.currentPage==="start") this.p.location.disabledChoices = disableClone;
-                    else this.p.location[this.p.currentPage].disabledChoices = disableClone;
-                }
             }
+            var actions = p.actions.slice();
             var cont = this.p.menuCont;
             cont.append('<ul id="actions-menu-ul"></ul>');
             for(var i=0;i<actions.length;i++){
-                $("#actions-menu-ul").append('<li id="ac-'+actions[i][1]+'" class="btn btn-default" num="'+i+'">'+actions[i][0]+'</li>');
+                if(!actions[i][1]){
+                    $("#actions-menu-ul").append('<li id="ac-'+actions[i][2]+'" class="btn btn-default" num="'+i+'">'+actions[i][0]+'</li>');
+                }
             }
             $("#actions-menu-ul li").click(function(){
                 Q.locationController.doAction(actions[$(this).attr("num")]);
@@ -1171,6 +1230,19 @@ Quintus.UIObjects=function(Q){
             }
         },
         condFuncs:{
+            checkVar:function(t,obj){
+                
+            },
+            checkCharProp:function(t,obj){
+                
+            },
+            checkCharStat:function(t,obj){
+                
+            },
+            checkKeyword:function(t,obj){
+                
+            }
+            /*
             checkKeyword:function(t,obj){
                 var vr = obj.vr;
                 var op = obj.operator;
@@ -1258,9 +1330,10 @@ Quintus.UIObjects=function(Q){
                         return t.evaluateStringOperator(processedSavedVal,obj.operator,processedVal);
                     }
                 }
-            }
+            }*/
         },
         effectFuncs:{
+            /*
             setVar:function(t,obj){
                 var vars;
                 switch(obj.scope){
@@ -1290,8 +1363,7 @@ Quintus.UIObjects=function(Q){
                 }
                 //Special case for money PROBABLY TEMP
                 if(obj.vr==="money") Q.state.get("saveData").money = vars[obj.vr];
-            }
-            
+            }*/
         }
     }); 
     

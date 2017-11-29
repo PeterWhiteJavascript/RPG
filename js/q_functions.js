@@ -1,4 +1,44 @@
 Quintus.QFunctions=function(Q){
+    Q.convertCombatStat = function(name){
+        switch(name){
+            case "Max Hit Points":
+                return "maxHp";
+            case "Max Technique Points":
+                return "maxTp";
+            case "Pain Tolerance":
+                return "painTolerance";
+            case "Damage Reduction":
+                return "damageReduction";
+            case "Physical Resistance":
+                return "physicalResistance";
+            case "Mental Resistance":
+                return "mentalResistance";
+            case "Magical Resistance":
+                return "magicalResistance";
+            case "Attack Range":
+                return "atkRange";
+            case "Max Attack Damage":
+                return "maxAtkDmg";
+            case "Encumbrance Threshold":
+                return "encumbranceThreshold";
+            case "Total Weight":
+                return "totalWeight";
+            case "Encumbrance Penalty":
+                return "encumbrancePenalty";
+            case "Defensive Ability":
+                return "defensiveAbility";
+            case "Attack Accuracy":
+                return "atkAccuracy";
+            case "Critical Chance":
+                return "critChance";
+            case "Counter Chance":
+                return "counterChance";
+            case "Attack Speed":
+                return "atkSpeed";
+            case "Move Speed":
+                return "moveSpeed";
+        }
+    };
     
     Q.getCharClassNum = function(c){
         return Q.state.get("charGeneration").classNames.indexOf(c);

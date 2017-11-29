@@ -1,0 +1,148 @@
+{
+    "name": "Kitchen-b",
+    "kind": "battle",
+    "map": "Test\/Kitchen.tmx",
+    "music": "battle.mp3",
+    "placementSquares": [
+        [
+            14,
+            12
+        ],
+        [
+            15,
+            12
+        ],
+        [
+            14,
+            13
+        ],
+        [
+            15,
+            13
+        ],
+        [
+            15,
+            14
+        ]
+    ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [
+            {
+                "conds": [],
+                "effects": [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "kitchenComplete",
+                            "=",
+                            true
+                        ]
+                    ]
+                ],
+                "required": true
+            }
+        ],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "Kitchen-post"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "Kitchen-post"
+        ]
+    },
+    "events": [
+        {
+            "conds": [
+                [
+                    "charHealth",
+                    [
+                        "Tomato 0",
+                        "deadOrFainted"
+                    ]
+                ],
+                [
+                    "rounds",
+                    [
+                        ">=",
+                        1,
+                        0
+                    ]
+                ]
+            ],
+            "effects": [
+                [
+                    "changeMusic",
+                    [
+                        "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3"
+                    ]
+                ]
+            ],
+            "required": true
+        }
+    ],
+    "characters": [
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            0,
+            [
+                14,
+                9
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Lettuce",
+            0,
+            [
+                14,
+                8
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Patty",
+            0,
+            [
+                15,
+                8
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Bun",
+            0,
+            [
+                15,
+                9
+            ],
+            "down"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Astraea",
+            0,
+            [
+                14,
+                14
+            ],
+            "up"
+        ]
+    ]
+}

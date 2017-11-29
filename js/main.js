@@ -142,6 +142,13 @@ Q.startGame=function(save){
     });
     */
     Q.state.set("saveData",save);
+    
+    Q.state.set(
+        "sceneVars",
+        Q.state.get("scenesList").Story.filter(function(sc){
+            return sc.name===Q.state.get("saveData").startSceneName;
+        })[0].vrs
+    );
     /*
     var storyChars = [];
     save.characters.story.forEach(function(ally){
@@ -154,7 +161,7 @@ Q.startGame=function(save){
     var alex = Q.state.get("characters").Alex;
     var storyAlex = Q.charGen.generateCharacter(alex,"alex");
     Q.state.set("alex",storyAlex);
-    Q.state.set("allies",[]);
+    Q.state.set("allies",[storyAlex]);
     //Set up the Bag.
     Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
@@ -191,7 +198,7 @@ function convertSkills(data){
 //Load all of the assets that we need. We should probably load bgm only when necessary as it takes several seconds per file.
 var toLoad = [];
 var fileKeys = Object.keys(GDATA);
-//TEMP: don't load music on every page refresh
+//TEMP: don't load music on every page refresh. Music also won't be loaded unless enabled, so if it's set to off, then loading times while testing will be great.
 delete GDATA["bgm"];
 for(var i=0;i<fileKeys.length;i++){
     var files = GDATA[fileKeys[i]];
@@ -266,7 +273,7 @@ Q.load(toLoad.join(","),function(){
         Q.state.set("startSceneType",type);
         Q.load("json/save/sample_save_data.json",function(){
             Q.startGame(Q.assets["json/save/sample_save_data.json"]);
-        })
+        });
     } 
     /* END TESTING EVENT */
     else {

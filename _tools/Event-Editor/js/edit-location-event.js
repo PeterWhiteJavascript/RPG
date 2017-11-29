@@ -27,7 +27,7 @@ var start = function(){
         conditionals:["==","!=",">=","<="],
         conditionalEquals:["==","!="],
         operators:["=","+=","-="],
-        officers:Object.keys(GDATA.dataFiles["officers.json"]).concat("Current"),
+        officers:Object.keys(GDATA.dataFiles["officers.json"]),
         charPropTypes:["nationality","charClass","value","methodology","personality","gender"],
         charPropValues:{
             nationality:GDATA.dataFiles["character-generation.json"].nationalities,
@@ -37,10 +37,10 @@ var start = function(){
             personality:GDATA.dataFiles["character-generation.json"].personalityNames,
             gender:GDATA.dataFiles["character-generation.json"].genders
         },
-        charStatProps:["baseStats","derivedStats"],
+        charStatProps:["Base Stats","Derived Stats"],
         charStatValues:{
-            baseStats:GDATA.dataFiles["character-generation.json"].statNames,
-            derivedStats:GDATA.dataFiles["character-generation.json"].derivedStats
+            "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
+            "Derived Stats":GDATA.dataFiles["character-generation.json"].derivedStats
         }
     };
     var formatScenes = function(){
@@ -119,10 +119,12 @@ var start = function(){
             DC.linkValueToText($(choiceCont).children("input")[0],$(top).children(".display-text-descriptor"),20);
             choiceCont.append(DC.groupCheckbox("Disabled",disabled));
             choiceCont.append(DC.groupSelect("Func",dataP.actionFuncs,func,"choices-select"));
+            
             choiceCont.append(DC.getChoiceProps($("<div class='choice-props'></div>"),func,props));
             
             choice.append(choiceCont);
             $("#choices-cont").append(choice);
+            DC.selectInitialValue(choiceCont);
             
         },
         //Adds a var to the list
@@ -398,14 +400,8 @@ var start = function(){
     var FileSaver = {
         processValue:function(value){
             var val = parseInt(value);
-            if(isNaN(val)){
-                if(/[+=]/g.test(value) == true) {
-                    val = encodeURIComponent(value);
-                } else {
-                    val = value;
-                }
-            }
-            if(!val && isNaN(val)) val = (value === 'true');
+            if(isNaN(val)) val = value;
+            if(value === 'true') val = true;
             if(value == 'false') val = false;
             return val;
         },
@@ -416,7 +412,7 @@ var start = function(){
             $(".choice-cont").each(function(){
                 var props = [];
                 $(this).children(".choice-props").children(".prop").each(function(){
-                    props.push($(this).val());
+                    props.push(FileSaver.processValue($(this).val()));
                 });
                 var choice = [
                     $($(this).children(".prop")[0]).val(),
@@ -436,7 +432,7 @@ var start = function(){
                     var func = $(this).children(".cond-top").children(".conditions-select").val();
                     var props = [];
                     $(this).children(".cond-props").children(".prop").each(function(){
-                        props.push($(this).val());
+                        props.push(FileSaver.processValue($(this).val()));
                     });
                     group.conds.push([func,props]);
                 });
@@ -444,7 +440,7 @@ var start = function(){
                     var func = $(this).children(".effect-top").children(".effects-select").val();
                     var props = [];
                     $(this).children(".effect-props").children(".prop").each(function(){
-                        props.push($(this).val());
+                        props.push(FileSaver.processValue($(this).val()));
                     });
                     group.effects.push([func,props]);
                 });
@@ -482,14 +478,14 @@ var start = function(){
                     }
                     var effects = groups[a].effects;
                     for(var i=0;i<effects.length;i++){
-                        if(conds[i][0]==="setVar"){
-                            if(conds[i][1][0]==="Scene"){
-                                sceneVarRefs.push(conds[i][1][1]);
-                            } else if(conds[i][1][0]==="Global"){
-                                globalVarRefs.push(conds[i][1][1]);
+                        if(effects[i][0]==="setVar"){
+                            if(effects[i][1][0]==="Scene"){
+                                sceneVarRefs.push(effects[i][1][1]);
+                            } else if(effects[i][1][0]==="Global"){
+                                globalVarRefs.push(effects[i][1][1]);
                             }
-                        } else if(conds[i][0]==="changeEvent"){
-                            eventRefs.push([conds[i][1]]);
+                        } else if(effects[i][0]==="changeEvent"){
+                            eventRefs.push([effects[i][1]]);
                         }
                     }
                     

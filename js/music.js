@@ -23,13 +23,15 @@ Q.playMusic=function(music,callback){
         })[0];
         //If the music hasn't been loaded
         if(!ld){
+            
+            $("#loading-screen").show();
             Q.stopMusic(Q.state.get("currentMusic"));
             Q.stopMusic(music);
             Q.load("bgm/"+music,function(){
                 Q.audio.play("bgm/"+music,{loop:true});
                 loadedMusic.push(music);
                 if(callback){callback();}
-            });
+            },{progressCallback:Q.progressCallback});
         //If the music is different than the currentMusic
         } else if(Q.state.get("currentMusic")!==music){
             Q.stopMusic(Q.state.get("currentMusic"));

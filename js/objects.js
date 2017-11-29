@@ -361,7 +361,6 @@ Quintus.Objects=function(Q){
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
             takeDamage:function(dmg,attacker,callback){
-                var text = [];
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.combatStats.hp-=dmg;
@@ -420,12 +419,7 @@ Quintus.Objects=function(Q){
                             }
                             
                         }
-                    }/*
-                    if(callback){
-                        if(text.length) Q.BatCon.attackFuncs.text.unshift(text);
-                        callback();
                     }
-                    return*/
                 } else {
                     if(this.p.talents.includes("Second Wind")&&this.p.tempHp<=Math.floor(this.p.combatStats.maxHp/10)){
                         Q.BatCon.removeFromTurnOrder(this);
@@ -435,6 +429,7 @@ Quintus.Objects=function(Q){
                         this.playStand(this.p.dir);
                     }
                 }
+                Q.BatCon.processTrigger("charHealth",this);
                 if(callback) callback();
             },
             //Generates stats based on buffs (called after adding and removing a buff)

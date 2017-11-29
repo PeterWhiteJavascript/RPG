@@ -872,6 +872,7 @@ Quintus.GameObjects=function(Q){
         init:function(){
             //Any characters that have their hp reduced to 0 or under get removed all at once (they get destroyed when they're killed, but only removed here after)
             this.markedForRemoval = [];
+            this.round = 0;
             this.add("attackFuncs,skillFuncs");
         },
         setUpTriggers:function(events){
@@ -883,7 +884,8 @@ Quintus.GameObjects=function(Q){
             }
             //Each type of event goes in its own array and is all checked at once. An event will be in more than one array if it has multiple conditions.
             this.triggers = {
-                rounds:[]
+                rounds:[],
+                charHealth:[]
             };
             //For each event
             for(var i=0;i<events.length;i++){
@@ -891,7 +893,7 @@ Quintus.GameObjects=function(Q){
                 var obj = new battleEvent(event.conds,event.effects,event.required);
                 //Loop through each condition and set up listeners
                 for(var j=0;j<event.conds.length;j++){
-                    this.triggers[event.conds[j].name].push(obj);
+                    this.triggers[event.conds[j][0]].push(obj);
                 }
             }
         },
@@ -1090,55 +1092,106 @@ Quintus.GameObjects=function(Q){
             }
         },
         effectsFuncs:{
-            setVar:function(type,vr,vl){
-                switch(type){
+            setVar:function(props){
+                switch(props[0]){
                     case "Event":
-                        
+                        Q.state.get("eventVars")[props[1]] = props[2];
                         break;
                     case "Scene":
-                        Q.state.get("sceneVars")[vr] = vl;
+                        Q.state.get("sceneVars")[props[1]] = props[2];
                         break;
                     case "Global":
-                        Q.state.get("globalVars")[vr] = vl;
+                        Q.state.get("globalVars")[props[1]] = props[2];
                         break;
                 }
             },
-            spawnEnemy:function(file,group,handle,loc,dir){
-                var char = Q.stage(0).insert(new Q.Character(Q.charGen.generateCharacter({file:file,group:group,handle:handle,loc:loc,dir:dir},"battleChar")));
+            spawnEnemy:function(props){
+                var char = Q.stage(0).insert(new Q.Character(Q.charGen.generateCharacter({file:props[0],group:props[1],handle:props[2],loc:[props[3],props[4]],dir:props[5]},"battleChar")));
                 //TODO: generate uniqueID
                 //Add to allies or enemeies
                 Q.BatCon.addToTeam(char);
                 Q.BatCon.addToTurnOrder(char);
+            },
+            changeMusic:function(props){
+                Q.playMusic(props[0]);
             }
         },
         triggerEffects:function(effects){
             for(var i=0;i<effects.length;i++){
-                this.effectsFuncs[effects[i].func].apply(this.effectFuncs,effects[i].props);
+                this.effectsFuncs[effects[i][0]](effects[i][1]);
+            }
+        },
+        processCond:function(conds,obj){
+            var name = conds[0];
+            var props = conds[1];
+            switch(name){
+                case "rounds":
+                    var round = obj;
+                    //If recurring
+                    if(props[2]){
+                        if(props[1]%round===0){
+                            props[2] -- ;
+                            if(props[1] === 0){
+                                return {recur:true};
+                            } else {
+                                return true;
+                            }
+                        }
+                    } else {
+                        if(Q.textModules.evaluateStringOperator(round,props[0],props[1])){
+                            return true;
+                        }
+                    }
+                    break;
+                case "charHealth":
+                    var char = obj;
+                    if(props[0] === char.p.handle + " " + char.p.uniqueId){
+                        var hpRatio = char.p.combatStats.hp / char.p.combatStats.maxHp;
+                        switch(props[1]){
+                            case "deadOrFainted":
+                                if(hpRatio<=0 || char.hasStatus("fainted")) return true;
+                            case "dead":
+                                if(hpRatio<=0) return true;
+                            case "fainted":
+                                if(char.hasStatus("fainted")) return true;
+                            case "fullHealth":
+                                if(char.hpRatio===100) return true;
+                            case "takenDamage":
+                                if(char.hpRatio!==100) return true;
+                            case "belowHalfHealth":
+                                if(char.hpRatio<50) return true;
+                        }
+                    } else {
+                        return false;
+                    }
+                    break;
+            }
+        },
+        processTrigger:function(name,obj){
+            for(var i=0;i<this.triggers[name].length;i++){
+                var group = this.triggers[name][i];
+                for(var j=group.conds.length-1;j>=0;j--){
+                    if(group.conds[j][0]===name){
+                        var complete = this.processCond(group.conds[j],obj)
+                        if(complete){
+                            this.completedCond(group,j);
+                            if(!complete.recur) this.triggers[name].splice(j,1);
+                        };
+                    }
+                }
             }
         },
         completedCond:function(obj,num){
             obj.completed.push(obj.conds.splice(num,1));
-            if((obj.required==="all"&&obj.conds.length===0)||(obj.required===obj.completed.length)){
+            if((obj.required&&obj.conds.length===0)){
                 this.triggerEffects(obj.effects);
             }
         },
         advanceRound:function(){
             this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
+            this.round ++;
             this.checkIcyStatus();
-            //Loop thorugh the triggers that change on round.
-            for(var i=0;i<this.triggers.rounds.length;i++){
-                //Find the round cond
-                var obj = this.triggers.rounds[i];
-                for(var j=obj.conds.length-1;j>=0;j--){
-                    if(obj.conds[j].name==="rounds"){
-                        obj.conds[j].props[0]--;
-                        if(obj.conds[j].props[0]===0){
-                            this.completedCond(obj,j);
-                            this.triggers.rounds.splice(j,1);
-                        }
-                    }
-                }
-            }
+            this.processTrigger("rounds",this.round);
         },
         //Starts the character that is first in turn order
         startTurn:function(){
@@ -1696,11 +1749,9 @@ Quintus.GameObjects=function(Q){
                     damage = this.solidBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDamageReduction)*props.finalMultiplier;
                     break;
                 case "Glancing":
+                case "Miss":
                     damage = this.glancingBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDefensiveAbility)*props.finalMultiplier;
                     sound = "glancing_blow.mp3";
-                    break;
-                case "Miss":
-                    damage = 0;
                     break;
                 case "Counter":
                     var dist = Q.BattleGrid.getTileDistance(props.attacker.p.loc,props.defender.p.loc);
@@ -2904,13 +2955,14 @@ Quintus.GameObjects=function(Q){
                     break;
                 //The data will include a reference to the actual character properties that are in the character's file.
                 case "battleChar":
-                    char.loc = Q.BattleGrid.getObject(data.loc)?Q.BattleGrid.getEmptyAround(data.loc,{})[0]:data.loc;
-                    char.dir = data.dir;
-                    char.uniqueId = data.uniqueId;
+                    char.loc = Q.BattleGrid.getObject(data[4])?Q.BattleGrid.getEmptyAround(data[4],{})[0]:data[4];
+                    char.dir = data[5];
+                    char.uniqueId = data[3];
+                    char.handle = data[2];
                     char.exp = 0;
                 case "rosterFromFile":
                     //Reset the data variable
-                    data = Q.state.get("characterFiles")[data.file][data.group][data.handle];
+                    data = Q.state.get("characterFiles")[data[0]][data[1]][data[2]];
                     
                     char.team = data.team.toLowerCase();
                     //Random number between levelmin and levelmax

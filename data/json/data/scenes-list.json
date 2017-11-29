@@ -277,8 +277,7 @@
         },
         {
             "name": "Act-1-4",
-            "events": [
-            ],
+            "events": [],
             "vrs": {
                 "tookTooLongInBattle": "false"
             }
@@ -507,8 +506,93 @@
         },
         {
             "name": "Act-2-3",
-            "events": [],
-            "vrs": []
+            "events": [
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Kitchen-pre"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Base-Camp",
+                    "type": "location",
+                    "left": "653px",
+                    "top": "311px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Kitchen-b"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Kitchen-pre",
+                    "type": "battleScene",
+                    "left": "645px",
+                    "top": "357px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Kitchen-post"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Kitchen-post"
+                        ]
+                    ],
+                    "sceneVars": [
+                        "kitchenComplete"
+                    ],
+                    "globalVars": [],
+                    "name": "Kitchen-b",
+                    "type": "battle",
+                    "left": "519px",
+                    "top": "358px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Base-Camp"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Kitchen-post",
+                    "type": "battleScene",
+                    "left": "503px",
+                    "top": "310px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Base-Camp"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Starting",
+                    "type": "story",
+                    "left": "670px",
+                    "top": "256px"
+                }
+            ],
+            "vrs": {
+                "kitchenComplete": false
+            }
         },
         {
             "name": "Act-2-4",

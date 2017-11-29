@@ -49,7 +49,8 @@ $(function(){
             }
             var characters = stage.options.characters;
             for(var i=0;i<characters.length;i++){
-                var char = characters[i];
+                var charData = characters[i];
+                var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
                 var charButton = DC.newCharacter(char);
                 $('#event-chars-cont').append(charButton);
                 var data = dataP.charFiles[char.file][char.group][char.handle];
@@ -474,12 +475,13 @@ $(function(){
                 name = name || "rounds";
                 switch(name){
                     case "rounds":
-                        props = props || [1,0];
-                        content.append(this.groupInput("Rounds",props[0],"number",1));
-                        content.append(this.groupInput("Repeat",props[1],"number",0));
+                        props = props || ["==",1,0];
+                        content.append(this.groupSelect("Cond",dataP.conditionals,props[0]));
+                        content.append(this.groupInput("Round",props[1],"number",1));
+                        content.append(this.groupInput("Repeat",props[2],"number",0));
                         break;
                     case "charHealth":
-                        var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
+                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
                         props = props || [chars[0],dataP.charHealth[0]];
                         content.append(this.groupSelect("Char",chars,props[0]));
                         content.append(this.groupSelect("Prop",dataP.charHealth,props[1]));
@@ -638,8 +640,9 @@ $(function(){
         FileSaver = {
             processValue:function(value){
                 var val = parseInt(value);
-                if(isNaN(val)) val = encodeURIComponent(value);
-                if(!val && isNaN(val)) val = (value === 'true');
+                if(isNaN(val)) val = value;
+                if(value == 'true') val = true;
+                if(value == 'false') val = false;
                 return val;
             },
             getGroups:function(cont){
@@ -674,14 +677,14 @@ $(function(){
                 var chars = [];
                 $(".character").each(function(){
                     var char = $(this);
-                    chars.push({
-                        file:char.attr("file"),
-                        group:char.attr("group"),
-                        handle:char.attr("class").split(" ")[1],
-                        uniqueId:FileSaver.processValue(char.attr("uniqueId")),
-                        loc:[FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
-                        dir:char.attr("dir")
-                    });
+                    chars.push([
+                        char.attr("file"),
+                        char.attr("group"),
+                        char.attr("class").split(" ")[1],
+                        FileSaver.processValue(char.attr("uniqueId")),
+                        [FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
+                        char.attr("dir")
+                    ]);
                 });
                 return chars;
             },
@@ -901,7 +904,7 @@ $(function(){
             if($("#load-chars-from-cont").length) return;
             $("#full-screen-hider").show();
             var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
-            var scType = DC.groupSelect("Type",dataP.GDATA.eventPointer.types,GDATA.eventPointer.type);
+            var scType = DC.groupSelect("Type",dataP.sceneTypes,GDATA.eventPointer.type);
             var scName = DC.groupSelect("SCName",dataP.scenes[GDATA.eventPointer.type],GDATA.eventPointer.scene);
             var evName = DC.groupSelect("EVName",dataP.events[GDATA.eventPointer.type][GDATA.eventPointer.scene],GDATA.eventPointer.event);
             $(cont).append(scType);

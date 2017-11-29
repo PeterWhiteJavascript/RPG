@@ -1,0 +1,47 @@
+{
+    "name": "Base-Camp",
+    "kind": "location",
+    "music": "demo.mp3",
+    "bg": "Pumpkins.jpg",
+    "pageList": [
+        "start"
+    ],
+    "onload": [
+        {
+            "conds": [
+                [
+                    "checkVar",
+                    [
+                        "Event",
+                        "Test",
+                        "==",
+                        false
+                    ]
+                ]
+            ],
+            "effects": [
+                [
+                    "enableChoice",
+                    [
+                        "Go to Kitchen"
+                    ]
+                ]
+            ]
+        }
+    ],
+    "actions": [
+        [
+            "Go to Kitchen",
+            true,
+            "changeEvent",
+            [
+                "Story",
+                "Act-2-3",
+                "Kitchen-pre"
+            ]
+        ]
+    ],
+    "vrs": {
+        "Test": false
+    }
+}

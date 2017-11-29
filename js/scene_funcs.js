@@ -8,6 +8,27 @@ Quintus.SceneFuncs=function(Q){
             //TODO: come up with a way to save the previous vars (maybe won't be necessary if we won't be going back to events and also the vars will re-evaluate when going back)
             Q.state.set("eventVars",data.vrs);
             Q.stageScene(data.kind,0,{data:data,char:char});
+            if(testing&&!$("#back-button").length){
+                $(document.body).append("<div id='back-button' class='btn btn-default'>Go Back</div>");
+                $("#back-button").click(function(){
+                    var path = "_tools/Event-Editor/";
+                    switch(data.kind){
+                        case "story":
+                            path += "edit-story-event.php";
+                            break;
+                        case "location":
+                            path += "edit-location-event.php";
+                            break;
+                        case "battleScene":
+                            path += "edit-battleScene-script.php";
+                            break;
+                        case "battle":
+                            path += "edit-battle-event.php";
+                            break;
+                    }
+                    $.redirect(path, {'scene':testing.scene, 'event':testing.event, 'type':testing.type});
+                });
+            }
         });
     };
     Q.scene("story",function(stage){
@@ -15,7 +36,7 @@ Quintus.SceneFuncs=function(Q){
         var characters = Q.state.get("allies");
         Q.loadSceneAssets(data.pages,function(){
             Q.playMusic(data.pages[0].music,function(){
-                var bgImage = stage.insert(new Q.BackgroundImage({asset:data.pages[0].bg}));
+                var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.pages[0].bg}));
                 Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters,char:stage.options.char}));
                 Q.storyController.insertPage(0);
             });
@@ -27,13 +48,16 @@ Quintus.SceneFuncs=function(Q){
         Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.script,next:scriptData.finished}));
     }); 
     Q.scene("location",function(stage){
+        $("#loading-screen").show();
         var data = stage.options.data;
         Q.loadSceneAssets([{music:data.music,bg:data.bg}],function(){
-            var bgImage = stage.insert(new Q.BackgroundImage({asset:data.bg}));
+            var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.bg}));
             Q.playMusic(data.music,function(){
                 Q.locationController = stage.insert(new Q.LocationController({location:data,bgImage:bgImage}));
             });
         });
+    },{
+        progressCallback:Q.progressCallback
     });
     
     Q.placeCharacters = function(characters,stage){
@@ -42,7 +66,7 @@ Quintus.SceneFuncs=function(Q){
         
         var files = Q.state.get("characterFiles");
         characters.forEach(function(char){
-            var ref = files[char.file][char.group][char.handle];
+            var ref = files[char[0]][char[1]][char[2]];
             var newChar = {
                 baseStats:ref.baseStats,
                 charClass:ref.charClass,
@@ -54,12 +78,13 @@ Quintus.SceneFuncs=function(Q){
                 nationality:ref.nationality,
                 techniques:ref.techniques,
                 handle:ref.handle,
-                group:char.group,
-                file:char.file,
-                dir:char.dir,
-                loc:char.loc,
-                uniqueId:char.uniqueId
+                group:char[1],
+                file:char[0],
+                dir:char[5],
+                loc:char[4],
+                uniqueId:char[3]
             };
+            console.log(newChar)
             charData.push(newChar);
              stage.insert(new Q.StoryCharacter(newChar));
         });/*
@@ -101,44 +126,50 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("battleScene",function(stage){
         Q.inputs['confirm'] = false;
-        Q.stageScene("fader",11);
         //Get the data to play out this scene
         var data = stage.options.data;
         var map = "maps/"+data.map;
         Q.loadTMX(map, function() {
-            //Display the tmx tile map
-            //If one is not passed in, we are re-using the map from the previous battle
-            if(map){
-                Q.stageTMX(map, stage);
-            }
-            stage.lists.TileLayer[0].p.z = 0;
-            stage.lists.TileLayer[1].p.z = 1;
-            stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
-            stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-            stage.add("viewport");
-            stage.viewport.scale = 2;
-            //The invisible sprite that the viewport follows
-            stage.viewSprite = stage.insert(new Q.ViewSprite());
-            Q.viewFollow(stage.viewSprite,stage);
-            
-            stage.viewSprite.animateTo(Q.BatCon.getXY(data.viewLoc));
-            
-            //Set the batcon's stage
-            Q.BatCon.stage = stage;
-            Q.placeCharacters(data.characters,stage);
+            Q.playMusic(data.music,function(){
+                Q.stageScene("fader",11);
+                //Display the tmx tile map
+                //If one is not passed in, we are re-using the map from the previous battle
+                if(map){
+                    Q.stageTMX(map, stage);
+                }
+                stage.lists.TileLayer[0].p.z = 0;
+                stage.lists.TileLayer[1].p.z = 1;
+                stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
+                stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+                stage.add("viewport");
+                stage.viewport.scale = 2;
+                //The invisible sprite that the viewport follows
+                stage.viewSprite = stage.insert(new Q.ViewSprite());
+                Q.viewFollow(stage.viewSprite,stage);
 
-            //DialogueController holds the functions for the battleScene
-            Q.stageScene("script",1,{data:data});
-        },{tmxImagePath:"../images/"});
-    },{sort:true});
+                stage.viewSprite.animateTo(Q.BatCon.getXY(data.viewLoc));
+
+                //Set the batcon's stage
+                Q.BatCon.stage = stage;
+                Q.placeCharacters(data.characters,stage);
+
+                //DialogueController holds the functions for the battleScene
+                Q.stageScene("script",1,{data:data});
+            });
+        },{
+            tmxImagePath:"../images/"
+        });
+    },{
+        sort:true
+    });
     Q.scene("battle",function(stage){
         $("#loading-screen").show();
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         var map = "maps/"+battleData.map;
         Q.loadTMX(map, function() {
-            Q.stageScene("fader",11);
             Q.playMusic(battleData.music,function(){
+                Q.stageScene("fader",11);
                 //Display the tmx tile map
                 Q.stageTMX(map, stage);
                 stage.lists.TileLayer[0].p.z = -5;

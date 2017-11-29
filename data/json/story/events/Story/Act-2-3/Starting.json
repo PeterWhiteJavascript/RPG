@@ -1,0 +1,40 @@
+{
+    "name": "Starting",
+    "kind": "story",
+    "music": "demo.mp3",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "demo.mp3",
+            "bg": "bg\/Pumpkins.jpg",
+            "text": "You arrive in a village.",
+            "choices": [
+                {
+                    "displayText": "Enter",
+                    "desc": "",
+                    "page": "Page 1",
+                    "disabled": "Enabled",
+                    "groups": [
+                        {
+                            "conds": [],
+                            "effects": [
+                                [
+                                    "changeEvent",
+                                    {
+                                        "type": "Story",
+                                        "scene": "Act-2-3",
+                                        "event": "Base-Camp"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "onload": [],
+            "modules": {},
+            "modulesVars": {}
+        }
+    ],
+    "vrs": {}
+}
