@@ -8,33 +8,16 @@
     </head>
     <body>
         <div id="editor-content">
-            <div id="top-bar">
-                <div class="top-bar-itm">
-                    <div class="bar-button">-</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="save-file" class="bar-button">SAVE</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="test-file" class="bar-button">TEST</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div class="bar-button">-</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="go-back" class="bar-button">BACK</div>
-                </div>
-            </div>
             <div class="editor-left-menu" id="action-vars">
-                <div id="add-action">Add Action</div>
-                <div class="centered-title">ACTIONS</div>
+                <div id="add-action" class="btn btn-default">Add Action</div>
+                <div class="dark-gradient centered-title">Actions</div>
                 <div id="editor-actions">
                     <div id="actions-cont" class="sortable">
 
                     </div>
                 </div>
-                <div id="add-var">Add Var</div>
-                <div class="centered-title">VARS</div>
+                <div id="add-var" class='btn btn-default'>Add Var</div>
+                <div class="dark-gradient centered-title">Vars</div>
                 <div id="editor-variables">
                     <div id="variables-cont">
                         
@@ -44,14 +27,14 @@
             <div id="editor-main-content">
                 <div id="editor-page-options">
                     <div id="music-select">
-                        <span class="item-desc">Music</span>
+                        <p class="dark-gradient centered-title">Music</p>
                         <select class="music-select"></select>
                         <audio controls class="music-preview full-width">
                             <source type="audio/mp3" src="">Sorry, your browser does not support HTML5 audio.
                         </audio>
                     </div>
                     <div id="bg-select">
-                        <p class="item-desc">Background</p>
+                        <p class="dark-gradient centered-title">Background</p>
                         <select class="bg-select">
                         </select>
                         <img>
@@ -67,7 +50,7 @@
                     </div>
                     <div id="choices">
                         <p class="editor-descriptor-big dark-gradient">Choices</p>
-                        <div class="btn btn-default" id="add-new-choice">Add Choices</div>
+                        <div class="btn btn-default" id="add-new-choice">Add Choice</div>
                         <div id="choices-cont" class="sortable">
                             
                         </div>

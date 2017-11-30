@@ -2,28 +2,34 @@
     "name": "Base-Camp",
     "kind": "location",
     "music": "demo.mp3",
-    "bg": "Pumpkins.jpg",
+    "bg": "Inveraray_Castle_-_south-west_facade.jpg",
     "pageList": [
         "start"
     ],
     "onload": [
         {
+            "conds": [],
+            "effects": []
+        },
+        {
             "conds": [
                 [
-                    "checkVar",
+                    "checkCharProp",
                     [
-                        "Event",
-                        "Test",
+                        "Sjrna",
+                        "value",
                         "==",
-                        false
+                        "Altruist"
                     ]
                 ]
             ],
             "effects": [
                 [
-                    "enableChoice",
+                    "addToRoster",
                     [
-                        "Go to Kitchen"
+                        "Act-2-2.json",
+                        "Dummies",
+                        "Legion"
                     ]
                 ]
             ]
@@ -42,6 +48,6 @@
         ]
     ],
     "vrs": {
-        "Test": false
+        "w": false
     }
 }

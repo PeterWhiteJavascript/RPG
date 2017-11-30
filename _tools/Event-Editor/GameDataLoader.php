@@ -1,8 +1,8 @@
 <?php
 
-$scene = $_POST['scene'];
-$name = $_POST['event'];
-$type = $_POST['type'];
+$type = isset($_POST['type']) ? $_POST['type'] : "Story";
+$scene = isset($_POST['scene']) ? $_POST['scene'] : "Act-2-2";
+$name = isset($_POST['event']) ? $_POST['event'] : "Arrive-in-village";
 
 $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 

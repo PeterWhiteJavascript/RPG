@@ -1,8 +1,14 @@
 
+
+.dark-gradient{
+    background: linear-gradient(to bottom right, black, grey);
+    color:#EEE;
+}
 #editor-content{
     width:100%;
     height:100%;
     position:absolute;
+    background-color:var(--main-color);
 }
 #editor-main-content{
     height:100%;
@@ -16,12 +22,13 @@
     text-align:center;
     height:30px;
     line-height:30px;
-    background-color:lightgrey;
     user-select:none;
     cursor:pointer;
+    border-radius:2px 2px 0px 0px;
+    padding:0;
 }
 #add-action:hover, #add-var:hover{
-    background-color:#f5f5f5;
+    background-color:#EEE
 }
 
 #add-new-choice{
@@ -46,17 +53,17 @@
 #editor-page-options{
     padding:10px;
     width:90%;
-    height:10%;
 }
 #music-select{
     width:15%;
     height:100%;
     padding-right:15px;
     padding-left:15px;
-    float:left;
+    display:inline-block;
     border-left:thick double;
     border-right:thick double;
     user-select:none;
+    vertical-align:top;
 }
 #music-select select{
     width:100%;
@@ -68,16 +75,16 @@
     width:35%;
     padding-left:15px;
     padding-right:15px;
-    float:left;
+    display:inline-block;
     user-select:none;
+    vertical-align:top;
 }
 #bg-select select{
     width:100%;
 }
 #bg-select img{
-    width:120px;
-    height:auto;
-    max-height:80px;
+    width:auto;
+    height:80px;
     display:block;
     margin:0 auto;
 }
@@ -88,13 +95,6 @@
 }
 #text-select textarea{
     height:100px;
-}
-#bg-preview{
-    width:120px;
-    height:auto;
-    max-height:80px;
-    display:block;
-    margin:0 auto;
 }
 #onload{
     width:33.33%;
@@ -110,27 +110,6 @@
     float:left;
     height:100%;
 }
-.choice-group-top{
-    font-size:0;
-    margin-bottom:10px;
-}
-.display-text-descriptor{
-    width:80%;
-}
-.choice{
-    padding:10px;
-    background-color: #BBD;
-    border:1px solid #666;
-    margin-bottom:10px;
-}
-.choice-group-top *{
-    display:inline-block;
-    font-size:1.2vw;
-    text-align:center;
-    height:100%;
-    line-height:30px;
-    user-select:none;
-}
 
 #bottom-page-options{
     float:left;
@@ -139,22 +118,6 @@
     width:90%;
     top:150px;
     border-right:thick double;
-}
-.menu-button{
-    width: 100%;
-    cursor: pointer;
-    border-width: initial;
-    border-style: groove;
-    border-color: grey;
-    border-image: initial;
-    background-color:#DDD;
-    border-radius:0;
-    margin:0;
-    overflow:hidden;
-}
-.menu-button-modify{
-    width:100%;
-    height:50%;
 }
 .editor-left-menu{
     width:10%;
@@ -177,138 +140,6 @@
     float:left;
     width:66.66%;
     padding-left:15px;
-}
-.cond-group{
-    margin-top:10px;
-}
-.cond-group-top{
-    width:100%;
-    font-size:0;
-    border:1px solid black;
-    border-top-left-radius:2px;
-    border-top-right-radius:2px;
-    background-color:white;
-}
-.cond-group-top div{
-    text-align:center;
-    display:inline-block;
-    font-size:1.2vw;
-    cursor:pointer;
-}
-.cond-group-top div:hover{
-    background-color:#f5f5f5;
-}
-.cond-group-top div:nth-child(2), .cond-group-top div:nth-child(3){
-    width:40%;
-}
-.cond-group-top div span{
-    line-height:30px;
-}
-.cond-top{
-    width:100%;
-    font-size:0;
-}
-.cond-top div{
-    display:inline-block;
-    height:30px;
-}
-.cond-top *{
-    font-size:1.2vw;
-    cursor:pointer;
-    line-height:30px;
-    text-align:center;
-    margin-bottom:2px;
-    user-select:none;
-}
-.cond-props *{
-    display:inline-block;
-    height:30px;
-}
-.cond-props span{
-    text-align:center;
-    user-select:none;
-}
-.conditions-select{
-    width:40%;
-    height:30px;
-}
-
-
-.effect-group{
-    margin-top:10px;
-}
-.effect-group-top{
-    width:100%;
-    font-size:0;
-    border:1px solid black;
-    border-top-left-radius:2px;
-    border-top-right-radius:2px;
-}
-.effect-group-top div{
-    text-align:center;
-    display:inline-block;
-    font-size:1.2vw;
-    cursor:pointer;
-}
-.effect-group-top div:hover{
-    background-color:#f5f5f5;
-}
-.effect-group-top div:nth-child(2), .effect-group-top div:nth-child(3){
-    width:40%;
-}
-.effect-group-top div span{
-    line-height:30px;
-}
-.effect-top{
-    width:100%;
-    font-size:0;
-}
-.effect-top div{
-    display:inline-block;
-    height:30px;
-}
-.effect-top *{
-    font-size:1.2vw;
-    cursor:pointer;
-    line-height:30px;
-    text-align:center;
-    margin-bottom:2px;
-    user-select:none;
-}
-.effect-props *{
-    display:inline-block;
-    height:30px;
-    line-height:30px;
-    vertical-align:top;
-}
-.effect-props input{
-    margin:0 !important;
-}
-.effect-props span{
-    text-align:center;
-    user-select:none;
-}
-.effects-select{
-    width:40%;
-    height:30px;
-}
-.choice-cont{
-    width:100%;
-    height:auto;
-}
-.choice-cont *{
-    display:inline-block;
-    height:30px;
-    line-height:30px;
-    vertical-align:top;
-    text-align:center;
-}
-.choice-props{
-    width:100%;
-    height:auto;
-}
-.editor-descriptor-title{
-    line-height:30px;
 }
 .action{
     width:100%;

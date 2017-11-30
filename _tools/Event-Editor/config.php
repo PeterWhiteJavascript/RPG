@@ -21,3 +21,5 @@
         $("body").get(0).style.setProperty("--secondary-color", Cookies("secondary-color"));
     });
 </script>
+<link rel="stylesheet" href="css/UIController.css">
+<script src="js/UIController.js"></script>

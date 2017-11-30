@@ -1,0 +1,240 @@
+.UIC-choice{
+    
+    border:1px solid black;
+    border-radius:6px;
+}
+.UIC-group{
+    width:100%;
+    border:1px solid black;
+    border-radius:6px;
+    font-size:0;
+    user-select:none;
+    line-height:30px;
+    background-color:#EEE;
+}
+/*HUD START*/
+.UIC-hud{
+    text-align:center;
+    height:30px;
+}
+.UIC-hud div{
+    display:inline-block;
+    font-size:1.2vw;
+}
+.UIC-hud div:hover{
+    background-color:lightgrey;
+    cursor:pointer;
+}
+.UIC-hud .add-new-condition{
+    width:40%;
+}
+.UIC-hud .add-new-effect{
+    width:40%;
+}
+/*HUD END*/
+/*COND-EFFECT START*/
+.UIC-conditions{
+    border-top:1px solid black;
+    border-bottom:1px solid black;
+}
+.UIC-group-cont{
+    text-align:center;
+    background-color:#EEE;
+}
+.UIC-group-hud{
+    width:100%;
+    height:30px;
+    border-bottom:1px solid black;
+}
+.UIC-group-hud:hover{
+    background-color:lightgrey;
+    cursor:pointer;
+}
+.UIC-group-hud div{
+    display:inline-block;
+    font-size:1.2vw;
+}
+.UIC-group-minimize{
+    width:10%;
+}
+.UIC-title{
+    width:90%;
+    font-size:1.2vw;
+    height:30px;
+}
+
+.UIC-cont{
+    width:100%;
+    font-size:1vw;
+}
+.UIC-func{
+    width:100%;
+    height:30px;
+}
+.UIC-group-item{
+    padding-left:5%;
+    padding-right:5%;
+    padding-top:5px;
+    padding-bottom:5px;
+    border-bottom:1px solid black;
+}
+.UIC-choice-item-top *{
+    
+    line-height:30px;
+    height:30px;
+    display:inline-block;
+    vertical-align: middle;
+}
+.UIC-group-item-top{
+    width:100%;
+}
+
+.UIC-group-item-top *{
+    line-height:30px;
+    height:30px;
+    display:inline-block;
+    vertical-align: middle;
+}
+.UIC-group-item-top div{
+    display:inline-block;
+}
+
+.UIC-group-item-props *{
+    display:inline-block;
+    height:30px;
+    line-height:30px;
+}
+/*COND-EFFECT END*/
+/* CHOICE START*/
+.UIC-choice-hud {
+    width:100%;
+    height:30px;
+    line-height:30px;
+    font-size:0;
+}
+.UIC-choice-title-cont{
+    width:90%;
+}
+.UIC-choice-title-cont:hover{
+    cursor:pointer;
+    background-color:lightgrey;
+}
+.UIC-choice-hud *{
+    display:inline-block;
+    font-size:1.2vw;
+    
+}
+.UIC-choice-hud div *{
+    display:inline-block;
+    
+}
+.UIC-choice-title{
+    width:80%;
+}
+/* CHOICE END*/
+/* TOP-BAR START*/
+#top-bar{
+    width:100%;
+    height:60px;
+    line-height:60px;
+    text-align:center;
+    position:fixed;
+    z-index:100;
+}
+.top-bar-itm{
+    height:100%;
+    background-color:#EEE;
+    font-size:1.5vw;
+    user-select:none;
+    border:1px solid black;
+    display:inline-block;
+}
+.top-bar-itm:hover{
+    background-color:lightgrey;
+    cursor:pointer;
+}
+
+//Taken from https://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has
+/* one item */
+.top-bar-itm:first-child:nth-last-child(1) {
+/* -or- li:only-child { */
+    width: 100%;
+}
+
+/* two items */
+.top-bar-itm:first-child:nth-last-child(2),
+.top-bar-itm:first-child:nth-last-child(2) ~ .top-bar-itm {
+    width: 50%;
+}
+
+/* three items */
+.top-bar-itm:first-child:nth-last-child(3),
+.top-bar-itm:first-child:nth-last-child(3) ~ .top-bar-itm {
+    width: 33.3333%;
+}
+
+/* four items */
+.top-bar-itm:first-child:nth-last-child(4),
+.top-bar-itm:first-child:nth-last-child(4) ~ .top-bar-itm {
+    width: 25%;
+}
+
+/* five items */
+.top-bar-itm:first-child:nth-last-child(5),
+.top-bar-itm:first-child:nth-last-child(5) ~ .top-bar-itm {
+    width: 20%;
+}
+
+/* six items */
+.top-bar-itm:first-child:nth-last-child(6),
+.top-bar-itm:first-child:nth-last-child(6) ~ .top-bar-itm {
+    width: 16.6666%;
+}
+
+/* seven items */
+.top-bar-itm:first-child:nth-last-child(7),
+.top-bar-itm:first-child:nth-last-child(7) ~ .top-bar-itm {
+    width: 14.2857%;
+}
+
+/* eight items */
+.top-bar-itm:first-child:nth-last-child(8),
+.top-bar-itm:first-child:nth-last-child(8) ~ .top-bar-itm {
+    width: 12.5%;
+}
+
+
+/* TOP-BAR END*/
+
+.tenth-width{
+    width:10%;
+}
+.quarter-width{
+    width:25%;
+}
+.third-width{
+    width:33.3333%;
+}
+.half-width{
+    width:50%;
+}
+.sixty-five-width{
+    width:65%;
+}
+.three-quarter-width{
+    width:75%; 
+}
+.eighty-width{
+    width:80%;
+}
+.full-width{
+    width:100%;
+}
+.remove-choice-deep{
+    cursor:pointer;
+    width:10%;
+}
+.remove-choice-deep:hover{
+    background-color:lightgrey;
+}
+
