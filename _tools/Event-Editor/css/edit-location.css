@@ -1,23 +1,18 @@
-
-
-.dark-gradient{
-    background: linear-gradient(to bottom right, black, grey);
-    color:#EEE;
-}
 #editor-content{
     width:100%;
     height:100%;
     position:absolute;
-    background-color:var(--main-color);
 }
 #editor-main-content{
-    height:100%;
+    height:auto;
+    min-height:calc(100% - 60px);
     width:100%;
     top:60px;
     left:10%;
     position:absolute;
+    background-color:var(--background-color);
 }
-#add-action, #add-var{
+.category-button{
     width:100%;
     text-align:center;
     height:30px;
@@ -26,9 +21,12 @@
     cursor:pointer;
     border-radius:2px 2px 0px 0px;
     padding:0;
+    border:1px solid black;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
 }
-#add-action:hover, #add-var:hover{
-    background-color:#EEE
+.category-button:hover{
+    background-color:var(--button-hover-color);
 }
 
 #add-new-choice{
@@ -41,18 +39,10 @@
     margin: 0 auto;
     border-radius: 0px 0px 2px 2px; 
 }
-.centered-title{
-    text-align:center;
-    font-family:"Georgia" !important;
-    height:30px;
-    line-height:30px;
-    font-size:20px;
-    background: linear-gradient(to bottom right, grey, white);
-    user-select:none;
-}
 #editor-page-options{
     padding:10px;
     width:90%;
+    height:15%;
 }
 #music-select{
     width:15%;
@@ -67,6 +57,8 @@
 }
 #music-select select{
     width:100%;
+    height:30px;
+    line-height:30px;
 }
 #music-select audio{
     width:100%;
@@ -81,6 +73,8 @@
 }
 #bg-select select{
     width:100%;
+    height:30px;
+    line-height:30px;
 }
 #bg-select img{
     width:auto;
@@ -101,30 +95,30 @@
     float:left;
     padding-right:1%;
     border-right:thick double;
-    height:100%;
+    height:calc(85% - 60px);
+    overflow-y:auto;
 }
 #choices{
     padding-left:1%;
     padding-right:1%;
     width:66.66%;
     float:left;
-    height:100%;
 }
 
 #bottom-page-options{
     float:left;
-    height:100%;
     padding:10px;
     width:90%;
-    top:150px;
-    border-right:thick double;
+    top:calc(15% + 60px);   
 }
-.editor-left-menu{
+#editor-left-menu{
     width:10%;
-    height:100%;
+    height:calc(100% - 60px);
     border-right:thick double;
     position:fixed;
     top:60px;
+    overflow-y:auto;
+    background-color:var(--menu-background-color);
 }
 
 #disabled-select{
@@ -147,37 +141,65 @@
     line-height:30px;
     text-align:center;
     cursor:pointer;
-    background-color:lightgrey;
+    background-color:var(--content-button-background-color);
     border:2px solid black;
     user-select:none;
 }
 .action div{
+    color:var(--content-button-text-color);
     display:inline-block;
-    height:26px;
+    height:26px !important;
+    vertical-align:top;
 }
 .action input{
     display:inline-block;
     height:26px;
-    vertical-align:top;
 }
 .list-item{
     width:90%;
 }
 .action-button{
-    height:30px;
     font-size:1.2vw;
     line-height:30px;
 }
 .action-button:hover{
-    background-color:#f5f5f5;
+    background-color:var(--content-button-hover-color);
 }
+
+.var-button{
+    width:100%;
+    font-size:0;
+    text-align:center;
+    border:1px solid black;
+    user-select:none;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
+}
+.var-button *{
+    display:inline-block;
+    font-size:1.2vw;
+    line-height:30px;
+}
+.var-value{
+    width:100%;
+    resize:vertical;
+}
+.var-remove{
+    width:25%;
+    height:30px;
+}
+.var-name{
+    width:90%;
+    height:30px;
+}
+
 
 .minimize-choice{
     cursor:pointer;
     width:10%;
 }
 .minimize-choice:hover{
-    background-color:#f5f5f5;
+    background-color:var(--button-hover-color);
     
 }
 .quarter-width{
@@ -212,20 +234,16 @@
     cursor:pointer;
 }
 .remove-choice:hover{
-    background-color:#f5f5f5;
+    background-color:var(--content-button-hover-color);
 }
 .remove-choice-deep:hover{
-    background-color:#f5f5f5;
+    background-color:var(--content-button-hover-color);
 }
 .minimize-icon-deep{
     width:10%;
     border-right:1px solid black;
 }
-.selected{
-    background:transparent;
-    background-color:#d1be8e;
-}
 .selectable:hover{
-    background-color:#d1be8e;
+    background-color:var(--button-hover-color);
     cursor:pointer;
 }

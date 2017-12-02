@@ -29,7 +29,29 @@ function UIC(p){
             $(textObj).text(text.substring(0,limit || text.length));
         });
     };
-    //Get a vaslue deep within an object (a.b.c.d)
+    
+    this.linkSelectedCharToSelect = function(select){
+        Q.stage(0).on("selectedCharacter",function(char){
+            if(Q.selectedCharacter){
+                Q.selectedCharacter.destroySelectedBox();
+            }
+            Q.selectedCharacter = char;
+            Q.selectedCharacter.createSelectedBox();
+            $(select).val(char.p.handle+" "+char.p.uniqueId);
+        });
+        Q.stage(0).trigger("selectedCharacter",Q.getSpriteByName($(select).val()));
+    };
+    this.linkSelectedLocToInputs = function(locX,locY){
+        Q.stage(0).on("selectedLocation",function(loc){
+            if(Q.selectedLocs.length) Q.selectedLocs[0].destroy();
+            Q.selectedLocs = [];
+            Q.selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:Q.selectedLocs.length+1})));
+            $(locX).val(loc[0]);
+            $(locY).val(loc[1]);
+        });
+        Q.stage(0).trigger("selectedLocation",[$(locX).val(),$(locY).val()]);
+    };
+    //Get a value deep within an object (a.b.c.d)
     this.getDeepValue = function(obj, path){
         for (var i=0, path=path.split('&'), len=path.length; i<len; i++){
             obj = obj[path[i]];
@@ -70,7 +92,7 @@ function UIC(p){
         return "<span class='full-width'>"+text+"</span><textarea class='UIC-prop full-width group-text-area'>"+val+"</textarea>";
     };
     this.Container = function(text,data){
-        return "<span class='full-width'>"+text+"</span><div class='UIC-prop full-width' data="+JSON.stringify(data)+"></div>";
+        return "<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width'>"+text+"</span></div>";
     };
     this.Select = function(text,opts,value,cl){
         return "<span class='quarter-width'>"+text+"</span><select class='UIC-prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+this.getOptions(opts)+"</select>";
@@ -111,6 +133,16 @@ function UIC(p){
         this.selectInitialValue(cont.children(".UIC-func-cont"));
         return group;
     };
+    this.minimizeScript = function(){
+        var text = $(this).text();
+        if(text==="-"){
+            $(this).parent().siblings().hide();
+            $(this).children("span").text("+");
+        } else {
+            $(this).parent().siblings().show();
+           $(this).children("span").text("-");
+        }
+    };
     this.minimizeGroup = function(){
         var text = $(this).children(".UIC-group-minimize").text();
         if(text==="-"){
@@ -143,6 +175,50 @@ function UIC(p){
             itm.on("click",this.topBarProps[options[i]]);
         }
         cont.append(bar);
+    };
+    this.createScriptGroup = function(cont, p){
+        p = p || [];
+        var group = $(
+        "<div class='UIC-group'>\n\
+            <div class='UIC-script-hud'>\n\
+                <div class='UIC-group-minimize'><span>-</span></div>\n\
+                <div class='add-new-script-item'>Add Item</div>\n\
+                <div class='remove-choice-deep'><span>x</span></div>\n\
+            </div>\n\
+        </div>");
+        $(group).children(".UIC-script-hud").children(".UIC-group-minimize").click(this.minimizeScript);
+        $(group).children(".UIC-script-hud").children(".remove-choice-deep").click(this.removeDeepItem);
+        function createScriptItem(props){
+            var scriptItemsCont = $("<div class='UIC-script-items'></div>");
+            var top = $(
+            "<div class='UIC-choice-hud'>\n\
+                <div class='UIC-choice-title-cont'>\n\
+                    <div class='UIC-group-minimize'><span>-</span></div>\n\
+                    <div class='UIC-choice-title'><span>"+props[0]+"</span></div>\n\
+                </div>\n\
+                <div class='remove-choice-deep'><span>x</span></div>\n\
+            </div>");
+            $(top).children(".UIC-choice-title-cont").click(uic.minimizeChoice);
+            $(top).children(".remove-choice-deep").click(uic.removeDeepItem);
+            scriptItemsCont.append(top);
+            var items = uic.getGroupItem(uic.scriptFuncs,"scriptProps",props[0],props[1],false);
+            scriptItemsCont.append(items);
+            uic.linkValueToText($(items).children(".UIC-group-item-top").children(".UIC-func-cont").children(".UIC-func"),$(top).children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
+            return scriptItemsCont;
+        }
+        $(group).children(".UIC-script-hud").children(".add-new-script-item").click(function(){
+            $(this).parent().parent().children(".UIC-cont").append(createScriptItem([uic.scriptFuncs[3]]));
+        });
+        var groupItemsCont = $("<div class='UIC-cont'></div>");
+        for(var i=0;i<p.length;i++){
+            groupItemsCont.append(createScriptItem(p[i]));
+        }
+        group.append(groupItemsCont);
+        $(groupItemsCont).sortable({
+            axis: "y"
+        });
+        $(groupItemsCont).disableSelection();
+        cont.append(group);
     };
     this.createChoiceGroup = function(cont,p){
         p = p || ["New Choice",false];
@@ -229,7 +305,15 @@ function UIC(p){
             var func = $(this).children(".UIC-group-item-top").children(".UIC-func-cont").children(".UIC-func").val();
             var props = [];
             $(this).children(".UIC-group-item-props").children(".UIC-prop").each(function(){
-                props.push(uic.processValue($(this).val()));
+                if($(this).is("div")){
+                    props.push($(this).attr("data"));
+                }
+                else if($(this).attr("type")==="checkbox"){
+                    props.push($(this).prop("checked"));
+                } 
+                else {
+                    props.push(uic.processValue($(this).val()));
+                }
             });
             itms.push([func,props]);
         });
@@ -257,6 +341,13 @@ function UIC(p){
             });
         });
         return groups;
+    };
+    this.getSaveScript = function(cont){
+        var script = [];
+        $(cont).children(".UIC-group").each(function(){
+            script.push(uic.getGroupValues($(this).children(".UIC-cont").children(".UIC-script-items").children(".UIC-group-item")));
+        });
+        return script;
     };
     this.getSaveReferences = function(data){
         var eventRefs = [];

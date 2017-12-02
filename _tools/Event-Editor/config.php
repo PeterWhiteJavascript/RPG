@@ -16,9 +16,30 @@
 <script src="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js" type="text/javascript"></script>
 <link rel="stylesheet" href="css/new-style.css">
 <script>
+    var COOKIECOLORS = [
+        ["background-color","Main Background"],
+        ["menu-background-color","Menu Background"],
+        ["menu-text-color","Menu Text"],
+        ["menu-button-hover-color","Menu Button Hover"],
+        ["button-text-color","Category Button Text"],
+        ["button-background-color","Category Button BG"],
+        ["button-hover-color","Category Hover Button"],
+        ["content-button-text-color","Content Button Text"],
+        ["content-button-background-color","Content Button BG"],
+        ["content-button-hover-color","Content Hover Button"],
+        ["form-elm-text-color","Form Element Text"],
+        ["form-elm-background-color","Form Element BG"],
+        ["heading-font-family","Heading Font"],
+        ["heading-text-color","Heading Text"],
+        ["heading-gradient-one","Heading Gradient 1"],
+        ["heading-gradient-two","Heading Gradient 2"]
+    ];
     $(function(){
-        $("body").get(0).style.setProperty("--main-color", Cookies("main-color"));
-        $("body").get(0).style.setProperty("--secondary-color", Cookies("secondary-color"));
+        for(var i=0;i<COOKIECOLORS.length;i++){
+            var id = COOKIECOLORS[i][0];
+            var color = Cookies.get(id);
+            $("body").get(0).style.setProperty("--"+id, color);
+        }
     });
 </script>
 <link rel="stylesheet" href="css/UIController.css">

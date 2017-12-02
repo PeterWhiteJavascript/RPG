@@ -519,8 +519,8 @@
                     "globalVars": [],
                     "name": "Base-Camp",
                     "type": "location",
-                    "left": "653px",
-                    "top": "311px"
+                    "left": "652px",
+                    "top": "312px"
                 },
                 {
                     "events": [
@@ -534,7 +534,7 @@
                     "globalVars": [],
                     "name": "Kitchen-pre",
                     "type": "battleScene",
-                    "left": "645px",
+                    "left": "644px",
                     "top": "357px"
                 },
                 {
@@ -556,8 +556,8 @@
                     "globalVars": [],
                     "name": "Kitchen-b",
                     "type": "battle",
-                    "left": "519px",
-                    "top": "358px"
+                    "left": "516px",
+                    "top": "360px"
                 },
                 {
                     "events": [

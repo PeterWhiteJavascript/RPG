@@ -314,9 +314,9 @@ var start = function(){
         //Adds a var to the list
         addVar:function(name,val){
             if(name){
-                $("#variables-cont").append("<div class='var-button'><div class='remove-choice'><span>x</span></div><div class='var-name'>"+name+"</div><input class='var-value' value="+(val?val:0)+"></div>");
+                $("#variables-cont").append("<div class='var-button'><div class='var-name'>"+name+"</div><div class='remove-choice'><span>x</span></div><input class='var-value' value="+(val?val:0)+"></div>");
             } else {
-                $("#variables-cont").append("<div class='var-button'><div class='remove-choice'><span>x</span></div><input class='var-name' placeholder='VARNAME'><input class='var-value' value='false'></div>");
+                $("#variables-cont").append("<div class='var-button'><input class='var-name' placeholder='VARNAME'><div class='remove-choice'><span>x</span></div><input class='var-value' value='false'></div>");
             }
             $("#variables-cont").children(".var-button").children(".remove-choice").click(function(){
                 if(!$(this).siblings(".var-name").is("input")){

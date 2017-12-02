@@ -3,7 +3,7 @@ $(function(){
     var FileSaver = {};
     var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, Music, Animations")
-        .setup({development: true, width:$(document).width()/2-9,height:$(document).height()-60})
+        .setup({development: true, width:$(document).width()/2,height:$(document).height()-60})
         .touch().controls(true)
         .enableSound();
     Q.options.imagePath = "../../images/";
@@ -14,9 +14,43 @@ $(function(){
     Q.tileH = 32;
     Q.SPRITE_CHARACTER  = 8;
     
-    var allowSpriteSelecting = true;
-    var selectedCharacter = false;
-    var selectedLocs = [];
+    Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
+        var ctx = Q.ctx;
+        var split = label.split(' ');
+        var newLabel = '';
+        var tempLabel = '';
+        var spaceWidth = ctx.measureText(" ").width;
+        var spaces = 0;
+        //Loop through the array of the split label
+        for(var i=0;i<split.length;i++){
+            //Run regex to get rid of extra line breaks (Optimally, the logic could be improved to not need this)
+            //This is only needed for the streaming text for Dialogue. Maybe the label for that should be saved before this modification or something
+            split[i] = split[i].replace(/(\r\n|\n|\r)/gm,"");
+            //The upcoming width for this word
+            var nextWidth = split[i]?ctx.measureText(split[i]).width:0;
+            for(var j=0;j<split[i].length;j++){
+                var measured = ctx.measureText(tempLabel);
+                //Move to a new line
+                if(measured.width+nextWidth+spaceWidth*spaces>=maxWidth){
+                    newLabel+="\n";
+                    tempLabel = '';
+                    spaces = 0;
+                } else {
+                    tempLabel+=split[i][j];
+                }
+            }
+            newLabel+=split[i];
+            if(i!==split.length-1){
+                newLabel+=" ";
+            }
+            spaces++;
+        }
+        return newLabel;
+    };
+
+    Q.allowSpriteSelecting = true;
+    Q.selectedCharacter = false;
+    Q.selectedLocs = [];
     function startQuintusCanvas(){
         Q.setUpAnimations("../../");
         Q.scene("map",function(stage){
@@ -48,7 +82,7 @@ $(function(){
                 var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
                 var charButton = DC.newCharacter(char);
                 $('#event-chars-cont').append(charButton);
-                var data = dataP.charFiles[char.file][char.group][char.handle];
+                var data = uic.dataP.charFiles[char.file][char.group][char.handle];
                 Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:DC.getNextEmpty(char.loc),dir:char.dir,ref:$(charButton).children(".character")}));
             }
             Q.toCharSelection();
@@ -64,7 +98,7 @@ $(function(){
                 return;
             }
             //Can't click sprite if placing one
-            if(allowSpriteSelecting){
+            if(Q.allowSpriteSelecting){
                 var x = e.offsetX || e.layerX,
                     y = e.offsetY || e.layerY,
                     stage = Q.stage();
@@ -80,7 +114,7 @@ $(function(){
                     Q.stage(0).trigger("selectedLocation",[locX,locY]);
                 }
             } else {
-                selectedCharacter.confirmPlacement();
+                Q.selectedCharacter.confirmPlacement();
             }
         });
         Q.el.addEventListener("mousemove",function(e) {
@@ -93,9 +127,9 @@ $(function(){
                 stageY = Q.canvasToStageY(y, stage);
             var locX = Math.floor(stageX/Q.tileW);
             var locY = Math.floor(stageY/Q.tileH);
-            $("#canvas-coordinates").text(locX+","+locY);
-            $("#canvas-coordinates").attr("locX",locX);
-            $("#canvas-coordinates").attr("locY",locY);
+            $("#canvas-coordinates").first().text(locX+","+locY);
+            $("#canvas-coordinates").first().attr("locX",locX);
+            $("#canvas-coordinates").first().attr("locY",locY);
         });
         var dragged = false;
         Q.addViewport = function(stage){
@@ -138,11 +172,12 @@ $(function(){
         $(document).on("click",".char-remove",function(){
             var charButton = $(this).parent().children(".character");
             var char = Q.getSpriteAt([parseInt($(charButton).attr("locX")),parseInt($(charButton).attr("locY"))]);
-            if(Q.matchChars(selectedCharacter,char)){
-                selectedCharacter.destroySelectedBox();
-                selectedCharacter.off("step",selectedCharacter,"setDir");
+            if(Q.matchChars(Q.selectedCharacter,char)){
+                Q.selectedCharacter.destroySelectedBox();
+                Q.selectedCharacter.off("step",Q.selectedCharacter,"setDir");
             }
             char.removeFromExistence();
+            $(this).parent().remove();
             DC.updateCharSelects();
         });
         Q.matchChars = function(a,b){
@@ -153,10 +188,10 @@ $(function(){
             //When a character is clicked on the map
             Q.stage(0).on("selectedCharacter",function(obj){
                 //If the character is already selected
-                if(selectedCharacter&&Q.matchChars(selectedCharacter,obj)){
-                    selectedCharacter.destroySelectedBox();
-                    selectedCharacter.unconfirmPlacement();
-                    selectedCharacter.allowPlacement();
+                if(Q.selectedCharacter&&Q.matchChars(Q.selectedCharacter,obj)){
+                    Q.selectedCharacter.destroySelectedBox();
+                    Q.selectedCharacter.unconfirmPlacement();
+                    Q.selectedCharacter.allowPlacement();
                 } 
                 //If the character is not already selected, select it.
                 else {
@@ -215,7 +250,7 @@ $(function(){
                     Q.Grid[this.p.loc[1]][this.p.loc[0]] = this;
                     $(this.p.ref).attr("locX",this.p.loc[0]);
                     $(this.p.ref).attr("locY",this.p.loc[1]);
-                    allowSpriteSelecting = true;
+                    Q.allowSpriteSelecting = true;
                     var pos = Q.getXY(this.p.loc);
                     this.p.x = pos.x;
                     this.p.y = pos.y;
@@ -270,12 +305,12 @@ $(function(){
                 this.p.selectedBox = Q.stage(0).insert(new Q.SelectedSquare({loc:this.p.loc,fill:"white"}));
             },
             removeFromExistence:function(){
-                if(selectedCharacter===this&&Q.locSelectedBox) Q.locSelectedBox.destroy();
+                if(Q.selectedCharacter===this&&Q.locSelectedBox) Q.locSelectedBox.destroy();
                 if(!isNaN(this.p.loc[0])&&!isNaN(this.p.loc[1])) this.unconfirmPlacement();
                 this.destroy();
             },
             allowPlacement:function(){
-                allowSpriteSelecting = false;
+                Q.allowSpriteSelecting = false;
                 this.on("step",this,"stickToCursor");
                 this.p.lastLoc = [this.p.loc[0],this.p.loc[1]];
             },
@@ -288,59 +323,22 @@ $(function(){
         });
         var map = "../../data/maps/"+$("#map-select-group").val()+"/"+$("#map-select-place").val();
         Q.loadTMX(map,function(){
-            Q.stageScene("map",0,{map:map,characters:dataP.event.characters});
+            var event = FileSaver.event;
+            Q.stageScene("map",0,{map:map,characters:event.characters});
 
-            //Using the file data, set up the page
-            var event = dataP.event;
             $("#prop-music .music-select").val(event.music).trigger("change");
 
             //Loop through script
-            for(var i=0;i<dataP.event.script.length;i++){
-                var group = dataP.event.script[i];
-                var groupCont = DC.getScriptItemGroup();
-                for(var j=0;j<group.length;j++){
-                    var event = group[j];
-                    var content = DC.getScriptItemFunc($("<div class='script-item-cont selectable'></div>"),event[0]);
-                    content.append(DC.getScriptItem($("<div class='script-item minimize'></div>"),event[0],event[1]));
-                    groupCont.children(".script-items-cont").append(content);
-                    DC.selectInitialValue($(content));
-                    DC.selectInitialValue($(content).children(".script-item"));
-                    $(content).children(".func").on("change",function(){
-                        $(this).next().nextAll().remove(); //After the 'x' remove all
-                        $(this).siblings(".minimize-icon").text("-");
-                        $(this).parent().append(DC.getScriptItem($("<div class='script-item minimize'></div>"),$(this).parent().children(".func").val()));
-                    });
-                }
-                $("#script-item-box").children(".script-groups").append(groupCont);
-                //$(groupCont).children(".script-item-group-top").children(".minimize-icon-deep").trigger("click");
-                $(groupCont).children(".script-items-cont").children(".script-item-cont").children(".minimize-icon").trigger("click");
+            for(var i=0;i<event.script.length;i++){
+                uic.createScriptGroup($("#script-groups"),event.script[i]);
             }
             $( ".sortable" ).sortable({
                 axis: "y"
             });
             $( ".sortable" ).disableSelection();
+            $(".UIC-choice-title-cont").children(".UIC-group-minimize").trigger("click");
         },{tmxImagePath:Q.options.imagePath.substring(3)});
     }
-    
-    var dataP = {
-        mapFileNames:GDATA.mapFileNames,
-        mapFileGroups:Object.keys(GDATA.mapFileNames),
-        soundFileNames:GDATA.soundFileNames,
-        musicFileNames:GDATA.musicFileNames,
-        charFiles:GDATA.characterFiles,
-        imageAssets:GDATA.imageAssets,
-        event:GDATA.event,
-        sceneTypes:["Story","Flavour"],
-        groupFuncs:["text","centerViewChar","centerViewLoc","moveAlong","changeDir","modDialogueBox","waitTime","fadeChar","changeMusic","playSound","changeMoveSpeed","playAnim","changeEvent"],
-        scopes:["Global","Scene","Event"],
-        conditionals:["==","!=",">=","<="],
-        operators:["=","+=","-="],
-        directions:["down","left","up","right"],
-        speeds:["fast","medium","slow"],
-        inOut:["out","in"],
-        animations:["walking","attacking","countering","lift","lifted","hurt","dying","fainting","dead","levelingUp"]
-    };
-    
     var formatScenes = function(){
         var story = GDATA.dataFiles["scenes-list.json"];
         var flavour = GDATA.dataFiles["flavour-events-list.json"];
@@ -374,248 +372,280 @@ $(function(){
         }
         return newEvents;
     };
-    
-    var start = function(){
-        dataP.scenes = formatScenes();
-        dataP.events = formatEvents();
-        dataP.scene = GDATA.dataFiles["scenes-list.json"].Story.find(function(sc){return sc.name===GDATA.eventPointer.scene;});
-        dataP.vrs = {Global:Object.keys(GDATA.dataFiles["global-vars.json"].vrs),Scene:Object.keys(dataP.scene.vrs)};
-        DC = {
-            getScriptItemGroup:function(){
-                return $(
-                    '<div class="script-item-group">\n\
-                        <div class="script-item-group-top">\n\
-                            <span class="minimize-icon-deep group-text">-</span>\n\
-                            <span class="add-script-item">Add Item</span>\n\
-                            <span class="remove-choice-deep group-text">x</span>\n\
-                        </div>\n\
-                        <div class="script-items-cont minimize sortable"></div>\n\
-                    </div>');
+    function saveFile(){
+        var data = FileSaver.getNewSaveFile();
+            $.ajax({
+                type:'POST',
+                url:'save-battle.php',
+                data:{data:JSON.stringify(data.file),name:uic.dataP.eventPointer.event,scene:uic.dataP.eventPointer.scene,type:uic.dataP.eventPointer.type},
+                dataType:'json'
+            })
+            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+            .fail(function(data){console.log(data)});
+
+            if(uic.dataP.eventPointer.type==="Story"){
+                $.ajax({
+                    type:'POST',
+                    url:'save-event-references.php',
+                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:uic.dataP.eventPointer.event,scene:uic.dataP.eventPointer.scene},
+                    dataType:'json'
+                })
+                .done(function(data){console.log(data)})
+                .fail(function(data){console.log(data)});
+            }
+    };
+    var uic = new UIC({
+        dataP:{
+            events:formatEvents(),
+            scenes:formatScenes(),
+            scopes:["Global","Scene"],
+            vars:{
+                Scene:GDATA.dataFiles["scenes-list.json"].Story.find(function(scene){return scene.name===GDATA.eventPointer.scene;}).vrs,
+                Global:GDATA.dataFiles["global-vars.json"].vrs
             },
-            groupMinimize:function(){
-              return "<span class='minimize-icon group-text'>-</span>";  
+            officers:Object.keys(GDATA.dataFiles["officers.json"]),
+            charFiles:GDATA.characterFiles,
+            charPropTypes:["nationality","charClass","value","methodology","personality","gender"],
+            charPropValues:{
+                nationality:GDATA.dataFiles["character-generation.json"].nationalities,
+                charClass:GDATA.dataFiles["character-generation.json"].classNames,
+                value:GDATA.dataFiles["character-generation.json"].values,
+                methodology:GDATA.dataFiles["character-generation.json"].methodologies,
+                personality:GDATA.dataFiles["character-generation.json"].personalityNames,
+                gender:GDATA.dataFiles["character-generation.json"].genders
             },
-            groupTop:function(func){
-                return "<select class='func eighty-width' initial-value='"+func+"'>"+DC.getOptString(dataP.groupFuncs)+"</select>";
+            charStatProps:["Base Stats","Derived Stats"],
+            charStatValues:{
+                "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
+                "Derived Stats":GDATA.dataFiles["character-generation.json"].derivedStats
             },
-            groupRemove:function(){
-                return "<span class='remove-choice group-text'>x</span>";
+            sceneTypes:["Story","Flavour"],
+            conditionalEquals:["==","!="],
+            operators:["=","+=","-="],
+            conditionals:["==","!=",">=","<="],
+            eventPointer:GDATA.eventPointer,
+            
+            directions:["down","left","up","right"],
+            speeds:["fast","medium","slow"],
+            inOut:["out","in"],
+            animations:["walking","attacking","countering","lift","lifted","hurt","dying","fainting","dead","levelingUp"]
+        },
+        topBarProps:{
+            "0,0":function(){
+                //Doesn't do anything since it's here just to show the location that the mouse is at on the canvas.
             },
-            groupInput:function(text,val,type,min){
-                return "<span class='quarter-width'>"+text+"</span><input class='prop three-quarter-width' value='"+val+"' type='"+type+"' min='"+min+"'>";
+            Save:function(){
+                saveFile();
             },
-            groupCheckbox:function(text,val){
-                var box = $("<span class='three-quarter-width'>"+text+"</span><input class='prop quarter-width' type='checkbox'>");
-                $(box).prop("checked",val);
-                return box;
+            Test:function(){
+                window.onbeforeunload = null;
+                saveFile();
+                $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
             },
-            groupTextArea:function(text,val){
-                return "<span class='full-width'>"+text+"</span><textarea class='prop full-width group-text-area'>"+val+"</textarea>";
-            },
-            groupContainer:function(text,data){
-                return "<span class='full-width'>"+text+"</span><div class='prop full-width' data="+JSON.stringify(data)+"></div>";
-            },
-            groupSelect:function(text,opts,value,cl){
-                return "<span class='quarter-width'>"+text+"</span><select class='prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+DC.getOptString(opts)+"</select>";
-            },
-            getScriptItemFunc:function(content,name){
-                name = name || "moveAlong";
-                content.append(DC.groupMinimize());
-                content.append(DC.groupTop(name));
-                content.append(DC.groupRemove());
-                return content;
-            },
-            getScriptItem:function(content,name,props){
-                name = name || "moveAlong";
-                switch(name){
-                    case "text":
-                        props = props || ["empty.png","empty.png","",false,0,false];
-                        
-                        content.append(this.groupSelect("<-Img",dataP.imageAssets,props[0]));
-                        content.append("<div class='img-div'><img src='../../images/story/"+props[0]+"'></div>");
-                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("div").first().children("img")[0],"../../images/story/");
-                        content.append("<div class='img-div'><img src='../../images/story/"+props[1]+"'></div>");
-                        content.append(this.groupSelect("Img->",dataP.imageAssets,props[1]));
-                        DC.linkSelectToSrc($(content).children("select")[1],$(content).children("div").last().children("img")[0],"../../images/story/");
-                        
-                        content.append(this.groupTextArea("Text",props[2]));
-                        
-                        content.append(this.groupCheckbox("Inverted Text Cycle",props[3]));
-                        content.append(this.groupInput("Cyc(ms)",props[4],"number",0));
-                        content.append(this.groupCheckbox("NoCycle",props[5]));
-                    break;
-                    case "centerViewChar":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],1000];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupInput("Spd(ms)",props[1],"number",0));
-                        break;
-                    case "centerViewLoc":
-                        props = props || [0,0,1000];
-                        content.append(this.groupInput("LocX",props[0],"number",0));
-                        content.append(this.groupInput("LocY",props[1],"number",0));
-                        content.append(this.groupInput("Spd(ms)",props[2],"number",0));
-                        break;
-                    case "moveAlong":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],dataP.directions[0],true,[]];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupSelect("Dir",dataP.directions,props[1]));
-                        content.append(this.groupCheckbox("Cycle Text On Arrival",props[2]));
-                        content.append(this.groupContainer("Move Path",props[3]));
-                        for(var i=0;i<props[3].length;i++){
-                            var loc = props[3][i];
-                            $(content).children("div").append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
-                        }
-                        break;
-                    case "changeDir":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],"down"];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupSelect("Dir",dataP.directions,props[1]));
-                        break;
-                    case "modDialogueBox":
-                        props = props || [true];
-                        content.append(this.groupCheckbox("Show Dialogue Box",props[0]));
-                        break;
-                    case "waitTime":
-                        props = props || [1000];
-                        content.append(this.groupInput("Wait(ms)",props[0],"number",0));
-                        break;
-                    case "fadeChar":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],"out",1000];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupSelect("InOut",dataP.inOut,props[1]));
-                        content.append(this.groupInput("Spd(ms)",props[2],"number"));
-                        break;
-                    case "changeMusic":
-                        props = props || [dataP.musicFileNames[0]];
-                        content.append(this.groupSelect("Music",dataP.musicFileNames,props[0]));
-                        content.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/bgm/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
-                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("audio")[0],"../../audio/bgm/");
-                        break;
-                    case "playSound":
-                        props = props || [dataP.soundFileNames[0]];
-                        content.append(this.groupSelect("Sound",dataP.soundFileNames,props[0]));
-                        content.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/sfx/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
-                        DC.linkSelectToSrc($(content).children("select")[0],$(content).children("audio")[0],"../../audio/sfx/");
-                        break;
-                    case "changeMoveSpeed":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],300];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupInput("Spd(ms)",props[1],"number",0));
-                        break;
-                    case "playAnim":
-                        var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                        props = props || [chars[0],"attacking","down",dataP.soundFileNames[0]];
-                        content.append(this.groupSelect("Char",chars,props[0],"char"));
-                        content.append(this.groupSelect("Anim",dataP.animations,props[1]));
-                        content.append("<div class='play-anim'>Play Anim</div>");
-                        content.append(this.groupSelect("Dir",dataP.directions,props[2]));
-                        content.append(this.groupSelect("Sound",dataP.soundFileNames,props[3]));
-                        content.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/sfx/'+props[3]+'">Sorry, your browser does not support HTML5 audio.</audio>');
-                        DC.linkSelectToSrc($(content).children("select")[3],$(content).children("audio")[0],"../../audio/sfx/");
-                        $(content).children(".play-anim").on("click",function(){
-                            var char = Q.getSpriteByName($($(this).siblings("select")[0]).val());
-                            var dir =  $($(this).siblings("select")[2]).val();
-                            var anim = $($(this).siblings("select")[1]).val();
-                            if(anim==="levelingUp"){
-                                char.play("levelingUp");
-                            } else {
-                                char.play(anim+dir);
+            "Load Chars":function(){
+                if($("#load-chars-from-cont").length) return;
+                $("#full-screen-hider").show();
+                var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
+                var scType = uic.Select("Type",uic.dataP.sceneTypes,uic.dataP.eventPointer.type);
+                var scName = uic.Select("Scene",uic.dataP.scenes[uic.dataP.eventPointer.type],uic.dataP.eventPointer.scene);
+                var evName = uic.Select("Event",uic.dataP.events[uic.dataP.eventPointer.type][uic.dataP.eventPointer.scene],uic.dataP.eventPointer.event);
+                $(cont).append(scType);
+                $(cont).append(scName);
+                $(cont).append(evName);
+                uic.selectInitialValue(cont);
+                uic.linkSelects($(cont).children(".UIC-prop")[0],$(cont).children(".UIC-prop")[1],uic.dataP.scenes);
+                uic.linkSelects($(cont).children(".UIC-prop")[1],$(cont).children(".UIC-prop")[2],uic.dataP.events,[$(cont).children(".UIC-prop")[0]]);
+
+                $(cont).append("<div id='load-chars-buttons'><span id='load-chars'>LOAD</span><span id='chars-cancel'>CANCEL</span></div>");
+                $("#editor-content").append(cont);
+                $("#load-chars").click(function(){
+                    var url = "../../data/json/story/events/"+$($("#load-chars-from-cont").children(".UIC-prop")[0]).val()+"/"+$($("#load-chars-from-cont").children(".UIC-prop")[1]).val()+"/"+$($("#load-chars-from-cont").children(".UIC-prop")[2]).val()+".json";;
+                    $.getJSON(url)
+                        .done(function(d){
+                            if(!d.characters){
+                                alert("This file is not a battle or battleScene!");
+                                return;      
                             }
-                            char.on("animLoop."+char.p.animation,function(){char.play("standing"+char.p.dir);char.off("animLoop."+char.p.animation);});
-                            $(this).siblings("audio")[0].currentTime = 0
-                            $(this).siblings("audio")[0].play();
-                        });
-                        break;
-                    case "changeEvent":
-                        props = props || [GDATA.eventPointer.type,GDATA.eventPointer.scene,GDATA.eventPointer.event];
-                        content.append(this.groupSelect("ScType",dataP.sceneTypes,props[0],"scene-type"));
-                        content.append(this.groupSelect("ScName",dataP.scenes[props[0]],props[1],"scene-name"));
-                        content.append(this.groupSelect("EvName",dataP.events[props[0]][props[1]],props[2],"event-name"));$($(content).children("select")[0]).trigger("change");
-                        $($(content).children("select")[1]).trigger("change");
-                        DC.linkSelects($(content).children("select")[0],$(content).children("select")[1],dataP.scenes);
-                        DC.linkSelects($(content).children("select")[1],$(content).children("select")[2],dataP.events,[$(content).children("select")[0]]);
-                        
-                        break;
-                }
-                DC.selectInitialValue(content);
-                return content;
+                            $("#full-screen-hider").trigger("click");
+                            $("#event-chars-cont").empty();
+                            Q("CharacterSprite").each(function(){
+                                this.removeFromExistence();
+                            });
+                            for(var i=0;i<d.characters.length;i++){
+                                var charData = d.characters[i];
+                                var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
+                                char.loc = DC.getNextEmpty(char.loc);
+                                var charButton = DC.newCharacter(char);
+                                $('#event-chars-cont').append(charButton);
+                                var data = uic.dataP.charFiles[char.file][char.group][char.handle];
+                                Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+                            }
+                            $(".character").last().trigger("click");
+                        }
+                    );
+                });
+                $("#chars-cancel").click(function(){
+                    $("#full-screen-hider").trigger("click");
+                });
             },
+            Back:function(){
+                if(confirm("Are you sure you want to go back without saving?")){
+                    var to = "show-events.php";
+                    if(uic.dataP.eventPointer.type==="Flavour"){
+                        to = "show-flavour.php";
+                    }
+                    $.redirect(to,  {'scene':uic.dataP.eventPointer.scene, 'event':uic.dataP.eventPointer.event, 'type':uic.dataP.eventPointer.type});
+                }
+            }
+        },
+        scriptFuncs:["text","centerViewChar","centerViewLoc","moveAlong","changeDir","modDialogueBox","waitTime","fadeChar","changeMusic","playSound","playAnim"],
+        scriptProps:function(func,props){
+            var cont = $("<div class='UIC-group-item-props'></div>");
+            func = func || "moveAlong";
+            switch(func){
+                case "text":
+                    props = props || ["empty.png","empty.png","",false,0,false];
+
+                    cont.append(this.Select("<-Img",GDATA.imageAssets,props[0]));
+                    cont.append("<div class='img-div'><img src='../../images/story/"+props[0]+"'></div>");
+                    this.linkSelectToSrc($(cont).children("select")[0],$(cont).children("div").first().children("img")[0],"../../images/story/");
+                    cont.append("<div class='img-div'><img src='../../images/story/"+props[1]+"'></div>");
+                    cont.append(this.Select("Img->",GDATA.imageAssets,props[1]));
+                    this.linkSelectToSrc($(cont).children("select")[1],$(cont).children("div").last().children("img")[0],"../../images/story/");
+
+                    cont.append(this.TextArea("Text",props[2]));
+
+                    cont.append(this.Checkbox("Invert Text",props[3]));
+                    cont.append(this.Input("Cyc(ms)",props[4],"number",0));
+                    cont.append(this.Checkbox("NoCycle",props[5]));
+                break;
+                case "centerViewChar":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],1000];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Input("Spd(ms)",props[1],"number",0));
+                    break;
+                case "centerViewLoc":
+                    props = props || [0,0,1000];
+                    cont.append(this.Input("LocX",props[0],"number",0));
+                    cont.append(this.Input("LocY",props[1],"number",0));
+                    cont.append(this.Input("Spd(ms)",props[2],"number",0));
+                    break;
+                case "moveAlong":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],uic.dataP.directions[0],true,"[]"];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Select("Dir",uic.dataP.directions,props[1]));
+                    cont.append(this.Checkbox("On Arrival",props[2]));
+                    var moveLocs = JSON.parse(props[3]);
+                    var moveCont = $(this.Container("Move Path",moveLocs));
+                    cont.append(moveCont);
+                    for(var i=0;i<moveLocs.length;i++){
+                        var loc = moveLocs[i];
+                        $(moveCont).append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
+                    }
+                    break;
+                case "changeDir":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],"down"];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Select("Dir",uic.dataP.directions,props[1]));
+                    break;
+                case "modDialogueBox":
+                    props = props || [true];
+                    cont.append(this.Checkbox("Show",props[0]));
+                    break;
+                case "waitTime":
+                    props = props || [1000];
+                    cont.append(this.Input("Wait(ms)",props[0],"number",0));
+                    break;
+                case "fadeChar":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],"out",1000];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Select("InOut",uic.dataP.inOut,props[1]));
+                    cont.append(this.Input("Spd(ms)",props[2],"number"));
+                    break;
+                case "changeMusic":
+                    props = props || [GDATA.musicFileNames[0]];
+                    cont.append(this.Select("Music",GDATA.musicFileNames,props[0]));
+                    cont.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/bgm/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
+                    this.linkSelectToSrc($(cont).children("select")[0],$(cont).children("audio")[0],"../../audio/bgm/");
+                    break;
+                case "playSound":
+                    props = props || [GDATA.soundFileNames[0]];
+                    cont.append(this.Select("Sound",GDATA.soundFileNames,props[0]));
+                    cont.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/sfx/'+props[0]+'">Sorry, your browser does not support HTML5 audio.</audio>');
+                    this.linkSelectToSrc($(cont).children("select")[0],$(cont).children("audio")[0],"../../audio/sfx/");
+                    break;
+                case "changeMoveSpeed":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],300];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Input("Spd(ms)",props[1],"number",0));
+                    break;
+                case "playAnim":
+                    var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                    props = props || [chars[0],"attacking","down",GDATA.soundFileNames[0]];
+                    cont.append(this.Select("Char",chars,props[0],"char"));
+                    cont.append(this.Select("Anim",uic.dataP.animations,props[1]));
+                    cont.append("<div class='play-anim full-width'>Play Anim</div>");
+                    cont.append(this.Select("Dir",uic.dataP.directions,props[2]));
+                    cont.append(this.Select("Sound",GDATA.soundFileNames,props[3]));
+                    cont.append('<audio controls class="full-width"><source type="audio/mp3" src="../../audio/sfx/'+props[3]+'">Sorry, your browser does not support HTML5 audio.</audio>');
+                    this.linkSelectToSrc($(cont).children("select")[3],$(cont).children("audio")[0],"../../audio/sfx/");
+                    $(cont).children(".play-anim").on("click",function(){
+                        var char = Q.getSpriteByName($($(this).siblings("select")[0]).val());
+                        var dir =  $($(this).siblings("select")[2]).val();
+                        var anim = $($(this).siblings("select")[1]).val();
+                        if(anim==="levelingUp"){
+                            char.play("levelingUp");
+                        } else {
+                            char.play(anim+dir);
+                        }
+                        char.on("animLoop."+char.p.animation,function(){char.play("standing"+char.p.dir);char.off("animLoop."+char.p.animation);});
+                        $(this).siblings("audio")[0].currentTime = 0;
+                        $(this).siblings("audio")[0].play();
+                    });
+                    break;
+            }
+            this.selectInitialValue(cont);
+            return cont;
+        }
+    });
+    var start = function(){
+        uic.createTopMenu($("#editor-content"));
+        $(".bar-button").first().attr("id","canvas-coordinates");
+        DC = {
             newCharacter:function(char){
-                return $("<div class='character-cont'><span class='character selectable "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text char-remove'>x</span></div>");
+                return $("<div class='character-cont'><span class='character selectable "+char.handle+"' handle='"+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='group-text char-remove'>x</span></div>");
             },
             checkSelectedLoc:function(loc){
-                for(var i=0;i<selectedLocs.length;i++){
-                    if(selectedLocs[i].p.loc[0]===loc[0]&&selectedLocs[i].p.loc[1]===loc[1]){
+                for(var i=0;i<Q.selectedLocs.length;i++){
+                    if(Q.selectedLocs[i].p.loc[0]===loc[0]&&Q.selectedLocs[i].p.loc[1]===loc[1]){
+                        var cont = Q.selectedLocs[0].p.cont;
                         $("#move-locations").children("div:nth-child("+(i+1)+")").remove();
-
-                        $(selectedLocs[i].p.cont).children(".loc-display").each(function(){
+                        $(Q.selectedLocs[i].p.cont).children(".loc-display").each(function(){
                             var locX = $(this).attr("locX");
                             var locY = $(this).attr("locY");
                             if(locX==loc[0]&&locY==loc[1]) $(this).remove();
                         });
-                        selectedLocs[i].destroy();
-                        selectedLocs.splice(i,1);
-                        //Change any of the next selectedLocs's labels
-                        for(var j=i;j<selectedLocs.length;j++){
-                            selectedLocs[j].p.number.p.label = ""+(j+1);
+                        Q.selectedLocs[i].destroy();
+                        Q.selectedLocs.splice(i,1);
+                        //Change any of the next Q.selectedLocs's labels
+                        for(var j=i;j<Q.selectedLocs.length;j++){
+                            Q.selectedLocs[j].p.number.p.label = ""+(j+1);
                         }
+
+                        $(cont).attr("data",JSON.stringify(Q.selectedLocs.map(function(o){return [o.p.loc[0],o.p.loc[1]];})));
                         return true;
                     }
                 }
             },
             updateCharSelects:function(){
-                var chars = FileSaver.getCharacters().map(function(c){return c.handle+" "+c.uniqueId;});
-                var opts = DC.getOptString(chars);
+                var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
+                var opts = uic.getOptions(chars);
                 $(".char").empty().append(opts); 
-            },
-            //When sel1 changes, change all of the options of sel2 from the passed in object.
-            //obj must be in this format: {myName:[itm1, itm2, ..]}
-            //myName would be equal to the sel1's value.
-            //deepArray allows multiple selects to 'chain' changes
-            linkSelects:function(sel1,sel2,obj,deepArray){
-                $(sel1).on("change",function(){
-                    $(sel2).empty();
-                    if(deepArray){
-                        var props = [];
-                        $(deepArray).each(function(){props.push($(this).val());});
-                        props.push($(this).val());
-                        $(sel2).append(DC.getOptString(DC.getDeepValue(obj,props.join("&"))));
-                    } else {
-                        $(sel2).append(DC.getOptString(obj[$(this).val()]));
-                    }
-                    $(sel2).trigger("change");
-                });
-            },
-            linkSelectToSrc:function(select,srcObj,path){
-                $(select).on("change",function(){
-                    $(srcObj).attr("src",path+$(select).val());
-                });
-            },
-            linkSelectedCharToSelect:function(select){
-                Q.stage(0).on("selectedCharacter",function(char){
-                    if(selectedCharacter){
-                        selectedCharacter.destroySelectedBox();
-                    }
-                    selectedCharacter = char;
-                    selectedCharacter.createSelectedBox();
-                    $(select).val(char.p.handle+" "+char.p.uniqueId);
-                });
-                Q.stage(0).trigger("selectedCharacter",Q.getSpriteByName($(select).val()));
-            },
-            linkSelectedLocToInputs:function(locX,locY){
-                Q.stage(0).on("selectedLocation",function(loc){
-                    if(selectedLocs.length) selectedLocs[0].destroy();
-                    selectedLocs = [];
-                    selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:selectedLocs.length+1})));
-                    $(locX).val(loc[0]);
-                    $(locY).val(loc[1]);
-                });
-                Q.stage(0).trigger("selectedLocation",[$(locX).val(),$(locY).val()]);
             },
             genUniqueId:function(handle){
                 var id = 0;
@@ -651,53 +681,10 @@ $(function(){
                     }
                 }
                 return loc;
-            },
-            getDeepValue:function(obj, path){
-                for (var i=0, path=path.split('&'), len=path.length; i<len; i++){
-                    obj = obj[path[i]];
-                };
-                return obj;
-            },
-            getOptString:function(arr,prop){
-                var opts = '';
-                //If an object is passed in
-                if(!$.isArray(arr)) arr = Object.keys(arr);
-                arr.forEach(function(itm){
-                    if(prop){
-                        opts += '<option value="' + itm[prop] + '">' + itm[prop] + '</option>';
-                    } else {
-                        opts += '<option value="'+itm+'">'+itm+'</option>';
-                    }
-                });
-                return opts;
-            },
-            selectInitialValue:function(cont){
-                $(cont).children("select").each(function(){
-                    $(this).val($(this).attr("initial-value"));
-                });
             }
         };
         FileSaver = {
-            processValue:function(value){
-                var val = parseInt(value);
-                if(isNaN(val)){
-                    if(/[+=]/g.test(value) == true) {
-                        val = encodeURIComponent(value);
-                    } else {
-                        val = value;
-                    }
-                }
-                if(!val && isNaN(val)) val = (value === 'true');
-                return val;
-            },
-            getGroups:function(cont){
-                var groups = [];
-                $(cont).children(".group-cont").each(function(){
-                    var group = {};
-                    groups.push(group);
-                });
-                return groups;
-            },
+            event:GDATA.event,
             getCharacters:function(){
                 var chars = [];
                 $(".character").each(function(){
@@ -705,146 +692,93 @@ $(function(){
                     chars.push([
                         char.attr("file"),
                         char.attr("group"),
-                        char.attr("class").split(" ")[2],
-                        FileSaver.processValue(char.attr("uniqueId")),
-                        [FileSaver.processValue(char.attr("locX")),FileSaver.processValue(char.attr("locY"))],
+                        char.attr("handle"),
+                        uic.processValue(char.attr("uniqueId")),
+                        [uic.processValue(char.attr("locX")),uic.processValue(char.attr("locY"))],
                         char.attr("dir")
                     ]);
                 });
                 return chars;
             },
-            getViewLoc:function(){
-                return [parseInt($("#prop-initial-view").children("input").first().val()),parseInt($("#prop-initial-view").children("input").last().val())];
-            },
-            getFinishedEvent:function(){
-                var cont = $("#prop-finished");
-                return [$(cont).children(".scene-type").val(),$(cont).children(".scene-name").val(),$(cont).children(".event-name").val()];
-            },
-            getScript:function(){
-                var script = [];
-                $(".script-item-group").each(function(){
-                    var group = [];
-                    $(this).children(".script-items-cont").children(".script-item-cont").each(function(){
-                        var func = $(this).children(".func").val();
-                        var props = [];
-                        $(this).children(".script-item").children(".prop").each(function(){
-                            if($(this).is("div")){
-                                props.push(JSON.parse($(this).attr("data")));
-                            }
-                            else if($(this).attr("type")==="checkbox"){
-                                props.push(this.checked);
-                            } else {
-                                props.push(FileSaver.processValue($(this).val()));
-                            }
-                        });
-                        group.push([func,props]);
-                    });
-                    script.push(group);
-                });
-                return script;
-            },
-            getEventRefs:function(){
-                var refs = [];
-                $(".event-name").each(function(){
-                    refs.push([$(this).siblings(".scene-type").val(),$(this).siblings(".scene-name").val(),$(this).val()]);
-                });
-                return refs;
-            },
             getNewSaveFile:function(){
+                var finished = [$("#prop-finished").children(".scene-type").val(),$("#prop-finished").children(".scene-name").val(),$("#prop-finished").children(".event-name").val()];
                 return {
-                    file:JSON.stringify({
-                        name:dataP.event.name,
+                    file:{
+                        name:FileSaver.event.name,
                         kind:"battleScene",
                         map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
                         music:$("#prop-music .music-select").val(),
-                        script:FileSaver.getScript(),
+                        script:uic.getSaveScript($("#script-groups")),
                         characters:FileSaver.getCharacters(),
-                        finished:FileSaver.getFinishedEvent(),
-                        viewLoc:FileSaver.getViewLoc()
-                    }),
-                    eventRefs:FileSaver.getEventRefs(),
+                        finished:finished,
+                        viewLoc:[parseInt($("#prop-initial-view").children("input").first().val()),parseInt($("#prop-initial-view").children("input").last().val())]
+                    },
+                    eventRefs:[finished],
                     sceneVarRefs:[],
                     globalVarRefs:[]
                 };
             }
         };
         
-        DC.linkSelectToSrc($("#prop-music").children(".music-select"),$("#prop-music").children("audio"),"../../audio/bgm/");
+        uic.linkSelectToSrc($("#prop-music").children(".music-select"),$("#prop-music").children("audio"),"../../audio/bgm/");
         //Fill the char-files container with the files. This only needs to be done once at runtime as it will not change until the page is refreshed after a new character file has been created.
-        var fileNames = Object.keys(dataP.charFiles);
+        var fileNames = Object.keys(uic.dataP.charFiles);
         var cont = $("#char-files");
         for(var i=0;i<fileNames.length;i++){
-            var groups = Object.keys(dataP.charFiles[fileNames[i]]);
+            var groups = Object.keys(uic.dataP.charFiles[fileNames[i]]);
             $(cont).append('<div class="file-groups"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+fileNames[i]+'</span><div class="groups minimize"></div></div>');
             for(var j=0;j<groups.length;j++){
-                var chars = Object.keys(dataP.charFiles[fileNames[i]][groups[j]]);
+                var chars = Object.keys(uic.dataP.charFiles[fileNames[i]][groups[j]]);
                 $(cont).children(".file-groups").children(".groups").last().append('<div class="file-chars"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+groups[j]+'</span><div class="chars minimize"></div></div>');
                 for(var k=0;k<chars.length;k++){
-                    var char = dataP.charFiles[fileNames[i]][groups[j]][chars[k]];
+                    var char = uic.dataP.charFiles[fileNames[i]][groups[j]][chars[k]];
                     char.file = fileNames[i];
                     char.group = groups[j];
                     $(cont).children(".file-groups").last().children(".groups").children(".file-chars").last().children(".chars").append("<div class='file-character draggable' data='"+JSON.stringify(char)+"'>"+char.handle+"</div>");
                 }
             }
         }
-        $(document).on("click",".add-group",function(){
-            var cont = DC.getScriptItemGroup();
-            $(this).parent().siblings(".script-groups").append(cont);
-            $( ".sortable" ).last().sortable({
-                axis: "y"
-            });
-            $( ".sortable" ).last().disableSelection();
-        });
-        $(document).on("click",".add-script-item",function(){
-            var content = DC.getScriptItemFunc($("<div class='script-item-cont selectable'></div>"));
-            content.append(DC.getScriptItem($("<div class='script-item minimize'></div>")));
-            $(this).parent().parent().children(".script-items-cont").append(content);
-            DC.selectInitialValue($(content));
-            $(content).children(".func").on("change",function(){
-                $(this).next().nextAll().remove(); //After the 'x' remove all
-                $(this).siblings(".minimize-icon").text("-");
-                $(this).parent().append(DC.getScriptItem($("<div class='script-item minimize'></div>"),$(this).parent().children(".func").val()));
-            });
+        $(document).on("click","#add-group",function(){
+            uic.createScriptGroup($("#script-groups"));
         });
         /* start initial props code */
         
-        
-        DC.linkSelects($("#map-select-group"),$("#map-select-place"),dataP.mapFileNames);
-        $("#map-select-group").append(DC.getOptString(dataP.mapFileGroups));
+        uic.linkSelects($("#map-select-group"),$("#map-select-place"),GDATA.mapFileNames);
+        $("#map-select-group").append(uic.getOptions(Object.keys(GDATA.mapFileNames)));
         $("#map-select-group").trigger("change");
         
-        $("#prop-initial-view").children("input").first().val(dataP.event.viewLoc[0]);
-        $("#prop-initial-view").children("input").last().val(dataP.event.viewLoc[1]);
+        $("#prop-initial-view").children("input").first().val(FileSaver.event.viewLoc[0]);
+        $("#prop-initial-view").children("input").last().val(FileSaver.event.viewLoc[1]);
         
-        $(".music-select").append(DC.getOptString(dataP.musicFileNames));
+        $(".music-select").append(uic.getOptions(GDATA.musicFileNames));
         
-        DC.linkSelects($("#prop-finished").children(".scene-type"),$("#prop-finished").children(".scene-name"),dataP.scenes);
-        $("#prop-finished").children(".scene-type").append(DC.getOptString(dataP.sceneTypes));
-        DC.linkSelects($("#prop-finished").children(".scene-name"),$("#prop-finished").children(".event-name"),dataP.events,[$("#prop-finished").children(".scene-type")]);
-        $("#prop-finished").children(".scene-type").val(dataP.event.finished[0]);
+        uic.linkSelects($("#prop-finished").children(".scene-type"),$("#prop-finished").children(".scene-name"),uic.dataP.scenes);
+        $("#prop-finished").children(".scene-type").append(uic.getOptions(uic.dataP.sceneTypes));
+        uic.linkSelects($("#prop-finished").children(".scene-name"),$("#prop-finished").children(".event-name"),uic.dataP.events,[$("#prop-finished").children(".scene-type")]);
+        $("#prop-finished").children(".scene-type").val(FileSaver.event.finished[0]);
         $("#prop-finished").children(".scene-type").trigger("change");
-        $("#prop-finished").children(".scene-name").val(dataP.event.finished[1]);
+        $("#prop-finished").children(".scene-name").val(FileSaver.event.finished[1]);
         $("#prop-finished").children(".scene-name").trigger("change");
-        $("#prop-finished").children(".event-name").val(dataP.event.finished[2]);
+        $("#prop-finished").children(".event-name").val(FileSaver.event.finished[2]);
         
         /* end initial props code */
 
         function toggleSelected(sel){
-            if(selectedLocs.length){
+            if(Q.selectedLocs.length){
                 var locs = [];
-                for(var i=0;i<selectedLocs.length;i++){
-                    locs.push([selectedLocs[i].p.loc[0],selectedLocs[i].p.loc[1]]);
+                for(var i=0;i<Q.selectedLocs.length;i++){
+                    locs.push([Q.selectedLocs[i].p.loc[0],Q.selectedLocs[i].p.loc[1]]);
                 }
-                if(selectedLocs[0].p.cont) $(selectedLocs[0].p.cont).attr("data",JSON.stringify(locs));
-                for(var i=selectedLocs.length-1;i>=0;i--){
-                    selectedLocs[i].destroy();
+                if(Q.selectedLocs[0].p.cont) $(Q.selectedLocs[0].p.cont).attr("data",JSON.stringify(locs));
+                for(var i=Q.selectedLocs.length-1;i>=0;i--){
+                    Q.selectedLocs[i].destroy();
                 }
-                selectedLocs = [];
+                Q.selectedLocs = [];
             }
             //Stop selecting that character
-            if(selectedCharacter){
-                selectedCharacter.destroySelectedBox();
-                selectedCharacter.off("step",selectedCharacter,"setDir");
+            if(Q.selectedCharacter){
+                Q.selectedCharacter.destroySelectedBox();
+                Q.selectedCharacter.off("step",Q.selectedCharacter,"setDir");
             }
             
             $(".selected").removeClass("selected");
@@ -856,37 +790,38 @@ $(function(){
         $(document).on("click",".character",function(){
             toggleSelected(this);
             Q.toCharSelection();
-            selectedCharacter = Q.getSpriteAt([parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))]);
-            selectedCharacter.createSelectedBox();
-            selectedCharacter.on("step",selectedCharacter,"setDir");
+            Q.selectedCharacter = Q.getSpriteAt([parseInt($(this).attr("locX")),parseInt($(this).attr("locY"))]);
+            Q.selectedCharacter.createSelectedBox();
+            Q.selectedCharacter.on("step",Q.selectedCharacter,"setDir");
             
         });
-        $(document).on("click",".script-item-cont",function(){
+        $(document).on("click",".UIC-group-item",function(){
             toggleSelected(this);
             //Any funcs that use selectedCharacter or selectedLocation
-            var func = $(this).children(".func").val();
+            var func = $(this).children(".UIC-group-item-top").children(".UIC-func-cont").children(".UIC-func").val();
             switch(func){
                 case "centerViewLoc":
-                    DC.linkSelectedLocToInputs($(this).children(".script-item").children("input")[0],$(this).children(".script-item").children("input")[1]);
+                    uic.linkSelectedLocToInputs($(this).children(".UIC-group-item-props").children(".UIC-prop")[0],$(this).children(".UIC-group-item-props").children(".UIC-prop")[1]);
                     break;
                 case "changeMoveSpeed":
                 case "playAnim":
                 case "changeDir":
                 case "fadeChar":
                 case "centerViewChar":
-                    DC.linkSelectedCharToSelect($(this).children(".script-item").children("select")[0]);
+                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item-props").children(".UIC-prop")[0]);
                     break;
                 case "moveAlong":
-                    DC.linkSelectedCharToSelect($(this).children(".script-item").children("select")[0]);
-                    var locsCont = $(this).children(".script-item").children("div");
+                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item-props").children(".UIC-prop")[0]);
+                    var locsCont = $(this).children(".UIC-group-item-props").children(".UIC-container");
                     Q.stage(0).on("selectedLocation",function(loc){
                         if(DC.checkSelectedLoc(loc)) return;
-                        selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:selectedLocs.length+1,cont:locsCont})));
+                        Q.selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:Q.selectedLocs.length+1,cont:locsCont})));
+                        $(locsCont).attr("data",JSON.stringify(Q.selectedLocs.map(function(o){return [o.p.loc[0],o.p.loc[1]];})));
                         $(locsCont).append("<div class='loc-display' locX='"+loc[0]+"' locY='"+loc[1]+"'>"+loc[0]+","+loc[1]+"</div>");
                     });
                     var locs = JSON.parse($(locsCont).attr("data"));
                     for(var i=0;i<locs.length;i++){
-                        selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:locs[i],num:selectedLocs.length+1,cont:locsCont})));
+                        Q.selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:locs[i],num:Q.selectedLocs.length+1,cont:locsCont})));
                     }
                     break;
             }
@@ -905,14 +840,14 @@ $(function(){
             accept:".file-character",
             //Create a character element
             drop:function(event,ui){
-                if(selectedCharacter) selectedCharacter.confirmPlacement();
+                if(Q.selectedCharacter) Q.selectedCharacter.confirmPlacement();
                 var char = JSON.parse($(ui.draggable).attr("data"));
                 char.uniqueId = DC.genUniqueId(char.handle);
                 char.loc = DC.getNextEmpty([0,0]);
                 char.dir = "down";
                 var charButton = DC.newCharacter(char);
                 $(this).append(charButton);
-                var data = dataP.charFiles[char.file][char.group][char.handle];
+                var data = uic.dataP.charFiles[char.file][char.group][char.handle];
                 var character = Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
                 $(charButton).children(".character").trigger("click");
                 Q.stage(0).trigger("selectedCharacter",character);
@@ -920,112 +855,12 @@ $(function(){
                 DC.updateCharSelects();
             }
         });
-        $("#go-back").click(function(e){
-            if(confirm("Are you sure you want to go back without saving?")){
-                var to = "show-events.php";
-                if(GDATA.eventPointer.type==="Flavour"){
-                    to = "show-flavour.php";
-                }
-                $.redirect(to,  {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
-            }
-        });
-        $("#test-file").click(function(e){
-            window.onbeforeunload = null;
-            var data = FileSaver.getNewSaveFile();
-            $.ajax({
-                type:'POST',
-                url:'save-battle.php',
-                data:{data:data.file,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene,type:GDATA.eventPointer.type},
-                dataType:'json'
-            })
-            .done(function(data){$.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});})
-            .fail(function(data){console.log(data)});
-    
-            if(GDATA.eventPointer.type==="Story"){
-                $.ajax({
-                    type:'POST',
-                    url:'save-event-references.php',
-                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene},
-                    dataType:'json'
-                })
-                .done(function(data){console.log(data)})
-                .fail(function(data){console.log(data)});
-            }
-        });
-        $("#save-file").click(function(){
-            var data = FileSaver.getNewSaveFile();
-            $.ajax({
-                type:'POST',
-                url:'save-battle.php',
-                data:{data:data.file,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene,type:GDATA.eventPointer.type},
-                dataType:'json'
-            })
-            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-            .fail(function(data){console.log(data)});
-    
-            if(GDATA.eventPointer.type==="Story"){
-                $.ajax({
-                    type:'POST',
-                    url:'save-event-references.php',
-                    data:{eventRefs:data.eventRefs,sceneVarRefs:data.sceneVarRefs,globalVarRefs:data.globalVarRefs,name:GDATA.eventPointer.event,scene:GDATA.eventPointer.scene},
-                    dataType:'json'
-                })
-                .done(function(data){console.log(data)})
-                .fail(function(data){console.log(data)});
-            }
-        });
-        $("#load-characters").click(function(){
-            if($("#load-chars-from-cont").length) return;
-            $("#full-screen-hider").show();
-            var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
-            var scType = DC.groupSelect("Type",dataP.sceneTypes,GDATA.eventPointer.type);
-            var scName = DC.groupSelect("SCName",dataP.scenes[GDATA.eventPointer.type],GDATA.eventPointer.scene);
-            var evName = DC.groupSelect("EVName",dataP.events[GDATA.eventPointer.type][GDATA.eventPointer.scene],GDATA.eventPointer.event);
-            $(cont).append(scType);
-            $(cont).append(scName);
-            $(cont).append(evName);
-            DC.selectInitialValue(cont);
-            DC.linkSelects($(cont).children(".prop")[0],$(cont).children(".prop")[1],dataP.scenes);
-            DC.linkSelects($(cont).children(".prop")[1],$(cont).children(".prop")[2],dataP.events,[$(cont).children(".prop")[0]]);
-            
-            $(cont).append("<div id='load-chars-buttons'><span id='load-chars'>LOAD</span><span id='chars-cancel'>CANCEL</span></div>");
-            $("#editor-content").append(cont);
-            $("#load-chars").click(function(){
-                var url = "../../data/json/story/events/"+$($("#load-chars-from-cont").children(".prop")[0]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[1]).val()+"/"+$($("#load-chars-from-cont").children(".prop")[2]).val()+".json";;
-                $.getJSON(url)
-                    .done(function(d){
-                        if(!d.characters){
-                            alert("This file is not a battle or battleScene!");
-                            return;      
-                        }
-                        $("#full-screen-hider").trigger("click");
-                        $("#event-chars-cont").empty();
-                        Q("CharacterSprite").each(function(){
-                            this.removeFromExistence();
-                        });
-                        for(var i=0;i<d.characters.length;i++){
-                            var charData = d.characters[i];
-                            var char = {file:charData[0],group:charData[1],handle:charData[2],uniqueId:charData[3],loc:[charData[4][0],charData[4][1]],dir:charData[5]};
-                            char.loc = DC.getNextEmpty(char.loc);
-                            var charButton = DC.newCharacter(char);
-                            $('#event-chars-cont').append(charButton);
-                            var data = dataP.charFiles[char.file][char.group][char.handle];
-                            Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
-                        }
-                        $(".character").last().trigger("click");
-                    }
-                );
-            });
-            $("#chars-cancel").click(function(){
-                $("#full-screen-hider").trigger("click");
-            });
-        });
         $("#full-screen-hider").click(function(){
             $(this).hide();
             $("#load-chars-from-cont").remove();
         });
         
-        var event = dataP.event;
+        var event = FileSaver.event;
         var map = event.map.split("/");
         $("#map-select-group").val(map[0]).trigger("change");
         $("#map-select-place").val(map[1]).trigger("change");
@@ -1041,31 +876,5 @@ $(function(){
         start();
     });
     
-    $(document).on("click",".minimize-icon, .minimizable",function(){
-        var content = $(this).parent().children(".minimize");
-        if($(content).css("display")==="none"){
-            $(content).show();
-            $(this).parent().children(".minimize-icon").text("-");
-        } else {
-            $(content).hide();
-            $(this).parent().children(".minimize-icon").text("+");
-        }
-    });
-    $(document).on("click",".minimize-icon-deep, .minimizable-deep",function(){
-        var content = $(this).parent().parent().children(".minimize");
-        if($(content).css("display")==="none"){
-            $(content).show();
-            $(this).parent().children(".minimize-icon-deep").text("-");
-        } else {
-            $(content).hide();
-            $(this).parent().children(".minimize-icon-deep").text("+");
-        }
-    });
-    $(document).on("click",".remove-choice",function(e){
-        $(this).parent().remove();
-    });
-    $(document).on("click",".remove-choice-deep",function(e){
-        $(this).parent().parent().remove();
-    });
 });
     

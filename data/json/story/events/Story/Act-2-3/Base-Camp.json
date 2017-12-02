@@ -8,28 +8,22 @@
     ],
     "onload": [
         {
-            "conds": [],
-            "effects": []
-        },
-        {
             "conds": [
                 [
-                    "checkCharProp",
+                    "checkVar",
                     [
-                        "Sjrna",
-                        "value",
+                        "Event",
+                        "w",
                         "==",
-                        "Altruist"
+                        false
                     ]
                 ]
             ],
             "effects": [
                 [
-                    "addToRoster",
+                    "enableChoice",
                     [
-                        "Act-2-2.json",
-                        "Dummies",
-                        "Legion"
+                        "Go to Kitchen"
                     ]
                 ]
             ]

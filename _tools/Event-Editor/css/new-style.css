@@ -51,8 +51,22 @@ table {
 /* Start my style */
 
 :root {
-    --main-color: lightgrey;
-    --secondary-color:orange;
+    --background-color: lightgrey;
+    --menu-background-color:orange;
+    --menu-text-color:white;
+    --menu-button-hover-color:lightgrey;
+    --button-text-color:white;
+    --button-background-color:#EEE;
+    --button-hover-color:lightgrey;
+    --content-button-text-color:white;
+    --content-button-background-color:#EEE;
+    --content-button-hover-color:lightgrey;
+    --form-elm-text-color:black;
+    --form-elm-background-color:white;
+    --heading-font-family:"Helvetica";
+    --heading-text-color:black;
+    --heading-gradient-one:black;
+    --heading-gradient-two:grey;
 }
 
 * {
@@ -60,6 +74,8 @@ table {
 }
 textarea, input, select, option{
     font-family: "Helvetica" !important;
+    background-color: var(--form-elm-background-color);
+    color: var(--form-elm-text-color);
 }
 body {
     width: 100%;
@@ -96,7 +112,8 @@ body {
     display:inline-block;
     width:100%;
     height:7.5%;
-    background-color:var(--main-color);
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
     border-radius:5px 5px 0px 0px; 
     padding:1%;
 }
@@ -107,44 +124,39 @@ body {
 #menu-cont{
     width:20%;
     height:92.5%;
-    background-color:var(--main-color);
+    background-color:var(--menu-background-color);
     display:inline-block;
     vertical-align:top;
     border-left:1px solid black;
 }
 
 .menu-button{
-    width:90%;
-    margin-left:5%;
-    margin-top:1%;
-    margin-bottom:1%;
+    width:100%;
     font-size:2vw;
     padding:10px;
     text-align:center;
     user-select:none;
     cursor:pointer;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
 }
 .menu-button:hover{
-    background-color:#F5f5f5;
+    background-color:var(--menu-button-hover-color);
 }
 .menu-button-modify{
     width:100%;
     height:50%;
 }
-.menu-button:hover{
-    background-color:#F5f5f5;
-}
-
 .main-menu-background{
     display:inline-block;
-    background-color:var(--secondary-color);
+    background-color:var(--background-color);
     height:92.5%;
     width:100%;
 }
 
 .main-menu-cont{
     position:absolute;
-    background-color:var(--main-color);
+    background-color:var(--menu-background-color);
     height:auto;
     width:35%;
     left:32.5%;
@@ -173,37 +185,14 @@ body {
     float:left;
 }
 #editor-variables{
-    max-height:40%;
-    overflow-y:auto;
+    /*max-height:40%;
+    overflow-y:auto;*/
 }
 #editor-actions{
-    height:60%;
-    overflow-y:auto;
+    /*height:60%;
+    overflow-y:auto;*/
+    margin-bottom:10px;
 }
-.var-button{
-    width:100%;
-    font-size:0;
-    text-align:center;
-    border:1px solid black;
-    padding:2px;
-}
-.var-button *{
-    display:inline-block;
-    font-size:1.2vw;
-    line-height:30px;
-}
-.var-value{
-    width:100%;
-    resize:vertical;
-}
-.var-remove{
-    width:25%;
-    height:30px;
-}
-.var-name{
-    width:75%;
-}
-
 .editor-descriptor{
     text-align:center;
     font-family:"Georgia";
@@ -268,6 +257,19 @@ body {
     border:1px solid #666;
 }
 
+.title-text{
+    text-align:center;
+    font-family:var(--heading-font-family) !important;
+    height:30px;
+    line-height:30px;
+    font-size:1.5vw;
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
+    color:var(--heading-text-color);
+    user-select:none;
+    display:inline-block;
+    width:100%;
+    vertical-align:top;
+}
 /* Classes that are added to an element for visual cues*/
 .selected{
     border-color:red !important;
@@ -275,7 +277,7 @@ body {
 .crossed{
     text-decoration: line-through;
 }
-
+/*
 .light-gradient{
     font-family:"Calibri";
     background: linear-gradient(to bottom right, grey, white);
@@ -294,7 +296,7 @@ body {
     background: linear-gradient(to bottom right, black, grey);
     color:#EEE;
 }
-
+*/
 .thirty-height{
     height:30px;
 }

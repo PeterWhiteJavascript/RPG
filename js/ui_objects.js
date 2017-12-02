@@ -232,6 +232,7 @@ Quintus.UIObjects=function(Q){
                 },
                 checkCharProp:function(obj){
                     var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
+                    if(!char) return false;
                     return Q.textModules.evaluateStringOperator(char[obj[1]],obj[2],obj[3]);
                 },
                 checkCharStat:function(obj){
@@ -1860,7 +1861,7 @@ Quintus.UIObjects=function(Q){
                 //Allow cycling to the next script item
                 Q.dialogueController.p.noCycle = false;
             });
-            obj.moveAlongPath(props[3]);
+            obj.moveAlongPath(JSON.parse(props[3]));
             this.p.noCycle = true;
             //If we're waiting on arrival
             return props[2];

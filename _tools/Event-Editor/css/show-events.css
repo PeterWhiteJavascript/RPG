@@ -1,4 +1,5 @@
 #scene-type-display{
+    color:var(--menu-text-color);
     position:absolute;
     top:10px;
     left:10px;
@@ -10,7 +11,8 @@
     left:50%;
     width:300px;
     height:200px;
-    background-color:lightgrey;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
     margin:0 auto;
     text-align:center;
     transform:translate(-50%,-50%);
@@ -67,7 +69,7 @@
     cursor:pointer;
 }
 .new-event-buttons span:hover{
-    background-color:#f5f5f5;
+    background-color:var(--button-hover-color)
 }
 .new-event-confirm{
     float:left;
@@ -81,7 +83,7 @@
 #events-flowchart-cont{
     width:80%;
     height:92.5%;
-    background-color:var(--secondary-color);
+    background-color:var(--background-color);
     position:relative;
     display:inline-block;
     overflow:scroll;
@@ -161,66 +163,6 @@
     border-bottom: 8px solid transparent;
 }
 
-#categories{
-    width:100%;
-    height:5%;
-    background-color:lightgrey;
-}
-.category{
-    width:20%;
-    height:100%;
-    background-color:light-grey;
-    display:inline-block;
-    font-size:1.5vw;
-    border-top:1px solid black;
-    border-bottom:1px solid black;
-    text-align:center;
-    padding:10px;
-    cursor:pointer;
-    user-select:none;
-}
-.category:hover{
-    background-color:#f5f5f5;
-}
-#group-cont{
-    width:100%;
-    height:100%;
-}
-.event-group{
-    width:30%;
-    height:280px;
-    display:inline-block;
-    margin-left:2.5%;
-    margin-top:2.5%;
-    border:2px solid black;
-    border-radius:4px;
-    background-color:lightgrey;
-}
-.add-cond{
-    width:100%;
-    height:20px;
-    font-size:18px;
-    background-color:lightgrey;
-    text-align:center;
-    padding:2px;
-    border:1px solid black;
-    user-select:none;
-    cursor:pointer;
-}
-.add-cond:hover{
-    background-color:#f5f5f5;
-}
-.conds-cont{
-    width:100%;
-    height:100px;
-    overflow-y:auto;
-}
-.event-cont{
-    width:100%;
-    height:120px;
-    overflow-y:auto;
-    border-top:1px dashed black;
-}
 .event-button{
     margin:2px 2px;
     display:inline-block;
@@ -233,111 +175,12 @@
     cursor:pointer;
     user-select:none;
     overflow:hidden;
-    background-color: lightgrey;
+    background-color: var(--content-button-background-color);
+    color: var(--content-button-text-color);
 }
 .absolute-event-button{
     position:absolute !important;
 }
 .event-button:hover{
-    background-color:#f5f5f5;
-}
-.event-options{
-    width:100%;
-    height:36px;
-    border-top:1px dashed black;
-    vertical-align:middle;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-.priority-desc{
-    width:25%;
-    height:100%;
-    font-size:1.2vw;
-    text-align:center;
-    margin-top:18px;
-}
-.event-options input{
-    width:25%;
-    height:100%;
-    font-size:1.2vw;
-    background-color:lightgrey;
-    border:0;
-}
-.recur-desc{
-    width:25%;
-    height:100%;
-    font-size:1.2vw;
-    text-align:center;
-    margin-top:18px;
-}
-.event-options select{
-    width:25%;
-    height:100%;
-    font-size:1.2vw;
-    background-color:lightgrey;
-    border:0;
-}
-.event-cond{
-    width:100%;
-    height:40%;
-    border:1px solid black;
-}
-.cond-remove{
-    width:10%;
-    height:50%;
-    display:inline-block;
-    text-align:center;
-    padding:1px;
-    font-size:1.2vw;
-    cursor:pointer;
-    border:1px solid black;
-    border-radius:1px;
-    background-color:lightgrey;
-    vertical-align: top;
-}
-.cond-groups{
-    width:25%;
-    height:50%;
-    font-size:1.1vw;
-    border:0;
-    text-align-last:center;
-}
-.cond-types{
-    width:55%;
-    height:50%;
-    font-size:1.1vw;
-    border:0;
-    text-align-last:center;
-}
-.cond-operator{
-    width:10%;
-    height:50%;
-    font-size:1.1vw;
-    border:0;
-    text-align-last:center;
-}
-.cond-value{
-    width:100%;
-    height:50%;
-    font-size:1.1vw;
-    border:0;
-    vertical-align: top;
-    text-align-last:center;
-}
-.cond-remove:hover{
-    background-color:#f5f5f5;
-}
-select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    text-indent: 1px;
-    text-overflow: '';
-}
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0; 
+    background-color:var(--content-button-hover-color);
 }

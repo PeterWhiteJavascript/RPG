@@ -1,5 +1,4 @@
 .UIC-choice{
-    
     border:1px solid black;
     border-radius:6px;
 }
@@ -10,7 +9,7 @@
     font-size:0;
     user-select:none;
     line-height:30px;
-    background-color:#EEE;
+    background-color:var(--menu-background-color);
 }
 /*HUD START*/
 .UIC-hud{
@@ -20,16 +19,12 @@
 .UIC-hud div{
     display:inline-block;
     font-size:1.2vw;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
 }
 .UIC-hud div:hover{
-    background-color:lightgrey;
+    background-color:var(--button-hover-color);
     cursor:pointer;
-}
-.UIC-hud .add-new-condition{
-    width:40%;
-}
-.UIC-hud .add-new-effect{
-    width:40%;
 }
 /*HUD END*/
 /*COND-EFFECT START*/
@@ -39,15 +34,18 @@
 }
 .UIC-group-cont{
     text-align:center;
-    background-color:#EEE;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
 }
 .UIC-group-hud{
     width:100%;
     height:30px;
     border-bottom:1px solid black;
+    font-size:0;
+    text-align:center;
 }
 .UIC-group-hud:hover{
-    background-color:lightgrey;
+    background-color:var(--menu-button-hover-color);
     cursor:pointer;
 }
 .UIC-group-hud div{
@@ -77,6 +75,11 @@
     padding-top:5px;
     padding-bottom:5px;
     border-bottom:1px solid black;
+    text-align:center;
+    font-size:1vw;
+}
+.UIC-choice-item-top{
+    padding:5px;
 }
 .UIC-choice-item-top *{
     
@@ -103,6 +106,7 @@
     display:inline-block;
     height:30px;
     line-height:30px;
+    vertical-align:top;
 }
 /*COND-EFFECT END*/
 /* CHOICE START*/
@@ -111,18 +115,21 @@
     height:30px;
     line-height:30px;
     font-size:0;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
+    text-align:center;
 }
 .UIC-choice-title-cont{
     width:90%;
 }
-.UIC-choice-title-cont:hover{
+.UIC-choice-title-cont:hover, .UIC-choice-hud .remove-choice-deep:hover{
     cursor:pointer;
-    background-color:lightgrey;
+    background-color:var(--menu-button-hover-color);
 }
+
 .UIC-choice-hud *{
     display:inline-block;
     font-size:1.2vw;
-    
 }
 .UIC-choice-hud div *{
     display:inline-block;
@@ -132,28 +139,80 @@
     width:80%;
 }
 /* CHOICE END*/
+/* SCRIPT ITEM START*/
+.UIC-script-hud {
+    width:100%;
+    height:30px;
+    line-height:30px;
+    font-size:0;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
+    text-align:center;
+    border-bottom:1px solid black;
+}
+.UIC-script-hud *{
+    display:inline-block;
+    font-size:1.2vw;
+}
+.UIC-script-hud .UIC-group-minimize:hover, .add-new-script-item:hover{
+    cursor:pointer;
+    background-color:var(--button-hover-color);
+}
+.UIC-script-title{
+    width:80%;
+}
+.UIC-script-items{
+    border-top:1px solid black;
+    background-color:var(--menu-background-color);
+}
+.UIC-group-item-props input[type=checkbox]{
+    margin:0;
+}
+.UIC-group-item{
+    cursor:pointer;
+}
+
+/* SCRIPT ITEM END*/
 /* TOP-BAR START*/
 #top-bar{
+    top:0;
     width:100%;
     height:60px;
     line-height:60px;
     text-align:center;
     position:fixed;
     z-index:100;
+    font-size:0;
+    background-color:var(--menu-background-color);
 }
 .top-bar-itm{
     height:100%;
-    background-color:#EEE;
     font-size:1.5vw;
+    color:var(--menu-text-color);
     user-select:none;
     border:1px solid black;
     display:inline-block;
 }
 .top-bar-itm:hover{
-    background-color:lightgrey;
+    background-color:var(--menu-button-hover-color);
     cursor:pointer;
 }
-
+/* TOP-BAR END */
+.add-new-condition{
+    width:40%;
+}
+.add-new-effect{
+    width:40%;
+}
+.add-new-script-item{
+    width:80%;
+}
+textarea{
+    line-height:initial !important;
+}
+.UIC-container{
+    height:auto;
+}
 //Taken from https://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has
 /* one item */
 .top-bar-itm:first-child:nth-last-child(1) {
@@ -207,16 +266,16 @@
 /* TOP-BAR END*/
 
 .tenth-width{
-    width:10%;
+    width:10% !important;
 }
 .quarter-width{
-    width:25%;
+    width:25% !important;
 }
 .third-width{
-    width:33.3333%;
+    width:33.3333% !important;
 }
 .half-width{
-    width:50%;
+    width:50% !important;
 }
 .sixty-five-width{
     width:65%;
@@ -228,13 +287,13 @@
     width:80%;
 }
 .full-width{
-    width:100%;
+    width:100% !important;
 }
 .remove-choice-deep{
     cursor:pointer;
     width:10%;
 }
 .remove-choice-deep:hover{
-    background-color:lightgrey;
+    background-color:var(--button-hover-color);
 }
 

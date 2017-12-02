@@ -5,61 +5,98 @@
         <?php include 'config.php';?>
         <title>Set Options</title>
         <style>
-            #main-bg{
-                width:100%;
-                height:92.5%;
-                background-color:var(--secondary-color);
-                display:inline-block;
-            }
-            span{
+            .desc-text{
                 width:50%;
-                font-size:1.5vw;
+                font-size:1.2vw;
                 display:inline-block;
+                color:var(--desc-text-color);
             }
             input{
                 width:50%;
                 font-size:1.5vw;
                 display:inline-block;
+                color:var(--form-elm-text-color);
+                background-color:var(--form-elm-background-color);
+            }
+            #main-bg{
+                width:100%;
+                height:100%;
+                display:inline-block;
+                background-color:var(--background-color);
+            }
+            #main-menu-cont{
+                position:absolute;
+                bottom:0px;
+                height:150px;
+                width:100%;
+                text-align:center;
+                background-color:var(--menu-background-color);
+            }
+            .bar-button{
+                color:var(--menu-text-color);
+            }
+            .color-col{
+                display:inline-block;
+                vertical-align:top;
+                width:25%;
+                color:var(--menu-text-color);
+            }
+            .color-col *{
+                height:30px;
+                line-height:30px;
             }
         </style>
     </head>
     <body>
         <script>
-            $(function(){ 
-                $("#main-color").val(Cookies.get("main-color") || "lightgrey");
-                $("#secondary-color").val(Cookies.get("secondary-color") || "orange");
-                function useCookies(main,second){
-                    $("body").get(0).style.setProperty("--main-color", main);
-                    $("body").get(0).style.setProperty("--secondary-color", second);
+            $(function(){
+                function useCookies(){
+                    var cont = $("#main-menu-cont");
+                    cont.empty();
+                    var group = $("<div class='color-col'></div>");
+                    var numCol = 5;
+                    for(var i=0;i<COOKIECOLORS.length;i++){
+                        if(i>0&&i%numCol===0){
+                            cont.append(group);
+                            group = $("<div class='color-col'></div>");
+                        }
+                        var id = COOKIECOLORS[i][0];
+                        var text = COOKIECOLORS[i][1];
+                        var color = Cookies.get(id);
+                        $("body").get(0).style.setProperty("--"+id, color);
+                        $(group).append("<div class='color-cont'><span class='desc-text'>"+text+"</span><input class='color-value' id="+id+" value="+color+"></div>");
+                    }
+                    cont.append(group);
                 }
+                useCookies();
+                
                 $("#save").click(function(){
-                    Cookies.set("main-color",$("#main-color").val(),{expires:365});
-                    Cookies.set("secondary-color",$("#secondary-color").val(),{expires:365});
-                    useCookies($("#main-color").val(),$("#secondary-color").val());
+                    for(var i=0;i<COOKIECOLORS.length;i++){
+                        var id = COOKIECOLORS[i][0];
+                        var value = $("#"+id).val();
+                        Cookies.set(id,value,{expires:365});
+                    }
+                    useCookies();
                 });
-                $("#back-to-main").click(function(){
+                $("#back").click(function(){
                     window.location = "index.php";
+                });
+                $(document).on("change",".color-value",function(){
+                    $("#save").trigger("click");
                 });
             });
         </script>
         <div id="wrapper">
-            <div id="main-content">
-                <div id="scene-title"><div>Options</div></div>
-                <div id="main-bg">
-                    
-                </div>
-                <div class="main-menu-cont">
-                    <div id="main-color-cont">
-                        <span>Main Colour</span>
-                        <input id="main-color" placeholder="Main Colour" value="">
+            <div id="main-bg">
+                <div id="top-bar">
+                    <div class="top-bar-itm">
+                        <div id="save" class="bar-button">Save</div>
                     </div>
-                    <div id="secondary-color-cont">
-                        <span>Secondary Colour</span>
-                        <input id="secondary-color" placeholder="Secondary Colour" value="">
+                    <div class="top-bar-itm">
+                        <div id="back" class="bar-button">Back</div>
                     </div>
-                    <div id="save" class="menu-button">Save</div>
-                    <div id="back-to-main" class="menu-button">Back</div>
                 </div>
+                <div id="main-menu-cont"></div>
             </div>
         </div>        
     </body>

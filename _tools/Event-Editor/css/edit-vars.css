@@ -7,32 +7,21 @@
     font-size:0;
     border-radius:10px; 
     border:1px solid black;
-    border-radius:10px 10px 0px 0px; 
+    border-radius:10px 10px 0px 0px;
+    background-color:var(--background-color);
 }
 
-#scene-title{
-    display:inline-block;
-    width:100%;
-    height:7.5%;
-    background-color:var(--main-color);
-    border-radius:5px 5px 0px 0px; 
-    padding:1%;
-}
-#scene-title div{
-    font-size:5vh;
-    text-align:center;
-}
 #vars-list{
     top:0;
     width:40%;
     height:92.5%;
-    background-color:var(--secondary-color);
     display:inline-block;
     overflow-y:auto;
 }
 .var-title{
     font-size:24px;
-    background-color:var(--main-color);
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
+    color:var(--heading-text-color);
     text-align:center;
     border-top:1px solid black;
     border-bottom:1px solid black;
@@ -45,13 +34,14 @@
     margin-top:1%;
     margin-bottom:1%;
     padding:0;
-    background-color:lightgrey;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
     border:2px solid black;
     border-radius:5px;
     cursor:pointer;
 }
 .variable:hover{
-    background-color:#f5f5f5;
+    background-color:var(--content-button-hover-color);
 }
 .variable input{
     margin-top:1%;
@@ -64,7 +54,6 @@
 #ref-cont{
     width:40%;
     height:92.5%;
-    background-color:var(--secondary-color);
     display:inline-block;
     vertical-align:top;
     border-left:1px solid black;
@@ -72,7 +61,8 @@
 }
 .ref-title{
     font-size:24px;
-    background-color:lightgrey;
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
+    color:var(--heading-text-color);
     border-bottom:1px solid black;
     border-top:1px solid black;
     text-align:center;
@@ -82,7 +72,8 @@
     width:90%;
     height:40px;
     font-size:1.3vw;
-    background-color:lightgrey;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
     border:2px solid black;
     border-radius:5px;
     cursor:pointer;
@@ -91,6 +82,10 @@
     display:inline-block;
     line-height:40px;
     margin-top:5px;
+}
+.reference:hover{
+    background-color:var(--content-button-hover-color);
+    
 }
 .clicked{
     border-color:red;
