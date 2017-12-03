@@ -539,8 +539,8 @@
                     "globalVars": [],
                     "name": "Kitchen-pre",
                     "type": "battleScene",
-                    "left": "644px",
-                    "top": "357px"
+                    "left": "640px",
+                    "top": "470px"
                 },
                 {
                     "events": [
@@ -563,8 +563,8 @@
                     ],
                     "name": "Kitchen-b",
                     "type": "battle",
-                    "left": "516px",
-                    "top": "360px"
+                    "left": "369px",
+                    "top": "473px"
                 },
                 {
                     "events": [
@@ -578,8 +578,8 @@
                     "globalVars": [],
                     "name": "Kitchen-post",
                     "type": "battleScene",
-                    "left": "503px",
-                    "top": "310px"
+                    "left": "339px",
+                    "top": "312px"
                 },
                 {
                     "events": [
@@ -593,8 +593,8 @@
                     "globalVars": [],
                     "name": "Starting",
                     "type": "story",
-                    "left": "670px",
-                    "top": "256px"
+                    "left": "618px",
+                    "top": "388px"
                 },
                 {
                     "events": [
@@ -608,8 +608,8 @@
                     "globalVars": [],
                     "name": "battleScene-2",
                     "type": "battleScene",
-                    "left": "791px",
-                    "top": "314px"
+                    "left": "793px",
+                    "top": "320px"
                 },
                 {
                     "events": [],
@@ -625,15 +625,35 @@
                         [
                             "Story",
                             "Act-2-3",
-                            "the-epic-battle"
+                            "epic-battle-fight"
                         ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "the-epic-battle",
                     "type": "story",
-                    "left": "875px",
-                    "top": "220px"
+                    "left": "811px",
+                    "top": "253px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Base-Camp"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Base-Camp"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "epic-battle-fight",
+                    "type": "battle",
+                    "left": "656px",
+                    "top": "251px"
                 }
             ],
             "vrs": {
@@ -642,7 +662,43 @@
         },
         {
             "name": "Act-2-4",
-            "events": [],
+            "events": [
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-4",
+                            "battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Start",
+                    "type": "battleScene",
+                    "left": "457px",
+                    "top": "318px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-4",
+                            "battle"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-4",
+                            "battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "battle",
+                    "type": "battle",
+                    "left": "545px",
+                    "top": "323px"
+                }
+            ],
             "vrs": []
         },
         {

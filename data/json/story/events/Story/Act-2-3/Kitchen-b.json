@@ -2,7 +2,7 @@
     "name": "Kitchen-b",
     "kind": "battle",
     "map": "Test\/Kitchen.tmx",
-    "music": "battle.mp3",
+    "music": "LevelGuard.mp3",
     "placementSquares": [
         [
             14,
@@ -93,10 +93,11 @@
         {
             "conds": [
                 [
-                    "charHealth",
+                    "rounds",
                     [
-                        "Tomato 0",
-                        "deadOrFainted"
+                        "==",
+                        1,
+                        0
                     ]
                 ],
                 [

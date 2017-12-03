@@ -1,23 +1,40 @@
 {
-    "name": "the-epic-battle",
-    "kind": "battleScene",
+    "name": "epic-battle-fight",
+    "kind": "battle",
     "map": "Test\/house-of-villains-2.tmx",
-    "music": "LevelGuard.mp3",
-    "script": [
+    "music": "demo.mp3",
+    "placementSquares": [
         [
-            [
-                "text",
-                [
-                    "empty.png",
-                    "empty.png",
-                    "hey!",
-                    false,
-                    0,
-                    false
-                ]
-            ]
+            24,
+            11
+        ],
+        [
+            24,
+            12
+        ],
+        [
+            24,
+            10
         ]
     ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "Base-Camp"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "Base-Camp"
+        ]
+    },
+    "events": [],
     "characters": [
         [
             "Officers.json",
@@ -58,7 +75,7 @@
             "Sjrna",
             0,
             [
-                24,
+                25,
                 11
             ],
             "left"
@@ -140,14 +157,5 @@
             ],
             "right"
         ]
-    ],
-    "finished": [
-        "Story",
-        "Act-2-3",
-        "epic-battle-fight"
-    ],
-    "viewLoc": [
-        21,
-        11
     ]
 }

@@ -495,7 +495,7 @@ Quintus.UIObjects=function(Q){
             allies.forEach(function(ally){
                 actions.push([ally.name,"fillEquipMenu",ally]);
             });
-            actions.push(["Back","createEntourageMenu"]);
+            actions.push(["Back",false,"createEntourageMenu",[]]);
             this.displayList({actions:actions});
             var cont = this.p.midCont;
             cont.append('\n\

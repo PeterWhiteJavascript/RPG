@@ -1,0 +1,73 @@
+{
+    "name": "battle",
+    "kind": "battle",
+    "map": "Test\/xxxxxxxxxxkean.tmx",
+    "music": "demo.mp3",
+    "placementSquares": [
+        [
+            13,
+            12
+        ],
+        [
+            14,
+            12
+        ],
+        [
+            15,
+            12
+        ]
+    ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-4",
+            "battle"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-4",
+            "battle"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "TEST.json",
+            "ARMY-MEN",
+            "Monster-Assassin",
+            0,
+            [
+                13,
+                10
+            ],
+            "down"
+        ],
+        [
+            "TEST.json",
+            "ARMY-MEN",
+            "Monster-Berserker",
+            0,
+            [
+                14,
+                10
+            ],
+            "down"
+        ],
+        [
+            "TEST.json",
+            "ARMY-MEN",
+            "Dungeon-Man",
+            0,
+            [
+                15,
+                10
+            ],
+            "down"
+        ]
+    ]
+}

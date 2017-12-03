@@ -465,7 +465,7 @@ $(function(){
             "Load Chars":function(){
                 if($("#load-chars-from-cont").length) return;
                 $("#full-screen-hider").show();
-                var cont = $("<div id='load-chars-from-cont'><span class='full-width'>Load From File</span></div>");
+                var cont = $("<div id='load-chars-from-cont'><span class='full-width load-chars-title'>Load From File</span></div>");
                 var scType = uic.Select("Type",uic.dataP.sceneTypes,uic.dataP.eventPointer.type);
                 var scName = uic.Select("Scene",uic.dataP.scenes[uic.dataP.eventPointer.type],uic.dataP.eventPointer.scene);
                 var evName = uic.Select("Event",uic.dataP.events[uic.dataP.eventPointer.type][uic.dataP.eventPointer.scene],uic.dataP.eventPointer.event);
@@ -749,10 +749,11 @@ $(function(){
         var cont = $("#char-files");
         for(var i=0;i<fileNames.length;i++){
             var groups = Object.keys(uic.dataP.charFiles[fileNames[i]]);
-            $(cont).append('<div class="file-groups"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+fileNames[i]+'</span><div class="groups minimize"></div></div>');
+            $(cont).append('<div class="file-groups"><div class="file-group-title-cont"><span class="minimize-icon group-text">-</span><span class="title-text minimizable group-text">'+fileNames[i]+'</span></div><div class="groups minimize"></div></div>');
+            
             for(var j=0;j<groups.length;j++){
                 var chars = Object.keys(uic.dataP.charFiles[fileNames[i]][groups[j]]);
-                $(cont).children(".file-groups").children(".groups").last().append('<div class="file-chars"><span class="minimize-icon group-text">-</span><span class="title-text medium-gradient minimizable group-text">'+groups[j]+'</span><div class="chars minimize"></div></div>');
+                $(cont).children(".file-groups").children(".groups").last().append('<div class="file-chars"><div class="file-group-title-cont"><span class="minimize-icon group-text">-</span><span class="title-text minimizable group-text">'+groups[j]+'</span></div><div class="chars minimize"></div></div>');
                 for(var k=0;k<chars.length;k++){
                     var char = uic.dataP.charFiles[fileNames[i]][groups[j]][chars[k]];
                     char.file = fileNames[i];
@@ -762,6 +763,17 @@ $(function(){
             }
         }
         
+        $(document).on("click",".file-group-title-cont",function(){
+            var text = $(this).children(".minimize-icon").text();
+            if(text==="-"){
+                $(this).parent().children(".minimize").hide();
+                $(this).children(".minimize-icon").text("+");
+            } else {
+                $(this).parent().children(".minimize").show();
+                $(this).children(".minimize-icon").text("-");
+            }
+        });
+        $("#char-files").children(".file-groups").children(".file-group-title-cont").trigger("click");
         $(document).on("click",".add-group",function(){
             uic.createCondEffectsGroup($(this).parent().siblings(".cond-groups")); 
         });

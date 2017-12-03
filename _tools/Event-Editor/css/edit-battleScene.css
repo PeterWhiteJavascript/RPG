@@ -146,6 +146,12 @@ body{
     background:transparent;
     background-color:var(--button-hover-color);
 }
+.file-group-title-cont{
+    height:30px;
+}
+.file-group-title-cont:hover{
+    background-color:var(--button-hover-color);
+}
 .loc-display{
     width:20%;
 }
@@ -236,20 +242,33 @@ body{
     top:40%;
     left:50%;
     width:300px;
-    height:200px;
-    background-color:lightgrey;
+    height:150px;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
     margin:0 auto;
     text-align:center;
     transform:translate(-50%,-50%);
     z-index:2;
 }
+#load-chars-from-cont *{
+    height:30px;
+    line-height:30px;
+}
+
 #load-chars-from-cont span{
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
     display:inline-block;
-    line-height:25px;
+}
+#load-chars-from-cont .load-chars-title{
+    color:var(--heading-text-color);
+    font-family:var(--heading-font-family);
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
 }
 #load-chars-buttons{
     width:100%;
     text-align:center;
+    background-color:var(--button-background-color);
 }
 #load-chars-buttons span{
     width:50%;
@@ -257,7 +276,7 @@ body{
     user-select:none;
 }
 #load-chars-buttons span:hover{
-    background-color:grey;
+    background-color:var(--menu-button-hover-color);
 }
 #full-screen-hider{
     position:absolute;

@@ -84,7 +84,6 @@ Quintus.SceneFuncs=function(Q){
                 loc:char[4],
                 uniqueId:char[3]
             };
-            console.log(newChar)
             charData.push(newChar);
              stage.insert(new Q.StoryCharacter(newChar));
         });/*

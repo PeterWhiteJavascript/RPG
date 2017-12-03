@@ -2854,7 +2854,7 @@ Quintus.GameObjects=function(Q){
                         "accessory": "None"
                     };
                     char.equipment = this.getEquipment(eq,char.classNum,char.natNum,char.level);
-                    char.techniques = this.getTechniques(data.techniques) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
+                    char.techniques = this.getTechniques(data.techniques,char.charClass) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
                     char.talents = this.getTalents(char.charClass,char.charGroup);
                     char.lean = [this.getStatLean(),this.getStatLean()];
                     char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
@@ -2885,12 +2885,12 @@ Quintus.GameObjects=function(Q){
                         accessory:data.equipment.accessory?this.equipment.gear[data.accessory]:false
                     };
                     char.baseStats = data.baseStats;
-                    char.techniques = this.getTechniques(data.techniques);
                     char.nationality = data.nationality;
                     char.natNum = this.getNatNum(char.nationality);
                     char.charClass = data.charClass;
                     char.classNum = this.getClassNum(char.charClass);
                     char.charGroup = this.generateCharGroup(char.classNum);
+                    char.techniques = this.getTechniques(data.techniques,char.charClass);
                     char.talents = this.getTalents(char.charClass,char.charGroup);
                     
                     char.exp = data.exp;
@@ -2926,12 +2926,12 @@ Quintus.GameObjects=function(Q){
                         accessory:data.equipment.accessory?this.equipment.gear[data.accessory]:false
                     };
                     char.baseStats = data.baseStats;
-                    char.techniques = this.getTechniques(data.techniques);
                     char.nationality = data.nationality;
                     char.natNum = this.getNatNum(char.nationality);
                     char.charClass = data.charClass;
                     char.classNum = this.getClassNum(char.charClass);
                     char.charGroup = this.generateCharGroup(char.classNum);
+                    char.techniques = this.getTechniques(data.techniques,char.charClass);
                     char.talents = this.getTalents(char.charClass,char.charGroup);
                     
                     char.value = data.value;
@@ -2979,7 +2979,7 @@ Quintus.GameObjects=function(Q){
                     char.lean = [this.getStatLean(),this.getStatLean()];
                     
                     char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
-                    char.techniques = this.getTechniques(this.setLevelTechniques(data.techniques,char.level));//Techniques are always filled out and are not random for enemies.
+                    char.techniques = this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass);//Techniques are always filled out and are not random for enemies.
                     char.talents = this.getTalents(char.charClass,char.charGroup);
                     char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.primaryCoordinate,char.lean);
                     
@@ -3122,17 +3122,23 @@ Quintus.GameObjects=function(Q){
                accessory:ac
             };
         },
-        getTechniques:function(techs){
+        getTechniques:function(techs,charClass){
             if(!techs) return;
             var fullTechs = [];
             var allSkills = Q.state.get("allSkills");
+            var skills = Q.state.get("skills");
             for(var i=0;i<techs.length;i++){
                 if(techs[i].length){
-                    fullTechs.push(allSkills[techs[i]]);
+                    if(techs[i]==="Default"){
+                        fullTechs.push(skills[charClass][i]);
+                    } else {
+                        fullTechs.push(allSkills[techs[i]]);
+                    }
                 } else {
                     i = techs.length;
                 }
             }
+            console.log(fullTechs)
             return fullTechs;
         },
         //Remove some later techniques if the level is not enough

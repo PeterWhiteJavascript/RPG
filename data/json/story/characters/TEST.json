@@ -1,0 +1,139 @@
+{
+    "ARMY-MEN": {
+        "Monster-Berserker": {
+            "handle": "Monster-Berserker",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Push",
+                "Staredown",
+                "Charge Through",
+                "Headbutt",
+                "Pull",
+                "War Cry"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Berserker"
+        },
+        "Monster-Assassin": {
+            "handle": "Monster-Assassin",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Bleeding Strike",
+                "Caltrops",
+                "Weakening Strike",
+                "Nerve Strike",
+                "Acid Bomb",
+                "Poison Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Assassin"
+        },
+        "Dungeon-Man": {
+            "handle": "Dungeon-Man",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "team": "Enemy",
+            "equipment": {
+                "righthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "lefthand": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "armour": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "footwear": [
+                    "Default",
+                    "Default",
+                    "Default"
+                ],
+                "accessory": "None"
+            },
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Vanguard"
+        }
+    }
+}
