@@ -213,6 +213,16 @@ textarea{
 .UIC-container{
     height:auto;
 }
+
+
+.minimize-choice{
+    cursor:pointer;
+    width:10%;
+}
+.minimize-choice:hover{
+    background-color:var(--button-hover-color);
+    
+}
 //Taken from https://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has
 /* one item */
 .top-bar-itm:first-child:nth-last-child(1) {

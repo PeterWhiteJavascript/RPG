@@ -1861,7 +1861,7 @@ Quintus.UIObjects=function(Q){
                 //Allow cycling to the next script item
                 Q.dialogueController.p.noCycle = false;
             });
-            obj.moveAlongPath(JSON.parse(props[3]));
+            obj.moveAlongPath(props[3]);
             this.p.noCycle = true;
             //If we're waiting on arrival
             return props[2];

@@ -4,28 +4,13 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <?php include 'GameDataLoader.php';?>
+        <?php include 'config.php';?>
         <link href="css/edit-battle-event.css" rel="stylesheet">
     </head>
     <body>
         <div id="editor-content">
             <div id="full-screen-hider"></div>
-            <div id="top-bar">
-                <div class="top-bar-itm">
-                    <div id="canvas-coordinates">0,0</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="save-file" class="bar-button">SAVE</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="test-file" class="bar-button">TEST</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="load-characters" class="bar-button">LOAD CHARS</div>
-                </div>
-                <div class="top-bar-itm">
-                    <div id="go-back" class="bar-button">BACK</div>
-                </div>
-            </div>
             <div id="editor-main-content">
                 <div id="map-cont" class="menu-box">
                     
@@ -97,11 +82,8 @@
             </div>
         </div>
         
-        <?php include 'GameDataLoader.php';?>
-        <?php include 'config.php';?>
-        <?php include 'quintus-lib.php'; ?>
+        <script src="js/edit-battle-event.js"></script>
         <script src="../../js/music.js"></script>
         <script src="../../js/animations.js"></script>
-        <script src="js/edit-battle-event.js"></script>
     </body>
 </html>

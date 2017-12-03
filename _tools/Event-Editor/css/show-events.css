@@ -1,5 +1,6 @@
 #scene-type-display{
-    color:var(--menu-text-color);
+    color:var(--heading-text-color);
+    font-family: var(--heading-font-family);
     position:absolute;
     top:10px;
     left:10px;

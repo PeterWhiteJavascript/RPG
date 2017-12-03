@@ -1,0 +1,27 @@
+{
+    "name": "battle-2",
+    "kind": "battle",
+    "music": "demo.mp3",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "placementSquares": [],
+    "maxAllies": 6,
+    "events": [],
+    "characters": [],
+    "victory": {
+        "next": [
+            "Story",
+            "Act-2-3",
+            "battle-2"
+        ],
+        "events": []
+    },
+    "defeat": {
+        "next": [
+            "Story",
+            "Act-2-3",
+            "battle-2"
+        ],
+        "events": []
+    },
+    "vrs": []
+}

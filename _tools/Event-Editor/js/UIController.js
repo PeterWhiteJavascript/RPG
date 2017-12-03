@@ -306,7 +306,7 @@ function UIC(p){
             var props = [];
             $(this).children(".UIC-group-item-props").children(".UIC-prop").each(function(){
                 if($(this).is("div")){
-                    props.push($(this).attr("data"));
+                    props.push(JSON.parse($(this).attr("data")));
                 }
                 else if($(this).attr("type")==="checkbox"){
                     props.push($(this).prop("checked"));

@@ -5,6 +5,12 @@
         "buff":"",
         "effect":{"stat":"","amount":0}
     },
+    "bridge":{
+        "name":"Bridge",
+        "move":1,
+        "buff":"",
+        "effect":{"epic":"2GUD","amount":666}
+    },
     "grass":{
         "name":"Grass",
         "move":1,

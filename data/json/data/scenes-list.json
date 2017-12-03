@@ -31,8 +31,8 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Location",
-                    "left": "585px",
-                    "top": "363px"
+                    "left": "582px",
+                    "top": "365px"
                 },
                 {
                     "events": [
@@ -513,14 +513,19 @@
                             "Story",
                             "Act-2-3",
                             "Kitchen-pre"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "battleScene-2"
                         ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Base-Camp",
                     "type": "location",
-                    "left": "652px",
-                    "top": "312px"
+                    "left": "651px",
+                    "top": "313px"
                 },
                 {
                     "events": [
@@ -553,7 +558,9 @@
                     "sceneVars": [
                         "kitchenComplete"
                     ],
-                    "globalVars": [],
+                    "globalVars": [
+                        "money"
+                    ],
                     "name": "Kitchen-b",
                     "type": "battle",
                     "left": "516px",
@@ -588,6 +595,45 @@
                     "type": "story",
                     "left": "670px",
                     "top": "256px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "the-epic-battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "battleScene-2",
+                    "type": "battleScene",
+                    "left": "791px",
+                    "top": "314px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "battle-2",
+                    "type": "battle",
+                    "left": "917px",
+                    "top": "317px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "the-epic-battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "the-epic-battle",
+                    "type": "story",
+                    "left": "875px",
+                    "top": "220px"
                 }
             ],
             "vrs": {

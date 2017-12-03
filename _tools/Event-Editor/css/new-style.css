@@ -20,7 +20,6 @@ time, mark, audio, video {
 	padding: 0;
 	border: 0;
 	font-size: 100%;
-	font: inherit;
 	vertical-align: baseline;
         text-decoration:none;
 }
@@ -70,10 +69,10 @@ table {
 }
 
 * {
-    font-family: "Kalam" !important;
+    font-family: "Kalam";
 }
 textarea, input, select, option{
-    font-family: "Helvetica" !important;
+    font-family: "Helvetica";
     background-color: var(--form-elm-background-color);
     color: var(--form-elm-text-color);
 }
@@ -112,14 +111,16 @@ body {
     display:inline-block;
     width:100%;
     height:7.5%;
-    background-color:var(--menu-background-color);
-    color:var(--menu-text-color);
-    border-radius:5px 5px 0px 0px; 
-    padding:1%;
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
+    border-radius:5px 5px 0px 0px;
 }
 #scene-title div{
+    height:100%;
     font-size:5vh;
     text-align:center;
+    font-family: var(--heading-font-family) !important;
+    color:var(--heading-text-color);
+    padding:6px;
 }
 #menu-cont{
     width:20%;
@@ -130,6 +131,15 @@ body {
     border-left:1px solid black;
 }
 
+.menu-box{
+    width:25%;
+    height:calc(50% - 30px);
+    overflow:auto;
+    position:fixed;
+    padding:10px;
+    background-color:var(--menu-background-color);
+    border:1px solid black;
+}
 .menu-button{
     width:100%;
     font-size:2vw;
@@ -164,6 +174,24 @@ body {
     border-radius:5px;
 }
 
+
+.character-cont{
+    width:100%;
+    height:30px;
+    text-align:center;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
+}
+.character{
+    width:90%;
+    display:inline-block;
+    font-size:1.1vw;
+    user-select:none;
+    cursor:pointer;
+    vertical-align:top;
+    padding:10px;
+    height:100%;
+}
 .menu-divider{
     width:100%;
     height:5%;
@@ -259,10 +287,10 @@ body {
 
 .title-text{
     text-align:center;
-    font-family:var(--heading-font-family) !important;
     height:30px;
     line-height:30px;
     font-size:1.5vw;
+    font-family: var(--heading-font-family);
     background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
     color:var(--heading-text-color);
     user-select:none;

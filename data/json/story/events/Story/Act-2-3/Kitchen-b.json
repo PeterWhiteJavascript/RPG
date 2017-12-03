@@ -23,6 +23,14 @@
         [
             15,
             14
+        ],
+        [
+            17,
+            13
+        ],
+        [
+            17,
+            14
         ]
     ],
     "maxAllies": 6,
@@ -40,8 +48,7 @@
                             true
                         ]
                     ]
-                ],
-                "required": true
+                ]
             }
         ],
         "next": [
@@ -51,7 +58,31 @@
         ]
     },
     "defeat": {
-        "events": [],
+        "events": [
+            {
+                "conds": [
+                    [
+                        "rounds",
+                        [
+                            "==",
+                            1,
+                            0
+                        ]
+                    ]
+                ],
+                "effects": [
+                    [
+                        "setVar",
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            1000
+                        ]
+                    ]
+                ]
+            }
+        ],
         "next": [
             "Story",
             "Act-2-3",
@@ -84,8 +115,7 @@
                         "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3"
                     ]
                 ]
-            ],
-            "required": true
+            ]
         }
     ],
     "characters": [

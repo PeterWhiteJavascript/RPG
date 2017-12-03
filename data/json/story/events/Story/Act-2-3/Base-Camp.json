@@ -39,6 +39,16 @@
                 "Act-2-3",
                 "Kitchen-pre"
             ]
+        ],
+        [
+            "Go to bs 2",
+            false,
+            "changeEvent",
+            [
+                "Story",
+                "Act-2-3",
+                "battleScene-2"
+            ]
         ]
     ],
     "vrs": {

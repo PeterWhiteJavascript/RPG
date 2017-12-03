@@ -64,6 +64,5 @@
         <script src="js/edit-battleScene-script.js"></script>
         <script src="../../js/music.js"></script>
         <script src="../../js/animations.js"></script>
-        <!--<script src="lib/ask-before-redirect.js"></script>-->
     </body>
 </html>

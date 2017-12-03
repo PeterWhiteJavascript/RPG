@@ -373,7 +373,7 @@ $(function(){
         return newEvents;
     };
     function saveFile(){
-        var data = FileSaver.getNewSaveFile();
+        var data = FileSaver.getSaveFile();
             $.ajax({
                 type:'POST',
                 url:'save-battle.php',
@@ -533,11 +533,11 @@ $(function(){
                     break;
                 case "moveAlong":
                     var chars = FileSaver.getCharacters().map(function(c){return c[2]+" "+c[3];});
-                    props = props || [chars[0],uic.dataP.directions[0],true,"[]"];
+                    props = props || [chars[0],uic.dataP.directions[0],true,[]];
                     cont.append(this.Select("Char",chars,props[0],"char"));
                     cont.append(this.Select("Dir",uic.dataP.directions,props[1]));
                     cont.append(this.Checkbox("On Arrival",props[2]));
-                    var moveLocs = JSON.parse(props[3]);
+                    var moveLocs = props[3];
                     var moveCont = $(this.Container("Move Path",moveLocs));
                     cont.append(moveCont);
                     for(var i=0;i<moveLocs.length;i++){
@@ -700,7 +700,7 @@ $(function(){
                 });
                 return chars;
             },
-            getNewSaveFile:function(){
+            getSaveFile:function(){
                 var finished = [$("#prop-finished").children(".scene-type").val(),$("#prop-finished").children(".scene-name").val(),$("#prop-finished").children(".event-name").val()];
                 return {
                     file:{
@@ -795,24 +795,24 @@ $(function(){
             Q.selectedCharacter.on("step",Q.selectedCharacter,"setDir");
             
         });
-        $(document).on("click",".UIC-group-item",function(){
+        $(document).on("click",".UIC-script-items",function(){
             toggleSelected(this);
             //Any funcs that use selectedCharacter or selectedLocation
-            var func = $(this).children(".UIC-group-item-top").children(".UIC-func-cont").children(".UIC-func").val();
+            var func = $(this).children(".UIC-group-item").children(".UIC-group-item-top").children(".UIC-func-cont").children(".UIC-func").val();
             switch(func){
                 case "centerViewLoc":
-                    uic.linkSelectedLocToInputs($(this).children(".UIC-group-item-props").children(".UIC-prop")[0],$(this).children(".UIC-group-item-props").children(".UIC-prop")[1]);
+                    uic.linkSelectedLocToInputs($(this).children(".UIC-group-item").children(".UIC-group-item-props").children(".UIC-prop")[0],$(this).children(".UIC-group-item").children(".UIC-group-item-props").children(".UIC-prop")[1]);
                     break;
                 case "changeMoveSpeed":
                 case "playAnim":
                 case "changeDir":
                 case "fadeChar":
                 case "centerViewChar":
-                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item-props").children(".UIC-prop")[0]);
+                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item").children(".UIC-group-item-props").children(".UIC-prop")[0]);
                     break;
                 case "moveAlong":
-                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item-props").children(".UIC-prop")[0]);
-                    var locsCont = $(this).children(".UIC-group-item-props").children(".UIC-container");
+                    uic.linkSelectedCharToSelect($(this).children(".UIC-group-item").children(".UIC-group-item-props").children(".UIC-prop")[0]);
+                    var locsCont = $(this).children(".UIC-group-item").children(".UIC-group-item-props").children(".UIC-container");
                     Q.stage(0).on("selectedLocation",function(loc){
                         if(DC.checkSelectedLoc(loc)) return;
                         Q.selectedLocs.push(Q.stage(0).insert(new Q.SelectedSquare({loc:loc,num:Q.selectedLocs.length+1,cont:locsCont})));
