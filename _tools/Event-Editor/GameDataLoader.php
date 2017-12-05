@@ -74,5 +74,40 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
     };
     //Makes sure empty object is not converted to array (not sure what is really happening here).
     if(Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
+    var formatScenes = function(){
+        var story = GDATA.dataFiles["scenes-list.json"];
+        var flavour = GDATA.dataFiles["flavour-events-list.json"];
+        var newScenes = {
+            Story:[],
+            Flavour:[]
+        };
+        for(var i=0;i<story.Story.length;i++){
+            newScenes["Story"].push(story.Story[i].name);
+        }
+        var groups = Object.keys(flavour.groups);
+        for(var i=0;i<groups.length;i++){
+            newScenes["Flavour"].push(groups[i]);
+        }
+
+        return newScenes;
+    };
+    var formatEvents = function(){
+        var story = GDATA.dataFiles["scenes-list.json"];
+        var flavour = GDATA.dataFiles["flavour-events-list.json"];
+        var newEvents = {
+            Story:{},
+            Flavour:{}
+        };
+        for(var i=0;i<story.Story.length;i++){
+            newEvents.Story[story.Story[i].name] = story.Story[i].events.map(function(itm){return itm.name;});
+        }
+        var groups = Object.keys(flavour.groups);
+        for(var i=0;i<groups.length;i++){
+            newEvents.Flavour[groups[i]] = flavour.groups[groups[i]][2];
+        }
+        return newEvents;
+    };
+    GDATA.events = formatEvents();
+    GDATA.scenes = formatScenes();
     console.log(GDATA)
 </script>

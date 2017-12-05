@@ -586,7 +586,7 @@
                         [
                             "Story",
                             "Act-2-3",
-                            "Base-Camp"
+                            "Kitchen-pre"
                         ]
                     ],
                     "sceneVars": [],
@@ -652,8 +652,8 @@
                     "globalVars": [],
                     "name": "epic-battle-fight",
                     "type": "battle",
-                    "left": "656px",
-                    "top": "251px"
+                    "left": "616px",
+                    "top": "246px"
                 }
             ],
             "vrs": {

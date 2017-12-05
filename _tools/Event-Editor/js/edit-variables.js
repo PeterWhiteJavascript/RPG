@@ -69,7 +69,7 @@ function updateMenuOptions(type){
             $("#menu-cont").append(button("add-var","Add New Var"));
             $("#menu-cont").append(button("remove-var","Remove Var"));
             $("#menu-cont").append(button("save-vars","Save"));
-            $("#menu-cont").append(button("back","Back"));
+            $("#menu-cont").append(button("back-to-main","Back"));
         } else if(type==="reference"){
             $("#menu-cont").empty();
             $("#menu-cont").append(button("add-var","Add New Var"));
@@ -143,6 +143,12 @@ function updateMenuOptions(type){
             $("#save-vars").trigger("click");
         }
         window.location.href = 'load.php';
+    });
+    $("#back-to-main").click(function(){
+        if(changed&&confirm("Save vars before leaving?")){
+            $("#save-vars").trigger("click");
+        }
+        window.location.href = 'index.php';
     });
     $(document).on("change","input",function(){
         changed = true;

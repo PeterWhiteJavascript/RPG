@@ -247,6 +247,101 @@ function UIC(p){
         group.append(choiceCont);
         $(cont).append(group);
     };
+    this.createModuleGroup = function(cont,props){
+        props = props || ["","",[]];
+        var group = $(
+        '<div class="UIC-group">\n\
+            <div class="UIC-choice-hud">\n\
+                <div class="UIC-choice-title-cont">\n\
+                    <div class="UIC-group-minimize"><span>-</span></div>\n\
+                    <div class="UIC-choice-title"><span>'+props[0].substr(0,40)+'</span></div>\n\
+                </div>\n\
+                <div class="remove-choice-deep"><span>x</span></div>\n\
+            </div>\n\
+            <div class="UIC-text-handle">'+this.Input("Handle",props[0])+'</div>\n\
+            <div class="UIC-text">'+this.TextArea("",props[1])+'</div>\n\
+            <div class="UIC-copy-to-clipboard">Copy to Clipboard</div>\n\
+            <div class="UIC-hud">\n\
+                <div class="minimize-choice"><span>-</span></div>\n\
+                <div class="add-new-text"><span>Add Text</span></div>\n\
+                <div class="remove-choice-deep"><span>x</span></div>\n\
+            </div>\n\
+            <div class="UIC-text-groups">\n\
+            </div>\n\
+        </div>');
+        cont.append(group);
+        $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").click(this.minimizeChoice);
+        $(group).children(".UIC-choice-hud").children(".remove-choice-deep").click(this.removeDeepItem);
+        $(group).children(".UIC-copy-to-clipboard").click(function(){
+            //https://stackoverflow.com/questions/36233134/how-to-create-copy-to-clipboard-button-in-html-javascript
+            var aux = document.createElement("input");
+            aux.setAttribute("value","{"+$(group).children(".UIC-text-handle").children("input").val()+"}");
+            document.body.appendChild(aux);
+            aux.select();
+            document.execCommand("copy");
+            document.body.removeChild(aux);
+        });
+        uic.linkValueToText($(group).children(".UIC-text-handle").children("input"),$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
+        function createModularTextItem(props){
+            props = props || ["",false];
+            var cont = $("<div class='UIC-modular-texts'></div>");
+            cont.append(
+            '<div class="UIC-hud">\n\
+                <div class="minimize-choice"><span>-</span></div>\n\
+                <div class="add-new-module-cond"><span>Add Cond</span></div>\n\
+                <div class="remove-choice-deep"><span>x</span></div>\n\
+            </div>\n\
+            <div class="UIC-conditions">\n\
+                <div class="UIC-group-hud">\n\
+                    <div class="UIC-group-minimize"><span>-</span></div>\n\
+                    <div class="UIC-title"><span>Conditions</span></div>\n\
+                </div>\n\
+                <div class="UIC-cont"></div>\n\
+            </div>\n\
+            <div class="UIC-modular-text">'+uic.TextArea("Text",props[0])+'</div>');
+            $(cont).children(".UIC-conditions").children(".UIC-group-hud").click(uic.minimizeGroup);
+            
+            $(cont).children(".UIC-hud").children(".minimize-choice").click(function(){
+                var text = $(this).text();
+                if(text==="-"){
+                    $(this).parent().siblings().hide();
+                    $(this).text("+");
+                } else {
+                    $(this).parent().siblings().show();
+                    $(this).text("-");
+                }
+            });
+            $(cont).children(".UIC-hud").children(".add-new-module-cond").click(function(){
+                $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],false,true));
+            });
+            $(cont).children(".UIC-hud").children(".remove-choice-deep").click(function(){
+                $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").empty();
+            });
+            for(var i=0;i<props[1].length;i++){
+                $(cont).children(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],props[i],true));
+            }
+            return cont;
+        };
+        $(group).children(".UIC-hud").children(".add-new-text").click(function(){
+            $(this).parent().siblings(".UIC-text-groups").append(createModularTextItem());
+        });
+        $(group).children(".UIC-hud").children(".minimize-choice").click(function(){
+            var text = $(this).text();
+            if(text==="-"){
+                $(this).parent().siblings(".UIC-text-groups").hide();
+                $(this).text("+");
+            } else {
+                $(this).parent().siblings(".UIC-text-groups").show();
+                $(this).text("-");
+            }
+        });
+        $(group).children(".UIC-hud").children(".remove-choice-deep").click(function(){
+            $(this).parent().siblings(".UIC-text-groups").empty();
+        });
+        for(var i=0;i<props[2].length;i++){
+            $(group).children(".UIC-text-groups").append(createModularTextItem(props[2][i]));
+        }
+    };
     this.createCondEffectsGroup = function(cont,props){
         props = props || {conds:[],effects:[]};
         var group = $(
@@ -257,6 +352,7 @@ function UIC(p){
                 <div class="add-new-effect"><span>Add Effect</span></div>\n\
                 <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
+            <div class="UIC-conds-req UIC-group-item">'+this.Select("Conds Req",["All","Some","One"],"All")+'</div>\n\
             <div class="UIC-conditions UIC-group-cont">\n\
                 <div class="UIC-group-hud">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
@@ -332,10 +428,26 @@ function UIC(p){
         });
         return choices;
     };
+    this.getSaveModules = function(cont){
+        var modules = [];
+        $(cont).children(".UIC-group").each(function(){
+            var groups = [];
+            $(this).children(".UIC-text-groups").children(".UIC-modular-texts").each(function(){
+                groups.push([$(this).children(".UIC-modular-text").children("textarea").val(),uic.getGroupValues($(this).children(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item"))]);
+            });
+            modules.push({
+                handle:$(this).children(".UIC-text-handle").children("input").val(),
+                text:$(this).children(".UIC-text").children("textarea").val(),
+                groups:groups
+            });
+        });
+        return modules;
+    };
     this.getSaveGroups = function(cont){
         var groups = [];
         $(cont).children(".UIC-group").each(function(){
             groups.push({
+                req:$(this).children(".UIC-conds-req").children(".UIC-prop").val(),
                 conds:uic.getGroupValues($(this).children(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item")),
                 effects:uic.getGroupValues($(this).children(".UIC-effects").children(".UIC-cont").children(".UIC-group-item"))
             });

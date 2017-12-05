@@ -164,6 +164,22 @@ body {
     width:100%;
 }
 
+.category-button{
+    width:100%;
+    text-align:center;
+    height:30px;
+    line-height:30px;
+    user-select:none;
+    cursor:pointer;
+    border-radius:2px 2px 0px 0px;
+    padding:0;
+    border:1px solid black;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
+}
+.category-button:hover{
+    background-color:var(--button-hover-color);
+}
 .main-menu-cont{
     position:absolute;
     background-color:var(--menu-background-color);
@@ -174,6 +190,15 @@ body {
     border-radius:5px;
 }
 
+#editor-left-menu{
+    width:10%;
+    height:calc(100% - 60px);
+    border-right:thick double;
+    position:fixed;
+    top:60px;
+    overflow-y:auto;
+    background-color:var(--menu-background-color);
+}
 
 .character-cont{
     width:100%;
@@ -221,68 +246,33 @@ body {
     overflow-y:auto;*/
     margin-bottom:10px;
 }
-.editor-descriptor{
+
+
+.var-button{
+    width:100%;
+    font-size:0;
     text-align:center;
-    font-family:"Georgia";
-    font-size:22px;
-    border-radius: 2px 2px 0px 0px;
-    height:30px;
-    line-height:30px;
-}
-.editor-descriptor-title{
-    text-align:center;
-    font-family:"Georgia";
-    font-size:22px;
-    /*border-radius: 2px 2px 0px 0px;*/
-    height:30px;
-    line-height:30px;
+    border:1px solid black;
     user-select:none;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
 }
-.editor-descriptor-quarter{
+.var-button *{
+    display:inline-block;
+    font-size:1.2vw;
+    line-height:30px;
+}
+.var-value{
+    width:100%;
+    resize:vertical;
+}
+.var-remove{
     width:25%;
     height:30px;
-    float:left;
-    text-align:center;
-    font-family:"Georgia";
-    font-size:22px;
-    border-radius: 2px 2px 0px 0px; 
-    overflow:hidden;
-    line-height:30px;
 }
-.editor-descriptor-half{
-    width:50%;
+.var-name{
+    width:90%;
     height:30px;
-    float:left;
-    text-align:center;
-    font-family:"Georgia";
-    font-size:22px;
-    overflow:hidden;
-    line-height:30px;
-}
-.editor-descriptor-big{
-    text-align:center;
-    font-family:"Georgia";
-    font-size:36px;
-    padding:2px;
-    border-radius: 2px 2px 0px 0px; 
-    overflow:hidden;
-    line-height:40px;
-    user-select:none;
-}
-
-.condition{
-    width:100%;
-    min-height:150px;
-    padding:10px;
-    background-color: #BBD;
-    border:1px solid #666;
-}
-.effect{
-    width:100%;
-    min-height:150px;
-    padding:10px;
-    background-color: #BBD;
-    border:1px solid #666;
 }
 
 .title-text{

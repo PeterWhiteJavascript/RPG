@@ -28,6 +28,15 @@
 }
 /*HUD END*/
 /*COND-EFFECT START*/
+.UIC-conds-req{
+    text-align:center;
+    font-size:1vw;
+}
+.UIC-conds-req *{
+    display:inline-block;
+    height:30px;
+    line-height:30px;
+}
 .UIC-conditions{
     border-top:1px solid black;
     border-bottom:1px solid black;
@@ -165,7 +174,7 @@
     border-top:1px solid black;
     background-color:var(--menu-background-color);
 }
-.UIC-group-item-props input[type=checkbox]{
+input[type=checkbox]{
     margin:0;
 }
 .UIC-group-item{
@@ -173,6 +182,38 @@
 }
 
 /* SCRIPT ITEM END*/
+
+/* MODULES TEXT START*/
+.UIC-text-handle{
+    padding:5px;
+}
+.UIC-text{
+    padding:5px;
+}
+.UIC-copy-to-clipboard{
+    font-size:1.2vw;
+    text-align:center;
+    cursor:pointer;
+    width:100%;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
+}
+.UIC-copy-to-clipboard:hover{
+    background-color:var(--button-hover-color);
+}
+.UIC-text *, .UIC-text-handle *, .UIC-modular-text *{
+    display:inline-block;
+    font-size:1.2vw;
+}
+.UIC-text span, .UIC-text-handle span, .UIC-modular-text span{
+    text-align:center;
+}
+.UIC-text textarea{
+    min-height:30px;
+}
+
+/* MODULES TEXT END*/
+
 /* TOP-BAR START*/
 #top-bar{
     top:0;
@@ -198,13 +239,10 @@
     cursor:pointer;
 }
 /* TOP-BAR END */
-.add-new-condition{
+.add-new-condition, .add-new-effect{
     width:40%;
 }
-.add-new-effect{
-    width:40%;
-}
-.add-new-script-item{
+.add-new-script-item, .add-new-text, .add-new-module-cond{
     width:80%;
 }
 textarea{

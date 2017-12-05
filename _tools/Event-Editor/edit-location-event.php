@@ -11,14 +11,14 @@
     <body>
         <div id="editor-content">
             <div id="editor-left-menu" id="action-vars">
-                <div id="add-action"class="category-button" >Add Action</div>
+                <div id="add-action" class="category-button">Add Action</div>
                 <div class="title-text">Actions</div>
                 <div id="editor-actions">
-                    <div id="actions-cont" class="sortable">
+                    <div id="actions-cont">
 
                     </div>
                 </div>
-                <div id="add-var"class="category-button" >Add Var</div>
+                <div id="add-var" class="category-button" >Add Var</div>
                 <div class="title-text">Vars</div>
                 <div id="editor-variables">
                     <div id="variables-cont">
@@ -45,14 +45,14 @@
                 <div id="bottom-page-options">
                     <div id="onload">
                         <p class="title-text">On Load</p>
-                        <div id="add-new-onload-group"class="category-button" >Add Group</div>
+                        <div id="add-new-onload-group" class="category-button" >Add Group</div>
                         <div id="onload-cont">
                             
                         </div>
                     </div>
                     <div id="choices">
                         <p class="title-text">Choices</p>
-                        <div id="add-new-choice"class="category-button" >Add Choice</div>
+                        <div id="add-new-choice" class="category-button" >Add Choice</div>
                         <div id="choices-cont" class="sortable">
                             
                         </div>

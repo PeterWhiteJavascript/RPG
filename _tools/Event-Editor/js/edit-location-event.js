@@ -1,38 +1,6 @@
 $(function(){
 var uniqueActions = 1;
-var formatScenes = function(){
-    var story = GDATA.dataFiles["scenes-list.json"];
-    var flavour = GDATA.dataFiles["flavour-events-list.json"];
-    var newScenes = {
-        Story:[],
-        Flavour:[]
-    };
-    for(var i=0;i<story.Story.length;i++){
-        newScenes["Story"].push(story.Story[i].name);
-    }
-    var groups = Object.keys(flavour.groups);
-    for(var i=0;i<groups.length;i++){
-        newScenes["Flavour"].push(groups[i]);
-    }
 
-    return newScenes;
-};
-var formatEvents = function(){
-    var story = GDATA.dataFiles["scenes-list.json"];
-    var flavour = GDATA.dataFiles["flavour-events-list.json"];
-    var newEvents = {
-        Story:{},
-        Flavour:{}
-    };
-    for(var i=0;i<story.Story.length;i++){
-        newEvents.Story[story.Story[i].name] = story.Story[i].events.map(function(itm){return itm.name;});
-    }
-    var groups = Object.keys(flavour.groups);
-    for(var i=0;i<groups.length;i++){
-        newEvents.Flavour[groups[i]] = flavour.groups[groups[i]][2];
-    }
-    return newEvents;
-};
 function saveEvent(){
     FileSaver.saveAction($(".action.selected").attr("id"));
     var refs = FileSaver.getSaveReferences();
@@ -100,8 +68,8 @@ var FileSaver = {
 };
 var uic = new UIC({
     dataP:{
-        events:formatEvents(),
-        scenes:formatScenes(),
+        events:GDATA.events,
+        scenes:GDATA.scenes,
         scopes:["Event","Scene","Global"],
         vars:{
             Event:GDATA.event.vrs,
@@ -140,7 +108,7 @@ var uic = new UIC({
             saveEvent();
             $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
         },
-        "To Vars":function(){
+        "To Scene Vars":function(){
             if(confirm("Save file?")){
                 saveEvent();
             }
@@ -254,9 +222,9 @@ var uic = new UIC({
                 break;
             case "changeEvent":
                 props = props || [dataP.eventPointer.type,dataP.eventPointer.scene,dataP.eventPointer.event];
-                cont.append(this.Select("ScType",dataP.sceneTypes,props[0],"scene-type"));
-                cont.append(this.Select("ScName",dataP.scenes[props[0]],props[1],"scene-name"));
-                cont.append(this.Select("EvName",dataP.events[props[0]][props[1]],props[2],"event-name"));$($(cont).children("select")[0]).trigger("change");
+                cont.append(this.Select("Type",dataP.sceneTypes,props[0],"scene-type"));
+                cont.append(this.Select("Scene",dataP.scenes[props[0]],props[1],"scene-name"));
+                cont.append(this.Select("Event",dataP.events[props[0]][props[1]],props[2],"event-name"));$($(cont).children("select")[0]).trigger("change");
                 this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.scenes);
                 this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.events,[$(cont).children("select")[0]]);
                 break;
@@ -317,7 +285,24 @@ var start = function(){
                 $("#variables-cont").append("<div class='var-button'><div class='var-name'>"+name+"</div><div class='remove-choice'><span>x</span></div><input class='var-value' value="+(val?val:0)+"></div>");
             } else {
                 $("#variables-cont").append("<div class='var-button'><input class='var-name' placeholder='VARNAME'><div class='remove-choice'><span>x</span></div><input class='var-value' value='false'></div>");
+                $("#variables-cont").children(".var-button").last().children(".var-name").on("change",function(){
+                    var name = $(this).val();
+                    if(name.length){
+                        var matched = false;
+                        $(".var-name").each(function(){
+                            if(name===$(this).text()) matched = true;
+                        });
+                        if(!matched){
+                            FileSaver.event.vrs[name] = uic.processValue($(this).siblings(".var-value").val());
+                            $(this).replaceWith("<div class='var-name'>"+name+"</div>");
+                        }
+                    }
+                });
             }
+            $("#variables-cont").children(".var-button").last().children(".var-value").on("change",function(){
+                if(!$(this).val().length||$(this).siblings(".var-name").is("input")) return;
+                FileSaver.event.vrs[$(this).siblings(".var-name").text()] = uic.processValue($(this).val());
+            });
             $("#variables-cont").children(".var-button").children(".remove-choice").click(function(){
                 if(!$(this).siblings(".var-name").is("input")){
                     var name = $(this).siblings(".var-name").text();
@@ -354,7 +339,6 @@ var start = function(){
         selectAction:function(name){
             $(".action.selected").removeClass("selected");
             $("[id='"+name+"'").addClass("selected");
-            //Display the action with all values filled out with this action's props
             this.displayAction(name);
         },
         displayAction:function(name){
@@ -473,23 +457,6 @@ var start = function(){
         $(this).parent().children(".item-material").empty();
         $(this).parent().children(".item-material").append(DC.getOptString(DC.p.equipment[type][gear].materials));
     });*/
-    $(document).on("change",".var-name",function(){
-        var name = $(this).val();
-        if(name.length){
-            var matched = false;
-            $(".var-name").each(function(){
-                if(name===$(this).text()) matched = true;
-            });
-            if(!matched){
-                FileSaver.event.vrs[name] = uic.processValue($(this).siblings(".var-value").val());
-                $(this).replaceWith("<div class='var-name'>"+name+"</div>");
-            }
-        }
-    });
-    $(document).on("change",".var-value",function(){
-        if(!$(this).val().length||$(this).siblings(".var-name").is("input")) return;
-        FileSaver.event.vrs[$(this).siblings(".var-name").text()] = uic.processValue($(this).val());
-    });
     
     $("#onload-cont").sortable({
         axis: "y"

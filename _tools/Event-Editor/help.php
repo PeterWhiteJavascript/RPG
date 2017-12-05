@@ -15,14 +15,17 @@
                 background-color:var(--main-color);
                 padding:0.5%;
             }
+            #footer{
+                background-color:var(--button-background-color);
+            }
             #footer:hover{
-                background-color:#F5f5f5;
+                background-color:var(--button-hover-color);
             }
             #help-cont{
                 width:100%;
                 height:87.5%;
                 display:inline-block;
-                background-color:var(--secondary-color);
+                background-color:var(--background-color);
                 font-size:36px;
                 padding:100px;
                 overflow-y:auto;

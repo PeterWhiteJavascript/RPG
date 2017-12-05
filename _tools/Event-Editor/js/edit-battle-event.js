@@ -357,39 +357,6 @@ $(function(){
             }
         },{tmxImagePath:Q.options.imagePath.substring(3)});
     }
-    var formatScenes = function(){
-        var story = GDATA.dataFiles["scenes-list.json"];
-        var flavour = GDATA.dataFiles["flavour-events-list.json"];
-        var newScenes = {
-            Story:[],
-            Flavour:[]
-        };
-        for(var i=0;i<story.Story.length;i++){
-            newScenes["Story"].push(story.Story[i].name);
-        }
-        var groups = Object.keys(flavour.groups);
-        for(var i=0;i<groups.length;i++){
-            newScenes["Flavour"].push(groups[i]);
-        }
-        
-        return newScenes;
-    };
-    var formatEvents = function(){
-        var story = GDATA.dataFiles["scenes-list.json"];
-        var flavour = GDATA.dataFiles["flavour-events-list.json"];
-        var newEvents = {
-            Story:{},
-            Flavour:{}
-        };
-        for(var i=0;i<story.Story.length;i++){
-            newEvents.Story[story.Story[i].name] = story.Story[i].events.map(function(itm){return itm.name;});
-        }
-        var groups = Object.keys(flavour.groups);
-        for(var i=0;i<groups.length;i++){
-            newEvents.Flavour[groups[i]] = flavour.groups[groups[i]][2];
-        }
-        return newEvents;
-    };
     function saveFile(){
         var data = FileSaver.getSaveFile();
         $.ajax({
@@ -415,8 +382,8 @@ $(function(){
     
     var uic = new UIC({
         dataP:{
-            events:formatEvents(),
-            scenes:formatScenes(),
+            events:GDATA.events,
+            scenes:GDATA.scenes,
             scopes:["Global","Scene"],
             vars:{
                 Scene:GDATA.dataFiles["scenes-list.json"].Story.find(function(scene){return scene.name===GDATA.eventPointer.scene;}).vrs,
@@ -813,25 +780,37 @@ $(function(){
         
         
         $('.file-character').draggable({
-            cursorAt: { top: 10, left: 20 },
+            cursorAt: { top: 10, left: -10 },
             helper: "clone",
             appendTo: "body"
+        });
+        function dropChar(ui, loc){
+            if(Q.selectedCharacter) Q.selectedCharacter.confirmPlacement();
+            var char = JSON.parse($(ui.draggable).attr("data"));
+            char.uniqueId = DC.genUniqueId(char.handle);
+            char.loc = loc ? DC.getNextEmpty(loc) : DC.getNextEmpty([0,0]);
+            char.dir = "down";
+            var charButton = DC.newCharacter(char);
+            $('#event-chars-cont').append(charButton);
+            var data = uic.dataP.charFiles[char.file][char.group][char.handle];
+            var character = Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
+            if(!loc){
+                $(charButton).children(".character").trigger("click");
+            }
+            Q.stage(0).trigger("selectedCharacter",character);
+        };
+        $("#quintus_container").droppable({
+            accept:".file-character",
+            drop:function(event,ui){
+                var loc = [parseInt($("#canvas-coordinates").attr("locx")),parseInt($("#canvas-coordinates").attr("locy"))];
+                dropChar(ui, loc);
+            }
         });
         $('#event-chars-cont').droppable({
             accept:".file-character",
             //Create a character element
             drop:function(event,ui){
-                if(Q.selectedCharacter) Q.selectedCharacter.confirmPlacement();
-                var char = JSON.parse($(ui.draggable).attr("data"));
-                char.uniqueId = DC.genUniqueId(char.handle);
-                char.loc = DC.getNextEmpty([0,0]);
-                char.dir = "down";
-                var charButton = DC.newCharacter(char);
-                $(this).append(charButton);
-                var data = uic.dataP.charFiles[char.file][char.group][char.handle];
-                var character = Q.stage(0).insert(new Q.CharacterSprite({sheet:data.charClass.toLowerCase(),file:char.file,handle:char.handle,uniqueId:char.uniqueId,loc:char.loc,dir:char.dir,ref:$(charButton).children(".character")}));
-                $(charButton).children(".character").trigger("click");
-                Q.stage(0).trigger("selectedCharacter",character);
+                dropChar(ui);
             }
         });
         $("#full-screen-hider").click(function(){
