@@ -44,10 +44,10 @@ var FileSaver = {
                 dataToCheck.push([a[2],a[3]]);
             });
             itm.onload.forEach(function(o){
-                o.conds.forEach(function(c){
+                o[1].forEach(function(c){
                     dataToCheck.push(c);
                 });
-                o.effects.forEach(function(e){
+                o[2].forEach(function(e){
                     dataToCheck.push(e);
                 });
             });
@@ -145,31 +145,6 @@ var uic = new UIC({
             }
         }
     },
-    
-    choiceFuncs:["changePage","changeEvent"],
-    choiceProps:function(func,props){
-        var cont = $("<div class='UIC-group-item-props'></div>");
-        var dataP = this.dataP;
-        func = func || "changeEvent";
-        switch(func){
-            case "changePage":
-                var pageNames = FileSaver.event.pages.map(function(page){return page.name;});
-                $(".action-button").each(function(){pageNames.push($(this).text());});
-                props = props || [pageNames[0],""];
-                cont.append(this.Select("Page",pageNames,props[0]));
-                break;
-            case "changeEvent":
-                props = props || [dataP.eventPointer.type,dataP.eventPointer.scene,dataP.eventPointer.event];
-                cont.append(this.Select("Type",dataP.sceneTypes,props[0],"scene-type"));
-                cont.append(this.Select("Scene",dataP.scenes[props[0]],props[1],"scene-name"));
-                cont.append(this.Select("Event",dataP.events[props[0]][props[1]],props[2],"event-name"));$($(cont).children("select")[0]).trigger("change");
-                this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.scenes);
-                this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.events,[$(cont).children("select")[0]]);
-                break;
-        }
-        this.selectInitialValue(cont);
-        return cont;
-    },
     condsFuncs:["checkVar","checkCharProp","checkCharStat","checkKeyword"],
     condProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
@@ -211,7 +186,7 @@ var uic = new UIC({
         this.selectInitialValue(cont);
         return cont;
     },
-    effectsFuncs:["setVar","changePage","enableChoice","goToAnchorEvent","recruitChar","changeRelation","tempStatChange","equipItem"],
+    effectsFuncs:["setVar","changePage","changeEvent","enableChoice","goToAnchorEvent","recruitChar","changeRelation","tempStatChange","equipItem"],
     //TODO
     effectProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
@@ -244,7 +219,7 @@ var uic = new UIC({
                 var choiceNames = [];
                 $(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
                 props = props || [choiceNames[0]];
-                cont.append(this.Select("Choice",choiceNames,props[0],"page"));
+                cont.append(this.Select("Choice",choiceNames,props[0]));
                 break;
             case "goToAnchorEvent":
                 
@@ -383,12 +358,12 @@ var start = function(){
             $("#bg-select select").val(data.bg);
             $("#bg-select select").trigger("change");
             $("#text-select textarea").val(data.text);
-            //Show all of the onload groups
-            for(var i=0;i<data.onload.length;i++){
-                uic.createCondEffectsGroup($("#onload-cont"),data.onload[i]); 
-            }
+            //Create choices early as we need the enableChoice options
             for(var i=0;i<data.choices.length;i++){
                 uic.createChoiceGroup($("#choices-cont"),data.choices[i]);
+            }
+            for(var i=0;i<data.onload.length;i++){
+                uic.createCondEffectsGroup($("#onload-cont"),data.onload[i]); 
             }
             for(var i=0;i<data.modules.length;i++){
                 uic.createModuleGroup($("#modules-cont"),data.modules[i]);
@@ -501,12 +476,12 @@ var start = function(){
     });
     
     //End editor-content buttons
-    $("#modules-cont").sortable({
-        axis: "y"
-    });
     $("#pages-cont").disableSelection();
     
     $("#pages-cont").sortable({
+        axis: "y"
+    });
+    $("#onload-cont").sortable({
         axis: "y"
     });
     $("#onload-cont").disableSelection();

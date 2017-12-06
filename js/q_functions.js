@@ -77,7 +77,7 @@ Quintus.QFunctions=function(Q){
         return "Ecstatic";
     };
     //Loads all unique assets that are used in a scene
-    Q.loadSceneAssets = function(data,callback){
+   /* Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];
         for(var i=0;i<data.length;i++){
             if(musicAssets.indexOf("bgm/"+data[i].music)<0) {
@@ -88,7 +88,7 @@ Quintus.QFunctions=function(Q){
         Q.load(musicAssets,callback,{
             progressCallback:Q.progressCallback
         });
-    };
+    };*/
     //Value scale of 1-100
     Q.getCharacterValue=function(value){
         if(value<=33) return "Egoist";

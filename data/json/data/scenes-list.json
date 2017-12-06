@@ -582,15 +582,29 @@
                     "top": "312px"
                 },
                 {
-                    "events": [
+                    "events": [],
+                    "sceneVars": [
                         [
-                            "Story",
-                            "Act-2-3",
-                            "Kitchen-pre"
+                            "Scene",
+                            "kitchenComplete",
+                            "==",
+                            "false"
                         ]
                     ],
-                    "sceneVars": [],
-                    "globalVars": [],
+                    "globalVars": [
+                        [
+                            "Global",
+                            "money",
+                            ">=",
+                            "4545345345345"
+                        ],
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            "1000"
+                        ]
+                    ],
                     "name": "Starting",
                     "type": "story",
                     "left": "618px",

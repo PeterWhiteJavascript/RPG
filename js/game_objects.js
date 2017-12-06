@@ -3138,7 +3138,6 @@ Quintus.GameObjects=function(Q){
                     i = techs.length;
                 }
             }
-            console.log(fullTechs)
             return fullTechs;
         },
         //Remove some later techniques if the level is not enough

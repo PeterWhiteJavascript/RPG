@@ -1,15 +1,18 @@
 Quintus.SceneFuncs=function(Q){
-    
     Q.startScene = function(type,scene,event,char){
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
             var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
             Q.state.set("currentEvent",{type:type,scene:scene,event:event,data:data});
-            //TODO: come up with a way to save the previous vars (maybe won't be necessary if we won't be going back to events and also the vars will re-evaluate when going back)
-            Q.state.set("eventVars",data.vrs);
+            if(type==="Story"){
+                Q.variableProcessor.vars.Event[scene][event] = data.vrs;
+                console.log(Q.variableProcessor.vars)
+            }
             Q.stageScene(data.kind,0,{data:data,char:char});
             if(testing&&!$("#back-button").length){
-                $(document.body).append("<div id='back-button' class='btn btn-default'>Go Back</div>");
+                $("#main-content").append("<div id='back-button' class='btn btn-default'>Go Back</div>");
+                
+                
                 $("#back-button").click(function(){
                     var path = "_tools/Event-Editor/";
                     switch(data.kind){
@@ -33,13 +36,9 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
-        var characters = Q.state.get("allies");
-        Q.loadSceneAssets(data.pages,function(){
-            Q.playMusic(data.pages[0].music,function(){
-                var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.pages[0].bg}));
-                Q.storyController = stage.insert(new Q.StoryController({pages:data.pages,pageNum:0,bgImage:bgImage,vrs:data.vrs,characters:characters,char:stage.options.char}));
-                Q.storyController.insertPage(0);
-            });
+        Q.playMusic(data.pages[0].music,function(){
+            $('#background-image').attr('src', 'images/bg/'+data.pages[0].bg);
+            Q.storyController.startScene(data);
         });
     });
     Q.scene("script",function(stage){
@@ -50,11 +49,9 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("location",function(stage){
         $("#loading-screen").show();
         var data = stage.options.data;
-        Q.loadSceneAssets([{music:data.music,bg:data.bg}],function(){
-            var bgImage = stage.insert(new Q.BackgroundImage({asset:"bg/"+data.bg}));
-            Q.playMusic(data.music,function(){
-                Q.locationController = stage.insert(new Q.LocationController({location:data,bgImage:bgImage}));
-            });
+        $('body').css('background', '#000 url(images/bg/'+data.bg+') no-repeat');
+        Q.playMusic(data.music,function(){
+            Q.locationController = stage.insert(new Q.LocationController({location:data,bgImage:bgImage}));
         });
     },{
         progressCallback:Q.progressCallback

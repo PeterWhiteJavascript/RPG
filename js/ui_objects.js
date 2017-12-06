@@ -1,27 +1,240 @@
 Quintus.UIObjects=function(Q){
-    $(function(){
-        //When clicking a choice
-        $('body').on('click', '.choice-list li', function() {
-            Q.storyController.p.choice = Q.storyController.getChoice(Q.storyController.p.pages[Q.storyController.p.pageNum],$(this).text());
-            //Check if something happens before doing the default change page
-            //Will be true if all conditions are met
-            //Loop through each group
-            Q.textModules.processCondEffects(Q.storyController,Q.storyController.p.choice.groups);
-            var choice = Q.storyController.p.choice;
-            var page = choice.page;
-            var desc = choice.desc;
-            Q.storyController.removeChoices();
-            //Don't insert anything if there's no feedback
-            if(desc.length){
-                Q.storyController.insertChoiceDesc(desc);
+    
+    Q.GameObject.extend("VariableProcessor",{
+        //Set the global and scene variables. Event vars are set when the scene is staged.
+        init:function(){
+            var obj = this;
+            Object.assign(obj.vars.Global,GDATA.game['global-vars.json'].vrs);
+            Q.state.get("scenesList").Story.forEach(function(sc){
+                obj.vars.Scene[sc.name] = sc.vrs;
+                obj.vars.Event[sc.name] = {};
+            });
+        },
+        vars:{
+            Global:{},
+            Scene:{},
+            Event:{}
+        },
+        setVar:function(scope,vr,vl,scene,event){
+            switch(scope){
+                case "Global":
+                    this.vars[scope][vr] = vl;
+                    break;
+                case "Scene":
+                    this.vars[scope][scene][vr] = vl;
+                    break;
+                case "Event":
+                    this.vars[scope][scene][event][vr] = vl;
+                    break;
             }
-            Q.storyController.changePage(page);
-            /*
-            setTimeout(function(){
-                Q.storyController.changePage(page);
-            },desc.length*25);*/
-        });
+        },
+        getVar:function(scope,vr){
+            switch(scope){
+                case "Global":
+                    return this.vars[scope][vr];
+                case "Scene":
+                    var scene = Q.state.get("currentEvent").scene;
+                    return this.vars[scope][scene][vr];
+                case "Event":
+                    var scene = Q.state.get("currentEvent").scene;
+                    var event = Q.state.get("currentEvent").event;
+                    return this.vars[scope][scene][event][vr];
+            }
+        }
     });
+    //Has functions for splitting strings.
+    //Can return array from a string that has \n\
+    //Can get variable values from {a@b}
+    //Can process modules from {moduleName}
+    Q.GameObject.extend("TextProcessor",{
+        makeParagraphs:function(text){
+            //Split up all of the text by paragraph into an array(at \n)
+            var paragraphs = text.split("\n").filter(
+            //Remove any \n that has no text in it
+            function(itm){
+                return itm.length;
+            //Rework the items into paragraphs.
+            }).map(function(itm){
+                return "<p>"+itm+"</p>";
+            //Join the array back into a string
+            }).join(" ");
+            return paragraphs;
+        },
+        evaluateStringOperator:function(vr,op,vl){
+            switch(op){
+                case "==": return vr==vl;
+                case "!=": return vr!=vl;
+                case ">": return vr>vl;
+                case "<": return vr<vl;
+                case ">=": return vr>=vl;
+                case "<=": return vr<=vl;
+            }
+        },
+    });
+    Q.GameObject.extend("GroupsProcessor",{
+        processGroups:function(groups){
+            for(var i=0;i<groups.length;i++){
+                if(this.processConds(groups[i][0],groups[i][1])){
+                    this.processEffects(groups[i][2]);
+                }
+            }
+        },
+        processConds:function(required,conds){
+            var condsEvaluated = [];
+            for(var i=0;i<conds.length;i++){
+                var func = conds[i][0];
+                var props = conds[i][1];
+                switch(func){
+                    case "checkVar":
+                        var scope = props[0];
+                        var vr = Q.variableProcessor.getVar(scope,props[1]);
+                        var op = props[2];
+                        var vl = props[3];
+                        condsEvaluated.push(Q.textProcessor.evaluateStringOperator(vr,op,vl));
+                        break;
+                    case "checkChar":
+                        
+                        break;
+                    case "checkCharStat":
+                        
+                        break;
+                    case "checkKeyword":
+                        
+                        break;
+                }
+            }
+            var evaluation = false;
+            switch(required){
+                case "All":
+                    evaluation = condsEvaluated.every(function(itm){return itm;});
+                    break;
+                case "Some":
+                    evaluation = condsEvaluated.some(function(itm){return itm;});
+                    break;
+                case "One":
+                    evaluation = condsEvaluated.filter(function(itm){return itm;}).length === 1;
+                    break;
+            }
+            console.log(evaluation)
+            return evaluation;
+        },
+        
+        processEffects:function(effects){
+            
+        }
+    });
+    /*
+                checkVar:function(obj){
+                    var varValue;
+                    switch(obj[0]){
+                        case "Event":
+                            varValue = Q.state.get("eventVars")[obj[1]];
+                            break;
+                        case "Scene":
+                            varValue = Q.state.get("sceneVars")[obj[1]];
+                            break;
+                        case "Global":
+                            varValue = Q.state.get("globalVars")[obj[1]];
+                            break;
+                    }
+                    return Q.textModules.evaluateStringOperator(varValue,obj[2],obj[3]);
+                },
+                checkCharProp:function(obj){
+                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
+                    if(!char) return false;
+                    return Q.textModules.evaluateStringOperator(char[obj[1]],obj[2],obj[3]);
+                },
+                checkCharStat:function(obj){
+                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
+                    if(char){
+                        var prop;
+                        switch(obj[1]){
+                            case "Base Stats":
+                                prop = char.baseStats[obj[2]];
+                                break;
+                            case "Derived Stats":
+                                prop = char.combatStats[Q.convertCombatStat(obj[2])];
+                                break;
+                        }
+                        return Q.textModules.evaluateStringOperator(prop,obj[3],obj[4]);
+                    }
+                },
+                checkKeyword:function(obj){
+                    switch(obj[0]){
+                        case "partySize":
+                            var size = Q.state.get("allies").length;
+                            return Q.textModules.evaluateStringOperator(size,obj[1],obj[2]);
+                    }
+                }*/
+    Q.GameObject.extend("StoryController",{
+        init:function(){
+            var cont = $('<div id="text-cont"></div>');
+            var text = $('<div id="text-content"></div>');
+            cont.append(text);
+            $("#main-content").append(cont);
+        },
+        //When a story scene starts, set data and show the container.
+        startScene:function(data){
+            this.data = data;
+            this.displayPage(data.pages[0].name);
+            $("#text-cont").show();
+        },
+        finishScene:function(){
+            $("#text-cont").hide();
+        },
+        getPageData:function(name){
+            return this.data.pages.filter(function(page){return page.name === name; })[0];
+        },
+        getPageParagraph:function(text){
+            var cont = $("<div class='page-text'>"+Q.textProcessor.makeParagraphs(text)+"</div>");
+            return cont;
+        },
+        getChoice:function(num){
+            return this.currentPage.choices[num];
+        },
+        getPageChoices:function(choices){
+            var cont = $("<div class='page-choices'></div>");
+            for(var i=0;i<choices.length;i++){
+                if(!choices[i][1]){
+                    $(cont).append("<div class='page-choice'><span>"+choices[i][0]+"</span></div>");
+                    $(cont).children(".page-choice").last().click(function(){
+                        var data = Q.storyController.getChoice($(this).index());
+                        switch(data[2]){
+                            case "changePage":
+                                Q.storyController.changePage(data[3]);
+                                break;
+                            case "changeEvent":
+                                Q.storyController.changeEvent(data[3]);
+                                break;
+                        }
+                    });
+                }
+            }
+            return cont;
+        },
+        newPage:function(data){
+            var cont = $("<div class='page'></div>");
+            $(cont).append(this.getPageParagraph(data.text));
+            $(cont).append(this.getPageChoices(data.choices));
+            return cont;
+        },
+        displayPage:function(name){
+            this.currentPage = this.getPageData(name);
+            Q.groupsProcessor.processGroups(this.currentPage.onload);
+            
+            $("#text-content").append(this.newPage(this.currentPage));
+        },
+        changePage:function(name){
+            $("#text-content").children(".page").remove();
+            this.displayPage(name);
+        },
+        changeEvent:function(props){
+            this.finishScene();
+            Q.startScene(props[0],props[1],props[2]);
+        }
+    });
+    
+    
     Q.component("time",{
         added:function(){
             this.entity.on("cycleWeek",this,"cycleWeek");
@@ -1366,10 +1579,10 @@ Quintus.UIObjects=function(Q){
                 if(obj.vr==="money") Q.state.get("saveData").money = vars[obj.vr];
             }*/
         }
-    }); 
-    
+    });
+    /*
     //Using CSS/Jquery, create the story dialogue with options
-    Q.UI.Container.extend("StoryController",{
+    Q.GameObject.extend("StoryController",{
         init:function(p){
             this._super(p,{
                 x:0,y:0,
@@ -1379,13 +1592,15 @@ Quintus.UIObjects=function(Q){
             });
             this.p.x+=10;
             this.p.y+=10;
-            this.p.container = $('<div id="text-container"></div>');
-            this.p.textContent = $('<div id="text-content"></div>');
+            this.p.container = ;
+            this.p.textContent = ;
             $(this.p.container).append(this.p.textContent);
             $(document.body).append(this.p.container);
+            this.insertPage(0);
         },
         insertPage:function(num){
             var page = this.p.pages[num];
+            console.log(page)
             //Do the onload conditions/effects
             Q.textModules.processCondEffects(this,page.onload);
             if(!this.p.changedPage){
@@ -1570,7 +1785,7 @@ Quintus.UIObjects=function(Q){
                 }    
             }
         }
-    });
+    });*/
     Q.UI.Container.extend("DialogueController",{
         init:function(p){
             this._super(p,{
@@ -1907,25 +2122,6 @@ Quintus.UIObjects=function(Q){
                 })[0];
             }
         }*/
-    });
-    
-    
-    
-    //The background image user in dialogue and menus
-    Q.Sprite.extend("BackgroundImage",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                type:Q.SPRITE_NONE,
-                w:Q.width,h:Q.height
-            });
-            Q._generatePoints(this,true);
-        },
-        draw:function(ctx){
-            ctx.drawImage(this.asset(), 0, 0, this.asset().width,    this.asset().height,     // source rectangle
-                   0, 0, Q.width, Q.height); // destination rectangle
-        }
     });
     //The person who is talking in the story
     Q.Sprite.extend("StoryImage",{

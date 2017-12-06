@@ -24,7 +24,7 @@ Q.progressCallback = function(loaded,total){
     $("#bar-top").width(str);
     $("#bar-text").text(str);
     if(loaded===total){
-        $("#loading-screen").hide();
+        $("#loading-bar").hide();
     }
 };
 //Wraps the text to fit inside a container.
@@ -71,7 +71,7 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
 //The default values will be overridden by data coming from the save file.
 Q.state.set({
     options:{
-        musicEnabled:true,
+        musicEnabled:false,
         musicVolume:20,
         soundEnabled:true,
         soundVolume:100,
@@ -143,12 +143,6 @@ Q.startGame=function(save){
     */
     Q.state.set("saveData",save);
     
-    Q.state.set(
-        "sceneVars",
-        Q.state.get("scenesList").Story.filter(function(sc){
-            return sc.name===Q.state.get("saveData").startSceneName;
-        })[0].vrs
-    );
     /*
     var storyChars = [];
     save.characters.story.forEach(function(ally){
@@ -232,8 +226,7 @@ Q.load(toLoad.join(","),function(){
     Q.state.set("status",GDATA.game['status.json']);
     //The attributes of each type of tile that can be stepped on.
     Q.state.set("tileTypes",GDATA.game['tile-types.json']);
-    //The global variables that are set in global-vars.json
-    Q.state.set("globalVars",GDATA.game['global-vars.json'].vrs);
+    
     //The modules for text replacement
     Q.state.set("modules",GDATA.game["modules.json"]);
     //All important story events that happen on a certain week
@@ -262,6 +255,15 @@ Q.load(toLoad.join(","),function(){
     //The functions that take text from the modules.json
     Q.textModules = new Q.TextModules();
     
+    
+    //Any variable functions (set and get)
+    Q.variableProcessor = new Q.VariableProcessor();
+    Q.groupsProcessor = new Q.GroupsProcessor();
+    //Functions for doing things with text
+    Q.textProcessor = new Q.TextProcessor();
+    //Functions for story scene
+    Q.storyController = new Q.StoryController();
+    
     /* TESTING EVENT */
     //testing = {type:"Story",scene:"Act-1-1",name:"Start"};
     if(testing){
@@ -280,16 +282,26 @@ Q.load(toLoad.join(","),function(){
     //For now, just start a new game when we load in. -> main.js
         Q.newGame({gender:"Female"});
     }
-    //Start the game from the JSON save data
-    //Q.startGame(Q.assets['json/save/sample_save_data.json']);
-    //Make it so that you can open the options menu at all times
-    //For now, press space or z to load
-    Q.input.on("fire",Q,"loadOptions");
 },{
     progressCallback:Q.progressCallback
 });
+
+$(document).keydown(function(e) {
+    if(e.which == 32) {
+        Q.loadOptions();
+    }
+});
 //Checks if the user wants to go to the options menu
 Q.loadOptions = function(){
+    //For now, just toggle musicEnabled
+    if(Q.state.get("options").musicEnabled){
+        Q.state.get("options").musicEnabled = false;
+    } else {
+        Q.state.get("options").musicEnabled = true;
+    }
+    
+    Q.state.trigger("change.musicEnabled",Q.state.get("options").musicEnabled);
+    return;
     if(!Q.stage(4)){
         Q.pauseAllStages();
         Q.stageScene("optionsMenu",4);
