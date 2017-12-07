@@ -539,8 +539,8 @@
                     "globalVars": [],
                     "name": "Kitchen-pre",
                     "type": "battleScene",
-                    "left": "640px",
-                    "top": "470px"
+                    "left": "497px",
+                    "top": "377px"
                 },
                 {
                     "events": [
@@ -582,7 +582,13 @@
                     "top": "312px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "Base-Camp"
+                        ]
+                    ],
                     "sceneVars": [
                         [
                             "Scene",
@@ -607,8 +613,8 @@
                     ],
                     "name": "Starting",
                     "type": "story",
-                    "left": "618px",
-                    "top": "388px"
+                    "left": "680px",
+                    "top": "425px"
                 },
                 {
                     "events": [

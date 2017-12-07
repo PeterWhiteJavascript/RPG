@@ -117,7 +117,12 @@ function UIC(p){
         cont.append("<div><span>Func</span></div><div class='UIC-func-cont'><select class='UIC-func' initial-value='"+func+"'>"+uic.getOptions(funcs)+"</select></div>");
         if(includeX){
             cont.append("<div class='remove-choice-deep tenth-width'><span>x</span></div>");
-            cont.children(".remove-choice-deep").click(uic.removeDeepItem);
+            cont.children(".remove-choice-deep").click(function(){
+                var category = $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").text().split(" ")[0];
+                $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").children("span").text(category+" ("+($(this).parent().parent().parent().children(".UIC-group-item").length-1)+")");
+                $(this).parent().parent().remove();
+                
+            });
             $(cont).children("div").first().addClass("quarter-width");
             $(cont).children("div:nth-child(2)").addClass("sixty-five-width");
         } else {
@@ -283,7 +288,7 @@ function UIC(p){
         });
         uic.linkValueToText($(group).children(".UIC-text-handle").children("input"),$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
         function createModularTextItem(props){
-            props = props || ["All",false,false];
+            props = props || ["All",[],""];
             var cont = $("<div class='UIC-modular-texts'></div>");
             cont.append(
             '<div class="UIC-hud">\n\
@@ -295,7 +300,7 @@ function UIC(p){
             <div class="UIC-conditions">\n\
                 <div class="UIC-group-hud">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Conditions</span></div>\n\
+                    <div class="UIC-title"><span>Conditions ('+props[1].length+')</span></div>\n\
                 </div>\n\
                 <div class="UIC-cont"></div>\n\
             </div>\n\
@@ -314,9 +319,11 @@ function UIC(p){
             });
             $(cont).children(".UIC-hud").children(".add-new-module-cond").click(function(){
                 $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],false,true));
+                $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(this).parent().siblings(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item").length+")");
             });
             $(cont).children(".UIC-hud").children(".remove-choice-deep").click(function(){
                 $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").empty();
+                $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Condition (0)");
             });
             for(var i=0;i<props[1].length;i++){
                 $(cont).children(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",props[1][i][0],props[1][i][1],true));
@@ -357,14 +364,14 @@ function UIC(p){
             <div class="UIC-conditions UIC-group-cont">\n\
                 <div class="UIC-group-hud">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Conditions</span></div>\n\
+                    <div class="UIC-title"><span>Conditions ('+props[1].length+')</span></div>\n\
                 </div>\n\
                 <div class="UIC-cont"></div>\n\
             </div>\n\
             <div class="UIC-effects UIC-group-cont">\n\
                 <div class="UIC-group-hud">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Effects</span></div>\n\
+                    <div class="UIC-title"><span>Effects ('+props[2].length+')</span></div>\n\
                 </div>\n\
                 <div class="UIC-cont"></div>\n\
             </div>\n\
@@ -374,9 +381,11 @@ function UIC(p){
         
         $(group).children(".UIC-hud").children(".add-new-condition").click(function(){
             $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],false,true));
+            $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(this).parent().siblings(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item").length+")");
         });
         $(group).children(".UIC-hud").children(".add-new-effect").click(function(){
             $(this).parent().siblings(".UIC-effects").children(".UIC-cont").append(uic.getGroupItem(uic.effectsFuncs,"effectProps",uic.effectsFuncs[0],false,true));
+            $(this).parent().siblings(".UIC-effects").children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(this).parent().siblings(".UIC-effects").children(".UIC-cont").children(".UIC-group-item").length+")");
         });
         $(group).children(".UIC-hud").children(".minimize-choice").click(function(){
             var text = $(this).text();
@@ -476,6 +485,7 @@ function UIC(p){
         var sceneVarRefs = [];
         var globalVarRefs = [];
         for(var i=0;i<data.length;i++){
+            console.log(data)
             var func = data[i][0];
             var props = data[i][1];
             switch(func){

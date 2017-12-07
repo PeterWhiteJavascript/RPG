@@ -1,5 +1,5 @@
 Quintus.QFunctions=function(Q){
-    Q.convertCombatStat = function(name){
+    /*Q.convertCombatStat = function(name){
         switch(name){
             case "Max Hit Points":
                 return "maxHp";
@@ -39,7 +39,7 @@ Quintus.QFunctions=function(Q){
                 return "moveSpeed";
         }
     };
-    
+    */
     Q.getCharClassNum = function(c){
         return Q.state.get("charGeneration").classNames.indexOf(c);
     };
@@ -53,29 +53,6 @@ Quintus.QFunctions=function(Q){
         });
     };
     
-    Q.getRelationsString = function(value){
-        if(value<1) return "Lowest";
-        if(value<31) return "Low";
-        if(value<71) return "Average";
-        if(value<91) return "High";
-        return "Superb";
-    };
-    
-    Q.getLoyaltyString = function(loyalty){
-        if(loyalty<1) return "Traitorous";
-        if(loyalty<31) return "Disloyal";
-        if(loyalty<71) return "Average";
-        if(loyalty<91) return "Loyal";
-        if(loyalty<99) return "Admiring";
-        return "Idolizing";
-    };
-    Q.getMoraleString = function(morale){
-        if(morale<1) return "Quit";
-        if(morale<31) return "Unhappy";
-        if(morale<71) return "Content";
-        if(morale<91) return "Inspired";
-        return "Ecstatic";
-    };
     //Loads all unique assets that are used in a scene
    /* Q.loadSceneAssets = function(data,callback){
         var musicAssets = [];

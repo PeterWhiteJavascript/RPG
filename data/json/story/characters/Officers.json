@@ -5,7 +5,7 @@
             "name": "Alex",
             "levelmin": 1,
             "levelmax": 1,
-            "gender": "Random",
+            "gender": "Female",
             "team": "Ally",
             "equipment": {
                 "righthand": [
@@ -24,9 +24,9 @@
                     "Outfit"
                 ],
                 "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
+                    "Average",
+                    "Soft Leather",
+                    "Shoes"
                 ],
                 "accessory": "None"
             },
@@ -42,12 +42,12 @@
                 "eff": 20
             },
             "techniques": [
-                "Default",
-                "Default",
-                "Default",
-                "Default",
-                "Default",
-                "Default"
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
             ],
             "nationality": "Venorian",
             "charClass": "Random"

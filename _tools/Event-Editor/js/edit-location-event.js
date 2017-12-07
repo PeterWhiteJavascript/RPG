@@ -77,7 +77,7 @@ var uic = new UIC({
             Global:GDATA.dataFiles["global-vars.json"].vrs
         },
         conditionals:["==","!=",">=","<="],
-        officers:Object.keys(GDATA.dataFiles["officers.json"]),
+        officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
         charFiles:GDATA.characterFiles,
         charPropTypes:["nationality","charClass","value","methodology","personality","gender"],
         charPropValues:{

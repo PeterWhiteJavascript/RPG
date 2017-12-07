@@ -1,5 +1,5 @@
 {
-    "o":{
+    "officer":{
         "Alex":{
             "demo":{
                 "first":"Hello, I'm {@name}",
@@ -42,7 +42,7 @@
         }
     },
     
-    "g":{
+    "gender":{
         "Male":{
             "he":"he",
             "He":"He",
@@ -64,10 +64,10 @@
             "He":"She",
             "him":"her",
             "Him":"Her",
-            "his":"hers",
-            "His":"Hers",
-            "his2":"her",
-            "His2":"Her",
+            "his":"her",
+            "His":"Her",
+            "his2":"hers",
+            "His2":"Hers",
             "himself":"herself",
             "Himself":"Herself",
             "prince":"princess",

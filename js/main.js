@@ -100,11 +100,11 @@ Q.newGame=function(options){
     Q.state.set("potentialEvents",[]);
 
     //The main character's object
-    var alex = Q.state.get("characters").Alex;
+    var alex = GDATA.chars["Officers.json"]["Officers"].Alex;
     //Gender is based on what the player selected
     alex.gender = options.gender;
     var storyAlex = Q.charGen.generateCharacter(alex,"alex");
-    var astraea = Q.charGen.generateCharacter(Q.state.get("characters").Astraea,"officer");
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"officer");
     astraea.combatStats.hp = 0;
     astraea.wounded = 111;
     var random1 = Q.charGen.generateCharacter({},"roster");
@@ -114,7 +114,8 @@ Q.newGame=function(options){
     random2.combatStats.hp = 0;
     random2.wounded = 5;
     //console.log(legion)
-    Q.state.set("allies",[storyAlex,astraea,random1,random2]);
+    Q.partyManager.alex = storyAlex;
+    Q.partyManager.allies = [storyAlex,astraea,random1,random2];
     //Set up the new game bag
     Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
     //Set up the applications roster
@@ -152,10 +153,11 @@ Q.startGame=function(save){
         storyChars.push(Q.charGen.generateCharacter(ally));
     });*/
     
-    var alex = Q.state.get("characters").Alex;
-    var storyAlex = Q.charGen.generateCharacter(alex,"alex");
-    Q.state.set("alex",storyAlex);
-    Q.state.set("allies",[storyAlex]);
+    var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex,"alex");
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"roster");
+    Q.partyManager.alex = alex;
+    Q.partyManager.allies = [alex,astraea];
+    
     //Set up the Bag.
     Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
@@ -210,8 +212,7 @@ Q.load(toLoad.join(","),function(){
     Q.state.set("items",GDATA.game["items.json"]);
     //All base settings for character classes
     Q.state.set("charClasses",GDATA.game['character-classes.json']);
-    //The story characters that you can recruit (including alex)
-    Q.state.set("characters",GDATA.game['officers.json']);
+    
     //A bunch of values for generating random characters
     Q.state.set("charGeneration",GDATA.game['character-generation.json']);
     //The list of skills and their effects
@@ -228,9 +229,9 @@ Q.load(toLoad.join(","),function(){
     Q.state.set("tileTypes",GDATA.game['tile-types.json']);
     
     //The modules for text replacement
-    Q.state.set("modules",GDATA.game["modules.json"]);
+    //Q.state.set("modules",GDATA.game["modules.json"]);
     //All important story events that happen on a certain week
-    Q.state.set("storyEvents",GDATA.game["story-events.json"].events);
+    //Q.state.set("storyEvents",GDATA.game["story-events.json"].events);
     //The list of events
     Q.state.set("scenesList",GDATA.game["scenes-list.json"]);
     //All of the character files
@@ -252,17 +253,18 @@ Q.load(toLoad.join(","),function(){
     Q.BattleGrid = new Q.BattleGridObject();
     //The character generator used to create random characters and fill in properties from the save data.
     Q.charGen = new Q.CharacterGenerator();
-    //The functions that take text from the modules.json
-    Q.textModules = new Q.TextModules();
     
     
     //Any variable functions (set and get)
     Q.variableProcessor = new Q.VariableProcessor();
+    
     Q.groupsProcessor = new Q.GroupsProcessor();
     //Functions for doing things with text
     Q.textProcessor = new Q.TextProcessor();
     //Functions for story scene
     Q.storyController = new Q.StoryController();
+    //Controls adding and removing party members and much more
+    Q.partyManager = new Q.PartyManager();
     
     /* TESTING EVENT */
     //testing = {type:"Story",scene:"Act-1-1",name:"Start"};

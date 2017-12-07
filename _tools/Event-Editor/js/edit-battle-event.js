@@ -389,7 +389,7 @@ $(function(){
                 Scene:GDATA.dataFiles["scenes-list.json"].Story.find(function(scene){return scene.name===GDATA.eventPointer.scene;}).vrs,
                 Global:GDATA.dataFiles["global-vars.json"].vrs
             },
-            officers:Object.keys(GDATA.dataFiles["officers.json"]),
+            officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
             charFiles:GDATA.characterFiles,
             charPropTypes:["nationality","charClass","value","methodology","personality","gender"],
             charPropValues:{

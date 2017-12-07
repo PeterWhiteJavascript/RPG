@@ -1,5 +1,135 @@
 Quintus.UIObjects=function(Q){
     
+    Q.GameObject.extend("PartyManager",{
+        init:function(){
+            
+        },
+        getAlly:function(name){
+            return this.allies.find(function(ally){return name === ally.name;});
+        },
+        convertPropName:function(name){
+            switch(name){
+                case "Gender":
+                    return "gender";
+                case "Morale":
+                    return "morale";
+                case "Loyalty":
+                    return "loyalty";
+                case "Personality":
+                    return "personality";
+                case "Methodology":
+                    return "methodology";
+                case "Value":
+                    return "value";
+                case "Character Class":
+                    return "charClass";
+                case "Nationality":
+                    return "nationality";
+            }
+            return name;
+        },
+        convertCombatStat:function(stat){
+            switch(stat){
+                case "Max Hit Points":
+                    return "maxHp";
+                case "Max Technique Points":
+                    return "maxTp";
+                case "Pain Tolerance":
+                    return "painTolerance";
+                case "Damage Reduction":
+                    return "damageReduction";
+                case "Physical Resistance":
+                    return "physicalResistance";
+                case "Mental Resistance":
+                    return "mentalResistance";
+                case "Magical Resistance":
+                    return "magicalResistance";
+                case "Attack Range":
+                    return "atkRange";
+                case "Max Attack Damage":
+                    return "maxAtkDmg";
+                case "Encumbrance Threshold":
+                    return "encumbranceThreshold";
+                case "Total Weight":
+                    return "totalWeight";
+                case "Encumbrance Penalty":
+                    return "encumbrancePenalty";
+                case "Defensive Ability":
+                    return "defensiveAbility";
+                case "Attack Accuracy":
+                    return "atkAccuracy";
+                case "Critical Chance":
+                    return "critChance";
+                case "Counter Chance":
+                    return "counterChance";
+                case "Attack Speed":
+                    return "atkSpeed";
+                case "Move Speed":
+                    return "moveSpeed";
+            }
+        },
+        convertPresetString:function(obj,prop,value){
+            //If we've passed in an operator, we're going to need either the min or max values.
+            if(typeof obj === "string"){
+                switch(prop){
+                    case "morale":
+                        return this.convertMorale(value,obj);
+                    case "loyalty":
+                        return this.convertLoyalty(value,obj);
+                }
+            } else {
+                switch(prop){
+                    case "morale":
+                        return this.convertMorale(obj[prop]);
+                    case "loyalty":
+                        return this.convertLoyalty(obj[prop]);
+                }
+                return obj[prop];
+            }
+        },
+        adjustForOper:function(min,max,oper){
+            return !oper || oper === ">=" ? min : max;
+        },
+        convertMorale:function(morale,oper){
+            if(typeof morale === "string"){
+                if(morale==="Quit") return this.adjustForOper(0,0,oper);
+                if(morale==="Unhappy") return this.adjustForOper(1,30,oper);
+                if(morale==="Content") return this.adjustForOper(31,70,oper);
+                if(morale==="Inspired") return this.adjustForOper(71,90,oper);
+                return this.adjustForOper(91,100,oper);
+            }
+            if(morale<1) return "Quit";
+            if(morale<31) return "Unhappy";
+            if(morale<71) return "Content";
+            if(morale<91) return "Inspired";
+            return "Ecstatic";
+        },
+        convertLoyalty:function(loyalty,oper){
+            if(typeof loyalty === "string"){
+                if(loyalty==="Traitorous") return this.adjustForOper(0,0,oper);
+                if(loyalty==="Disloyal") return this.adjustForOper(1,30,oper);
+                if(loyalty==="Average") return this.adjustForOper(31,70,oper);
+                if(loyalty==="Loyal") return this.adjustForOper(71,90,oper);
+                if(loyalty==="Admiring") return this.adjustForOper(91,99,oper);
+                return this.adjustForOper(100,100,oper);
+            }
+            if(loyalty<1) return "Traitorous";
+            if(loyalty<31) return "Disloyal";
+            if(loyalty<71) return "Average";
+            if(loyalty<91) return "Loyal";
+            if(loyalty<100) return "Admiring";
+            return "Idolizing";
+        },
+        getRelations:function(value){
+            //TODO
+            if(value<1) return "Lowest";
+            if(value<31) return "Low";
+            if(value<71) return "Average";
+            if(value<91) return "High";
+            return "Superb";
+        }
+    });
+    
     Q.GameObject.extend("VariableProcessor",{
         //Set the global and scene variables. Event vars are set when the scene is staged.
         init:function(){
@@ -55,7 +185,7 @@ Quintus.UIObjects=function(Q){
                 return itm.length;
             //Rework the items into paragraphs.
             }).map(function(itm){
-                return "<p>"+itm+"</p>";
+                return "<p>"+Q.textProcessor.replaceText(itm)+"</p>";
             //Join the array back into a string
             }).join(" ");
             return paragraphs;
@@ -69,6 +199,62 @@ Quintus.UIObjects=function(Q){
                 case ">=": return vr>=vl;
                 case "<=": return vr<=vl;
             }
+        },
+        getDeepValue:function(obj, path){
+            for (var i=0, path=path.split('.'), len=path.length; i<len; i++){
+                obj = obj[path[i]];
+            };
+            return obj;
+        },
+        //Takes a string and evaluates anything within {} and then returns a new string
+        replaceText:function(text){
+            return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                return Q.textProcessor.getVarValue(p1);
+            });
+        },
+        getVarValue:function(text){
+            var newText;
+            //The text is a module on the page.
+            if(text.indexOf("@") === -1){
+                var module = Q.storyController.currentPage.modules.find(function(itm){return itm[0] === text;});
+                for(var i=0;i<module[2].length;i++){
+                    if(Q.groupsProcessor.processConds(module[2][i][0],module[2][i][1])){
+                        newText = Q.textProcessor.replaceText(module[2][i][2]);
+                        break;
+                    }
+                }
+                if(!newText) newText = Q.textProcessor.replaceText(module[1]);
+            } 
+            else {
+                //Figure out what the category is
+                var category = text[0];
+                var prop = text.slice(text.indexOf("@")+1,text.length);
+                switch(category){
+                    //{@his}, {@hers}, etc... 
+                    case "@":
+                        newText = GDATA.game["modules.json"].gender[Q.partyManager.alex.gender][prop];
+                        break;
+                    //{g@myGlobalVar}
+                    case "g":
+                        newText = Q.variableProcessor.getVar("Global",prop);
+                        break;
+                    //{s@mySceneVar}
+                    case "s":
+                        newText = Q.variableProcessor.getVar("Scene",prop);
+                        break;
+                    //{e@myEventVar}
+                    case "e":
+                        newText = Q.variableProcessor.getVar("Event",prop);
+                        break;
+                    //{o.Alex@baseStats.str}
+                    case "o":
+                        var name = text.slice(0,text.indexOf("@")).split(".")[1];
+                        var officer = Q.partyManager.getAlly(name);
+                        newText = Q.textProcessor.getDeepValue(officer,prop);
+                        break;
+                }
+            }
+            return newText;
         },
     });
     Q.GameObject.extend("GroupsProcessor",{
@@ -92,8 +278,27 @@ Quintus.UIObjects=function(Q){
                         var vl = props[3];
                         condsEvaluated.push(Q.textProcessor.evaluateStringOperator(vr,op,vl));
                         break;
-                    case "checkChar":
-                        
+                    case "checkCharProp":
+                        var character = Q.partyManager.getAlly(props[0]);
+                        var propName = Q.partyManager.convertPropName(props[1]);
+                        var oper = props[2];
+                        var propValue = props[3];
+                        if(propName === "loyalty" || propName === "morale"){
+                            //Compare numbers for >= and <=; Compare string for == and !=;
+                            if(oper === "==" || oper === "!="){
+                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(Q.partyManager.convertPresetString(character,propName),oper,propValue));
+                            } else {
+                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character[propName],oper,Q.partyManager.convertPresetString(oper,propName,propValue)));
+                            }
+                        } else {
+                            condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character[propName],oper,propValue));
+                        }
+                        break;
+                    case "checkCharPersonality":
+                        var character = Q.partyManager.getAlly(props[0]);
+                        var personality = props[1];
+                        var possession = props[2];
+                        console.log(character,personality,possession);
                         break;
                     case "checkCharStat":
                         
@@ -115,10 +320,8 @@ Quintus.UIObjects=function(Q){
                     evaluation = condsEvaluated.filter(function(itm){return itm;}).length === 1;
                     break;
             }
-            console.log(evaluation)
             return evaluation;
         },
-        
         processEffects:function(effects){
             
         }
@@ -1100,486 +1303,6 @@ Quintus.UIObjects=function(Q){
     });
     
     
-    Q.GameObject.extend("TextModules",{
-        getObjPathFromString:function(obj,i){
-            //If the i needs an index of an array
-            var arrProp = i.indexOf("[");
-            if(arrProp>=0){
-                var i2 = i.slice(0,arrProp);
-                var end = i.indexOf("]");
-                var num = i.slice(arrProp+1,end);
-                return obj[i2][num];
-            }
-            return obj[i];
-        },
-        processVarModule:function(prop){
-            var module = Q.storyController.p.pages[Q.storyController.p.pageNum].modulesVars[prop];
-            var text = module[0].text;
-            for(var i=1;i<module.length;i++){
-                //Evaluate all of the checks
-                var checks = module[i].checks;
-                var success = true;
-                for(var j=0;j<checks.length;j++){
-                    var varValue;
-                    switch(checks[j][0]){
-                        case "Event":
-                            varValue = Q.storyController.p.vrs[checks[j][1]];
-                            break;
-                        case "Scene":
-                            varValue = Q.state.get("sceneVars")[checks[j][1]];
-                            break;
-                        case "Global":
-                            varValue = Q.state.get("globalVars")[checks[j][1]];
-                            break;
-                    }
-                    success = this.evaluateStringOperator(varValue,checks[j][2],checks[j][3]);
-                    /*
-                    switch(checks[j][2]){
-                        case "==":
-                            if(varValue==checks[j][3]) success = true;
-                            else success = false;
-                            break;
-                        case "!=":
-                            if(varValue!=checks[j][3]) success = true;
-                            else success = false;
-                            break;
-                        case ">":
-                            if(varValue>checks[j][3]) success = true;
-                            else success = false;
-                            break;
-                        case "<":
-                            if(varValue<checks[j][3]) success = true;
-                            else success = false;
-                            break;
-                        case ">=":
-                            if(varValue>=checks[j][3]) success = true;
-                            else success = false;
-                            break;
-                        case "<=":
-                            if(varValue<=checks[j][3]) success = true;
-                            else success = false;
-                            break
-                    }*/
-                }
-                if(success){
-                    text = Q.textModules.processTextVars(module[i].text);
-                }
-            }
-            return text;
-        },
-        processModule:function(char,propAffected,prop){
-            var affectedCategory;
-            switch(propAffected){
-                case "c":
-                    affectedCategory = char.charClass;
-                    break;
-                case "p":
-                    affectedCategory = char.personality;
-                    break;
-                case "t":
-                    affectedCategory = char.methodology;
-                    break;
-                case "v":
-                    affectedCategory = char.value;
-                    break;
-                case "g":
-                    affectedCategory = char.gender;
-                    break;
-            }
-            var varText;
-            if(prop&&affectedCategory){
-                //If the module doesn't exist, use the default
-                if(!Q.state.get("modules")[propAffected][affectedCategory]){
-                    affectedCategory = "Default";
-                }
-                varText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules")[propAffected][affectedCategory]);
-            } else {
-                varText = propAffected.split('.').reduce(Q.textModules.getObjPathFromString,char);
-            }
-            var newText = Q.textModules.replaceVar(varText,char);
-            //If there's more, do it again.
-            while(newText.indexOf("{")>=0){
-                newText = Q.textModules.replaceVar(newText,char);    
-            }
-            return newText;
-        },
-        //Returns the text
-        addTextPoints:function(char,texts){
-            //Default is 0;
-            var idx = 0;
-            //The previous max points
-            var maxValue = 0;
-            //Skip first as it is default
-            for(var i=1;i<texts.length;i++){
-                var value = 0;
-                var checks = texts[i].checks;
-                var keys = Object.keys(checks);
-                keys.forEach(function(key){
-                    switch(key){
-                        //Personality
-                        case "p":
-                            var personality = char.personality;
-                            //Loop through this character's personalities
-                            personality.forEach(function(per){
-                                var found = checks[key].find(function(elm){return elm[0]===per;});
-                                if(found){
-                                    value+=found[1];
-                                }
-                            });
-                            break;
-                        //Character Class
-                        case "c":
-                            var found = checks[key].find(function(elm){return elm[0]===char.charClass;});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Value
-                        case "v":
-                            var found = checks[key].find(function(elm){return elm[0]===char.value;});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Methodology
-                        case "t":
-                            var found = checks[key].find(function(elm){return elm[0]===char.methodology;});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Nationality
-                        case "n":
-                            var found = checks[key].find(function(elm){return elm[0]===char.nationality;});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Loyalty
-                        case "l":
-                            var found = checks[key].find(function(elm){return elm[0]===Q.getLoyaltyString(char.loyalty);});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Morale
-                        case "m":
-                            var found = checks[key].find(function(elm){return elm[0]===Q.getMoraleString(char.morale);});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break;
-                        //Gender
-                        case "g":
-                            var found = checks[key].find(function(elm){return elm[0]===char.gender;});
-                            if(found){
-                                value+=found[1];
-                            }
-                            break
-                    }
-                });
-                if(value>maxValue){
-                    idx = i;
-                    maxValue = value;
-                }
-            }
-            return texts[idx].text;
-        },
-        getModularText:function(char,prop){
-            var aff = prop.split('.');
-            //Getting a module
-            if(aff[0]==="m"){
-                aff.shift();
-                var texts = Q.storyController.p.pages[Q.storyController.p.pageNum].modules[aff[0]];//aff.reduce(Q.textModules.getObjPathFromString,Q.state.get("modules"));
-                return Q.textModules.addTextPoints(char,texts);
-            } 
-            //Accessing the character's properties directly
-            else {
-                return prop.split('.').reduce(Q.textModules.getObjPathFromString,char);
-            }
-        },
-        replaceVar:function(text,c){
-            return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
-                return Q.textModules.processTextVarInstance(p1,c);
-            });
-        },
-        processTextVarInstance:function(text,character){
-            var affected = text.slice(0,text.indexOf("@"));
-            var aff = affected.split('.');
-            var prop = text.slice(text.indexOf("@")+1,text.length);
-            var varText = "";
-            switch(aff[0]){
-                //Event var -> {e@varName}
-                case "e":
-                    return Q.storyController.p.vrs[prop];
-                //Scene var
-                case "s":
-                    return Q.state.get("sceneVars")[prop];
-                //Global var
-                case "g":
-                    return Q.state.get("globalVars")[prop];
-                //The save data (in the game state)
-                case "d":
-                    return prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("saveData"));
-                break;
-                case "o":
-                    //We're affecting a specific officer's modules
-                    var newText;
-                    var char = Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0];
-                    //If there's a third property
-                    if(aff[2]){
-                        switch(aff[2]){
-                            case "g":
-                                var gender = char.gender;
-                                newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").g[gender]);
-                                break;
-                        }
-                    } else {
-                        newText = Q.textModules.getModularText(char,prop)//prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("modules").o[aff[1]]);
-                    }
-                    //If there's more, do it again.
-                    while(typeof newText==="string" && newText.indexOf("{")>=0){
-                        newText = Q.textModules.replaceVar(newText,Q.state.get("allies").filter(function(char){return char.name===aff[1];})[0]);    
-                    }
-                    return newText;
-                    
-                break;
-                //Modules from within modules
-                case "m":
-                    var propAffected = aff[1];
-                    return Q.textModules.processModule(character,propAffected,prop);
-                break;
-                //Variable modules don't have any passed in object
-                case "":
-                    return Q.textModules.processVarModule(prop);
-                break;
-                //Affected is not one of the above. It is a character
-                default:
-                    var intAffected = parseInt(aff[0]);
-                    var newText;
-                    //Rand character that is passed in
-                    if(intAffected>=0){
-                        var char = Q.storyController.p.char;
-                        //If there's more than one part to the obj
-                        if(aff[1]){
-                            var propAffected = aff[1];
-                            return Q.textModules.processModule(char,propAffected,prop);
-                        } else {
-                            newText = Q.textModules.getModularText(char,prop);
-                        }
-                    } 
-                    //Name of officer
-                    else {
-                        //If the character is passed in (like: {@name})
-                        if(character){
-                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,character);
-                        } 
-                        //If the name is passed in (like: {Alex@name})
-                        else {
-                            newText = prop.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("allies").filter(function(char){return char.name===aff[0];})[0]);
-                        }
-                    }
-                    return newText;
-            }
-            return varText;
-        },
-        //Finds a var
-        matchVar:function(text){
-            //If we're dealing with a number most likely
-            if(!Q._isString(text)) return Q.textModules.processTextVarInstance(text);
-            //Find any variables and replace the string with the values
-            var replacedText = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
-                return Q.textModules.processTextVarInstance(p1);
-            });
-            //If there are any vars
-            if (replacedText!==text) {
-                return replacedText;
-            }
-            return false;
-        },
-        processTextVars:function(text){
-            var newText = text;
-            //Match each of the variables one by one
-            do {
-                var textMatched = Q.textModules.matchVar(newText);
-                if(textMatched) newText = textMatched;
-            } while(textMatched);
-            return newText;
-        },
-        //Conds and effects below
-        processCondEffects:function(obj,data){
-            for(var i=0;i<data.length;i++){
-                if(Q.textModules.checkConds(data[i].conds)){
-                    Q.textModules.executeEffects(obj,data[i].effects);
-                };
-            }
-        },
-        checkConds:function(cond){
-            var condsMet = true;
-            if(cond){
-                //Loop through each condition
-                for(var i=0;i<cond.length;i++){
-                    //Run the condition's function (idx 0) with properties (idx 1)
-                    condsMet = Q.textModules["condFuncs"][cond[i][0]](this,cond[i][1]);
-                    if(!condsMet) return condsMet;
-                }
-            }
-            return condsMet;
-        },
-        executeEffects:function(obj,effects){
-            //Loop through each effect and run their functions
-            for(var i=0;i<effects.length;i++){
-                //Run the effects's function (idx 0) with properties (idx 1)
-                obj["effectFuncs"][effects[i][0]](obj,effects[i][1]);
-            }
-        },
-        evaluateStringOperator:function(vr,op,vl){
-            switch(op){
-                case "==": return vr==vl;
-                case "!=": return vr!=vl;
-                case ">": return vr>vl;
-                case "<": return vr<vl;
-                case ">=": return vr>=vl;
-                case "<=": return vr<=vl;
-            }
-        },
-        condFuncs:{
-            checkVar:function(t,obj){
-                
-            },
-            checkCharProp:function(t,obj){
-                
-            },
-            checkCharStat:function(t,obj){
-                
-            },
-            checkKeyword:function(t,obj){
-                
-            }
-            /*
-            checkKeyword:function(t,obj){
-                var vr = obj.vr;
-                var op = obj.operator;
-                var vl = obj.vl;
-                switch(vr){
-                    case "rosterSize":
-                        vr  = Q.state.get("saveData").applicationsRoster.length;
-                        break;
-                    case "partySize":
-                        vr = Q.state.get("allies").length;
-                        break;
-                }
-                return t.evaluateStringOperator(vr,op,vl);
-            },
-            checkChar:function(t,obj){
-                var char;
-                //First, get the character that we're checking
-                if(obj.char==="Current"){
-                    char = t.p.characters[0];
-                } else {
-                    char = Q.state.get("characters")[obj.char];
-                }
-                var value;
-                switch(obj.propType){
-                    case "Personality":
-                        //Loop through the character's personalities
-                        for(var i=0;i<char.personality.length;i++){
-                            var p = char.personality[i][1];
-                            if(p===obj.prop) return true;
-                        }
-                        return false;
-                        break;
-                    case "Character Class":
-                        value = char.charClass;//Q.state.get("charGeneration").classNames[char.charClass];
-                        break;
-                    case "Value":
-                        value = char.value;//Q.state.get("charGeneration").values[char.value];
-                        break;
-                    case "Methodology":
-                        value = char.methodology;//Q.state.get("charGeneration").methodologies[char.methodologies];
-                        break;
-                    case "Nationality":
-                        value = char.nationality;//Q.state.get("charGeneration").nationalities[char.nationalities];
-                        break;
-                    case "Loyalty":
-                        value = Q.getLoyaltyString(char.loyalty);
-                        break;
-                    case "Morale":
-                        value = Q.getMoraleString(char.morale);
-                        break;
-                    case "Gender":
-                        value = char.gender;//Q.state.get("charGeneration").genders[char.gender];
-                        break;
-                    //Special case where we're checking a number with different operators
-                    case "Stat":
-                        return t.evaluateStringOperator(char.combatStats[obj.prop],obj.operator,obj.value);
-                        break;
-                }
-                //Once a value is found, check it against the passed in prop. Personality is check within the switch as there are multiple personality traits sometimes.
-                if(value===obj.prop){
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-            checkVar:function(t,obj){
-                var vars;
-                switch(obj.scope){
-                    case "Event":
-                        vars = Q.state.get("eventVars");
-                        break;
-                    case "Scene":
-                        vars = Q.state.get("sceneVars");
-                        break;
-                    case "Global":
-                        vars = Q.state.get("globalVars");
-                        vars["money"] = Q.state.get("saveData").money;
-                        break;
-                }
-                var keys = Object.keys(vars);
-                var processedVal = typeof obj.vl !== "string" ? obj.vl : Q.textModules.processTextVars(obj.vl);
-                for(var i=0;i<keys.length;i++){
-                    if(keys[i]===obj.vr){
-                        var processedSavedVal = typeof vars[keys[i]] !== "string" ? vars[keys[i]] : Q.textModules.processTextVars(vars[keys[i]]);
-                        return t.evaluateStringOperator(processedSavedVal,obj.operator,processedVal);
-                    }
-                }
-            }*/
-        },
-        effectFuncs:{
-            /*
-            setVar:function(t,obj){
-                var vars;
-                switch(obj.scope){
-                    case "Event":
-                        vars = Q.state.get("eventVars");
-                        break;
-                    case "Scene":
-                        vars = Q.state.get("sceneVars");
-                        break;
-                    case "Global":
-                        vars = Q.state.get("globalVars");
-                        vars.money = Q.state.get("saveData").money;
-                        break;
-                }
-                //Process it so that you can have vars in the value.
-                var processedVal = typeof obj.vl !== "string" ? obj.vl : Q.textModules.processTextVars(obj.vl);
-                switch(obj.operator){
-                    case "=":
-                        vars[obj.vr] = processedVal;
-                        break;
-                    case "+":
-                        vars[obj.vr] += processedVal;
-                        break;
-                    case "-":
-                        vars[obj.vr] -= processedVal;
-                        break;
-                }
-                //Special case for money PROBABLY TEMP
-                if(obj.vr==="money") Q.state.get("saveData").money = vars[obj.vr];
-            }*/
-        }
-    });
     /*
     //Using CSS/Jquery, create the story dialogue with options
     Q.GameObject.extend("StoryController",{

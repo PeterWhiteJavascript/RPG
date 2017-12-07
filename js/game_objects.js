@@ -2875,28 +2875,23 @@ Quintus.GameObjects=function(Q){
                     char.team = "ally";
                     char.officer = true;
                     char.name = data.name;
-                    char.level = data.level;
                     char.gender = data.gender;
-                    char.equipment = {
-                        righthand:data.equipment.righthand?this.convertEquipment([data.equipment.righthand[1],data.equipment.righthand[2]],data.equipment.righthand[0]):false,
-                        lefthand:data.equipment.lefthand?this.convertEquipment([data.equipment.lefthand[1],data.equipment.lefthand[2]],data.equipment.lefthand[0]):false,
-                        armour:data.equipment.armour?this.convertEquipment([data.equipment.armour[1],data.equipment.armour[2]],data.equipment.armour[0]):false,
-                        footwear:data.equipment.footwear?this.convertEquipment([data.equipment.footwear[1],data.equipment.footwear[2]],data.equipment.footwear[0]):false,
-                        accessory:data.equipment.accessory?this.equipment.gear[data.accessory]:false
-                    };
-                    char.baseStats = data.baseStats;
-                    char.nationality = data.nationality;
+                    char.level = Math.floor(Math.random()*(data.levelmax-data.levelmin))+data.levelmin;
+                    char.nationality = data.nationality==="Random"?this.generateNationality(act):data.nationality;
+                    
                     char.natNum = this.getNatNum(char.nationality);
-                    char.charClass = data.charClass;
+                    char.charClass = data.charClass==="Random"?this.generateCharClass(char.nationality):data.charClass;
                     char.classNum = this.getClassNum(char.charClass);
                     char.charGroup = this.generateCharGroup(char.classNum);
-                    char.techniques = this.getTechniques(data.techniques,char.charClass);
-                    char.talents = this.getTalents(char.charClass,char.charGroup);
                     
-                    char.exp = data.exp;
-                    char.primaryStat = data.primaryStat;
+                    char.primaryStat = this.primaryStats[char.classNum];
                     char.primaryCoordinate = this.primaryCoordinates[char.classNum];
-                    char.lean = data.lean;
+                    char.lean = [this.getStatLean(),this.getStatLean()];
+                    
+                    char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
+                    char.techniques = this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass);//Techniques are always filled out and are not random for enemies.
+                    char.talents = this.getTalents(char.charClass,char.charGroup);
+                    char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.primaryCoordinate,char.lean);
                     
                     char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;

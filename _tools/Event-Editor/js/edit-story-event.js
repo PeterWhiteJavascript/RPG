@@ -40,8 +40,14 @@ var FileSaver = {
     getSaveReferences:function(){
         var dataToCheck = [];
         function add(itm){
-            itm.choices.forEach(function(a){
-                dataToCheck.push([a[2],a[3]]);
+            itm.choices.forEach(function(o){
+                console.log(o)
+                o[2][1].forEach(function(c){
+                    dataToCheck.push(c);
+                });
+                o[2][2].forEach(function(e){
+                    dataToCheck.push(e);
+                });
             });
             itm.onload.forEach(function(o){
                 o[1].forEach(function(c){
@@ -86,19 +92,20 @@ var uic = new UIC({
             Global:GDATA.dataFiles["global-vars.json"].vrs
         },
         conditionals:["==","!=",">=","<="],
-        officers:Object.keys(GDATA.dataFiles["officers.json"]),
+        officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
         charFiles:GDATA.characterFiles,
-        charPropTypes:["Nationality","Character Class","Value","Methodology","Personality","Loyalty","Morale","Gender"],
+        charPropTypes:["Nationality","Character Class","Value","Methodology","Loyalty","Morale","Gender"],
         charPropValues:{
             Nationality:GDATA.dataFiles["character-generation.json"].nationalities,
             "Character Class":GDATA.dataFiles["character-generation.json"].classNames,
             Value:GDATA.dataFiles["character-generation.json"].values,
             Methodology:GDATA.dataFiles["character-generation.json"].methodologies,
-            Personality:GDATA.dataFiles["character-generation.json"].personalityNames,
             Loyalty:["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"],
             Morale:["Quit","Unhappy","Content","Inspired","Ecstatic"],
             Gender:GDATA.dataFiles["character-generation.json"].genders
         },
+        charPersonalityTypes:GDATA.dataFiles["character-generation.json"].personalityNames,
+        charPersonalityPossesion:["Has","Lacks"],
         charStatProps:["Base Stats","Derived Stats"],
         charStatValues:{
             "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
@@ -145,7 +152,7 @@ var uic = new UIC({
             }
         }
     },
-    condsFuncs:["checkVar","checkCharProp","checkCharStat","checkKeyword"],
+    condsFuncs:["checkVar","checkCharProp","checkCharPersonality","checkCharStat","checkKeyword"],
     condProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
         var dataP = this.dataP;
@@ -161,15 +168,22 @@ var uic = new UIC({
                 break;
             case "checkCharProp":
                 props = props || [dataP.officers[0],dataP.charPropTypes[0],dataP.conditionalEquals[0],dataP.charPropValues[dataP.charPropTypes[0]][0]];
-                cont.append(this.Select("Char",dataP.officers,props[0]));
+                cont.append(this.Select("Char",dataP.officers.concat("Current"),props[0]));
                 cont.append(this.Select("Prop",dataP.charPropTypes,props[1]));
-                cont.append(this.Select("Oper",dataP.conditionalEquals,props[2]));
+                cont.append(this.Select("Oper",dataP.charPropConditionals[props[1]],props[2]));
                 cont.append(this.Select("Value",dataP.charPropValues[props[1]],props[3]));
+                this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.charPropConditionals);
                 this.linkSelects($(cont).children("select")[1],$(cont).children("select")[3],dataP.charPropValues);
+                break;
+            case "checkCharPersonality":
+                props = props || [dataP.officers[0],dataP.charPersonalityTypes[0],dataP.charPersonalityPossesion[0]];
+                cont.append(this.Select("Char",dataP.officers.concat("Current"),props[0]));
+                cont.append(this.Select("Personality",dataP.charPersonalityTypes,props[1]));
+                cont.append(this.Select("Possesion",dataP.charPersonalityPossesion,props[2]));
                 break;
             case "checkCharStat":
                 props = props || [dataP.officers[0],dataP.charStatProps[0],dataP.charStatValues[dataP.charStatProps[0]][0],dataP.conditionals[0],0];
-                cont.append(this.Select("Char",dataP.officers,props[0]));
+                cont.append(this.Select("Char",dataP.officers.concat("Current"),props[0]));
                 cont.append(this.Select("Prop",dataP.charStatProps,props[1]));
                 cont.append(this.Select("Stat",dataP.charStatValues[props[1]],props[2]));
                 cont.append(this.Select("Oper",dataP.conditionals,props[3]));
@@ -269,6 +283,15 @@ var uic = new UIC({
         return cont;
     }
 });
+uic.dataP.charPropConditionals = {
+    Nationality:uic.dataP.conditionalEquals,
+    "Character Class":uic.dataP.conditionalEquals,
+    Value:uic.dataP.conditionalEquals,
+    Methodology:uic.dataP.conditionalEquals,
+    Loyalty:uic.dataP.conditionals,
+    Morale:uic.dataP.conditionals,
+    Gender:uic.dataP.conditionalEquals
+};
 var start = function(){
     uic.createTopMenu($("#editor-content"));
     //In charge of dynamic content
