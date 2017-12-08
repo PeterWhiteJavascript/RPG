@@ -66,19 +66,6 @@ Quintus.QFunctions=function(Q){
             progressCallback:Q.progressCallback
         });
     };*/
-    //Value scale of 1-100
-    Q.getCharacterValue=function(value){
-        if(value<=33) return "Egoist";
-        if(value>=66) return "Altruist";
-        return "Nepotist";
-    };
-    //Method scale of 1-100
-    Q.getCharacterMethod=function(value){
-        if(value<=33) return "Intuitive";
-        if(value>=66) return "Kind";
-        return "Pragmatic";
-    };
-    
     Q.setAward = function(obj,prop,amount){
         if(!obj["awards"]) return;
         obj["awards"][prop] += amount;

@@ -1,3 +1,4 @@
+
 .UIC-choice{
     border:1px solid black;
     border-radius:6px;
@@ -22,21 +23,54 @@
     background-color:var(--button-background-color);
     color:var(--button-text-color);
 }
-.UIC-hud div:hover{
+.UIC-hud-buttons div:hover{
     background-color:var(--button-hover-color);
     cursor:pointer;
 }
 /*HUD END*/
 /*COND-EFFECT START*/
-.UIC-conds-req{
+
+.UIC-hud-buttons{
+    width:80%;
+}
+
+/* one item */
+.UIC-hud-button:first-child:nth-last-child(1) {
+    width: 80%;
+}
+
+/* two items */
+.UIC-hud-button:first-child:nth-last-child(2),
+.UIC-hud-button:first-child:nth-last-child(2) ~ .UIC-hud-button {
+    width: 40%;
+}
+
+/* three items */
+.UIC-hud-button:first-child:nth-last-child(3),
+.UIC-hud-button:first-child:nth-last-child(3) ~ .UIC-hud-button {
+    width: 26.6666%;
+}
+
+/* four items */
+.UIC-hud-button:first-child:nth-last-child(4),
+.UIC-hud-button:first-child:nth-last-child(4) ~ .UIC-hud-button {
+    width: 20%;
+}
+.UIC-base-props{
     text-align:center;
     font-size:1vw;
+    padding:5px;
 }
-.UIC-conds-req *{
+.UIC-base-props:empty {
+   display: none;
+}
+
+.UIC-base-props *{
     display:inline-block;
     height:30px;
     line-height:30px;
 }
+
 .UIC-conditions{
     border-top:1px solid black;
     border-bottom:1px solid black;
@@ -52,6 +86,7 @@
     border-bottom:1px solid black;
     font-size:0;
     text-align:center;
+    background-color:var(--menu-background-color);
 }
 .UIC-group-hud:hover{
     background-color:var(--menu-button-hover-color);
@@ -88,6 +123,7 @@
     text-align:center;
     font-size:1vw;
     background-color:var(--menu-background-color);
+    overflow:auto;
 }
 .UIC-choice-item-top{
     padding:5px;
@@ -186,22 +222,22 @@ input[type=checkbox]{
 /* SCRIPT ITEM END*/
 
 /* MODULES TEXT START*/
+.UIC-text-groups{
+    overflow:auto;
+}
+.UIC-modular-texts{
+    border-radius:2px;
+    border-top:1px solid black;
+}
 .UIC-text-handle{
     padding:5px;
 }
-.UIC-text{
+.UIC-text, .UIC-modular-text{
     padding:5px;
+    background-color:var(--menu-background-color);
 }
-.UIC-copy-to-clipboard{
-    font-size:1.2vw;
-    text-align:center;
-    cursor:pointer;
-    width:100%;
-    background-color:var(--button-background-color);
-    color:var(--button-text-color);
-}
-.UIC-copy-to-clipboard:hover{
-    background-color:var(--button-hover-color);
+.UIC-text textarea, .UIC-modular-text textarea{
+    min-height:30px;
 }
 .UIC-text *, .UIC-text-handle *, .UIC-modular-text *{
     display:inline-block;
@@ -210,8 +246,26 @@ input[type=checkbox]{
 .UIC-text span, .UIC-text-handle span, .UIC-modular-text span{
     text-align:center;
 }
-.UIC-text textarea{
-    min-height:30px;
+.UIC-copy-to-clipboard{
+    width:100%;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+}
+.UIC-copy-to-clipboard span{
+    display:inline-block;
+    line-height:30px;
+    font-size:1.2vw;
+    text-align:center;
+    cursor:pointer;
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
+    padding-left:2px;
+    padding-right:2px;
+    border-radius:2px;
+}
+.UIC-copy-to-clipboard span:hover{
+    background-color:var(--button-hover-color);
 }
 
 /* MODULES TEXT END*/
@@ -247,6 +301,10 @@ input[type=checkbox]{
 .add-new-script-item, .add-new-text, .add-new-module-cond{
     width:80%;
 }
+.add-new-text:hover{
+    cursor:pointer;
+    background-color:var(--button-hover-color);
+}
 textarea{
     line-height:initial !important;
 }
@@ -261,9 +319,9 @@ textarea{
 }
 .minimize-choice:hover{
     background-color:var(--button-hover-color);
-    
 }
-//Taken from https://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has
+
+/*Taken from https://stackoverflow.com/questions/8720931/can-css-detect-the-number-of-children-an-element-has*/
 /* one item */
 .top-bar-itm:first-child:nth-last-child(1) {
 /* -or- li:only-child { */

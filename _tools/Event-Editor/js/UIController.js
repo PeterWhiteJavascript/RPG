@@ -225,9 +225,87 @@ function UIC(p){
         $(groupItemsCont).disableSelection();
         cont.append(group);
     };
+    this.getPremadeGroup = function(group,props){
+        props = props || [];
+        switch(group){
+            case "Conditions":
+                return [
+                    "Add Condition",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.conditionsFuncs,"conditionProps",uic.conditionsFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                    },
+                    "Conditions ("+props.length+")",
+                    [
+                        uic.conditionsFuncs,
+                        "conditionProps"
+                    ],
+                    props
+                ];
+            case "Effects":
+                return [
+                    "Add Effect",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.effectsFuncs,"effectProps",uic.effectsFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                    },
+                    "Effects ("+props.length+")",
+                    [
+                        uic.effectsFuncs,
+                        "effectProps"
+                    ],
+                    props
+                ];
+        }
+    };
+    this.createGroup = function(categories,baseProps){
+        var group = $(
+        '<div class="UIC-group">\n\
+            <div class="UIC-hud">\n\
+                <div class="minimize-choice"><span>-</span></div>\n\
+                <div class="UIC-hud-buttons"></div>\n\
+                <div class="remove-choice-deep"><span>x</span></div>\n\
+            </div>\n\
+            <div class="UIC-base-props">'+baseProps+'</div>\n\
+        </div>');
+        uic.selectInitialValue($(group).children(".UIC-base-props"));
+        $(group).children(".UIC-hud").children(".minimize-choice").click(uic.minimizeScript);
+        $(group).children(".UIC-hud").children(".remove-choice-deep").click(uic.removeDeepItem);
+        for(var i=0;i<categories.length;i++){
+            var buttonText = categories[i][0];
+            var buttonFunc = categories[i][1];
+            var heading = categories[i][2];
+            var categoryFuncs = categories[i][3][0];
+            var categoryProps = categories[i][3][1];
+            var setProps = categories[i][4];
+            group.children(".UIC-hud").children(".UIC-hud-buttons").append("<div class='UIC-hud-button'><span>"+buttonText+"</span></div>");
+            group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().on("click",buttonFunc);
+            group.append(
+            '<div class="UIC-group-cont">\n\
+                <div class="UIC-group-hud">\n\
+                    <div class="UIC-group-minimize"><span>-</span></div>\n\
+                    <div class="UIC-title"><span>'+heading+'</span></div>\n\
+                </div>\n\
+                <div class="UIC-cont"></div>\n\
+            </div>');
+            $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").click(uic.minimizeGroup);
+            for(var j=0;j<setProps.length;j++){
+                group.children(".UIC-group-cont").last().children(".UIC-cont").append(uic.getGroupItem(categoryFuncs,categoryProps,setProps[j][0],setProps[j][1],true));   
+            }
+        }
+        $(group).children(".UIC-group-cont").children(".UIC-cont").sortable({
+            axis: "y"
+        });
+        $(group).children(".UIC-group-cont").children(".UIC-cont").disableSelection();
+        return group;
+    };
     this.createChoiceGroup = function(cont,p){
         p = p || ["New Choice",false];
-        var props = p[2] || ["All",[],[["changePage"]]];
+        var props = p[2] || [["changePage"]]; //Default to having a changePage func as this will be usually used.
         var group = $(
         '<div class="UIC-choice UIC-group-cont">\n\
             <div class="UIC-choice-hud">\n\
@@ -246,11 +324,22 @@ function UIC(p){
         top.append(this.Input("Text",p[0],"text"));
         top.append(this.Checkbox("Disabled",p[1]));
         choiceCont.append(top);
-        this.createCondEffectsGroup(choiceCont,props);
+        choiceCont.append(this.createGroup(
+            [
+                this.getPremadeGroup("Effects",props)
+            ],
+            [
+                
+            ]
+        ));
         
         this.linkValueToText($(choiceCont).children(".UIC-choice-item-top").children("input")[0],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
         group.append(choiceCont);
         $(cont).append(group);
+        
+        if(p[0] !== "New Choice"){
+            $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").trigger("click");
+        }
     };
     this.createModuleGroup = function(cont,props){
         props = props || ["","",[]];
@@ -264,8 +353,8 @@ function UIC(p){
                 <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
             <div class="UIC-text-handle">'+this.Input("Handle",props[0])+'</div>\n\
-            <div class="UIC-text">'+this.TextArea("",props[1])+'</div>\n\
-            <div class="UIC-copy-to-clipboard">Copy to Clipboard</div>\n\
+            <div class="UIC-copy-to-clipboard"><span>Copy to Clipboard</span></div>\n\
+            <div class="UIC-text">'+this.TextArea("Default Text",props[1])+'</div>\n\
             <div class="UIC-hud">\n\
                 <div class="minimize-choice"><span>-</span></div>\n\
                 <div class="add-new-text"><span>Add Text</span></div>\n\
@@ -274,6 +363,11 @@ function UIC(p){
             <div class="UIC-text-groups">\n\
             </div>\n\
         </div>');
+        
+        $(group).children(".UIC-text-groups").sortable({
+            axis: "y"
+        });
+        $(group).children(".UIC-text-groups").disableSelection();
         cont.append(group);
         $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").click(this.minimizeChoice);
         $(group).children(".UIC-choice-hud").children(".remove-choice-deep").click(this.removeDeepItem);
@@ -287,51 +381,17 @@ function UIC(p){
             document.body.removeChild(aux);
         });
         uic.linkValueToText($(group).children(".UIC-text-handle").children("input"),$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
-        function createModularTextItem(props){
-            props = props || ["All",[],""];
-            var cont = $("<div class='UIC-modular-texts'></div>");
-            cont.append(
-            '<div class="UIC-hud">\n\
-                <div class="minimize-choice"><span>-</span></div>\n\
-                <div class="add-new-module-cond"><span>Add Condition</span></div>\n\
-                <div class="remove-choice-deep"><span>x</span></div>\n\
-            </div>\n\
-            <div class="UIC-conds-req UIC-group-item">'+uic.Select("Conds Req",["All","Some","One"],props[0])+'</div>\n\
-            <div class="UIC-conditions">\n\
-                <div class="UIC-group-hud">\n\
-                    <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Conditions ('+props[1].length+')</span></div>\n\
-                </div>\n\
-                <div class="UIC-cont"></div>\n\
-            </div>\n\
-            <div class="UIC-modular-text">'+uic.TextArea("Text",props[2])+'</div>');
-            $(cont).children(".UIC-conditions").children(".UIC-group-hud").click(uic.minimizeGroup);
-            
-            $(cont).children(".UIC-hud").children(".minimize-choice").click(function(){
-                var text = $(this).text();
-                if(text==="-"){
-                    $(this).parent().siblings().hide();
-                    $(this).text("+");
-                } else {
-                    $(this).parent().siblings().show();
-                    $(this).text("-");
-                }
-            });
-            $(cont).children(".UIC-hud").children(".add-new-module-cond").click(function(){
-                $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],false,true));
-                $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(this).parent().siblings(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item").length+")");
-            });
-            $(cont).children(".UIC-hud").children(".remove-choice-deep").click(function(){
-                $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").empty();
-                $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Condition (0)");
-            });
-            for(var i=0;i<props[1].length;i++){
-                $(cont).children(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",props[1][i][0],props[1][i][1],true));
-            }
-            return cont;
-        };
+        
         $(group).children(".UIC-hud").children(".add-new-text").click(function(){
-            $(this).parent().siblings(".UIC-text-groups").append(createModularTextItem());
+            $(group).children(".UIC-text-groups").append(uic.createGroup(
+                [
+                    uic.getPremadeGroup("Conditions")
+                ],
+                [
+                    uic.Select("Conds Req",["All","Some","One"])
+                    +uic.TextArea("Text","")
+                ]
+            ));
         });
         $(group).children(".UIC-hud").children(".minimize-choice").click(function(){
             var text = $(this).text();
@@ -347,68 +407,35 @@ function UIC(p){
             $(this).parent().siblings(".UIC-text-groups").empty();
         });
         for(var i=0;i<props[2].length;i++){
-            $(group).children(".UIC-text-groups").append(createModularTextItem(props[2][i]));
+            $(group).children(".UIC-text-groups").append(this.createGroup(
+                [
+                    this.getPremadeGroup("Conditions",props[2][i][2])
+                ],
+                [
+                    this.Select("Conds Req",["All","Some","One"],props[2][i][0])
+                    +this.TextArea("Text",props[2][i][1])
+                ]
+            ));
+        }
+        if(props[2].length){
+            $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").trigger("click");
         }
     };
     this.createCondEffectsGroup = function(cont,props){
         props = props || ["All",[],[]];
-        var group = $(
-        '<div class="UIC-group">\n\
-            <div class="UIC-hud">\n\
-                <div class="minimize-choice"><span>-</span></div>\n\
-                <div class="add-new-condition"><span>Add Condition</span></div>\n\
-                <div class="add-new-effect"><span>Add Effect</span></div>\n\
-                <div class="remove-choice-deep"><span>x</span></div>\n\
-            </div>\n\
-            <div class="UIC-conds-req UIC-group-item">'+this.Select("Conds Req",["All","Some","One"],props[0])+'</div>\n\
-            <div class="UIC-conditions UIC-group-cont">\n\
-                <div class="UIC-group-hud">\n\
-                    <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Conditions ('+props[1].length+')</span></div>\n\
-                </div>\n\
-                <div class="UIC-cont"></div>\n\
-            </div>\n\
-            <div class="UIC-effects UIC-group-cont">\n\
-                <div class="UIC-group-hud">\n\
-                    <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-title"><span>Effects ('+props[2].length+')</span></div>\n\
-                </div>\n\
-                <div class="UIC-cont"></div>\n\
-            </div>\n\
-        </div>');
-        cont.append(group);
-        this.selectInitialValue(group.children(".UIC-conds-req"));
-        
-        $(group).children(".UIC-hud").children(".add-new-condition").click(function(){
-            $(this).parent().siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",uic.condsFuncs[0],false,true));
-            $(this).parent().siblings(".UIC-conditions").children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(this).parent().siblings(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item").length+")");
-        });
-        $(group).children(".UIC-hud").children(".add-new-effect").click(function(){
-            $(this).parent().siblings(".UIC-effects").children(".UIC-cont").append(uic.getGroupItem(uic.effectsFuncs,"effectProps",uic.effectsFuncs[0],false,true));
-            $(this).parent().siblings(".UIC-effects").children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(this).parent().siblings(".UIC-effects").children(".UIC-cont").children(".UIC-group-item").length+")");
-        });
-        $(group).children(".UIC-hud").children(".minimize-choice").click(function(){
-            var text = $(this).text();
-            if(text==="-"){
-                $(this).parent().siblings().hide();
-                $(this).text("+");
-            } else {
-                $(this).parent().siblings().show();
-                $(this).text("-");
-            }
-        });
-        $(group).children(".UIC-hud").children(".remove-choice-deep").click(this.removeDeepItem);
-        $(group).children(".UIC-group-cont").children(".UIC-group-hud").click(this.minimizeGroup);
-        for(var i=0;i<props[1].length;i++){
-            $(group).children(".UIC-hud").siblings(".UIC-conditions").children(".UIC-cont").append(uic.getGroupItem(uic.condsFuncs,"condProps",props[1][i][0],props[1][i][1],true));
+        cont.append(this.createGroup(
+            [
+                this.getPremadeGroup("Conditions",props[1]),
+                this.getPremadeGroup("Effects",props[2])
+            ],
+            [
+                this.Select("Conds Req",["All","Some","One"],props[0])
+            ]
+        ));
+
+        if(props[1].length || props[2].length){
+            $(cont).children(".UIC-group").last().children(".UIC-group-cont").children(".UIC-group-hud").children(".UIC-group-minimize").trigger("click");
         }
-        for(var i=0;i<props[2].length;i++){
-            $(group).children(".UIC-hud").siblings(".UIC-effects").children(".UIC-cont").append(uic.getGroupItem(uic.effectsFuncs,"effectProps",props[2][i][0],props[2][i][1],true));
-        }
-        $(group).children(".UIC-group-cont").children(".UIC-cont").sortable({
-            axis: "y"
-        });
-        $(group).children(".UIC-group-cont").children(".UIC-cont").disableSelection();
     };
     this.getGroupValues = function(group){
         var itms = [];
@@ -433,12 +460,10 @@ function UIC(p){
     this.getSaveChoices = function(cont){
         var choices = [];
         $(cont).children(".UIC-choice").each(function(){
-            var values = uic.getSaveGroups($(this).children(".UIC-cont"));
-            console.log(values)
             choices.push([
                 $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").first().val(),
                 $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").last().is(":checked"),
-                values[0]
+                uic.getSaveGroups($(this).children(".UIC-cont"))[0][0]
             ]);
         });
         return choices;
@@ -446,18 +471,10 @@ function UIC(p){
     this.getSaveModules = function(cont){
         var modules = [];
         $(cont).children(".UIC-group").each(function(){
-            var groups = [];
-            $(this).children(".UIC-text-groups").children(".UIC-modular-texts").each(function(){
-                groups.push([
-                    $(this).children(".UIC-conds-req").children(".UIC-prop").val(),
-                    uic.getGroupValues($(this).children(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item")),
-                    $(this).children(".UIC-modular-text").children("textarea").val()
-                ]);
-            });
             modules.push([
                 $(this).children(".UIC-text-handle").children("input").val(),
                 $(this).children(".UIC-text").children("textarea").val(),
-                groups
+                uic.getSaveGroups($(this).children(".UIC-text-groups"))
             ]);
         });
         return modules;
@@ -465,11 +482,14 @@ function UIC(p){
     this.getSaveGroups = function(cont){
         var groups = [];
         $(cont).children(".UIC-group").each(function(){
-            groups.push([
-                $(this).children(".UIC-conds-req").children(".UIC-prop").val(),
-                uic.getGroupValues($(this).children(".UIC-conditions").children(".UIC-cont").children(".UIC-group-item")),
-                uic.getGroupValues($(this).children(".UIC-effects").children(".UIC-cont").children(".UIC-group-item"))
-            ]);
+            var group = [];
+            $(this).children(".UIC-base-props").children(".UIC-prop").each(function(){
+                group.push($(this).val());
+            });
+            $(this).children(".UIC-group-cont").each(function(){
+                group.push(uic.getGroupValues($(this).children(".UIC-cont").children(".UIC-group-item")));
+            });
+            groups.push(group);
         });
         return groups;
     };
@@ -485,7 +505,6 @@ function UIC(p){
         var sceneVarRefs = [];
         var globalVarRefs = [];
         for(var i=0;i<data.length;i++){
-            console.log(data)
             var func = data[i][0];
             var props = data[i][1];
             switch(func){

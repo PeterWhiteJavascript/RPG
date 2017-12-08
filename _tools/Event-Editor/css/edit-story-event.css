@@ -71,14 +71,13 @@
     overflow-y:auto;
 }
 #editor-page-options{
-    padding:10px;
+    padding:5px;
 }
 #bottom-page-options{
     height:100%;
-    padding:10px;
+    padding:5px;
     width:90%;
-    top:calc(15% + 60px);   
-    border-right:thick double;
+    top:calc(15% + 60px);
 }
 #add-new-onload-group{
     width:100%;
@@ -101,6 +100,7 @@
     left:10%;
     position:absolute;
     background-color:var(--background-color);
+    min-height:calc(100% - 60px);
 }
 #onload{
     width:33.33%;
@@ -108,6 +108,7 @@
     padding-right:1%;
     border-right:thick double;
     height:100%;
+    overflow:auto;
 }
 #choices{
     padding-left:1%;
@@ -115,6 +116,7 @@
     width:33.33%;
     float:left;
     height:100%;
+    overflow:auto;
 }
 #modules{
     padding-left:1%;
@@ -122,6 +124,7 @@
     float:left;
     border-left:thick double;
     height:100%;
+    overflow:auto;
 }
 #maps-select{
     height:30px;

@@ -1,6 +1,8 @@
 Quintus.UIObjects=function(Q){
     
     Q.GameObject.extend("PartyManager",{
+        allies:[],
+        roster:[],
         init:function(){
             
         },
@@ -68,6 +70,14 @@ Quintus.UIObjects=function(Q){
                     return "moveSpeed";
             }
         },
+        hasPersonality:function(character,much,value){
+            if(!character.personality) return;
+            for(var i=0;i<character.personality.length;i++){
+                if(much === "All" || much === character.personality[i][0]){
+                    if(character.personality === value) return true;
+                }
+            }
+        },
         convertPresetString:function(obj,prop,value){
             //If we've passed in an operator, we're going to need either the min or max values.
             if(typeof obj === "string"){
@@ -76,27 +86,37 @@ Quintus.UIObjects=function(Q){
                         return this.convertMorale(value,obj);
                     case "loyalty":
                         return this.convertLoyalty(value,obj);
+                    case "value":
+                        return this.convertValue(value,obj);
+                    case "methodology":
+                        return this.convertMethodology(value,obj);
                 }
-            } else {
+            } 
+            //If the obj is a character, we want that character's prop
+            else {
                 switch(prop){
                     case "morale":
                         return this.convertMorale(obj[prop]);
                     case "loyalty":
                         return this.convertLoyalty(obj[prop]);
+                    case "value":
+                        return this.convertValue(obj[prop]);
+                    case "methodology":
+                        return this.convertMethodology(obj[prop]);
                 }
                 return obj[prop];
             }
         },
-        adjustForOper:function(min,max,oper){
-            return !oper || oper === ">=" ? min : max;
+        adjustForOperator:function(min,max,operator){
+            return !operator || operator === ">=" ? min : max;
         },
-        convertMorale:function(morale,oper){
+        convertMorale:function(morale,operator){
             if(typeof morale === "string"){
-                if(morale==="Quit") return this.adjustForOper(0,0,oper);
-                if(morale==="Unhappy") return this.adjustForOper(1,30,oper);
-                if(morale==="Content") return this.adjustForOper(31,70,oper);
-                if(morale==="Inspired") return this.adjustForOper(71,90,oper);
-                return this.adjustForOper(91,100,oper);
+                if(morale==="Quit") return this.adjustForOperator(0,0,operator);
+                if(morale==="Unhappy") return this.adjustForOperator(1,30,operator);
+                if(morale==="Content") return this.adjustForOperator(31,70,operator);
+                if(morale==="Inspired") return this.adjustForOperator(71,90,operator);
+                return this.adjustForOperator(91,100,operator);
             }
             if(morale<1) return "Quit";
             if(morale<31) return "Unhappy";
@@ -104,14 +124,14 @@ Quintus.UIObjects=function(Q){
             if(morale<91) return "Inspired";
             return "Ecstatic";
         },
-        convertLoyalty:function(loyalty,oper){
+        convertLoyalty:function(loyalty,operator){
             if(typeof loyalty === "string"){
-                if(loyalty==="Traitorous") return this.adjustForOper(0,0,oper);
-                if(loyalty==="Disloyal") return this.adjustForOper(1,30,oper);
-                if(loyalty==="Average") return this.adjustForOper(31,70,oper);
-                if(loyalty==="Loyal") return this.adjustForOper(71,90,oper);
-                if(loyalty==="Admiring") return this.adjustForOper(91,99,oper);
-                return this.adjustForOper(100,100,oper);
+                if(loyalty==="Traitorous") return this.adjustForOperator(0,0,operator);
+                if(loyalty==="Disloyal") return this.adjustForOperator(1,30,operator);
+                if(loyalty==="Average") return this.adjustForOperator(31,70,operator);
+                if(loyalty==="Loyal") return this.adjustForOperator(71,90,operator);
+                if(loyalty==="Admiring") return this.adjustForOperator(91,99,operator);
+                return this.adjustForOperator(100,100,operator);
             }
             if(loyalty<1) return "Traitorous";
             if(loyalty<31) return "Disloyal";
@@ -120,6 +140,27 @@ Quintus.UIObjects=function(Q){
             if(loyalty<100) return "Admiring";
             return "Idolizing";
         },
+        convertValue:function(value,operator){
+            if(typeof value === "string"){
+                if(value==="Egoist") return this.adjustForOperator(0,32,operator);
+                if(value==="Nepotist") return this.adjustForOperator(33,67,operator);
+                return this.adjustForOperator(68,100);
+            }
+            if(value<33) return "Egoist";
+            if(value<68) return "Nepotist";
+            return "Altruist";
+        },
+        convertMethodology:function(value,operator){
+            if(typeof value === "string"){
+                if(value==="Intuitive") return this.adjustForOperator(0,32,operator);
+                if(value==="Pragmatic") return this.adjustForOperator(33,67,operator);
+                return this.adjustForOperator(68,100);
+            }
+            if(value<33) return "Intuitive";
+            if(value<68) return "Pragmatic";
+            return "Kind";
+        },
+    
         getRelations:function(value){
             //TODO
             if(value<1) return "Lowest";
@@ -296,15 +337,35 @@ Quintus.UIObjects=function(Q){
                         break;
                     case "checkCharPersonality":
                         var character = Q.partyManager.getAlly(props[0]);
-                        var personality = props[1];
-                        var possession = props[2];
-                        console.log(character,personality,possession);
+                        var much = props[1];
+                        var personality = props[2];
+                        var possession = props[3];
+                        var has = Q.partyManager.hasPersonality(character,much,personality);
+                        condsEvaluated.push((possession === "Has" && has) || (possession === "Lacks" && !has));
                         break;
                     case "checkCharStat":
-                        
+                        var character = Q.partyManager.getAlly(props[0]);
+                        switch(props[1]){
+                            case "Base Stats":
+                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character.baseStats[props[2]],props[3],props[4]));
+                                break;
+                            case "Derived Stats":
+                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character.combatStats[props[2]],props[3],props[4]));
+                                break;
+                        }
                         break;
                     case "checkKeyword":
-                        
+                        var keyword = props[0];
+                        var value = false;
+                        switch(keyword){
+                            case "partySize":
+                                value = Q.partyManager.allies.length;
+                                break;
+                            case "rosterSize":
+                                value = Q.partyManager.roster.length;
+                                break;
+                        }
+                        condsEvaluated.push(Q.textProcessor.evaluateStringOperator(value,props[1],props[2]));
                         break;
                 }
             }

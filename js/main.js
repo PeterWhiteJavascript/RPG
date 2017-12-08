@@ -123,7 +123,7 @@ Q.newGame=function(options){
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
         var char = Q.charGen.generateCharacter({nationality:"Venorian"},"roster");
-        Q.state.get("saveData").applicationsRoster.push(char);
+        Q.partyManager.roster.push(char);
     };
     Q.state.set(
         "sceneVars",

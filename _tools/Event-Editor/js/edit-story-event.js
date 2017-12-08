@@ -41,12 +41,9 @@ var FileSaver = {
         var dataToCheck = [];
         function add(itm){
             itm.choices.forEach(function(o){
-                console.log(o)
-                o[2][1].forEach(function(c){
+                console.log(o)  
+                o[2][0].forEach(function(c){
                     dataToCheck.push(c);
-                });
-                o[2][2].forEach(function(e){
-                    dataToCheck.push(e);
                 });
             });
             itm.onload.forEach(function(o){
@@ -105,6 +102,7 @@ var uic = new UIC({
             Gender:GDATA.dataFiles["character-generation.json"].genders
         },
         charPersonalityTypes:GDATA.dataFiles["character-generation.json"].personalityNames,
+        charPersonalityMuch:["All"].concat(GDATA.dataFiles["character-generation.json"].personalities.muchValues),
         charPersonalityPossesion:["Has","Lacks"],
         charStatProps:["Base Stats","Derived Stats"],
         charStatValues:{
@@ -152,8 +150,8 @@ var uic = new UIC({
             }
         }
     },
-    condsFuncs:["checkVar","checkCharProp","checkCharPersonality","checkCharStat","checkKeyword"],
-    condProps:function(func,props){
+    conditionsFuncs:["checkVar","checkCharProp","checkCharPersonality","checkCharStat","checkKeyword"],
+    conditionProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
         var dataP = this.dataP;
         func = func || "checkVar";
@@ -176,10 +174,11 @@ var uic = new UIC({
                 this.linkSelects($(cont).children("select")[1],$(cont).children("select")[3],dataP.charPropValues);
                 break;
             case "checkCharPersonality":
-                props = props || [dataP.officers[0],dataP.charPersonalityTypes[0],dataP.charPersonalityPossesion[0]];
+                props = props || [dataP.officers[0],dataP.charPersonalityMuch[0],dataP.charPersonalityTypes[0],dataP.charPersonalityPossesion[0]];
                 cont.append(this.Select("Char",dataP.officers.concat("Current"),props[0]));
-                cont.append(this.Select("Personality",dataP.charPersonalityTypes,props[1]));
-                cont.append(this.Select("Possesion",dataP.charPersonalityPossesion,props[2]));
+                cont.append(this.Select("How Much",dataP.charPersonalityMuch,props[1]));
+                cont.append(this.Select("Personality",dataP.charPersonalityTypes,props[2]));
+                cont.append(this.Select("Possesion",dataP.charPersonalityPossesion,props[3]));
                 break;
             case "checkCharStat":
                 props = props || [dataP.officers[0],dataP.charStatProps[0],dataP.charStatValues[dataP.charStatProps[0]][0],dataP.conditionals[0],0];
@@ -286,8 +285,8 @@ var uic = new UIC({
 uic.dataP.charPropConditionals = {
     Nationality:uic.dataP.conditionalEquals,
     "Character Class":uic.dataP.conditionalEquals,
-    Value:uic.dataP.conditionalEquals,
-    Methodology:uic.dataP.conditionalEquals,
+    Value:uic.dataP.conditionals,
+    Methodology:uic.dataP.conditionals,
     Loyalty:uic.dataP.conditionals,
     Morale:uic.dataP.conditionals,
     Gender:uic.dataP.conditionalEquals
