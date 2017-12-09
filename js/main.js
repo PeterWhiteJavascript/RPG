@@ -103,7 +103,7 @@ Q.newGame=function(options){
     var alex = GDATA.chars["Officers.json"]["Officers"].Alex;
     //Gender is based on what the player selected
     alex.gender = options.gender;
-    var storyAlex = Q.charGen.generateCharacter(alex,"alex");
+    var storyAlex = Q.charGen.generateCharacter(alex,"officer");
     var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"officer");
     astraea.combatStats.hp = 0;
     astraea.wounded = 111;
@@ -116,8 +116,7 @@ Q.newGame=function(options){
     //console.log(legion)
     Q.partyManager.alex = storyAlex;
     Q.partyManager.allies = [storyAlex,astraea,random1,random2];
-    //Set up the new game bag
-    Q.state.set("Bag",new Q.Bag({items:Q.state.get("saveData")["inventory"]}));
+    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     //Set up the applications roster
     //At the start of the game, there will be 10 random characters in it and they will all be venorian
     var freeSpaces = 10;
@@ -153,13 +152,12 @@ Q.startGame=function(save){
         storyChars.push(Q.charGen.generateCharacter(ally));
     });*/
     
-    var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex,"alex");
-    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"roster");
+    var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex,"officer");
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"officer");
     Q.partyManager.alex = alex;
     Q.partyManager.allies = [alex,astraea];
-    
+    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     //Set up the Bag.
-    Q.state.set("Bag",new Q.Bag({items:save.inventory}));//Q.Bag is in objects.js
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 

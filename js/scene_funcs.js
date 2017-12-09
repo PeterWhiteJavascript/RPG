@@ -6,7 +6,6 @@ Quintus.SceneFuncs=function(Q){
             Q.state.set("currentEvent",{type:type,scene:scene,event:event,data:data});
             if(type==="Story"){
                 Q.variableProcessor.vars.Event[scene][event] = data.vrs;
-                console.log(Q.variableProcessor.vars)
             }
             Q.stageScene(data.kind,0,{data:data,char:char});
             if(testing&&!$("#back-button").length){
@@ -38,7 +37,7 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         Q.playMusic(data.pages[0].music,function(){
             $('#background-image').attr('src', 'images/bg/'+data.pages[0].bg);
-            Q.storyController.startScene(data);
+            Q.storyController.startEvent(data);
         });
     });
     Q.scene("script",function(stage){
@@ -51,7 +50,7 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         $('body').css('background', '#000 url(images/bg/'+data.bg+') no-repeat');
         Q.playMusic(data.music,function(){
-            Q.locationController = stage.insert(new Q.LocationController({location:data,bgImage:bgImage}));
+            Q.locationController = stage.insert(new Q.LocationController({location:data}));
         });
     },{
         progressCallback:Q.progressCallback

@@ -84,6 +84,9 @@ body{
     text-align:center;
     width:100%;
     font-family: "Verdana";
+    border-radius:5px;
+    border: 5px solid #555;
+    border-style:outset;
 }
 .page-choice{
     color:#EEE;
@@ -91,7 +94,6 @@ body{
     width:100%;
     text-align:center;
     cursor:pointer;
-    border-radius:5px;
     user-select:none;
     display:inline-block;
 }

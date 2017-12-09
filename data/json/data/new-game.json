@@ -42,11 +42,26 @@
         "Kind":10
     },
     "relations":{
-        "Venoriae":[50,50],
-        "Dardoine":[50,50],
-        "Aljudramil":[50,50],
-        "Nomads":[50,50],
-        "Talumpatua":[50,50]
+        "Venoriae":{
+            "Stability":50,
+            "Reputation":50
+        },
+        "Dardoine":{
+            "Stability":50,
+            "Reputation":50
+        },
+        "Aljudramil":{
+            "Stability":50,
+            "Reputation":50
+        },
+        "Nomads":{
+            "Stability":50,
+            "Reputation":50
+        },
+        "Talumpatua":{
+            "Stability":50,
+            "Reputation":50
+        }
     },
     "startSceneName":"Act-1-1",
     "startSceneType":"Story",

@@ -68,6 +68,9 @@ table {
     --heading-gradient-two:grey;
 }
 
+.ui-sortable{
+    overflow:auto;
+}
 * {
     font-family: "Kalam";
 }

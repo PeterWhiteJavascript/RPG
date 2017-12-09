@@ -6,7 +6,12 @@ Quintus.UIObjects=function(Q){
         init:function(){
             
         },
+        adjustTempStatChange:function(char,props){
+            char.tempStatChanges.push(props);
+            char.baseStats[props[0]] = Q.variableProcessor.evaluateStringOperator(char.baseStats[props[0]],props[1],props[2]);
+        },
         getAlly:function(name){
+            if(name==="Current") return Q.state.get("currentEvent").character;
             return this.allies.find(function(ally){return name === ally.name;});
         },
         convertPropName:function(name){
@@ -186,16 +191,27 @@ Quintus.UIObjects=function(Q){
             Scene:{},
             Event:{}
         },
-        setVar:function(scope,vr,vl,scene,event){
+        evaluateStringOperator:function(vr,op,vl,min,max){
+            var value;
+            switch(op){
+                case "+=": value = vr + vl; break;
+                case "-=": value = vr - vl; break;
+                case "=": value = vl; break;
+            }
+            if(min) value = Math.max(value,min);
+            if(max) value = Math.min(value,max);
+            return value;
+        },
+        setVar:function(scope,vr,op,vl,scene,event){
             switch(scope){
                 case "Global":
-                    this.vars[scope][vr] = vl;
+                    this.vars[scope][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][vr],op,vl);
                     break;
                 case "Scene":
-                    this.vars[scope][scene][vr] = vl;
+                    this.vars[scope][scene][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][scene][vr],op,vl);
                     break;
                 case "Event":
-                    this.vars[scope][scene][event][vr] = vl;
+                    this.vars[scope][scene][event][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][scene][event][vr],op,vl);
                     break;
             }
         },
@@ -231,7 +247,7 @@ Quintus.UIObjects=function(Q){
             }).join(" ");
             return paragraphs;
         },
-        evaluateStringOperator:function(vr,op,vl){
+        evaluateStringConditional:function(vr,op,vl){
             switch(op){
                 case "==": return vr==vl;
                 case "!=": return vr!=vl;
@@ -259,8 +275,8 @@ Quintus.UIObjects=function(Q){
             if(text.indexOf("@") === -1){
                 var module = Q.storyController.currentPage.modules.find(function(itm){return itm[0] === text;});
                 for(var i=0;i<module[2].length;i++){
-                    if(Q.groupsProcessor.processConds(module[2][i][0],module[2][i][1])){
-                        newText = Q.textProcessor.replaceText(module[2][i][2]);
+                    if(Q.groupsProcessor.processConds(module[2][i][0],module[2][i][2])){
+                        newText = Q.textProcessor.replaceText(module[2][i][1]);
                         break;
                     }
                 }
@@ -296,13 +312,13 @@ Quintus.UIObjects=function(Q){
                 }
             }
             return newText;
-        },
+        }
     });
     Q.GameObject.extend("GroupsProcessor",{
-        processGroups:function(groups){
+        processGroups:function(groups,obj){
             for(var i=0;i<groups.length;i++){
                 if(this.processConds(groups[i][0],groups[i][1])){
-                    this.processEffects(groups[i][2]);
+                    this.processEffects(groups[i][2],obj);
                 }
             }
         },
@@ -317,7 +333,7 @@ Quintus.UIObjects=function(Q){
                         var vr = Q.variableProcessor.getVar(scope,props[1]);
                         var op = props[2];
                         var vl = props[3];
-                        condsEvaluated.push(Q.textProcessor.evaluateStringOperator(vr,op,vl));
+                        condsEvaluated.push(Q.textProcessor.evaluateStringConditional(vr,op,vl));
                         break;
                     case "checkCharProp":
                         var character = Q.partyManager.getAlly(props[0]);
@@ -327,12 +343,12 @@ Quintus.UIObjects=function(Q){
                         if(propName === "loyalty" || propName === "morale"){
                             //Compare numbers for >= and <=; Compare string for == and !=;
                             if(oper === "==" || oper === "!="){
-                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(Q.partyManager.convertPresetString(character,propName),oper,propValue));
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(Q.partyManager.convertPresetString(character,propName),oper,propValue));
                             } else {
-                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character[propName],oper,Q.partyManager.convertPresetString(oper,propName,propValue)));
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(character[propName],oper,Q.partyManager.convertPresetString(oper,propName,propValue)));
                             }
                         } else {
-                            condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character[propName],oper,propValue));
+                            condsEvaluated.push(Q.textProcessor.evaluateStringConditional(character[propName],oper,propValue));
                         }
                         break;
                     case "checkCharPersonality":
@@ -347,10 +363,10 @@ Quintus.UIObjects=function(Q){
                         var character = Q.partyManager.getAlly(props[0]);
                         switch(props[1]){
                             case "Base Stats":
-                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character.baseStats[props[2]],props[3],props[4]));
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(character.baseStats[props[2]],props[3],props[4]));
                                 break;
                             case "Derived Stats":
-                                condsEvaluated.push(Q.textProcessor.evaluateStringOperator(character.combatStats[props[2]],props[3],props[4]));
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(character.combatStats[props[2]],props[3],props[4]));
                                 break;
                         }
                         break;
@@ -365,7 +381,11 @@ Quintus.UIObjects=function(Q){
                                 value = Q.partyManager.roster.length;
                                 break;
                         }
-                        condsEvaluated.push(Q.textProcessor.evaluateStringOperator(value,props[1],props[2]));
+                        condsEvaluated.push(Q.textProcessor.evaluateStringConditional(value,props[1],props[2]));
+                        break;
+                    case "hasItemInBag":
+                        var item = Q.partyManager.bag.getItem(props[0],{gear:props[1],material:props[2],quality:props[3]});
+                        condsEvaluated.push(item && item.amount >= props[4]);
                         break;
                 }
             }
@@ -383,8 +403,154 @@ Quintus.UIObjects=function(Q){
             }
             return evaluation;
         },
-        processEffects:function(effects){
+        processEffects:function(effects,obj){
+            for(var i=0;i<effects.length;i++){
+                var props = effects[i][1];
+                switch(effects[i][0]){
+                    case "setVar":
+                        Q.variableProcessor.setVar(props[0],props[1],props[2],props[3],Q.state.get("currentEvent").scene,Q.state.get("currentEvent").event);
+                        break;
+                    case "changePage":
+                        obj.changePage(props[0]);
+                        break;
+                    case "changeEvent":
+                        Q.clearStage(0);
+                        obj.finishEvent();
+                        Q.startScene(props[0],props[1],props[2]);
+                        break;
+                    case "enableChoice":
+                        obj.currentPage.choices.find(function(choice){return props[0] === choice[0];})[1] = false;
+                        break;
+                    case "disableChoice":
+                        obj.currentPage.choices.find(function(choice){return props[0] === choice[0];})[1] = true;
+                        break;
+                    //Flavour only. Sends back to event that happened before triggering the flavour event.
+                    case "goToAnchorEvent":
+                        
+                        break;
+                    case "recruitChar":
+                        //Adds the character to the party
+                        break;
+                    case "changeInfluence":
+                        Q.state.get("saveData").influence[props[0]] = Q.variableProcessor.evaluateStringOperator(Q.state.get("saveData").influence[props[0]],props[1],props[2],0,100);
+                        break;
+                    case "changeRelation":
+                        Q.state.get("saveData").relations[props[0]][props[1]] = Q.variableProcessor.evaluateStringOperator(Q.state.get("saveData").relations[props[0]][props[1]],props[2],props[3],0,100);
+                        break;
+                    case "tempStatChange":
+                        var character;
+                        if(props[0]==="Current"){
+                            character = Q.state.get("currentEvent").character;
+                        } else {
+                            character = Q.partyManager.allies.find(function(ally){return ally.name === props[0];});
+                        }
+                        character.tempStatChanges.push([props[1],props[2],props[3],props[4]]);
+                        character.baseStats[props[1]] = Q.variableProcessor.evaluateStringOperator(character.baseStats[props[1]],props[2],props[3]);
+                        break;
+                    case "obtainItem":
+                        Q.partyManager.bag.addItem(props[0],{gear:props[1],material:props[2],quality:props[3],amount:props[4]});
+                        break;
+                    case "useItem":
+                        Q.partyManager.bag.decreaseItem(props[0],{gear:props[1],material:props[2],quality:props[3],amount:props[4]});
+                        break;
+                }
+            }
+        },
+        processImpact:function(groups,obj){
+            for(var i=0;i<groups.length;i++){
+                var characters = this.processImpactConds(groups[i][0],groups[i][1]);
+                if(characters.length){
+                    this.processImpactEffects(groups[i][2],characters);
+                }
+            }
+        },
+        //Gets all relevant characters
+        processImpactConds:function(required,conds){
+            var charactersAffected = [];
+            var allies = Q.partyManager.allies;
+            if(!conds) return allies;
+            function checkAlly(ally,required,conds){
+                var condsEvaluated = [];
+                for(var i=0;i<conds.length;i++){
+                    var check = conds[i][0];
+                    var props = conds[i][1];
+                    switch(check){
+                        case "Gender":
+                        case "Methodology":
+                        case "Value":
+                        case "Character Group":
+                        case "Character Class":
+                        case "Nationality":
+                            var prop = Q.partyManager.convertPropName(check);
+                            condsEvaluated.push(Q.textProcessor.evaluateStringConditional(ally[prop],check[0],check[1]));
+                            break;
+                        case "Morale":
+                        case "Loyalty":
+                            var prop = Q.partyManager.convertPropName(check);
+                            //Compare numbers for >= and <=; Compare string for == and !=;
+                            if(check[0] === "==" || check[0] === "!="){
+                                    condsEvaluated.push(Q.textProcessor.evaluateStringConditional(Q.partyManager.convertPresetString(ally,prop),check[0],check[1]));
+                            } else {
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(ally[prop],check[0],check[1]));
+                            }
+                            break;
+                        case "Name":
+                            if(props[1] === "Officers"){
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(ally.officer,props[0],true));
+                            } else if(props[1] === "Current"){
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(Q.state.get("currentEvent").character,props[0],ally));
+                            } else {
+                                condsEvaluated.push(Q.textProcessor.evaluateStringConditional(ally.name,props[0],props[1]));
+                            }
+                            break;
+                        case "Personality":
+                            var much = props[0];
+                            var personality = props[1];
+                            var possession = props[2];
+                            var has = Q.partyManager.hasPersonality(ally,much,personality);
+                            condsEvaluated.push((possession === "Has" && has) || (possession === "Lacks" && !has));
+                            break;
+                    }
+                }
+                var evaluation = false;
+                switch(required){
+                    case "All":
+                        evaluation = condsEvaluated.every(function(itm){return itm;});
+                        break;
+                    case "Some":
+                        evaluation = condsEvaluated.some(function(itm){return itm;});
+                        break;
+                    case "One":
+                        evaluation = condsEvaluated.filter(function(itm){return itm;}).length === 1;
+                        break;
+                }
+                return evaluation;
+            }
             
+            allies.forEach(function(ally){
+                if(checkAlly(ally,required,conds)) charactersAffected.push(ally);
+            });
+            return charactersAffected;
+        },
+        processImpactEffects:function(effects,characters){
+            for(var i=0;i<characters.length;i++){
+                var char = characters[i];
+                for(var j=0;j<effects.length;j++){
+                    var name = effects[j][0];
+                    var props = effects[j][1];
+                    switch(name){
+                        case "Loyalty":
+                            char.loyalty = Q.variableProcessor.evaluateStringOperator(char.loyalty,props[0],props[1],0,100);
+                            break;
+                        case "Morale":
+                            char.morale = Q.variableProcessor.evaluateStringOperator(char.morale,props[0],props[1],0,100);
+                            break;
+                        case "Stat":
+                            Q.partyManager.adjustTempStatChange(char,[props[0],props[1],props[2],props[3]]);
+                            break;
+                    }
+                }
+            }
         }
     });
     /*
@@ -437,13 +603,13 @@ Quintus.UIObjects=function(Q){
             cont.append(text);
             $("#main-content").append(cont);
         },
-        //When a story scene starts, set data and show the container.
-        startScene:function(data){
+        //When a story event starts, set data and show the container.
+        startEvent:function(data){
             this.data = data;
             this.displayPage(data.pages[0].name);
             $("#text-cont").show();
         },
-        finishScene:function(){
+        finishEvent:function(){
             $("#text-cont").hide();
         },
         getPageData:function(name){
@@ -456,21 +622,18 @@ Quintus.UIObjects=function(Q){
         getChoice:function(num){
             return this.currentPage.choices[num];
         },
+        selectChoice:function(choice){
+            var data = Q.storyController.getChoice(choice);
+            Q.groupsProcessor.processEffects(data[2],Q.storyController);
+            Q.groupsProcessor.processImpact(data[3],Q.storyController);
+        },
         getPageChoices:function(choices){
             var cont = $("<div class='page-choices'></div>");
             for(var i=0;i<choices.length;i++){
                 if(!choices[i][1]){
                     $(cont).append("<div class='page-choice'><span>"+choices[i][0]+"</span></div>");
                     $(cont).children(".page-choice").last().click(function(){
-                        var data = Q.storyController.getChoice($(this).index());
-                        switch(data[2]){
-                            case "changePage":
-                                Q.storyController.changePage(data[3]);
-                                break;
-                            case "changeEvent":
-                                Q.storyController.changeEvent(data[3]);
-                                break;
-                        }
+                        Q.storyController.selectChoice($(this).index());
                     });
                 }
             }
@@ -484,7 +647,7 @@ Quintus.UIObjects=function(Q){
         },
         displayPage:function(name){
             this.currentPage = this.getPageData(name);
-            Q.groupsProcessor.processGroups(this.currentPage.onload);
+            Q.groupsProcessor.processGroups(this.currentPage.onload,this);
             
             $("#text-content").append(this.newPage(this.currentPage));
         },

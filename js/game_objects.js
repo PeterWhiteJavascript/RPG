@@ -2788,21 +2788,16 @@ Quintus.GameObjects=function(Q){
                 return obj;
             };
             var char = {
-                tempStatChange:{
-                    "str":0,
-                    "end":0,
-                    "dex":0,
-                    "wsk":0,
-                    "rfl":0,
-                    "ini":0,
-                    "enr":0,
-                    "skl":0,
-                    "eff":0
-                },
-                "eachTempStatChange":[]
+                tempStatChanges:[]
             };
             var act = "Act-"+Q.state.get("saveData").act;
             switch(type){
+                //This is done when generating an officer from the officers.json. Only do this for new officers.
+                //Officers have all of their properties preset so they always start the same each playthrough.
+                case "officer":
+                    //Set this character to officer for easy reference later.
+                    char.officer = true;
+                    data.uniqueId = 0;
                 //Create a character for the applications roster.
                 //Data will not be completely random, but will be based on the act/chapter.
                 //Seeds are taken from the character-genartion.json file.
@@ -2822,7 +2817,7 @@ Quintus.GameObjects=function(Q){
                     }
                     
                     char.natNum = this.getNatNum(char.nationality);
-                    char.charClass = data.charClass || this.generateCharClass(char.nationality);
+                    char.charClass = data.charClass==="Random"?this.generateCharClass(char.nationality):data.charClass;
                     char.classNum = this.getClassNum(char.charClass);
                     char.charGroup = this.generateCharGroup(char.classNum);
                     
@@ -2860,9 +2855,9 @@ Quintus.GameObjects=function(Q){
                     char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
                     char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
                     char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
-                    char.combatStats = this.getCombatStats(char);
+                    /*char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;
-                    char.combatStats.tp = char.combatStats.maxTp;
+                    char.combatStats.tp = char.combatStats.maxTp;*/
                     char.exp = data.exp || 0;
                     char.loyalty = data.loyalty || 50;
                     char.morale = data.morale || 50;
@@ -2870,40 +2865,6 @@ Quintus.GameObjects=function(Q){
                     
                     char.completedEvents =  [];
                     break;
-                //Special case for Alex as he/she does not have personality, methodology, value, loyalty, or morale.
-                case "alex":
-                    char.team = "ally";
-                    char.officer = true;
-                    char.name = data.name;
-                    char.gender = data.gender;
-                    char.level = Math.floor(Math.random()*(data.levelmax-data.levelmin))+data.levelmin;
-                    char.nationality = data.nationality==="Random"?this.generateNationality(act):data.nationality;
-                    
-                    char.natNum = this.getNatNum(char.nationality);
-                    char.charClass = data.charClass==="Random"?this.generateCharClass(char.nationality):data.charClass;
-                    char.classNum = this.getClassNum(char.charClass);
-                    char.charGroup = this.generateCharGroup(char.classNum);
-                    
-                    char.primaryStat = this.primaryStats[char.classNum];
-                    char.primaryCoordinate = this.primaryCoordinates[char.classNum];
-                    char.lean = [this.getStatLean(),this.getStatLean()];
-                    
-                    char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
-                    char.techniques = this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass);//Techniques are always filled out and are not random for enemies.
-                    char.talents = this.getTalents(char.charClass,char.charGroup);
-                    char.baseStats = this.enemyBaseStats(data.baseStats,char.level,char.primaryStat,char.primaryCoordinate,char.lean);
-                    
-                    char.combatStats = this.getCombatStats(char);
-                    char.combatStats.hp = char.combatStats.maxHp;
-                    char.combatStats.tp = char.combatStats.maxTp;
-                    char.uniqueId = 0;
-                break;
-                //This is done when generating an officer from the officers.json. Only do this for new officers.
-                //Officers have all of their properties preset so they always start the same each playthrough.
-                case "officer":
-                    //Set this character to officer for easy reference later.
-                    char.officer = true;
-                    data.uniqueId = 0;
                 //Take the save data and create an ally character based on it.
                 //This is done only when the game is initialized.
                 case "saved":
@@ -2940,9 +2901,9 @@ Quintus.GameObjects=function(Q){
                     char.morale = data.morale;
                     char.personality = data.personality;
                     
-                    char.combatStats = this.getCombatStats(char);
+                    /*char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = data.hp || char.combatStats.maxHp;
-                    char.combatStats.tp = data.maxTp || char.combatStats.maxTp;
+                    char.combatStats.tp = data.maxTp || char.combatStats.maxTp;*/
                     
                     char.awards = data.awards || emptyAwards();
                     
@@ -2981,9 +2942,9 @@ Quintus.GameObjects=function(Q){
                     char.gender = data.gender==="Random"?this.generateGender(char.charClass,char.natNum):data.gender;//Requires charClass and natNum
                     char.name = data.name.length ? data.name : this.generateName(char.natNum,char.gender);
                     
-                    char.combatStats = this.getCombatStats(char);
+                    /*char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;
-                    char.combatStats.tp = char.combatStats.maxTp;
+                    char.combatStats.tp = char.combatStats.maxTp;*/
                     char.completedEvents = [];
                     break;
                 //Creates a simple character sprite used in battle scenes.
@@ -3486,31 +3447,31 @@ Quintus.GameObjects=function(Q){
             return Math.floor(trimmedStat);
         },
         get_strength:function(p){
-            return this.trimBaseStat(p.baseStats.str+p.tempStatChange.str);
+            return this.trimBaseStat(p.baseStats.str);
         },
         get_endurance:function(p){
-            return this.trimBaseStat(p.baseStats.end+p.tempStatChange.end);
+            return this.trimBaseStat(p.baseStats.end);
         },
         get_dexterity:function(p){
-            return this.trimBaseStat(p.baseStats.dex+p.tempStatChange.dex);
+            return this.trimBaseStat(p.baseStats.dex);
         },
         get_weaponSkill:function(p){
-            return this.trimBaseStat(p.baseStats.wsk+p.tempStatChange.wsk);
+            return this.trimBaseStat(p.baseStats.wsk);
         },
         get_reflexes:function(p){
-            return this.trimBaseStat(p.baseStats.rfl+p.tempStatChange.rfl);
+            return this.trimBaseStat(p.baseStats.rfl);
         },
         get_initiative:function(p){
-            return this.trimBaseStat(p.baseStats.ini+p.tempStatChange.ini);
+            return this.trimBaseStat(p.baseStats.ini);
         },
         get_energy:function(p){
-            return this.trimBaseStat(p.baseStats.enr+p.tempStatChange.enr);
+            return this.trimBaseStat(p.baseStats.enr);
         },
         get_skill:function(p){
-            return this.trimBaseStat(p.baseStats.skl+p.tempStatChange.skl);
+            return this.trimBaseStat(p.baseStats.skl);
         },
         get_efficiency:function(p){
-            return this.trimBaseStat(p.baseStats.eff+p.tempStatChange.eff);
+            return this.trimBaseStat(p.baseStats.eff);
         }
     });
 };

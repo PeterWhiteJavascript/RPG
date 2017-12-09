@@ -41,8 +41,7 @@ var FileSaver = {
         var dataToCheck = [];
         function add(itm){
             itm.choices.forEach(function(o){
-                console.log(o)  
-                o[2][0].forEach(function(c){
+                o[2].forEach(function(c){
                     dataToCheck.push(c);
                 });
             });
@@ -91,10 +90,11 @@ var uic = new UIC({
         conditionals:["==","!=",">=","<="],
         officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
         charFiles:GDATA.characterFiles,
-        charPropTypes:["Nationality","Character Class","Value","Methodology","Loyalty","Morale","Gender"],
+        charPropTypes:["Nationality","Character Class","Character Group","Value","Methodology","Loyalty","Morale","Gender"],
         charPropValues:{
             Nationality:GDATA.dataFiles["character-generation.json"].nationalities,
             "Character Class":GDATA.dataFiles["character-generation.json"].classNames,
+            "Character Group":GDATA.dataFiles["character-generation.json"].classGroups,
             Value:GDATA.dataFiles["character-generation.json"].values,
             Methodology:GDATA.dataFiles["character-generation.json"].methodologies,
             Loyalty:["Traitorous","Disloyal","Average","Loyal","Admiring","Idolizing"],
@@ -122,7 +122,10 @@ var uic = new UIC({
         materials:createMaterialsObj(),
         conditionalEquals:["==","!="],
         operators:["=","+=","-="],
-        relations:["Morale","Pragmatic","Kind","Intuitive","Egoist","Altruist","Nepotist","Reputation-Venoriae","Reputation-Dardoine","Reputation-Aljudramil","Reputation-Talumpatua","Reputation-Nomad","Stability-Venoriae","Stability-Dardoine","Stability-Aljudramil","Stability-Talumpatua","Stability-Nomad"],
+        relations:["Reputation","Stability"],
+        places:["Venoriae","Dardoine","Aljudramil","Talumpatua","Nomads"],
+        influence:["Pragmatic","Kind","Intuitive","Egoist","Altruist","Nepotist"],
+        loyaltyOptions:["Current"],
         quality:Object.keys(GDATA.dataFiles["equipment.json"].Quality),
         eventPointer:GDATA.eventPointer
     },
@@ -150,7 +153,7 @@ var uic = new UIC({
             }
         }
     },
-    conditionsFuncs:["checkVar","checkCharProp","checkCharPersonality","checkCharStat","checkKeyword"],
+    conditionsFuncs:["checkVar","checkCharProp","checkCharPersonality","checkCharStat","checkKeyword","hasItemInBag"],
     conditionProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
         var dataP = this.dataP;
@@ -195,12 +198,21 @@ var uic = new UIC({
                 cont.append(this.Select("Oper",dataP.conditionals,props[1]));
                 cont.append(this.Input("Value",props[2],"number",0));
                 break;
+            case "hasItemInBag":
+                props = props || ["Weapons","Short Sword","Bronze","Average",1];
+                cont.append(this.Select("Eq Type",dataP.equipmentGear,props[0]));
+                cont.append(this.Select("Gear",dataP.equipmentGear[props[0]],props[1]));
+                cont.append(this.Select("Materials",dataP.materials[props[1]],props[2]));
+                cont.append(this.Select("Quality",dataP.quality,props[3]));
+                cont.append(this.Input("How Many",props[4],"number"));
+                this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.equipmentGear);
+                this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.materials);
+                break;
         }
         this.selectInitialValue(cont);
         return cont;
     },
-    effectsFuncs:["setVar","changePage","changeEvent","enableChoice","goToAnchorEvent","recruitChar","changeRelation","tempStatChange","equipItem"],
-    //TODO
+    effectsFuncs:["setVar","changePage","changeEvent","enableChoice","disableChoice","goToAnchorEvent","recruitChar","changeInfluence","changeRelation","obtainItem","useItem"],
     effectProps:function(func,props){
         var cont = $("<div class='UIC-group-item-props'></div>");
         var dataP = this.dataP;
@@ -234,6 +246,12 @@ var uic = new UIC({
                 props = props || [choiceNames[0]];
                 cont.append(this.Select("Choice",choiceNames,props[0]));
                 break;
+            case "disableChoice":
+                var choiceNames = [];
+                $(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
+                props = props || [choiceNames[0]];
+                cont.append(this.Select("Choice",choiceNames,props[0]));
+                break;
             case "goToAnchorEvent":
                 
                 break;
@@ -250,41 +268,141 @@ var uic = new UIC({
                 this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.charFiles);
                 this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.charFiles,[$(cont).children("select")[0]]);
                 break;
-            case "changeRelation":
-                props = props || [dataP.relations[0],dataP.operators[1],10];
-                cont.append(this.Select("Stat",dataP.relations,props[0]));
+            case "changeInfluence":
+                props = props || [dataP.influence[0],dataP.operators[1],10];
+                cont.append(this.Select("Stat",dataP.influence,props[0]));
                 cont.append(this.Select("Oper",dataP.operators,props[1]));
                 cont.append(this.Input("Value",props[2],"number",0));
                 break;
-            case "tempStatChange":
-                props = props || [dataP.officers[0],dataP.charStatValues["Base Stats"][0],dataP.operators[1],5,3];
-                cont.append(this.Select("Char",dataP.officers.concat("Current"),props[0]));
-                cont.append(this.Select("Stat",dataP.charStatValues["Base Stats"],props[1]));
+            case "changeRelation":
+                props = props || [dataP.places[0],dataP.relations[0],dataP.operators[1],10];
+                cont.append(this.Select("Place",dataP.places,props[0]));
+                cont.append(this.Select("Type",dataP.relations,props[1]));
                 cont.append(this.Select("Oper",dataP.operators,props[2]));
                 cont.append(this.Input("Value",props[3],"number",0));
-                cont.append(this.Input("Turns",props[4],"number",0));
-                
                 break;
-            //Equip an item (generates equipment not from bag). Also can put the item in the bag.
-            case "equipItem":
-                props = props || [dataP.officers[0],"Weapons","Short Sword","Bronze","Average",1];
-                cont.append(this.Select("Eq To",dataP.officers.concat("Current").concat("Bag"),props[0]));
-                cont.append(this.Select("Eq Type",dataP.equipmentGear,props[1]));
-                cont.append(this.Select("Gear",dataP.equipmentGear[props[1]],props[2]));
-                cont.append(this.Select("Materials",dataP.materials[props[2]],props[3]));
-                cont.append(this.Select("Quality",dataP.quality,props[4]));
-                cont.append(this.Input("How Many",props[5],"number"));
-                this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.equipmentGear);
-                this.linkSelects($(cont).children("select")[2],$(cont).children("select")[3],dataP.materials);
+            case "obtainItem":
+            case "useItem":
+                props = props || ["Weapons","Short Sword","Bronze","Average",1];
+                cont.append(this.Select("Eq Type",dataP.equipmentGear,props[0]));
+                cont.append(this.Select("Gear",dataP.equipmentGear[props[0]],props[1]));
+                cont.append(this.Select("Materials",dataP.materials[props[1]],props[2]));
+                cont.append(this.Select("Quality",dataP.quality,props[3]));
+                cont.append(this.Input("How Many",props[4],"number"));
+                this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.equipmentGear);
+                this.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],dataP.materials);
+                break;
+        }
+        this.selectInitialValue(cont);
+        return cont;
+    },
+    impactProps:function(props){
+        props = props || ["All"];
+        var group = uic.createGroup(
+            [
+                this.getPremadeGroup("ImpactConditions",props[1]),
+                this.getPremadeGroup("ImpactEffects",props[2])
+            ],
+            [
+                uic.Select("Conds Req",["All","Some","One"],[props[0]])
+            ]
+        );
+        return group;
+    },
+    impactConditionsProps:function(func,props){
+        var cont = $("<div class='UIC-group-item-props'></div>");
+        var dataP = this.dataP;
+        func = func || "Name";
+        switch(func){
+            case "Name":
+                props = props || [dataP.conditionalEquals[0],"Officers"];
+                cont.append(this.Select("Operator",dataP.conditionalEquals,props[0]));
+                cont.append(this.Select("Character",dataP.officers.concat("Current","Officers"),props[1]));
+                break;
+            case "Personality":
+                props = props || [dataP.charPersonalityMuch[0],dataP.charPersonalityTypes[0],dataP.charPersonalityPossesion[0]];
+                cont.append(this.Select("How Much",dataP.charPersonalityMuch,props[0]));
+                cont.append(this.Select("Personality",dataP.charPersonalityTypes,props[1]));
+                cont.append(this.Select("Possesion",dataP.charPersonalityPossesion,props[2]));
+                break;
+            case "Nationality":
+                props = props || [dataP.conditionalEquals[0],dataP.charPropValues["Nationality"][0]];
+                cont.append(this.Select("Operator",dataP.conditionalEquals,props[0]));
+                cont.append(this.Select("Nationality",dataP.charPropValues["Nationality"],props[1]));
+                break;
+            case "Character Group":
+                props = props || [dataP.conditionalEquals[0],dataP.charPropValues["Character Group"][0]];
+                cont.append(this.Select("Operator",dataP.conditionalEquals,props[0]));
+                cont.append(this.Select("Char Group",dataP.charPropValues["Character Group"],props[1]));
+                break;
+            case "Character Class":
+                props = props || [dataP.conditionalEquals[0],dataP.charPropValues["Character Class"][0]];
+                cont.append(this.Select("Operator",dataP.conditionalEquals,props[0]));
+                cont.append(this.Select("Char Class",dataP.charPropValues["Character Class"],props[1]));
+                break;
+            case "Value":
+                props = props || [dataP.conditionals[0],dataP.charPropValues["Value"][0]];
+                cont.append(this.Select("Operator",dataP.conditionals,props[0]));
+                cont.append(this.Select("Value",dataP.charPropValues["Value"],props[1]));
+                break;
+            case "Methodology":
+                props = props || [dataP.conditionals[0],dataP.charPropValues["Methodology"][0]];
+                cont.append(this.Select("Operator",dataP.conditionals,props[0]));
+                cont.append(this.Select("Methodology",dataP.charPropValues["Methodology"],props[1]));
+                break;
+            case "Loyalty":
+                props = props || [dataP.conditionals[0],dataP.charPropValues["Loyalty"][0]];
+                cont.append(this.Select("Operator",dataP.conditionals,props[0]));
+                cont.append(this.Select("Loyalty",dataP.charPropValues["Loyalty"],props[1]));
+                break;
+            case "Morale":
+                props = props || [dataP.conditionals[0],dataP.charPropValues["Morale"][0]];
+                cont.append(this.Select("Operator",dataP.conditionals,props[1]));
+                cont.append(this.Select("Morale",dataP.charPropValues["Morale"],props[0]));
+                break
+            case "Gender":
+                props = props || [dataP.conditionalEquals[0],dataP.charPropValues["Gender"][0]];
+                cont.append(this.Select("Operator",dataP.conditionalEquals,props[0]));
+                cont.append(this.Select("Gender",dataP.charPropValues["Gender"],props[1]));
+                break;
+        }
+        this.selectInitialValue(cont);
+        return cont;
+    },
+    impactEffectsProps:function(func,props){
+        var cont = $("<div class='UIC-group-item-props'></div>");
+        var dataP = this.dataP;
+        func = func || "Morale";
+        switch(func){
+            case "Morale":
+                props = props || ["+=",10];
+                cont.append(this.Select("Oper",dataP.operators,props[0]));
+                cont.append(this.Input("Value",props[1],"number",0));
+                break;
+            case "Loyalty":
+                props = props || ["+=",5];
+                cont.append(this.Select("Oper",dataP.operators,props[0]));
+                cont.append(this.Input("Value",props[1],"number",0));
+                break;
+            case "Stat":
+                props = props || [dataP.charStatValues["Base Stats"][0],dataP.operators[1],5,3];
+                cont.append(this.Select("Stat",dataP.charStatValues["Base Stats"],props[0]));
+                cont.append(this.Select("Oper",dataP.operators,props[1]));
+                cont.append(this.Input("Value",props[2],"number",0));
+                cont.append(this.Input("Turns",props[3],"number",0));
                 break;
         }
         this.selectInitialValue(cont);
         return cont;
     }
 });
+
+uic.impactConditionsFuncs = ["Name","Personality"].concat(uic.dataP.charPropTypes);
+uic.impactEffectsFuncs = ["Morale","Loyalty","Stat"];
 uic.dataP.charPropConditionals = {
     Nationality:uic.dataP.conditionalEquals,
     "Character Class":uic.dataP.conditionalEquals,
+    "Character Group":uic.dataP.conditionalEquals,
     Value:uic.dataP.conditionals,
     Methodology:uic.dataP.conditionals,
     Loyalty:uic.dataP.conditionals,
@@ -317,7 +435,7 @@ var start = function(){
         //Adds a var to the list
         addVar:function(name,val){
             if(name){
-                $("#variables-cont").append("<div class='var-button'><div class='var-name'>"+name+"</div><div class='remove-choice'><span>x</span></div><input class='var-value' value="+(val?val:0)+"></div>");
+                $("#variables-cont").append("<div class='var-button'><div class='var-name'>"+name+"</div><div class='remove-choice'><span>x</span></div><input class='var-value' value="+val+"></div>");
             } else {
                 $("#variables-cont").append("<div class='var-button'><input class='var-name' placeholder='VARNAME'><div class='remove-choice'><span>x</span></div><input class='var-value' value='false'></div>");
                 $("#variables-cont").children(".var-button").last().children(".var-name").on("change",function(){
@@ -354,6 +472,7 @@ var start = function(){
         addPage:function(cont,name){
             $(cont).append("<div id='"+name+"' class='page'><div class='page-button list-item'>"+name+"</div><div class='remove-choice'><span>x</span></div></div>");
             $("[id='"+name+"']").children(".remove-choice").click(function(){
+                if(FileSaver.event.pages.length === 1) return;
                 for(var i=0;i<FileSaver.event.pages.length;i++){
                     if(FileSaver.event.pages[i].name === name){
                         FileSaver.event.pages.splice(i,1);
@@ -455,7 +574,8 @@ var start = function(){
                 if($(this).val()!==id){
                     var oldID = $(this).parent().attr("id");
                     $(this).parent().attr("id",$(this).val());
-                    FileSaver.event[$(this).parent().attr("id")] = FileSaver.event[oldID];
+                    
+                    FileSaver.getPage(oldID).name = $(this).parent().attr("id");
                 }
                 $(this).replaceWith("<div class='page-button list-item'>"+$(this).val()+"</div>");
             });

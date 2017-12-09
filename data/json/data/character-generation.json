@@ -2,6 +2,7 @@
     "nationalities":["Venorian","Dardoian","Aliudramilan","Talumpatuan","Nomadic"],
     "values":["Egoist","Nepotist","Altruist"],
     "methodologies":["Pragmatic","Intuitive","Kind"],
+    "classGroups":["Fighter","Rogue","Mage"],
     "classNames":["Legionnaire","Berserker","Vanguard","Assassin","Skirmisher","Archer","Illusionist","Elementalist","Healer"],
     "firstPromotion":["Veteran","Ravager","Champion","Cutthroat","Harrier","Sharpshooter","Occultist","Druid","Miraclist"],
     "secondPromotion":["Warlord","Destroyer","Hero","Eradicator","Marauder","Deadshot","Sorcerer","Wild Mage","Saint"],

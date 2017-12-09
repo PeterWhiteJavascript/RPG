@@ -112,31 +112,35 @@ function UIC(p){
         $(this).parent().remove();
     };
     this.getGroupItem = function(funcs,funcProps,func,props,includeX){
-        var group = $("<div class='UIC-group-item'></div>");
-        var cont = $("<div class='UIC-group-item-top'></div>");
-        cont.append("<div><span>Func</span></div><div class='UIC-func-cont'><select class='UIC-func' initial-value='"+func+"'>"+uic.getOptions(funcs)+"</select></div>");
-        if(includeX){
-            cont.append("<div class='remove-choice-deep tenth-width'><span>x</span></div>");
-            cont.children(".remove-choice-deep").click(function(){
-                var category = $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").text().split(" ")[0];
-                $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").children("span").text(category+" ("+($(this).parent().parent().parent().children(".UIC-group-item").length-1)+")");
-                $(this).parent().parent().remove();
-                
+        if(funcs){
+            var group = $("<div class='UIC-group-item'></div>");
+            var cont = $("<div class='UIC-group-item-top'></div>");
+            cont.append("<div><span>Func</span></div><div class='UIC-func-cont'><select class='UIC-func' initial-value='"+func+"'>"+uic.getOptions(funcs)+"</select></div>");
+            group.append(cont);
+            this.selectInitialValue(cont.children(".UIC-func-cont"));
+            if(includeX){
+                cont.append("<div class='remove-choice-deep tenth-width'><span>x</span></div>");
+                cont.children(".remove-choice-deep").click(function(){
+                    var category = $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").text().split(" ")[0];
+                    $(group).parent().siblings(".UIC-group-hud").children(".UIC-title").children("span").text(category+" ("+($(this).parent().parent().parent().children(".UIC-group-item").length-1)+")");
+                    $(this).parent().parent().remove();
+                });
+                $(cont).children("div").first().addClass("quarter-width");
+                $(cont).children("div:nth-child(2)").addClass("sixty-five-width");
+            } else {
+                $(cont).children("div").first().addClass("quarter-width");
+                $(cont).children("div:nth-child(2)").addClass("three-quarter-width");
+            }
+            group.append(uic[funcProps](func,props));
+            $(group).children(".UIC-group-item-top").children("div").children(".UIC-func").change(function(){
+                $(this).parent().parent().parent().children(".UIC-group-item-props").remove();
+                $(this).parent().parent().parent().append(uic[funcProps]($(this).val()));
             });
-            $(cont).children("div").first().addClass("quarter-width");
-            $(cont).children("div:nth-child(2)").addClass("sixty-five-width");
-        } else {
-            $(cont).children("div").first().addClass("quarter-width");
-            $(cont).children("div:nth-child(2)").addClass("three-quarter-width");
+            return group;
+        } 
+        else {
+            return $(uic[funcProps](func,props));
         }
-        group.append(cont);
-        group.append(uic[funcProps](func,props));
-        $(group).children(".UIC-group-item-top").children("div").children(".UIC-func").change(function(){
-            $(this).parent().parent().parent().children(".UIC-group-item-props").remove();
-            $(this).parent().parent().parent().append(uic[funcProps]($(this).val()));
-        });
-        this.selectInitialValue(cont.children(".UIC-func-cont"));
-        return group;
     };
     this.minimizeScript = function(){
         var text = $(this).text();
@@ -199,7 +203,7 @@ function UIC(p){
             "<div class='UIC-choice-hud'>\n\
                 <div class='UIC-choice-title-cont'>\n\
                     <div class='UIC-group-minimize'><span>-</span></div>\n\
-                    <div class='UIC-choice-title'><span>"+props[0]+"</span></div>\n\
+                    <div class='UIC-choice-title'><span>"+props[0].substr(0,40)+"</span></div>\n\
                 </div>\n\
                 <div class='remove-choice-deep'><span>x</span></div>\n\
             </div>");
@@ -260,6 +264,73 @@ function UIC(p){
                     ],
                     props
                 ];
+            case "Impact":
+                return [
+                    "Add Impact",
+                    function(e){
+                        var obj = this;
+                        function addImpact(p){
+                            console.log(p)
+                            var which = $(obj).index();
+                            var elm = $(obj).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                            $(elm).children(".UIC-cont").append(uic.impactProps(p));
+                            $(elm).children(".UIC-cont").children(".UIC-group").last().children(".UIC-hud").children(".remove-choice-deep").on("click",function(){
+                                $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
+                            });
+                            $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
+                            
+                        }
+                        if(!e.data){
+                            addImpact();
+                        } else {
+                            for(var i=0;i<e.data.length;i++){
+                                for(var j=0;j<e.data[i].length;j++){
+                                    addImpact(e.data[i][j]);
+                                }
+                            }
+                        }
+                        
+                    },
+                    "Impact ("+props.length+")",
+                    [
+                        false,
+                        "impactProps"
+                    ],
+                    props.length ? [props] : false
+                ];
+            case "ImpactConditions":
+                return [
+                    "Add Condition",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.impactConditionsFuncs,"impactConditionsProps",uic.impactConditionsFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                    },
+                    "Conditions ("+props.length+")",
+                    [
+                        uic.impactConditionsFuncs,
+                        "impactConditionsProps"
+                    ],
+                    props
+                ];
+                break;
+            case "ImpactEffects":
+                return [
+                    "Add Effect",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.impactEffectsFuncs,"impactEffectsProps",uic.impactEffectsFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                    },
+                    "Effects ("+props.length+")",
+                    [
+                        uic.impactEffectsFuncs,
+                        "impactEffectsProps"
+                    ],
+                    props
+                ];
         }
     };
     this.createGroup = function(categories,baseProps){
@@ -274,7 +345,7 @@ function UIC(p){
         </div>');
         uic.selectInitialValue($(group).children(".UIC-base-props"));
         $(group).children(".UIC-hud").children(".minimize-choice").click(uic.minimizeScript);
-        $(group).children(".UIC-hud").children(".remove-choice-deep").click(uic.removeDeepItem);
+        $(group).children(".UIC-hud").children(".remove-choice-deep").on("click",uic.removeDeepItem);
         for(var i=0;i<categories.length;i++){
             var buttonText = categories[i][0];
             var buttonFunc = categories[i][1];
@@ -283,7 +354,7 @@ function UIC(p){
             var categoryProps = categories[i][3][1];
             var setProps = categories[i][4];
             group.children(".UIC-hud").children(".UIC-hud-buttons").append("<div class='UIC-hud-button'><span>"+buttonText+"</span></div>");
-            group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().on("click",buttonFunc);
+            group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().click(setProps,buttonFunc);
             group.append(
             '<div class="UIC-group-cont">\n\
                 <div class="UIC-group-hud">\n\
@@ -293,8 +364,13 @@ function UIC(p){
                 <div class="UIC-cont"></div>\n\
             </div>');
             $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").click(uic.minimizeGroup);
+            $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").trigger("click");
             for(var j=0;j<setProps.length;j++){
-                group.children(".UIC-group-cont").last().children(".UIC-cont").append(uic.getGroupItem(categoryFuncs,categoryProps,setProps[j][0],setProps[j][1],true));   
+                if(categoryFuncs){
+                    group.children(".UIC-group-cont").last().children(".UIC-cont").append(uic.getGroupItem(categoryFuncs,categoryProps,setProps[j][0],setProps[j][1],categoryFuncs ? true : false));   
+                } else {
+                    group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().trigger("click");
+                }
             }
         }
         $(group).children(".UIC-group-cont").children(".UIC-cont").sortable({
@@ -305,13 +381,14 @@ function UIC(p){
     };
     this.createChoiceGroup = function(cont,p){
         p = p || ["New Choice",false];
-        var props = p[2] || [["changePage"]]; //Default to having a changePage func as this will be usually used.
+        var effects = p[2] || [["changePage"]]; //Default to having a changePage func as this will be usually used.
+        var impacts = p[3] || false;
         var group = $(
         '<div class="UIC-choice UIC-group-cont">\n\
             <div class="UIC-choice-hud">\n\
                 <div class="UIC-choice-title-cont">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-choice-title"><span>'+p[0].substr(0,40)+'</span></div>\n\
+                    <div class="UIC-choice-title"><span>'+p[0].substr(0,25)+'</span></div>\n\
                 </div>\n\
                 <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
@@ -326,14 +403,14 @@ function UIC(p){
         choiceCont.append(top);
         choiceCont.append(this.createGroup(
             [
-                this.getPremadeGroup("Effects",props)
+                this.getPremadeGroup("Effects",effects),
+                this.getPremadeGroup("Impact",impacts)
             ],
             [
                 
             ]
         ));
-        
-        this.linkValueToText($(choiceCont).children(".UIC-choice-item-top").children("input")[0],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),40);
+        this.linkValueToText($(choiceCont).children(".UIC-choice-item-top").children("input")[0],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),25);
         group.append(choiceCont);
         $(cont).append(group);
         
@@ -388,7 +465,7 @@ function UIC(p){
                     uic.getPremadeGroup("Conditions")
                 ],
                 [
-                    uic.Select("Conds Req",["All","Some","One"])
+                    uic.Select("Conds Req",["All","Some","One"],["All"])
                     +uic.TextArea("Text","")
                 ]
             ));
@@ -460,10 +537,12 @@ function UIC(p){
     this.getSaveChoices = function(cont){
         var choices = [];
         $(cont).children(".UIC-choice").each(function(){
+            var groups = uic.getSaveGroups($(this).children(".UIC-cont"));
             choices.push([
                 $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").first().val(),
                 $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").last().is(":checked"),
-                uic.getSaveGroups($(this).children(".UIC-cont"))[0][0]
+                groups[0][0],
+                groups[0][1] || []
             ]);
         });
         return choices;
@@ -487,7 +566,12 @@ function UIC(p){
                 group.push($(this).val());
             });
             $(this).children(".UIC-group-cont").each(function(){
-                group.push(uic.getGroupValues($(this).children(".UIC-cont").children(".UIC-group-item")));
+                //If we need to go deeper
+                if($(this).children(".UIC-cont").children(".UIC-group").length){
+                    group.push(uic.getSaveGroups($(this).children(".UIC-cont")));
+                } else {
+                    group.push(uic.getGroupValues($(this).children(".UIC-cont").children(".UIC-group-item")));
+                }
             });
             groups.push(group);
         });
@@ -504,6 +588,7 @@ function UIC(p){
         var eventRefs = [];
         var sceneVarRefs = [];
         var globalVarRefs = [];
+        console.log(data)
         for(var i=0;i<data.length;i++){
             var func = data[i][0];
             var props = data[i][1];

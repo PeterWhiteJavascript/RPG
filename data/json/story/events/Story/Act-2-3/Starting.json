@@ -3,90 +3,148 @@
     "kind": "story",
     "pages": [
         {
-            "name": "Page 1",
+            "name": "Start",
             "music": "demo.mp3",
             "bg": "Pumpkins.jpg",
-            "text": "Paragraphs\nWhat this handout is about\nWhat is a {@he}?\n\nParagraphs are the building blocks of papers. Many students define paragraphs in terms of length: a paragraph is a group of at least five sentences, a paragraph is half a page long, etc. In reality, though, the unity and coherence of ideas among sentences is what constitutes a paragraph. A paragraph is defined as \u201ca group of sentences or a single sentence that forms a unit\u201d (Lunsford and Connors 116). Length and appearance do not determine whether a section in a paper is a paragraph. For instance, in some styles of writing, particularly journalistic styles, a paragraph can be just one sentence long. Ultimately, a paragraph is a sentence or group of sentences that support one main idea. In this handout, we will refer to this as the \u201ccontrolling idea,\u201d because it controls what happens in the rest of the paragraph.\n\n{sese}",
+            "text": "Today\u2019s travels bring you and a small party of your followers into a village called Coringos. There, you are to speak with the village\u2019s leader, a priest and lord named Elder Vicus about the rebellion and see if you can win his trust. As a lord with some considerable pull in the outlying lands, you could improve your influence considerably by having him as an ally. Briony warned you however that he is highly religious and not too popular.\n\tUpon entering the town, you are greeted by the sight of five or six children playing a game. It seems they are pretending to fight a battle, using sticks as swords and spears. All of them are boys, except for one girl who is not playing with the main group but crouched in the grass, looking for a stick of her own. When she finds one, she rushes in to meet the boys in battle, but the game ceases immediately when she joins. \nThe largest of the boys speaks up, saying \u201cGirls are of the earth, this is a battle for boys. Elder Vicus says that Venor made girls for wifeing and farming, not for fighting!\u201d\n\tLooking dejected and with tears in her eyes, she turns to leave the boys, and spots you coming up the road. She shouts, excitedly \u201cReal warriors!\u201d and runs up to greet you. The boys are not far behind.\n\n{alexGender}\n\nBefore you have a chance to respond, the boy who spoke against her before interjects \u201cThat\u2019s Tecra, Elder Vicus\u2019s daughter. I think she\u2019s never read the scriptures.\u201d\n\tShe seems angry and embarrassed \u2018Yes I have!\u201d she shouts\n\tThe boy responds \u201cShe talks like she never has.\u201d\n\tDuring all of the noise, you didn\u2019t notice the approach of a tall, firm looking man in his fifties. He is wearing the robes of a priest, and from his stately presence, you assume that he must be Elder Vicus. He speaks \u201cSo you must be [Title] Alex. I heard you would be coming. My apologies for my daughter, she doesn\u2019t know what she\u2019s talking about.\u201d\n\tTecra pulls on your shirt then and speaks up \u201cAlex you\u2019re a real warrior. Tell my dad that I can be one too.\u201d\n",
             "choices": [
                 [
-                    "Go to next Event",
+                    "Tell Tecra that she can be whatever she wants.",
                     false,
                     [
                         [
-                            "changeEvent",
+                            "changeInfluence",
                             [
-                                "Story",
-                                "Act-2-3",
-                                "Base-Camp"
-                            ]
-                        ]
-                    ]
-                ],
-                [
-                    "Go to next Page",
-                    false,
-                    [
-                        [
-                            "changePage",
-                            [
-                                "Page 2"
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "onload": [
-                [
-                    "One",
-                    [
-                        [
-                            "checkVar",
-                            [
-                                "Scene",
-                                "kitchenComplete",
-                                "==",
-                                false
+                                "Pragmatic",
+                                "-=",
+                                3
                             ]
                         ],
                         [
-                            "checkVar",
+                            "changeInfluence",
                             [
-                                "Global",
-                                "money",
-                                ">=",
-                                4545345345345
+                                "Kind",
+                                "+=",
+                                3
+                            ]
+                        ],
+                        [
+                            "changeInfluence",
+                            [
+                                "Intuitive",
+                                "+=",
+                                2
+                            ]
+                        ],
+                        [
+                            "changeInfluence",
+                            [
+                                "Altruist",
+                                "+=",
+                                5
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Start[0]"
                             ]
                         ]
                     ],
                     [
                         [
-                            "setVar",
+                            "All",
+                            [],
                             [
-                                "Global",
-                                "money",
-                                "+=",
-                                1000
+                                [
+                                    "Morale",
+                                    [
+                                        "-=",
+                                        3
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            "All",
+                            [
+                                [
+                                    "Name",
+                                    [
+                                        "==",
+                                        "Astraea"
+                                    ]
+                                ]
+                            ],
+                            [
+                                [
+                                    "Loyalty",
+                                    [
+                                        "+=",
+                                        10
+                                    ]
+                                ]
                             ]
                         ]
                     ]
-                ]
-            ],
-            "modules": [
+                ],
                 [
-                    "sese",
-                    "{@him} is cool",
+                    "Tell Tecra to listen to her father.",
+                    false,
                     [
                         [
-                            "One",
-                            "HELLO",
+                            "changePage",
+                            [
+                                "Start[1]"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Ignore Tecra and ask Vicus to speak somewhere private.",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Start[2]"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Confront Vicus about the sexist rhetoric that he\u2019s been teaching the town\u2019s children.",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Start[3]"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": [
+                [
+                    "alexGender",
+                    "The children crowd around and ask questions about your weapons and the battles you\u2019ve fought. All throughout, the girl seems to have taken a step back to give the boys space, but as they quieten down a little, she speaks up \u201cDo you know any girl warriors?\u201d",
+                    [
+                        [
+                            "All",
+                            "As the children crowd around, the girl points emphatically at you and yells \u201cLook, a girl warrior! I knew the scriptures were wrong!\u201d",
                             [
                                 [
-                                    "checkCharPersonality",
+                                    "checkCharProp",
                                     [
-                                        "Astraea",
-                                        "",
-                                        "Pacifistic",
-                                        "Lacks"
+                                        "Alex",
+                                        "Gender",
+                                        "==",
+                                        "Female"
                                     ]
                                 ]
                             ]
@@ -96,16 +154,41 @@
             ]
         },
         {
-            "name": "Page 2",
-            "music": "LevelGuard.mp3",
-            "bg": "959396-river.jpg",
-            "text": "",
+            "name": "Start[0]",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "text": "Tecra beams at your response, and you get the impression that this is something she will remember for the rest of her life. Vicus frowns and says \u201cLet\u2019s get this over with.\u201d You are invited into his abode to discuss the political situation of the country. He seems unconvinced that you are worth supporting. He refuses to support you publicly, but you don\u2019t imagine he will denounce you either.",
+            "choices": [],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Start[1]",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "text": "Tecra steps back and lowers her eyes to the ground. Elder Vicus seems pleased that you supported him. The two of you step inside his abode and discuss the political situation in the country. Throughout the meeting, he explains that Tecra has \u2018a lot to learn\u2019 and \u2018will be punished\u2019. You can\u2019t help but feel that you encouraged him to be even more controlling. Still, at the end of the meeting, he agrees to support you publicly, and offers to help fund the rebellion. When all is said and done, [FEMALE NPC] scowls at you and says bitterly \u201cFlattering his ego isn\u2019t doing us any favours.\u201d",
+            "choices": [],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Start[2]",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "text": "Avoiding the awkward situation with the children, you and Elder Vicus step inside his abode and discuss the political situation in the country. Although the meeting goes well, and Vicus agrees to support you publicly, you find that some of the followers who accompanied you seem upset about your avoidance of the question.",
+            "choices": [],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Start[3]",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "text": "After that comment the conversation turns sour pretty quickly. Before long you and Elder Vicus are parting ways bitterly. It\u2019s obvious that he won\u2019t support your rebellion and will likely speak out against it.",
             "choices": [],
             "onload": [],
             "modules": []
         }
     ],
-    "vrs": {
-        "afe": "asdfw"
-    }
+    "vrs": {}
 }

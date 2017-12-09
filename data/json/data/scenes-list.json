@@ -524,8 +524,8 @@
                     "globalVars": [],
                     "name": "Base-Camp",
                     "type": "location",
-                    "left": "651px",
-                    "top": "313px"
+                    "left": "578px",
+                    "top": "326px"
                 },
                 {
                     "events": [
@@ -583,32 +583,12 @@
                 },
                 {
                     "events": [],
-                    "sceneVars": [
-                        [
-                            "Scene",
-                            "kitchenComplete",
-                            "==",
-                            "false"
-                        ]
-                    ],
-                    "globalVars": [
-                        [
-                            "Global",
-                            "money",
-                            ">=",
-                            "4545345345345"
-                        ],
-                        [
-                            "Global",
-                            "money",
-                            "+=",
-                            "1000"
-                        ]
-                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
                     "name": "Starting",
                     "type": "story",
                     "left": "680px",
-                    "top": "425px"
+                    "top": "117px"
                 },
                 {
                     "events": [
@@ -666,8 +646,8 @@
                     "globalVars": [],
                     "name": "epic-battle-fight",
                     "type": "battle",
-                    "left": "616px",
-                    "top": "246px"
+                    "left": "539px",
+                    "top": "229px"
                 }
             ],
             "vrs": {
