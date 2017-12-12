@@ -68,11 +68,8 @@ table {
     --heading-gradient-two:grey;
 }
 
-.ui-sortable{
-    overflow:auto;
-}
 * {
-    font-family: "Kalam";
+    font-family: "Verdana";
 }
 textarea, input, select, option{
     font-family: "Helvetica";

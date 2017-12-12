@@ -34,12 +34,12 @@
     "week":1,
         
     "influence":{
-        "Egoist":10,
-        "Nepotist":10,
-        "Altruist":10,
-        "Pragmatic":10,
-        "Intuitive":10,
-        "Kind":10
+        "Egoist":50,
+        "Nepotist":50,
+        "Altruist":50,
+        "Pragmatic":50,
+        "Intuitive":50,
+        "Kind":50
     },
     "relations":{
         "Venoriae":{

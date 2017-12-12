@@ -152,14 +152,14 @@ function UIC(p){
            $(this).children("span").text("-");
         }
     };
-    this.minimizeGroup = function(){
-        var text = $(this).children(".UIC-group-minimize").text();
+    this.minimizeGroup = function(cont,set){
+        var text = set || $(cont).children(".UIC-group-minimize").text();
         if(text==="-"){
-            $(this).siblings().hide();
-            $(this).children(".UIC-group-minimize").text("+");
+            $(cont).siblings().hide();
+            $(cont).children(".UIC-group-minimize").text("+");
         } else {
-            $(this).siblings().show();
-           $(this).children(".UIC-group-minimize").text("-");
+            $(cont).siblings().show();
+            $(cont).children(".UIC-group-minimize").text("-");
         }
     };
     this.minimizeChoice = function(){
@@ -240,6 +240,7 @@ function UIC(p){
                         var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                         $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.conditionsFuncs,"conditionProps",uic.conditionsFuncs[0],false,true));
                         $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
                     },
                     "Conditions ("+props.length+")",
                     [
@@ -256,6 +257,7 @@ function UIC(p){
                         var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                         $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.effectsFuncs,"effectProps",uic.effectsFuncs[0],false,true));
                         $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
                     },
                     "Effects ("+props.length+")",
                     [
@@ -267,26 +269,23 @@ function UIC(p){
             case "Impact":
                 return [
                     "Add Impact",
-                    function(e){
-                        var obj = this;
+                    function(event,props){
                         function addImpact(p){
-                            console.log(p)
-                            var which = $(obj).index();
-                            var elm = $(obj).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                            var which = $(event.currentTarget).index();
+                            var elm = $(event.currentTarget).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                             $(elm).children(".UIC-cont").append(uic.impactProps(p));
                             $(elm).children(".UIC-cont").children(".UIC-group").last().children(".UIC-hud").children(".remove-choice-deep").on("click",function(){
                                 $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
                             });
                             $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
-                            
+                            uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
                         }
-                        if(!e.data){
+                        
+                        if(!props){
                             addImpact();
                         } else {
-                            for(var i=0;i<e.data.length;i++){
-                                for(var j=0;j<e.data[i].length;j++){
-                                    addImpact(e.data[i][j]);
-                                }
+                            for(var i=0;i<props.length;i++){
+                                addImpact(props[i]);
                             }
                         }
                         
@@ -301,11 +300,13 @@ function UIC(p){
             case "ImpactConditions":
                 return [
                     "Add Condition",
-                    function(){
+                    function(obj){
+                        console.log(obj)
                         var which = $(this).index();
                         var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                         $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.impactConditionsFuncs,"impactConditionsProps",uic.impactConditionsFuncs[0],false,true));
                         $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Conditions ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
                     },
                     "Conditions ("+props.length+")",
                     [
@@ -323,6 +324,7 @@ function UIC(p){
                         var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                         $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.impactEffectsFuncs,"impactEffectsProps",uic.impactEffectsFuncs[0],false,true));
                         $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
                     },
                     "Effects ("+props.length+")",
                     [
@@ -353,8 +355,6 @@ function UIC(p){
             var categoryFuncs = categories[i][3][0];
             var categoryProps = categories[i][3][1];
             var setProps = categories[i][4];
-            group.children(".UIC-hud").children(".UIC-hud-buttons").append("<div class='UIC-hud-button'><span>"+buttonText+"</span></div>");
-            group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().click(setProps,buttonFunc);
             group.append(
             '<div class="UIC-group-cont">\n\
                 <div class="UIC-group-hud">\n\
@@ -363,13 +363,16 @@ function UIC(p){
                 </div>\n\
                 <div class="UIC-cont"></div>\n\
             </div>');
-            $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").click(uic.minimizeGroup);
+            $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").click(function(){uic.minimizeGroup(this);});
             $(group).children(".UIC-group-cont").last().children(".UIC-group-hud").trigger("click");
+            group.children(".UIC-hud").children(".UIC-hud-buttons").append("<div class='UIC-hud-button'><span>"+buttonText+"</span></div>");
+            //group.children(".UIC-hud").last().children(".UIC-hud-buttons").last().children(".UIC-hud-button").last().click(setProps,buttonFunc);
+            group.children(".UIC-hud").last().children(".UIC-hud-buttons").last().children(".UIC-hud-button").last().on("click",buttonFunc);
             for(var j=0;j<setProps.length;j++){
                 if(categoryFuncs){
                     group.children(".UIC-group-cont").last().children(".UIC-cont").append(uic.getGroupItem(categoryFuncs,categoryProps,setProps[j][0],setProps[j][1],categoryFuncs ? true : false));   
                 } else {
-                    group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().trigger("click");
+                    group.children(".UIC-hud").last().children(".UIC-hud-buttons").children(".UIC-hud-button").last().trigger("click",[setProps[j]]);
                 }
             }
         }
@@ -588,7 +591,6 @@ function UIC(p){
         var eventRefs = [];
         var sceneVarRefs = [];
         var globalVarRefs = [];
-        console.log(data)
         for(var i=0;i<data.length;i++){
             var func = data[i][0];
             var props = data[i][1];

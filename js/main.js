@@ -117,6 +117,8 @@ Q.newGame=function(options){
     Q.partyManager.alex = storyAlex;
     Q.partyManager.allies = [storyAlex,astraea,random1,random2];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
+    Q.partyManager.influence = Q.state.get("saveData").influence;
+    Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
     //At the start of the game, there will be 10 random characters in it and they will all be venorian
     var freeSpaces = 10;
@@ -157,6 +159,8 @@ Q.startGame=function(save){
     Q.partyManager.alex = alex;
     Q.partyManager.allies = [alex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
+    Q.partyManager.influence = Q.state.get("saveData").influence;
+    Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };

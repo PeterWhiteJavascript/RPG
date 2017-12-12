@@ -596,14 +596,14 @@ var start = function(){
     $("#add-page").click(function(){
         var newPage = {
             name: "Page "+uniquePages,
-            music:GDATA.musicFileNames[0],
-            bg:GDATA.bgFiles[0],
+            music: $("#music-select").children(".music-select").val(),
+            bg:$("#bg-select").children(".bg-select").val(),
             text: "",
             choices: [],
             onload: [],
             modules: []
         };
-        FileSaver.event.pages.push(newPage)
+        FileSaver.event.pages.push(newPage);
         DC.addPage($("#pages-cont"),newPage.name);
     });
 

@@ -432,10 +432,12 @@ Quintus.UIObjects=function(Q){
                         //Adds the character to the party
                         break;
                     case "changeInfluence":
-                        Q.state.get("saveData").influence[props[0]] = Q.variableProcessor.evaluateStringOperator(Q.state.get("saveData").influence[props[0]],props[1],props[2],0,100);
+                        Q.partyManager.influence[props[0]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.influence[props[0]],props[1],props[2],0,100);
+                        console.log(props,Q.partyManager.influence)
                         break;
                     case "changeRelation":
-                        Q.state.get("saveData").relations[props[0]][props[1]] = Q.variableProcessor.evaluateStringOperator(Q.state.get("saveData").relations[props[0]][props[1]],props[2],props[3],0,100);
+                        Q.partyManager.relations[props[0]][props[1]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.relations[props[0]][props[1]],props[2],props[3],0,100);
+                        console.log(props,Q.partyManager.relations)
                         break;
                     case "tempStatChange":
                         var character;
@@ -446,6 +448,7 @@ Quintus.UIObjects=function(Q){
                         }
                         character.tempStatChanges.push([props[1],props[2],props[3],props[4]]);
                         character.baseStats[props[1]] = Q.variableProcessor.evaluateStringOperator(character.baseStats[props[1]],props[2],props[3]);
+                        console.log(character.name,props,character.baseStats)
                         break;
                     case "obtainItem":
                         Q.partyManager.bag.addItem(props[0],{gear:props[1],material:props[2],quality:props[3],amount:props[4]});
@@ -541,12 +544,15 @@ Quintus.UIObjects=function(Q){
                     switch(name){
                         case "Loyalty":
                             char.loyalty = Q.variableProcessor.evaluateStringOperator(char.loyalty,props[0],props[1],0,100);
+                            console.log(char.name,"Loyalty",char.loyalty)
                             break;
                         case "Morale":
                             char.morale = Q.variableProcessor.evaluateStringOperator(char.morale,props[0],props[1],0,100);
+                            console.log(char.name,"Morale",char.morale)
                             break;
                         case "Stat":
                             Q.partyManager.adjustTempStatChange(char,[props[0],props[1],props[2],props[3]]);
+                            console.log(char.name,props,char.baseStats)
                             break;
                     }
                 }

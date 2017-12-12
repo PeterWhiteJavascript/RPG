@@ -584,11 +584,18 @@
                 {
                     "events": [],
                     "sceneVars": [],
-                    "globalVars": [],
+                    "globalVars": [
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            "1000"
+                        ]
+                    ],
                     "name": "Starting",
                     "type": "story",
-                    "left": "680px",
-                    "top": "117px"
+                    "left": "388px",
+                    "top": "85px"
                 },
                 {
                     "events": [
