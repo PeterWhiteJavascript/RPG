@@ -137,6 +137,10 @@ $(function(){
         $(".new-event-cancel").click(function(){finishNewEvent();});
         $(".new-event-confirm").click(function(){
             var newName = $(".new-event-name input").val().replace(/\s+/g, '-');
+            if(/^[a-zA-Z0-9- ]*$/.test(newName) == false) {
+                alert("Please only use letters and numbers (spaces will be converted to '-').");
+                return;
+            }
             var newType = $(".new-event-type select").val();
             if(!newName){
                 alert("Please set a name");
@@ -173,7 +177,6 @@ $(function(){
             var newFile = {};
             newFile.name = newName;
             newFile.kind = newType;
-            newFile.music = "demo.mp3";
             switch(newType){
                 case "story":
                     newFile.pages = [];
@@ -181,6 +184,7 @@ $(function(){
                     break;
                 case "location":
                     newFile.bg = "castle-room.jpg";
+                    newFile.music = "demo.mp3";
                     newFile.pageList = ["start"];
                     newFile.onload = [];
                     newFile.actions = [];
@@ -188,6 +192,7 @@ $(function(){
                     break;
                 case "battleScene":
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
+                    newFile.music = "demo.mp3";
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.finished = ["Story",scene,newName];
@@ -196,6 +201,7 @@ $(function(){
                     break;
                 case "battle":
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
+                    newFile.music = "demo.mp3";
                     newFile.placementSquares = [];
                     newFile.maxAllies = 6;
                     newFile.events = [];

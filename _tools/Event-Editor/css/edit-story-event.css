@@ -139,7 +139,7 @@
     border:2px solid black;
     user-select:none;
 }
-.page div{
+.page div,.page input{
     color:var(--content-button-text-color);
     display:inline-block;
     height:26px !important;

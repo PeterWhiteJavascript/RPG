@@ -618,8 +618,8 @@
                     "globalVars": [],
                     "name": "battle-2",
                     "type": "battle",
-                    "left": "917px",
-                    "top": "317px"
+                    "left": "995px",
+                    "top": "325px"
                 },
                 {
                     "events": [
@@ -633,8 +633,8 @@
                     "globalVars": [],
                     "name": "the-epic-battle",
                     "type": "story",
-                    "left": "811px",
-                    "top": "253px"
+                    "left": "899px",
+                    "top": "223px"
                 },
                 {
                     "events": [
@@ -704,7 +704,17 @@
         },
         {
             "name": "Act-3-1",
-            "events": [],
+            "events": [
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Selecting-two-out-of-three-options",
+                    "type": "story",
+                    "left": "467px",
+                    "top": "472px"
+                }
+            ],
             "vrs": []
         },
         {

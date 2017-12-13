@@ -1,0 +1,306 @@
+{
+    "name": "Selecting-two-out-of-three-options",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "homeland.mp3",
+            "bg": "throne-room.jpg",
+            "text": "{fruitsText}",
+            "choices": [
+                [
+                    "Apple",
+                    false,
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Apple"
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "apple",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "NumberTaken",
+                                "+=",
+                                1
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Page 1"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Banana",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "banana",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "NumberTaken",
+                                "+=",
+                                1
+                            ]
+                        ],
+                        [
+                            "disableChoice",
+                            [
+                                "Banana"
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Page 1"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Kiwi",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "kiwi",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "disableChoice",
+                            [
+                                "Kiwi"
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "NumberTaken",
+                                "+=",
+                                1
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Page 1"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Move on",
+                    true,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Page 2"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Event",
+                                "NumberTaken",
+                                "==",
+                                2
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Apple"
+                            ]
+                        ],
+                        [
+                            "disableChoice",
+                            [
+                                "Banana"
+                            ]
+                        ],
+                        [
+                            "disableChoice",
+                            [
+                                "Kiwi"
+                            ]
+                        ],
+                        [
+                            "enableChoice",
+                            [
+                                "Move on"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": [
+                [
+                    "fruitsText",
+                    "Take 2 of the three fruits.",
+                    [
+                        [
+                            "All",
+                            "You have taken 2 fruits!",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "NumberTaken",
+                                        "==",
+                                        2
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Page 2",
+            "music": "LevelGuard.mp3",
+            "bg": "959396-river.jpg",
+            "text": "{hasApple} {hasBanana} {hasKiwi}\n\n",
+            "choices": [],
+            "onload": [],
+            "modules": [
+                [
+                    "hasApple",
+                    "",
+                    [
+                        [
+                            "All",
+                            "You took the apple",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "apple",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "hasBanana",
+                    "You took the banana",
+                    [
+                        [
+                            "All",
+                            "as well as the banana.",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "apple",
+                                        "==",
+                                        true
+                                    ]
+                                ],
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "banana",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            "All",
+                            "",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "apple",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "hasKiwi",
+                    "",
+                    [
+                        [
+                            "All",
+                            "as well as the kiwi.",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "kiwi",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
+    ],
+    "vrs": {
+        "NumberTaken": 0,
+        "apple": false,
+        "banana": false,
+        "kiwi": false
+    }
+}

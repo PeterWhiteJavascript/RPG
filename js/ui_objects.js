@@ -265,9 +265,14 @@ Quintus.UIObjects=function(Q){
         },
         //Takes a string and evaluates anything within {} and then returns a new string
         replaceText:function(text){
-            return text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
-                return Q.textProcessor.getVarValue(p1);
-            });
+            //Loop through each {}
+            while(text.indexOf("{") !== -1){
+                text = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
+                    return Q.textProcessor.getVarValue(p1);
+                });
+            }
+            return text;
+           
         },
         getVarValue:function(text){
             var newText;
@@ -277,10 +282,11 @@ Quintus.UIObjects=function(Q){
                 for(var i=0;i<module[2].length;i++){
                     if(Q.groupsProcessor.processConds(module[2][i][0],module[2][i][2])){
                         newText = Q.textProcessor.replaceText(module[2][i][1]);
+                        
                         break;
                     }
                 }
-                if(!newText) newText = Q.textProcessor.replaceText(module[1]);
+                if(newText === undefined) newText = Q.textProcessor.replaceText(module[1]);
             } 
             else {
                 //Figure out what the category is
@@ -324,6 +330,7 @@ Quintus.UIObjects=function(Q){
         },
         processConds:function(required,conds){
             var condsEvaluated = [];
+            console.log(conds,required)
             for(var i=0;i<conds.length;i++){
                 var func = conds[i][0];
                 var props = conds[i][1];
@@ -625,8 +632,8 @@ Quintus.UIObjects=function(Q){
             var cont = $("<div class='page-text'>"+Q.textProcessor.makeParagraphs(text)+"</div>");
             return cont;
         },
-        getChoice:function(num){
-            return this.currentPage.choices[num];
+        getChoice:function(name){
+            return this.currentPage.choices.find(function(choice){return choice[0] === name});
         },
         selectChoice:function(choice){
             var data = Q.storyController.getChoice(choice);
@@ -639,7 +646,7 @@ Quintus.UIObjects=function(Q){
                 if(!choices[i][1]){
                     $(cont).append("<div class='page-choice'><span>"+choices[i][0]+"</span></div>");
                     $(cont).children(".page-choice").last().click(function(){
-                        Q.storyController.selectChoice($(this).index());
+                        Q.storyController.selectChoice($(this).text());
                     });
                 }
             }
@@ -654,7 +661,6 @@ Quintus.UIObjects=function(Q){
         displayPage:function(name){
             this.currentPage = this.getPageData(name);
             Q.groupsProcessor.processGroups(this.currentPage.onload,this);
-            
             $("#text-content").append(this.newPage(this.currentPage));
         },
         changePage:function(name){

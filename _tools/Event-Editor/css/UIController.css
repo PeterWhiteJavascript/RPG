@@ -12,6 +12,7 @@
     line-height:30px;
     background-color:var(--menu-background-color);
     margin:0 auto;
+    margin-top:5px;
 }
 /*HUD START*/
 .UIC-hud{
@@ -172,7 +173,7 @@
 
 .UIC-choice-hud *{
     display:inline-block;
-    font-size:1.2vw;
+    font-size:1.1vw;
 }
 .UIC-choice-hud div *{
     display:inline-block;
@@ -398,4 +399,3 @@ textarea{
 .remove-choice-deep:hover{
     background-color:var(--button-hover-color);
 }
-

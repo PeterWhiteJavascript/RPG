@@ -242,13 +242,21 @@ var uic = new UIC({
                 break;
             case "enableChoice":
                 var choiceNames = [];
-                $(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
+                if(!props){
+                    $(".UIC-choice").children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
+                } else {
+                    choiceNames = FileSaver.getPage($(".page.selected").attr("id")).choices.map(function(choice){return choice[0];});
+                }
                 props = props || [choiceNames[0]];
                 cont.append(this.Select("Choice",choiceNames,props[0]));
                 break;
             case "disableChoice":
                 var choiceNames = [];
-                $(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
+                if(!props){
+                    $(".UIC-choice").children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
+                } else {
+                    choiceNames = FileSaver.getPage($(".page.selected").attr("id")).choices.map(function(choice){return choice[0];});
+                }
                 props = props || [choiceNames[0]];
                 cont.append(this.Select("Choice",choiceNames,props[0]));
                 break;
@@ -429,7 +437,7 @@ var start = function(){
                 this.addPage($("#pages-cont"),p.name);
             }
             //Create a page if there is not one
-            if(!pages.length) this.addPage($("#pages-cont"),"Page "+uniquePages);
+            if(!pages.length) $("#add-page").click();
             this.selectPage(pages[0].name);
         },
         //Adds a var to the list
@@ -621,20 +629,32 @@ var start = function(){
     $("#pages-cont").disableSelection();
     
     $("#pages-cont").sortable({
-        axis: "y"
+        axis: "y",
+        start: function(event, ui){
+            $(ui.helper).css('width', `${ $(event.target).width() }px`);
+         }
     });
     $("#onload-cont").sortable({
-        axis: "y"
+        axis: "y",
+        start: function(event, ui){
+            $(ui.helper).css('width', `${ $(event.target).width() }px`);
+         }
     });
     $("#onload-cont").disableSelection();
     
     $("#choices-cont").sortable({
-        axis: "y"
+        axis: "y",
+        start: function(event, ui){
+            $(ui.helper).css('width', `${ $(event.target).width() }px`);
+         }
     });
     $("#choices-cont").disableSelection();
     
     $("#modules-cont").sortable({
-        axis: "y"
+        axis: "y",
+        start: function(event, ui){
+            $(ui.helper).css('width', `${ $(event.target).width() }px`);
+         }
     });
     $("#modules-cont").disableSelection();
     DC.init();

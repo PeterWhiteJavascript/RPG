@@ -224,7 +224,10 @@ function UIC(p){
         }
         group.append(groupItemsCont);
         $(groupItemsCont).sortable({
-            axis: "y"
+            axis: "y",
+            start: function(event, ui){
+                $(ui.helper).css('width', `${ $(event.target).width() }px`);
+             }
         });
         $(groupItemsCont).disableSelection();
         cont.append(group);
@@ -377,7 +380,10 @@ function UIC(p){
             }
         }
         $(group).children(".UIC-group-cont").children(".UIC-cont").sortable({
-            axis: "y"
+            axis: "y",
+            start: function(event, ui){
+                $(ui.helper).css('width', `${ $(event.target).width() }px`);
+             }
         });
         $(group).children(".UIC-group-cont").children(".UIC-cont").disableSelection();
         return group;
@@ -445,7 +451,10 @@ function UIC(p){
         </div>');
         
         $(group).children(".UIC-text-groups").sortable({
-            axis: "y"
+            axis: "y",
+            start: function(event, ui){
+                $(ui.helper).css('width', `${ $(event.target).width() }px`);
+             }
         });
         $(group).children(".UIC-text-groups").disableSelection();
         cont.append(group);
