@@ -9,16 +9,15 @@
     </head>
     <body>
         <div id="quintus"></div>
-        <div id="main-content">
-            <img id="background-image" src="images/ui/loading-screen.png">
-            <div id="loading-bar">
-                <div id="bar-cont">
-                    <div id="bar-bottom"></div>
-                    <div id="bar-top"></div>
-                    <div id="bar-text"></div>
-                </div>
+        <img id="background-image" src="images/ui/loading-screen.png">
+        <div id="loading-bar">
+            <div id="bar-cont">
+                <div id="bar-bottom"></div>
+                <div id="bar-top"></div>
+                <div id="bar-text"></div>
             </div>
         </div>
+        <div id="main-container"></div>
         <script>
             var testing = false;
             <?php if(isset($_POST['testing'])){ ?>

@@ -633,8 +633,8 @@
                     "globalVars": [],
                     "name": "the-epic-battle",
                     "type": "story",
-                    "left": "899px",
-                    "top": "223px"
+                    "left": "798px",
+                    "top": "231px"
                 },
                 {
                     "events": [
@@ -655,6 +655,15 @@
                     "type": "battle",
                     "left": "539px",
                     "top": "229px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Location-Test",
+                    "type": "location",
+                    "left": "477px",
+                    "top": "84px"
                 }
             ],
             "vrs": {

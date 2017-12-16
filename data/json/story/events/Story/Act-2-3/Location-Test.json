@@ -1,0 +1,47 @@
+{
+    "name": "Location-Test",
+    "kind": "location",
+    "vrs": {
+        "asfas": "f3"
+    },
+    "pages": [
+        {
+            "name": "Action 1",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "options": [
+                [
+                    "Recruit Characters",
+                    false,
+                    [
+                        [
+                            "createRecruitMenu",
+                            []
+                        ]
+                    ]
+                ]
+            ],
+            "onload": []
+        },
+        {
+            "name": "Action 2",
+            "music": "dragon_quest_4_in_brass_01_-_overture-tx.mp3",
+            "bg": "pub.jpg",
+            "options": [
+                [
+                    "Go Back",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Action 1"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": []
+        }
+    ]
+}

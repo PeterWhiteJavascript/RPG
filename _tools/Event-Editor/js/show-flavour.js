@@ -231,18 +231,13 @@ $(function(){
             var newFile = {};
             newFile.name = newName;
             newFile.kind = newType;
-            newFile.music = "demo.mp3";
             switch(newType){
                 case "story":
                     newFile.pages = [];
                     newFile.vrs = {};
                     break;
                 case "location":
-                    newFile.bg = "castle-room.jpg";
-                    newFile.disabledChoices = [];
-                    newFile.pageList = ["start"];
-                    newFile.onload = [];
-                    newFile.actions = [];
+                    newFile.pages = [];
                     newFile.vrs = {};
                     break;
                 case "battleScene":
@@ -252,6 +247,7 @@ $(function(){
                     newFile.vrs = {};
                     newFile.finished = ["Flavour",scene,newName];
                     newFile.viewLoc = [0,0];
+                    newFile.music = "demo.mp3";
                     break;
                 case "battle":
                     newFile.map = "Venoria/Venoria-Castle-Outside.tmx";
@@ -268,6 +264,7 @@ $(function(){
                         events:[]
                     };
                     newFile.vrs = {};
+                    newFile.music = "demo.mp3";
                     break;
             }
             $.ajax({

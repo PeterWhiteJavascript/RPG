@@ -1,70 +1,58 @@
 Quintus.Music=function(Q){
-//Make sure that when the user enables music, it starts playing
-Q.state.on("change.musicEnabled",function(value){
-    if(value){
-        var music = Q.state.get("currentMusic");
-        Q.state.set("currentMusic",false);
-        Q.input.off("fire",Q,"loadOptions");
-        Q.playMusic(music,function(){Q.input.on("fire",Q,"loadOptions");});
-    } else {
-        Q.stopMusic(Q.state.get("currentMusic"));
-    }
-});
-
-Q.stopMusic=function(music){
-    Q.audio.stop("bgm/"+music);
-};
-
-Q.playMusic=function(music,callback){
-    if(Q.state.get("options").musicEnabled){
-        var loadedMusic = Q.state.get("loadedMusic");
-        var ld = loadedMusic.filter(function(songName){
-            return songName===music;
-        })[0];
-        //If the music hasn't been loaded
-        if(!ld){
-            
-            $("#loading-screen").show();
-            Q.stopMusic(Q.state.get("currentMusic"));
-            Q.stopMusic(music);
-            Q.load("bgm/"+music,function(){
+    
+Q.GameObject.extend("AudioController",{
+    loadedMusic:[],
+    currentMusic:"",
+    playMusic:function(music,callback){
+        if(!music) music = this.currentMusic;
+        if(Q.optionsController.options.musicEnabled){
+            var loadedMusic = this.loadedMusic;
+            var ld = loadedMusic.includes(music);
+            //If the music hasn't been loaded
+            if(!ld){
+                $("#loading-screen").show();
+                this.stopMusic(this.currentMusic);
+                this.stopMusic(music);
+                Q.load("bgm/"+music,function(){
+                    Q.audio.play("bgm/"+music,{loop:true});
+                    loadedMusic.push(music);
+                    if(callback){callback();}
+                },{progressCallback:Q.progressCallback});
+            //If the music is different than the currentMusic
+            } else if(this.currentMusic!==music){
+                this.stopMusic(this.currentMusic);
+                this.stopMusic(music);
                 Q.audio.play("bgm/"+music,{loop:true});
-                loadedMusic.push(music);
+            }
+            //Do the callback instantly if the music has been loaded
+            if(ld){
                 if(callback){callback();}
-            },{progressCallback:Q.progressCallback});
-        //If the music is different than the currentMusic
-        } else if(Q.state.get("currentMusic")!==music){
-            Q.stopMusic(Q.state.get("currentMusic"));
-            Q.stopMusic(music);
-            Q.audio.play("bgm/"+music,{loop:true});
-        }
-        if(ld){
+            }
+        } else {
             if(callback){callback();}
         }
-    } else {
+        this.currentMusic = music;
+    },
+    stopMusic:function(music){
+        if(!music) music = this.currentMusic;
+        Q.audio.stop("bgm/"+music);
+    },
+    checkMusicEnabled:function(){
+        if(Q.optionsController.options.musicEnabled){
+            this.playMusic(this.currentMusic);
+        } else {
+            this.stopMusic(this.currentMusic);
+        }
+    },
+    playSound:function(sound,callback){
+        if(Q.optionsController.options.soundEnabled){
+            if(sound.length){
+                Q.audio.play("sfx/"+sound);
+            }
+        }
         if(callback){callback();}
     }
-    Q.state.set("currentMusic",music);
-};
-
-Q.playSound=function(sound,callback){
-    if(Q.state.get("options").soundEnabled){
-        if(sound.length){
-            Q.audio.play("sfx/"+sound);
-        }
-    }
-    if(callback){callback();}
-};
-//Does a normal Q.load, but also checks if music is enabled before loading.
-//This allows you to not load music while testing.
-Q.loadMusic=function(music,callback){
-    if(Q.state.get("options").musicEnabled){
-        Q.load(music,callback);
-    } else {
-        callback();
-    }
-};
-    
+});
 };
 
 

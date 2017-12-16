@@ -50,10 +50,10 @@
                             
                         </div>
                     </div>
-                    <div id="choices">
-                        <p class="title-text">Choices</p>
-                        <div id="add-new-choice" class="category-button" >Add Choice</div>
-                        <div id="choices-cont" class="sortable">
+                    <div id="options">
+                        <p class="title-text">Options</p>
+                        <div id="add-new-option" class="category-button" >Add Option</div>
+                        <div id="options-cont" class="sortable">
                             
                         </div>
                     </div>

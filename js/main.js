@@ -67,32 +67,6 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
     return newLabel;
 };
 
-//Set up the game state's options
-//The default values will be overridden by data coming from the save file.
-Q.state.set({
-    options:{
-        musicEnabled:false,
-        musicVolume:20,
-        soundEnabled:true,
-        soundVolume:100,
-        textSpeed:3,
-        autoScroll:true,
-        cursorSpeed:3,
-        
-        brightness:100,
-        damageIndicators:true,
-        factionHighlighting:true,
-        
-        cannotRecallMove:false,
-        
-        tooltips:true
-    },
-    //Which tunes have been loaded (so that we don't load music twice)
-    loadedMusic:[],
-    //The current music
-    currentMusic:""
-});
-
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
     Q.state.set("saveData",GDATA.game["new-game.json"]);
@@ -120,7 +94,6 @@ Q.newGame=function(options){
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
-    //At the start of the game, there will be 10 random characters in it and they will all be venorian
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
         var char = Q.charGen.generateCharacter({nationality:"Venorian"},"roster");
@@ -161,6 +134,16 @@ Q.startGame=function(save){
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
+    
+    Q.timeController.week = Q.state.get("saveData").week;
+    $("#hud-money").text(Q.state.get("saveData").money);
+    $("#hud-week").text(Q.state.get("saveData").week);
+    
+    //This will be passed in from the save file.
+    var freeSpaces = 10;
+    for(var i=0;i<freeSpaces;i++){
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"},"roster"));
+    };
     //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
@@ -249,6 +232,11 @@ Q.load(toLoad.join(","),function(){
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     
+    //Controls music/sounds
+    Q.audioController = new Q.AudioController();
+    //Sets and gets options
+    Q.optionsController = new Q.OptionsController();
+    
     //The battle controller holds all battle specific functions
     Q.BatCon = new Q.BattleController();
     //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
@@ -259,15 +247,21 @@ Q.load(toLoad.join(","),function(){
     
     //Any variable functions (set and get)
     Q.variableProcessor = new Q.VariableProcessor();
-    
+    //Processes conditions and effects
     Q.groupsProcessor = new Q.GroupsProcessor();
     //Functions for doing things with text
     Q.textProcessor = new Q.TextProcessor();
     //Functions for story scene
     Q.storyController = new Q.StoryController();
+    //Functions for the location scene
+    Q.locationController = new Q.LocationController();
+    //Changes week and does other time-related functions
+    Q.timeController = new Q.TimeController();
+    
     //Controls adding and removing party members and much more
     Q.partyManager = new Q.PartyManager();
     
+    $("body").append("<div id='HUD-container'><div><span>Money: </span><span id='hud-money'></span></div><div><span>Week: </span><span id='hud-week'></span></div></div>");
     /* TESTING EVENT */
     //testing = {type:"Story",scene:"Act-1-1",name:"Start"};
     if(testing){
@@ -289,30 +283,5 @@ Q.load(toLoad.join(","),function(){
 },{
     progressCallback:Q.progressCallback
 });
-
-$(document).keydown(function(e) {
-    if(e.which == 32) {
-        Q.loadOptions();
-    }
-});
-//Checks if the user wants to go to the options menu
-Q.loadOptions = function(){
-    //For now, just toggle musicEnabled
-    if(Q.state.get("options").musicEnabled){
-        Q.state.get("options").musicEnabled = false;
-    } else {
-        Q.state.get("options").musicEnabled = true;
-    }
-    
-    Q.state.trigger("change.musicEnabled",Q.state.get("options").musicEnabled);
-    return;
-    if(!Q.stage(4)){
-        Q.pauseAllStages();
-        Q.stageScene("optionsMenu",4);
-    } else  {
-        Q.clearStage(4);
-        Q.unpauseAllStages();
-    }
-};
 //Q.debug=true;
 });

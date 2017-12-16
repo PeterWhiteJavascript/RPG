@@ -183,11 +183,7 @@ $(function(){
                     newFile.vrs = {};
                     break;
                 case "location":
-                    newFile.bg = "castle-room.jpg";
-                    newFile.music = "demo.mp3";
-                    newFile.pageList = ["start"];
-                    newFile.onload = [];
-                    newFile.actions = [];
+                    newFile.pages = [];
                     newFile.vrs = {};
                     break;
                 case "battleScene":

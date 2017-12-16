@@ -26,7 +26,7 @@ function saveEvent(){
 var FileSaver = {
     event:GDATA.event,
     getPage:function(name){
-        return this.event.pages.filter(function(page){return page.name === name; })[0];
+        return this.event.pages.find(function(page){return page.name === name; });
     },
     savePage:function(name){
         var page = this.getPage(name);
@@ -219,7 +219,7 @@ var uic = new UIC({
         func = func || "setVar";
         switch(func){
             case "setVar":
-                props = props || ["Global","money","+=",1000];
+                props = props || ["Global","money","+=",1];
                 cont.append(this.Select("Scope",dataP.scopes,props[0]));
                 cont.append(this.Select("Var",dataP.vars[props[0]],props[1]));
                 this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.vars);

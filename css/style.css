@@ -1,23 +1,7 @@
-/*html, body {
-    height: 100%;
-}
-html {
-    display: table;
-    margin: auto;
-}
-
-body {
-    display: table-cell;
-    vertical-align: middle;
-    overflow:hidden;
-}
-pre{
-    white-space:pre-wrap;
-}*/
 body{
     overflow:hidden;
 }
-#main-content{
+#main-container{
     width:100%;
     height:100%;
 }
@@ -26,6 +10,8 @@ body{
     width:100%;
     height:100%;
 }
+
+/* Loading Start*/
 #loading-bar{
     position:fixed;
     width:100%;
@@ -58,10 +44,27 @@ body{
     height:100%;
     background-color:lightblue;
 }
+/* Loading End*/
 
-
-
-#text-cont{
+#HUD-container{
+    width:100%;
+    height:5%;
+    background-color:#555;
+    font-size:20px;
+    border-bottom:1px solid black;
+    position:absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align:center;
+}
+#HUD-container div{
+    font-size:20px;
+    color:white;
+    width:25%;
+}
+/* Story Start */
+#text-content{
     font-size:1.5vw;
     top:10%;
     left:25%;
@@ -71,14 +74,14 @@ body{
     background: rgb(204, 204, 204); /* Fallback for older browsers without RGBA-support */
     background: rgba(204, 204, 204, 0.8);
     overflow-y:auto;
-    display:none;
 }
-#text-content{
+#text-content-story{
     margin: 2.5% 2.5%;
     width:95%;
     color:black;
     font-family: "Times New Roman";
 }
+
 .page-choices{
     margin:0 auto;
     text-align:center;
@@ -103,16 +106,124 @@ body{
 .page-choice:hover{
     background-color:#CCC;
 }
-/*
-.text-header-line{
-    border: 32px solid transparent;
-    border-image: url(../images/ui/text-bar.png);
-    border-image-slice: 32;
-    border-image-repeat: round;
-    border-bottom:0;
-}*/
+/* Story End */
+/* Locations Start*/
+.big-box{
+    position:absolute;
+    background:#333;
+    padding:10px;
+    font-size:20px;
+    border:2px solid black;   
+}
+.inner-box{
+    background-color:#555;
+    border:1px solid black;
+}
+#options-menu{
+    width:50%;
+    height:50%;
+    top:20%;
+    left:25%;
+}
+#options-cont{
+    background-color:#555;
+    width:100%;
+    height:100%;
+    user-select:none;
+}
+#options-cont > div{
+    width:100%;
+    height:7.1428%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+#options-cont div > div{
+    width:100%;
+    height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#options-cont > div:nth-child(odd){
+    background-color:#999;
+}
+#options-cont > div:nth-child(even){
+    background-color:#AAA;
+}
+#options-cont div input{
+    width:50%;
+    height:50%;
+}
+.options-cont-confirm-cont{
+    height:14.2856% !important;
+    color:#EEE;
+    background-color:#555 !important;
+}
+.options-cont-confirm-cont div:hover{
+    cursor:pointer;
+    background-color:#CCC;
+}
+#options-cont-location{
+    top:15%;
+    right:5%;
+    width:20%;
+}
+.options-list{
+    text-align:center;
+}
+.option, .option-title{
+    color:#EEE;
+    background-color:#555;
+    width:100%;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+    display:inline-block;
+}
+.option span, .option-title span{
+    font-size:1.3vw;
+}
+.option:hover{
+    background-color:#CCC;
+}
+.selected-option{
+    background-color:#999;
+}
 
+#roster-characters-options{
+    top:15%;
+    left:5%;
+    width:20%;
+}
+#roster-characters-options:empty {
+   display: none;
+}
+#character-stats-display-cont{
+    width:50%;
+    height:40%;
+    left:25%;
+    top:15%;
+}
+.char-stats-cont-main{
+    width:35%;
+    height:100%;
+    display:inline-block;
+    border-right:none;
+}
+.char-stats-cont-derived{
+    width:30%;
+    height:100%;
+    display:inline-block;
+}
+.char-stats-cont-skills{
+    width:35%;
+    height:100%;
+    display:inline-block;
+    border-left:none;
+}
 
+/* Locations End */
 
 
 #back-button{
@@ -130,151 +241,4 @@ body{
     position:absolute;
     top:90px;
     left:10px;
-}
-
-#dialogue-cont{
-    width:100%;
-    height:150px;
-    bottom:0px;
-    position:absolute;
-    background-color:rgba(0,0,0,0.5);
-}
-#left-asset{
-    position:absolute;
-    top:-300px;
-    left:0;
-    width:200px;
-    height:300px;
-}
-#right-asset{
-    position:absolute;
-    top:-300px;
-    right:0;
-    width:200px;
-    height:300px;
-}
-#dialogue-text{
-    color:white;
-    margin:10px 10px;
-    font-size:30px;
-}
-
-/* LOCATIONS MENU */
-.selected-color{
-    border-color:red !important;
-}
-.main-menu{
-    position:absolute;
-    top:5%;
-    right:5%;
-    width:20%;
-    background:grey;
-    border-width: initial;
-    border-style: solid;
-    border-color: black;
-    border-image: initial;
-    padding:10px;
-}
-.main-menu ul{
-    list-style:none;
-    padding:0;
-}
-.main-menu ul li{
-    width:100%;
-    border-width: initial;
-    border-style: solid;
-    border-color: black;
-    border-image: initial;
-    text-align:center;
-    font-size:1vw;
-}
-.mid-cont{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:50%;
-    height:50%;
-    color:white;
-    font-size:1vw;
-}
-.left-cont{
-    position:absolute;
-    top:5%;
-    left:5%;
-    width:20%;
-    background:grey;
-    border-width: initial;
-    border-style: solid;
-    border-color: black;
-    border-image: initial;
-    padding:10px;
-}
-.left-cont ul{
-    list-style:none;
-    padding:0;
-}
-.left-cont ul li{
-    width:100%;
-    border-width: initial;
-    border-style: solid;
-    border-color: black;
-    border-image: initial;
-    text-align:center;
-    font-size:1vw;
-}
-
-.mid-box{
-    background:grey;
-    width:100%;
-    height:100%;
-}
-
-.menu-input{
-    width:100%;
-    height:auto;
-}
-
-#equip-menu{
-    width:100%;
-    height:100%;
-    background:grey;
-    border:5px solid black;
-}
-#equip-menu-left{
-    width:20%;
-    height:100%;
-    float:left;
-}
-#equip-menu-mid{
-    width:30%;
-    height:100%;
-    float:left;
-    font-size:22px;
-}
-#equip-menu-mid ul{
-    height:100%;
-    list-style:none;
-    padding-top:10px;
-}
-#equip-menu-mid ul li{
-    height:20%;
-}
-#equip-menu-right{
-    width:50%;
-    height:100%;
-    float:left;
-    font-size:22px;
-}
-#equip-menu-right ul{
-    height:100%;
-    list-style:none;
-}
-#equip-menu-right ul li{
-    padding:11px;
-    color:black;
-    height:20%;
-}
-#equip-menu-right ul li select{
-    width:100%;   
 }

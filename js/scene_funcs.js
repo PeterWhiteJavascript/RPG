@@ -9,9 +9,7 @@ Quintus.SceneFuncs=function(Q){
             }
             Q.stageScene(data.kind,0,{data:data,char:char});
             if(testing&&!$("#back-button").length){
-                $("#main-content").append("<div id='back-button' class='btn btn-default'>Go Back</div>");
-                
-                
+                $("body").append("<div id='back-button' class='btn btn-default'>Go Back</div>");
                 $("#back-button").click(function(){
                     var path = "_tools/Event-Editor/";
                     switch(data.kind){
@@ -35,26 +33,22 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
-        Q.playMusic(data.pages[0].music,function(){
-            $('#background-image').attr('src', 'images/bg/'+data.pages[0].bg);
+        Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
         });
     });
+    Q.scene("location",function(stage){
+        var data = stage.options.data;
+        Q.audioController.playMusic(data.pages[0].music,function(){
+            Q.locationController.startEvent(data);
+        });
+    });
+    
     Q.scene("script",function(stage){
         Q.inputs['confirm'] = false;
         var scriptData = stage.options.scriptData = stage.options.data;
         Q.dialogueController = stage.insert(new Q.DialogueController({script:scriptData.script,next:scriptData.finished}));
     }); 
-    Q.scene("location",function(stage){
-        $("#loading-screen").show();
-        var data = stage.options.data;
-        $('body').css('background', '#000 url(images/bg/'+data.bg+') no-repeat');
-        Q.playMusic(data.music,function(){
-            Q.locationController = stage.insert(new Q.LocationController({location:data}));
-        });
-    },{
-        progressCallback:Q.progressCallback
-    });
     
     Q.placeCharacters = function(characters,stage){
         var charData = [];
@@ -125,7 +119,7 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         var map = "maps/"+data.map;
         Q.loadTMX(map, function() {
-            Q.playMusic(data.music,function(){
+            Q.audioController.playMusic(data.music,function(){
                 Q.stageScene("fader",11);
                 //Display the tmx tile map
                 //If one is not passed in, we are re-using the map from the previous battle
@@ -163,7 +157,7 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         var map = "maps/"+battleData.map;
         Q.loadTMX(map, function() {
-            Q.playMusic(battleData.music,function(){
+            Q.audioController.playMusic(battleData.music,function(){
                 Q.stageScene("fader",11);
                 //Display the tmx tile map
                 Q.stageTMX(map, stage);

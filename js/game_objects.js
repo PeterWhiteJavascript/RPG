@@ -2805,8 +2805,7 @@ Quintus.GameObjects=function(Q){
                     char.team = "ally";
                     //Generate the level based on the Act
                     char.level = data.level || this.generateLevel(act);
-                    char.nationality = data.nationality || this.generateNationality(act);
-                    
+                    char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
                     if(data.personality){
                         char.personality = data.personality;
                     } else {
@@ -2815,9 +2814,8 @@ Quintus.GameObjects=function(Q){
                             char.personality.push(this.generatePersonality());
                         }
                     }
-                    
                     char.natNum = this.getNatNum(char.nationality);
-                    char.charClass = data.charClass==="Random"?this.generateCharClass(char.nationality):data.charClass;
+                    char.charClass = data.charClass==="Random" || !data.charClass ? this.generateCharClass(char.nationality) : data.charClass;
                     char.classNum = this.getClassNum(char.charClass);
                     char.charGroup = this.generateCharGroup(char.classNum);
                     

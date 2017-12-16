@@ -10,6 +10,21 @@ Quintus.UIObjects=function(Q){
             char.tempStatChanges.push(props);
             char.baseStats[props[0]] = Q.variableProcessor.evaluateStringOperator(char.baseStats[props[0]],props[1],props[2]);
         },
+        addToAllies:function(character){
+            this.allies.push(character);
+        },
+        removeFromAllies:function(idx){
+            this.allies.splice(idx,1);
+        },
+        
+        addToRoster:function(character){
+            this.roster.push(character);
+        },
+        removeFromRoster:function(idx){
+            this.roster.splice(idx,1);
+        },
+        
+        
         getAlly:function(name){
             if(name==="Current") return Q.state.get("currentEvent").character;
             return this.allies.find(function(ally){return name === ally.name;});
@@ -191,6 +206,10 @@ Quintus.UIObjects=function(Q){
             Scene:{},
             Event:{}
         },
+        changeMoney:function(amount){
+            this.vars.Global.money += amount;
+            $("#hud-money").text(this.vars.Global.money);
+        },
         evaluateStringOperator:function(vr,op,vl,min,max){
             var value;
             switch(op){
@@ -330,7 +349,6 @@ Quintus.UIObjects=function(Q){
         },
         processConds:function(required,conds){
             var condsEvaluated = [];
-            console.log(conds,required)
             for(var i=0;i<conds.length;i++){
                 var func = conds[i][0];
                 var props = conds[i][1];
@@ -463,6 +481,33 @@ Quintus.UIObjects=function(Q){
                     case "useItem":
                         Q.partyManager.bag.decreaseItem(props[0],{gear:props[1],material:props[2],quality:props[3],amount:props[4]});
                         break;
+                    //Locations-specific below
+                    case "createRecruitMenu":
+                        obj.createRecruitMenu();
+                        break;
+                    case "displayBuyItemsList":
+                        obj.displayBuyItemsList(props);
+                        break;
+                    case "displaySellItemsList":
+                        obj.displaySellItemsList(props);
+                        break;
+                    case "createGatherInfoMenu":
+                        obj.createGatherInfoMenu();
+                        break;
+                    case "createHuntMenu":
+                        obj.createHuntMenu();
+                        break;
+                    case "loadEntourageMenu":
+                        obj.loadEntourageMenu();
+                        break;
+                    case "loadBrionyMenu":
+                        obj.loadBrionyMenu();
+                        break;
+                    case "loadOptionsMenu":
+                        obj.loadOptionsMenu();
+                        break;
+                    
+                        
                 }
             }
         },
@@ -566,74 +611,44 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
-    /*
-                checkVar:function(obj){
-                    var varValue;
-                    switch(obj[0]){
-                        case "Event":
-                            varValue = Q.state.get("eventVars")[obj[1]];
-                            break;
-                        case "Scene":
-                            varValue = Q.state.get("sceneVars")[obj[1]];
-                            break;
-                        case "Global":
-                            varValue = Q.state.get("globalVars")[obj[1]];
-                            break;
-                    }
-                    return Q.textModules.evaluateStringOperator(varValue,obj[2],obj[3]);
-                },
-                checkCharProp:function(obj){
-                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
-                    if(!char) return false;
-                    return Q.textModules.evaluateStringOperator(char[obj[1]],obj[2],obj[3]);
-                },
-                checkCharStat:function(obj){
-                    var char = Q.state.get("allies").find(function(ally){return ally.name === obj[0];});
-                    if(char){
-                        var prop;
-                        switch(obj[1]){
-                            case "Base Stats":
-                                prop = char.baseStats[obj[2]];
-                                break;
-                            case "Derived Stats":
-                                prop = char.combatStats[Q.convertCombatStat(obj[2])];
-                                break;
-                        }
-                        return Q.textModules.evaluateStringOperator(prop,obj[3],obj[4]);
-                    }
-                },
-                checkKeyword:function(obj){
-                    switch(obj[0]){
-                        case "partySize":
-                            var size = Q.state.get("allies").length;
-                            return Q.textModules.evaluateStringOperator(size,obj[1],obj[2]);
-                    }
-                }*/
+
     Q.GameObject.extend("StoryController",{
-        init:function(){
-            var cont = $('<div id="text-cont"></div>');
-            var text = $('<div id="text-content"></div>');
-            cont.append(text);
-            $("#main-content").append(cont);
-        },
         //When a story event starts, set data and show the container.
         startEvent:function(data){
+            $("#main-container").append("<div id='HUD-container'></div>");
+            //Elements used for displaying text
+            $("#main-container").append('<div id="text-content"></div>');
+            $("#text-content").append('<div id="text-content-story"></div>');
             this.data = data;
+            //Start should actually be party menu.
+            
             this.displayPage(data.pages[0].name);
-            $("#text-cont").show();
         },
-        finishEvent:function(){
-            $("#text-cont").hide();
-        },
+        
         getPageData:function(name){
             return this.data.pages.filter(function(page){return page.name === name; })[0];
         },
-        getPageParagraph:function(text){
-            var cont = $("<div class='page-text'>"+Q.textProcessor.makeParagraphs(text)+"</div>");
+        displayPage:function(name){
+            this.currentPage = this.getPageData(name);
+            $("#background-image").attr('src', 'images/bg/'+this.currentPage.bg);
+            Q.groupsProcessor.processGroups(this.currentPage.onload,this);
+            $("#text-content-story").append(this.newPage(this.currentPage));
+        },
+        changePage:function(name){
+            $("#text-content-story").children(".page").remove();
+            this.displayPage(name);
+        },
+        newPage:function(data){
+            var cont = $("<div class='page'></div>");
+            $(cont).append(this.getPageWallOfText(data.text));
+            $(cont).append(this.getPageChoices(data.choices));
             return cont;
         },
+        getPageWallOfText:function(text){
+            return $("<div class='page-text'>"+Q.textProcessor.makeParagraphs(text)+"</div>");
+        },
         getChoice:function(name){
-            return this.currentPage.choices.find(function(choice){return choice[0] === name});
+            return this.currentPage.choices.find(function(choice){return choice[0] === name;});
         },
         selectChoice:function(choice){
             var data = Q.storyController.getChoice(choice);
@@ -652,32 +667,292 @@ Quintus.UIObjects=function(Q){
             }
             return cont;
         },
-        newPage:function(data){
-            var cont = $("<div class='page'></div>");
-            $(cont).append(this.getPageParagraph(data.text));
-            $(cont).append(this.getPageChoices(data.choices));
-            return cont;
-        },
-        displayPage:function(name){
-            this.currentPage = this.getPageData(name);
-            Q.groupsProcessor.processGroups(this.currentPage.onload,this);
-            $("#text-content").append(this.newPage(this.currentPage));
-        },
-        changePage:function(name){
-            $("#text-content").children(".page").remove();
-            this.displayPage(name);
-        },
         changeEvent:function(props){
             this.finishScene();
             Q.startScene(props[0],props[1],props[2]);
+        },
+        finishEvent:function(){
+            $("#text-content").remove();
         }
     });
     
-    
-    Q.component("time",{
-        added:function(){
-            this.entity.on("cycleWeek",this,"cycleWeek");
+    //All menus created in the editor
+    Q.component("locationsMenus",{
+        extend:{
+            createRecruitMenu:function(){
+                $("#main-container").empty();
+                $("#main-container").append("<div id='character-stats-display-cont' class='big-box'></div>");
+                $("#character-stats-display-cont").append("<div class='char-stats-cont-main inner-box'></div><div class='char-stats-cont-derived inner-box'></div><div class='char-stats-cont-skills inner-box'></div>");
+                $("#main-container").append("<div id='roster-characters-options' class='big-box'></div>");
+                $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
+                var optionsList = $("#options-cont-location").children(".options-list");
+                var roster = Q.partyManager.roster;
+                
+                function rosterEmpty(){
+                    optionsList.children(".option").first().replaceWith("<div class='option-title'><span>The roster is empty!</span></div>");
+                }
+                
+                //Put each roster character as an option.
+                for(var i=0;i<roster.length;i++){
+                    $("#roster-characters-options").append(this.newOption(roster[i].name));
+                    $("#roster-characters-options").children(".option").last().click(function(){
+                        $(".selected-option").removeClass("selected-option");
+                        $(this).addClass("selected-option");
+                        var money = 100;
+                        optionsList.children(".option").first().children("span").text("Recruit "+$(this).text()+" for "+money+" money?");
+                        optionsList.children(".option").first().children("span").attr("cost",money);
+                        $("#character-stats-display-cont").contents().empty();
+                    });
+                }
+                optionsList.append(this.newOption("Recruit"));
+                optionsList.children(".option").first().click(function(){
+                    var idx = $(".selected-option").index();
+                    var cost = parseInt($(this).children("span").attr("cost"));
+                    var currentMoney = Q.variableProcessor.vars.Global.money;
+                    if(currentMoney<cost){
+                        alert("Not enough money!");
+                    } else {
+                        Q.variableProcessor.changeMoney(-cost);
+                        Q.partyManager.addToAllies(roster[idx]);
+                        Q.partyManager.removeFromRoster(idx);
+                        $(".selected-option").remove();
+                        if($("#roster-characters-options").children(".option").length){
+                            var num = idx>0 ? idx-1 : idx;
+                            $("#roster-characters-options").children(".option:eq("+(num)+")").trigger("click");
+                        } else {
+                            rosterEmpty();
+                        }
+                    }
+                });
+                optionsList.append($(this.newOption("Back")).click(function(){
+                    $("#main-container").empty();
+                    Q.locationController.setUpCont();
+                    Q.locationController.changePage(Q.locationController.currentPage.name);
+                }));
+                if(roster.length){
+                    $("#roster-characters-options").children(".option").first().trigger("click");
+                } else {
+                    rosterEmpty();
+                }
+            },
+            displayBuyItemsList:function(props){
+                
+            },
+            displaySellItemsList:function(props){
+                
+            },
+            createGatherInfoMenu:function(){
+                
+            },
+            createHuntMenu:function(){
+                
+            }
+        }
+    });
+    Q.GameObject.extend("LocationController",{
+        startEvent:function(data){
+            this.add("locationsMenus");
+            this.setUpCont();
+            this.data = data;
+            data.pages.unshift({
+                name:"base",
+                music:data.pages[0].music,
+                bg:data.pages[0].bg,
+                options:[
+                    [
+                        "View Entourage",
+                        false,
+                        [
+                            [
+                                "loadEntourageMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "Briony's Orders",
+                        false,
+                        [
+                            [
+                                "loadBrionyMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "Select Action",
+                        false,
+                        [
+                            [
+                                "changePage",
+                                [
+                                    data.pages[0].name
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "Options",
+                        false,
+                        [
+                            [
+                                "loadOptionsMenu",
+                                []
+                            ]
+                        ]
+                    ]
+                ],
+                onload:[]
+            });
+            this.displayPage(data.pages[0].name);
         },
+        setUpCont:function(){
+            $("#main-container").append('<div id="options-cont-location" class="big-box"><div class="options-list inner-box"></div></div>');
+        },
+        finishEvent:function(){
+            $("#options-cont-location").remove();
+        },
+        newOption:function(text){
+            return $("<div class='option'><span>"+text+"</span></div>");
+        },
+        getPageData:function(name){
+            return this.data.pages.filter(function(page){return page.name === name; })[0];
+        },
+        addBaseOptions:function(){
+            $("#options-cont-location").children(".options-list").append(this.newOption("Entourage"));
+        },
+        displayPage:function(name){
+            this.currentPage = this.getPageData(name);
+            $("#background-image").attr('src', 'images/bg/'+this.currentPage.bg);
+            Q.groupsProcessor.processGroups(this.currentPage.onload,this);
+            $("#options-cont-location").append(this.newPage(this.currentPage));
+            //If we're at the first set of options ([0] is for the base options)
+            if(this.currentPage.name === this.data.pages[1].name){ 
+                $("#options-cont-location").children(".options-list").append($(this.newOption("Back")).click(function(){
+                    $("#main-container").empty();
+                    Q.locationController.setUpCont();
+                    Q.locationController.changePage(Q.locationController.data.pages[0].name);
+                }));
+            }
+        },
+        changePage:function(name){
+            $("#options-cont-location").children(".options-list").empty();
+            this.displayPage(name);
+        },
+        getOption:function(chosen){
+            return this.currentPage.options.find(function(option){return option[0] === chosen;});
+        },
+        newPage:function(data){
+            return this.getOptions(data.options,$("#options-cont-location").children(".options-list"));
+        },
+        selectOption:function(option){
+            var data = Q.locationController.getOption(option);
+            Q.groupsProcessor.processEffects(data[2],Q.locationController);
+        },
+        getOptions:function(options,cont){
+            for(var i=0;i<options.length;i++){
+                cont.append(this.newOption(options[i][0]));
+                $(cont).children(".option").last().click(function(){
+                    Q.locationController.selectOption($(this).text());
+                });
+            }
+            return cont;
+        },
+        
+        
+        //Base options funcs below
+        loadEntourageMenu:function(){
+            
+        },
+        loadBrionyMenu:function(){
+            
+        },
+        loadOptionsMenu:function(){
+            $("#main-container").empty();
+            $("#main-container").append("<div id='options-menu' class='big-box'><div id='options-cont' class='inner-box'></div></div>");
+            function makeOption(props){
+                var itm = $("<div class='option-itm'><div><span>"+props[0]+"</span></div><div></div></div>");
+                switch(props[1]){
+                    case "checkbox":
+                        var elm = $("<input type='checkbox' class='option-prop'>");
+                        elm.prop("checked",Q.optionsController.options[props[2]]);
+                        itm.children("div").last().append(elm);
+                        break;
+                    case "range":
+                        itm.children("div").last().append("<input type='range' min='0' max='100' value="+Q.optionsController.options[props[2]]+" class='option-prop'>");
+                        break;
+                    case "select":
+                        var options = "";
+                        props[3].forEach(function(v){
+                            options += "<option value = "+v+">"+v+"</option>";
+                        });
+                        var elm = $("<select class='option-prop'>"+options+"</select>");
+                        itm.children("div").last().append(elm);
+                        itm.children("div").last().children("select").last().val(Q.optionsController.options[props[2]]);
+                        break;
+                }
+                $("#options-cont").append(itm);
+            }
+            var options = [
+                ["Music","checkbox","musicEnabled"],
+                ["Music Volume","range","musicVolume"],
+                ["Sound","checkbox","soundEnabled"],
+                ["Sound Volume","range","soundVolume"],
+                ["Text Speed","select","textSpeed",["Slow","Normal","Fast"]],
+                ["Auto Scroll","checkbox","autoScroll"],
+                ["Cursor Speed","select","cursorSpeed",["Slow","Normal","Fast"]],
+                ["Brightness","range","brightness"],
+                ["Damage Indicators","checkbox","damageIndicators"],
+                ["Faction Highlighting","checkbox","factionHighlighting"],
+                ["Recall Move","checkbox","recallMove"],
+                ["Tool Tips","checkbox","tooltips"]
+            ];
+            options.forEach(function(opt){
+                makeOption(opt);
+            });
+            $("#options-cont").append("<div class='options-cont-confirm-cont'><div>Save Options</div><div>Go Back</div></div>");
+            function goBack(){
+                $("#main-container").empty();
+                Q.locationController.setUpCont();
+                Q.locationController.displayPage(Q.locationController.data.pages[0].name);
+            };
+            $("#options-cont").children(".options-cont-confirm-cont").children("div").first().click(function(){
+                $("#options-cont").children(".option-itm").each(function(idx){
+                    if($(this).children("div").children(".option-prop[type='checkbox']").length){
+                        Q.optionsController.options[options[idx][2]] = $(this).children("div").children(".option-prop").prop("checked");
+                    } else {
+                        Q.optionsController.options[options[idx][2]] = $(this).children("div").children(".option-prop").val();
+                    }
+                });
+                Q.audioController.checkMusicEnabled();
+                goBack();
+            });
+            $("#options-cont").children(".options-cont-confirm-cont").children("div").last().click(goBack);
+        }
+    });
+    
+    Q.GameObject.extend("OptionsController",{
+        options:{
+            musicEnabled:false,
+            musicVolume:20,
+            soundEnabled:true,
+            soundVolume:100,
+            textSpeed:"Fast",
+            autoScroll:true,
+            cursorSpeed:"Fast",
+
+            brightness:100,
+            damageIndicators:true,
+            factionHighlighting:true,
+
+            recallMove:true,
+
+            tooltips:true
+        }
+    });
+    
+    Q.GameObject.extend("TimeController",{
+        week:0,
         reduceWounded:function(char){
             char.wounded--;
             if(!char.wounded){
@@ -735,6 +1010,7 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
+    
     Q.component("locationActions",{
         extend:{
             doAction:function(p){
@@ -934,817 +1210,8 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
-    //Using CSS/Jquery, create the locations controller
-    //This is used when the player goes to a location and selects from different menu options.
-    Q.UI.Container.extend("LocationController",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                w:Q.width/2,
-                h:Q.height-100
-            });
-            this.p.x+=10;
-            this.p.y+=10;
-            this.on("inserted");
-            this.add("locationActions");
-            this.add("time");
-        },
-        fullDestroy:function(){
-            this.emptyConts();
-            $(this.p.menuCont).remove();
-            $(this.p.leftCont).remove();
-            $(this.p.midCont).remove();
-            this.destroy();
-        },
-        inserted:function(){
-            this.p.menuCont = this.createCont("main-menu");
-            this.p.midCont = this.createCont("mid-cont");
-            this.p.leftCont = this.createCont("left-cont");
-            $(this.p.leftCont).hide();
-            this.createMainMenu();
-        },
-        hideAll:function(){
-            this.emptyConts();
-            $(this.p.menuCont).hide();
-            $(this.p.leftCont).hide();
-            $(this.p.midCont).hide();
-        },
-        emptyConts:function(){
-            this.p.menuCont.empty();
-            this.p.midCont.empty();
-            this.p.leftCont.empty();
-            this.p.leftCont.hide();
-            if(this.p.characterMenu) this.p.characterMenu.destroy();
-        },
-        createCont:function(cl){
-            var cont = $('<div class='+cl+'></div>');
-            $(document.body).append(cont);
-            return cont;
-        },
-        createMainMenu:function(){
-            this.emptyConts();
-            var cont = this.p.menuCont;
-            /*cont.append(
-                '<ul id="main-menu-ul">\n\
-                    <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
-                    <li id="lc-briony" class="btn btn-default" func="createBrionyMenu">Briony</li>\n\
-                    <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
-                    <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
-                    <li id="lc-options" class="btn btn-default" func="createOptionsMenu">Options</li>\n\
-                </ul>'
-            );*/
-            cont.append(
-                '<ul id="main-menu-ul">\n\
-                    <li id="lc-select-action" class="btn btn-default" func="createActionsMenu">Actions</li>\n\
-                    <li id="lc-entourage" class="btn btn-default" func="createEntourageMenu">Entourage</li>\n\
-                    <li id="lc-log" class="btn btn-default" func="createLogMenu">Log</li>\n\
-                </ul>'
-            );
-            $("#main-menu-ul li").click(function(){
-                Q.locationController[$(this).attr("func")]();
-            });
-        },
-        createEntourageMenu:function(){
-            this.emptyConts();
-            var cont = this.p.menuCont;
-            /*
-            cont.append(
-                '<ul id="entourage-menu-ul">\n\
-                    <li id="en-taskforce" class="btn btn-default" func="createTaskforceMenu">Taskforce</li>\n\
-                    <li id="en-cash-bonus" class="btn btn-default" func="createCashBonusMenu">Cash Bonus</li>\n\
-                    <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
-                    <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
-                </ul>'
-            );
-             */
-            cont.append(
-                '<ul id="entourage-menu-ul">\n\
-                    <li id="en-distribute-gear" class="btn btn-default" func="createDistributeGearMenu">Equip</li>\n\
-                    <li id="en-infirmary" class="btn btn-default" func="createInfirmaryMenu">Infirmary</li>\n\
-                    <li id="en-back" class="btn btn-default" func="createMainMenu">Back</li>\n\
-                </ul>'
-            );
-            $("#entourage-menu-ul li").click(function(){
-                Q.locationController[$(this).attr("func")]();
-            });
-            
-        },
-        createTaskforceMenu:function(){
-            
-        },
-        createCashBonusMenu:function(){
-            
-        },
-        createInfirmaryMenu:function(){
-            this.emptyConts();
-            var cont = this.p.midCont;
-            
-            var cont = this.p.leftCont;
-            cont.append('<ul id="left-menu-ul"></ul>');
-            //Generate list of characters at 0 hp.
-            var chars = Q.state.get("allies").filter(function(ally){
-                return ally.combatStats.hp===0;
-            });
-            if(!chars.length){
-                alert("There are no characters that are wounded!");
-                this.createEntourageMenu();
-                return;
-            }
-            chars.forEach(function(char){
-                $("#left-menu-ul").append('<li id="'+char.name+'" class="character btn btn-default">'+char.name+'</li>');
-            });
-            var t = this;
-            $(".character").on("click",function(){
-                $('.character').removeClass("selected-color");
-                $(this).addClass("selected-color");
-                var name = $(this).attr("id");
-                var target = Q.state.get("allies").filter(function(a){
-                    return a.name===name;
-                })[0];
-                t.showRecruitCharacterCard(t,target);
-                t.p.selectedAlly = target;
-            });
-            $(".character").first().trigger("click");
-            this.p.leftCont.show();
-            this.showRecruitCharacterCard(this,chars[0]);
-            var infirmaryActions = [
-                [
-                    "Visit",
-                    "infirmaryVisitCharacter"
-                ],
-                [
-                    "Back",
-                    "createEntourageMenu"
-                ]
-            ];
-            this.displayList({actions:infirmaryActions});
-        },
-        infirmaryVisitCharacter:function(){
-            var ally = this.p.selectedAlly;
-            ally.loyalty = Math.min(ally.loyalty+10,100);
-            Q.setAward(ally,"visited",1);
-            this.time.reduceWounded(ally);
-            this.addToPotentialEvents(ally,"infirmary");
-            this.trigger("cycleWeek");
-        },
-        addToPotentialEvents:function(char,prop){
-            /* OLD FLAVOUR EVENTS CODE. WILL NEED TO BE COMPLETELY REDONE
-            var evaluateProp = function(d,char){
-                if(!d) return true;
-                var success = true;
-                var keys = Object.keys(d);
-                //Loop through each condition. All must evaluate true to continue.
-                keys.forEach(function(key){
-                    //The character's var value
-                    var value = key.split('.').reduce(Q.textModules.getObjPathFromString,char);
-                    var toMatch = d[key];
-                    if(Q._isArray(toMatch)){
-                        if(!Q.textModules.evaluateStringOperator(value,toMatch[0],toMatch[1])) success = false;
-                    } else {
-                        if(toMatch !== value) success = false;
-                    }
-                });
-                return success;
-            };
-            var eventCompleted = function(act,prop,idx,char){
-                //Will be 0 if the event was not completed yet.
-                return char.completedEvents.filter(function(event){
-                    return event.act === act && event.prop === prop && event.idx === idx;
-                }).length;
-            };
-            var checkEvents = function(act,prop,char,idx){
-                var data = act.split('.').reduce(Q.textModules.getObjPathFromString,Q.state.get("flavourEvents"))[prop][idx];
-                if(evaluateProp(data[0],char)&&!eventCompleted(act,prop,idx,char)){
-                    return {act:act,prop:prop,idx:idx,priority:data[1],recur:data[3],char:char};
-                };
-                return false;
-            };
-            var act = "Act-"+Q.state.get("saveData").act;
-            var events = Q.state.get("flavourEvents");
-            //Loop through the events that haven't been played and find the most suitable
-            var potentialEvents = [];
-            //Regular act events
-            if(events[act][prop]){
-                for(var i=0;i<events[act][prop].length;i++){
-                    var data = checkEvents(act,prop,char,i);
-                    if(data) potentialEvents.push(data);
-                }
-            }
-            //'All' act events
-            if(events["All"][prop]){
-                for(var i=0;i<events["All"][prop].length;i++){
-                    var data = checkEvents("All",prop,char,i);
-                    if(data) potentialEvents.push(data);
-                }
-            }
-            Q.state.set("potentialEvents",Q.state.get("potentialEvents").concat(potentialEvents));*/
-        },
-        createDistributeGearMenu:function(){
-            this.emptyConts();
-            var actions = [];
-            var allies = Q.state.get("allies");
-            allies.forEach(function(ally){
-                actions.push([ally.name,"fillEquipMenu",ally]);
-            });
-            actions.push(["Back",false,"createEntourageMenu",[]]);
-            this.displayList({actions:actions});
-            var cont = this.p.midCont;
-            cont.append('\n\
-                <div id="equip-menu">\n\
-                    <div id="equip-menu-left"><img></div>\n\
-                    \n\
-                    <div id="equip-menu-mid">\n\
-                        <ul>\n\
-                            <li>Right Hand</li>\n\
-                            <li>Left Hand</li>\n\
-                            <li>Body</li>\n\
-                            <li>Feet</li>\n\
-                            <li>Accessory</li>\n\
-                        </ul>\n\
-                    </div>\n\
-                    <div id="equip-menu-right">\n\
-                        <ul>\n\
-                            <li><select id="equip-right-hand" class="equip-select">'+this.fillHandsSelect(allies[0].equipment.righthand)+'</select></li>\n\
-                            <li><select id="equip-left-hand" class="equip-select">'+this.fillHandsSelect(allies[0].equipment.lefthand)+'</select></li>\n\
-                            <li><select id="equip-armour" class="equip-select">'+this.fillArmourSelect(allies[0].equipment.armour)+'</select></li>\n\
-                            <li><select id="equip-footwear" class="equip-select">'+this.fillFootwearSelect(allies[0].equipment.footwear)+'</select></li>\n\
-                            <li><select id="equip-accessory" class="equip-select">'+this.fillAccessorySelect(allies[0].equipment.accessory)+'</select></li>\n\
-                        </ul>\n\
-                    </div>\n\
-                </div>\n\
-            ');
-            this.fillEquipMenu(allies[0]);
-            //Removes the selected item from the bag, add the item to the character, remove what was equipped and add to bag.
-            $(".equip-select").on("change",function(){
-                var thisID = $(this).attr("id");
-                var char = Q.locationController.p.selectedAlly;
-                if(thisID==="equip-accessory"){
-                    Q.state.get("Bag").unequipItem(char,"accessory","toBag");
-                    Q.state.get("Bag").equipItem(char,"accessory",$(this).find(":selected").attr("name"));
-                } else {
-                    var quality = $(this).find(":selected").attr("quality");
-                    var material = $(this).find(":selected").attr("material");
-                    var name = $(this).find(":selected").attr("name");
-                    if(thisID==="equip-right-hand"){
-                        Q.state.get("Bag").unequipItem(char,"righthand","toBag");
-                        Q.state.get("Bag").equipItem(char,"righthand",name,material,quality);
-                        $("#equip-left-hand").empty();
-                        $("#equip-left-hand").append(Q.locationController.fillHandsSelect(char.equipment.lefthand));
-                        Q.locationController.fillHandsSelect(char.equipment.lefthand);
-                    } else if(thisID==="equip-left-hand"){
-                        Q.state.get("Bag").unequipItem(char,"lefthand","toBag");
-                        Q.state.get("Bag").equipItem(char,"lefthand",name,material,quality);
-                        $("#equip-right-hand").empty();
-                        $("#equip-right-hand").append(Q.locationController.fillHandsSelect(char.equipment.righthand));
-                    } else if(thisID==="equip-armour"){
-                        Q.state.get("Bag").unequipItem(char,"armour","toBag");
-                        Q.state.get("Bag").equipItem(char,"armour",name,material,quality);
-                    } else {
-                        Q.state.get("Bag").unequipItem(char,"footwear","toBag");
-                        Q.state.get("Bag").equipItem(char,"footwear",name,material,quality);
-                    }
-                }
-                Q.locationController.fillEquipMenu(char);
-            });
-        },
-        fillHandsSelect:function(ha){
-            var opts = '<option>None</option>';
-            var eq = Q.state.get("Bag").items.Weapons.concat(Q.state.get("Bag").items.Shields);
-            if(ha) eq.unshift(ha);
-            eq.forEach(function(e){
-                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
-            });
-            return opts;
-        },
-        fillArmourSelect:function(ar){
-            var opts = '<option>None</option>';
-            var eq = Q.state.get("Bag").items.Armour;
-            if(ar) eq.unshift(ar);
-            eq.forEach(function(e){
-                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
-            });
-            return opts;
-        },
-        fillFootwearSelect:function(ft){
-            var opts = '<option>None</option>';
-            var eq = Q.state.get("Bag").items.Footwear;
-            if(ft) eq.unshift(ft);
-            eq.forEach(function(e){
-                opts += '<option quality="'+e.quality+'" material="'+e.material+'" name="'+e.name+'">'+e.quality+' '+e.material+' '+e.name+'</option>';
-            });
-            return opts;
-        },
-        fillAccessorySelect:function(ac){
-            var opts = '<option>None</option>';
-            var eq = Q.state.get("Bag").items.Accessories;
-            if(ac) eq.unshift(ac);
-            eq.forEach(function(e){
-                opts += '<option name="'+e.name+'">'+e.name+'</option>';
-            });
-            return opts;
-        },
-        fillEquipMenu:function(ally){
-            var lastAlly = this.p.selectedAlly;
-            if(lastAlly){
-                var opts = ["right-hand","left-hand","armour","footwear"];
-                var vals = ["righthand","lefthand","armour","footwear"];
-                opts.forEach(function(o,i){
-                    $("#equip-"+o+" option").each(function() {
-                        if($(this).val()===lastAlly.equipment[vals[i]].quality+' '+lastAlly.equipment[vals[i]].material+' '+lastAlly.equipment[vals[i]].name){
-                            $(this).remove();
-                        }
-                    });
-                });
-                $("#equip-accessory option").each(function() {
-                    if($(this).val()===lastAlly.equipment.accessory.name){
-                        $(this).remove();
-                    }
-                });
-            }
-            this.p.selectedAlly = ally;
-            //Add this ally's equipment options
-            if(ally.equipment.righthand) $("#equip-right-hand").append($('<option quality="'+ally.equipment.righthand.quality+'" material="'+ally.equipment.righthand.material+'" name="'+ally.equipment.righthand.name+'">'+ally.equipment.righthand.quality+' '+ally.equipment.righthand.material+' '+ally.equipment.righthand.name+'</option>'));
-            if(ally.equipment.lefthand) $("#equip-left-hand").append($('<option quality="'+ally.equipment.lefthand.quality+'" material="'+ally.equipment.lefthand.material+'" name="'+ally.equipment.lefthand.name+'">'+ally.equipment.lefthand.quality+' '+ally.equipment.lefthand.material+' '+ally.equipment.lefthand.name+'</option>'));
-            if(ally.equipment.armour) $("#equip-armour").append($('<option quality="'+ally.equipment.armour.quality+'" material="'+ally.equipment.armour.material+'" name="'+ally.equipment.armour.name+'">'+ally.equipment.armour.quality+' '+ally.equipment.armour.material+' '+ally.equipment.armour.name+'</option>'));
-            if(ally.equipment.footwear) $("#equip-footwear").append($('<option quality="'+ally.equipment.footwear.quality+'" material="'+ally.equipment.footwear.material+'" name="'+ally.equipment.footwear.name+'">'+ally.equipment.footwear.quality+' '+ally.equipment.footwear.material+' '+ally.equipment.footwear.name+'</option>'));
-            if(ally.equipment.accessory) $("#equip-accessory").append($('<option name="'+ally.equipment.accessory.name+'">'+ally.equipment.accessory.name+'</option>'));
-            
-            $("#equip-menu-left img").attr("src","images/sprites/"+ally.charClass.toLowerCase()+".png");
-            $("#equip-right-hand").val(ally.equipment.righthand ? ally.equipment.righthand.quality+" "+ally.equipment.righthand.material+" "+ally.equipment.righthand.name : "None");
-            $("#equip-left-hand").val(ally.equipment.lefthand ? ally.equipment.lefthand.quality+" "+ally.equipment.lefthand.material+" "+ally.equipment.lefthand.name : "None");
-            $("#equip-armour").val(ally.equipment.armour ? ally.equipment.armour.quality+" "+ally.equipment.armour.material+" "+ally.equipment.armour.name : "None");
-            $("#equip-footwear").val(ally.equipment.footwear ? ally.equipment.footwear.quality+" "+ally.equipment.footwear.material+" "+ally.equipment.footwear.name : "None");
-            $("#equip-accessory").val(ally.equipment.accessory ? ally.equipment.accessory.name : "None");
-            
-        },
-        createBrionyMenu:function(){
-            
-        },
-        createActionsMenu:function(){
-            this.emptyConts();
-            this.p.currentPage = "start";
-            this.p.action = 0;
-            this.displayList({actions:this.p.location.actions.concat([["Back",false,"createMainMenu",[]]]),onload:this.p.location.onload});
-        },
-        displayQuantityToggle:function(p){
-            var cont = this.p.menuCont;
-            cont.append('<div>'+p.titleText+'</div><ul id="actions-menu-ul"></ul>');
-            $("#actions-menu-ul").append('\n\
-                <li><input type="number" min=1 max='+(p.item.amount || 99)+' class="menu-input" value=1></li>\n\
-                <li id="confirm-quantity" class="btn btn-default" func="'+p.confirmFunc+'">'+p.confirmText+'</li>\n\
-                <li id="quantity-go-back" class="btn btn-default">Back</li>\n\
-                ');
-            $("#confirm-quantity").click(function(){
-                Q.locationController[$("#confirm-quantity").attr("func")]({quantity:$("#actions-menu-ul li input").first().val(),p:p});
-            });
-            $("#quantity-go-back").click(function(){
-                Q.locationController.goBack(p.goBack);
-            });
-        },
-        displayList:function(p){
-            if(p.onload){
-                for(var i=0;i<p.onload.length;i++){
-                    var group = p.onload[i];
-                    if(this.checkConds(group.conds)){
-                        this.executeEffects(group.effects,p);
-                    };
-                }
-                
-            }
-            var actions = p.actions.slice();
-            var cont = this.p.menuCont;
-            cont.append('<ul id="actions-menu-ul"></ul>');
-            for(var i=0;i<actions.length;i++){
-                if(!actions[i][1]){
-                    $("#actions-menu-ul").append('<li id="ac-'+actions[i][2]+'" class="btn btn-default" num="'+i+'">'+actions[i][0]+'</li>');
-                }
-            }
-            $("#actions-menu-ul li").click(function(){
-                Q.locationController.doAction(actions[$(this).attr("num")]);
-            });
-        },
-        createFundraiseMenu:function(){
-            
-        },
-        createCampaignMenu:function(){
-            
-        },
-        getCharacterCost:function(char){
-            var rh = Q.charGen.getEquipmentProp("cost",char.equipment.righthand);
-            var lh = Q.charGen.getEquipmentProp("cost",char.equipment.lefthand);
-            var ar = Q.charGen.getEquipmentProp("cost",char.equipment.armour);
-            var ft = Q.charGen.getEquipmentProp("cost",char.equipment.footwear);
-            var baseStats = 0;
-            Object.keys(char.baseStats).forEach(function(itm){baseStats+=char.baseStats[itm];});
-            var base = 100;
-            return char.level*20+rh+lh+ar+ft+baseStats+base;
-        },
-        recruitCharacter:function(){
-            var character = Q.state.get("saveData").applicationsRoster.filter(function(a){
-                return a.name===$(".character.selected-color").attr("id");
-            })[0];
-            var cost = this.getCharacterCost(character);
-            var money = Q.state.get("saveData").money;
-            if(money>=cost){
-                Q.state.get("saveData").money-=cost;
-                Q.state.get("allies").push(character);
-                Q.state.get("saveData").applicationsRoster.splice(Q.state.get("saveData").applicationsRoster.indexOf(character),1);
-                if(Q.state.get("saveData").applicationsRoster.length){
-                    this.createRecruitMenu();
-                } else {
-                    $("#co-back").trigger("click");
-                }
-            } else {
-                alert("You don't have "+cost+" money!");
-            }
-        },
-        showRecruitCharacterCard:function(obj,target){
-            if(this.p.characterMenu) this.p.characterMenu.destroy();
-            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:{p:target}}));
-        },
-        createRecruitMenu:function(){
-            this.emptyConts();
-            $(this.p.leftCont).show();
-            var available = Q.state.get("saveData").applicationsRoster;
-            var cont = this.p.leftCont;
-            cont.append('<ul id="left-menu-ul"></ul>');
-            for(var i=0;i<available.length;i++){
-                $("#left-menu-ul").append('<li id="'+available[i].name+'" class="character btn btn-default">'+available[i].name+'</li>');
-            }
-            var t = this;
-            $(".character").on("click",function(){
-                $('.character').removeClass("selected-color");
-                $(this).addClass("selected-color");
-                var name = $(this).attr("id");
-                var target = Q.state.get("saveData").applicationsRoster.filter(function(a){
-                    return a.name===name;
-                })[0];
-                t.showRecruitCharacterCard(t,target);
-                var cost = t.getCharacterCost(Q.state.get("saveData").applicationsRoster.filter(function(a){
-                    return a.name===$(".character.selected-color").attr("id");
-                })[0]);
-                $("#co-recruit").text("Recruit for "+cost);
-            });
-            
-            this.p.menuCont.append(
-                '<ul id="confirm-recruit-menu-ul">\n\
-                    <li id="co-recruit" class="btn btn-default" func="recruitCharacter">Recruit</li>\n\
-                    <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
-                </ul>'
-            );
-            $(".character").first().trigger("click");
-            $("#confirm-recruit-menu-ul li").click(function(){
-                Q.locationController[$(this).attr("func")]();
-            });
-        },
-        throwFeast:function(amount,guestOfHonour){
-            if(Q.state.get("saveData").money>=amount){
-                Q.state.get("saveData").money-=amount;
-                var boost = 0;
-                switch(amount){
-                    case 100:
-                        boost = 5;
-                        break;
-                    case 500:
-                        boost = 10;
-                        break;
-                    case 1500:
-                        boost = 15;
-                        break;
-                }
-                Q.state.get("allies").forEach(function(ally){
-                    ally.morale+=boost;
-                    ally.awards.feasted++;
-                });
-                guestOfHonour.awards.guestOfHonour++;
-                var event = guestOfHonour.checkEvents("feasted");
-                if(event) Q.state.get("potentialEvents").push(event);
-                this.trigger("cycleWeek");
-            }
-            this.createMainMenu();
-            
-        },
-        createFeastMenu:function(){
-            this.emptyConts();
-            this.p.leftCont.show();
-            this.p.leftCont.append(
-                '<ul>\n\
-                    <li class="money btn btn-default" value="100">$100</li>\n\
-                    <li class="money btn btn-default" value="500">$500</li>\n\
-                    <li class="money btn btn-default" value="1500">$1500</li>\n\
-                </ul>'
-            );
-            $(".money").on("click",function(){
-                $('.money').removeClass("selected-color");
-                $(this).addClass("selected-color");
-                switch($(".money.selected-color").attr("value")){
-                    case "100":
-                        $(".mid-box").text("Increase morale of entire entourage by 5.");
-                        break;
-                    case "500":
-                        $(".mid-box").text("Increase morale of entire entourage by 10.");
-                        break;
-                    case "1500":
-                        $(".mid-box").text("Increase morale of entire entourage by 15.");
-                        break;
-                }
-                
-            });
-            this.p.midCont.append(
-                '<div class="mid-box"></div>'
-            );
-            $(".money").first().trigger("click");
-            
-            this.p.menuCont.append(
-                '<ul id="feast-menu">\n\
-                    <li id="co-feast" class="btn btn-default" func="confirmAmount">Confirm Amount</li>\n\
-                    <li id="co-back" class="btn btn-default" func="createActionsMenu">Back</li>\n\
-                </ul>'
-            );
-            $("#feast-menu li").click(function(){
-                Q.locationController[$(this).attr("func")](parseInt($(".money.selected-color").attr("value")));
-            });
-        },
-        confirmAmount:function(money){
-            this.emptyConts();
-            this.p.leftCont.show();
-            var allies = Q.state.get("allies");
-            this.p.leftCont.append('<ul></ul>');
-            for(var i=1;i<allies.length;i++){
-                $(this.p.leftCont).children('ul').first().append('\n\
-                    <li class="char btn btn-default" value="'+i+'">'+allies[i].name+'</li>\n\
-                ');
-            }
-            $(".char").on("click",function(){
-                $('.char').removeClass("selected-color");
-                $(this).addClass("selected-color");
-                $(".mid-box").text("Select "+allies[$(this).attr("value")].name+" as the Guest of Honour?");
-            });
-            this.p.midCont.append(
-                '<div class="mid-box"></div>'
-            );
-            $(".char").first().trigger("click");
-            this.p.menuCont.append(
-                '<ul id="confirm-feast-amount-menu">\n\
-                    <li id="co-feast" class="btn btn-default" func="throwFeast">Throw Feast</li>\n\
-                    <li id="co-back" class="btn btn-default" func="createFeastMenu">Back</li>\n\
-                </ul>'
-            );
-            $("#confirm-feast-amount-menu li").click(function(){
-                Q.locationController[$(this).attr("func")](money,allies[$(".char.selected-color").attr("value")]);
-            });
-        },
-        createMentorMenu:function(){
-            
-        },
-        createMarketMenu:function(){
-            
-        },
-        createHuntMenu:function(){
-            
-        },
-        
-        //Shows all characters and allows displaying their stats
-        createLogMenu:function(){
-            this.emptyConts();
-            var chars = Q.state.get("allies");
-            var cont = this.p.menuCont;
-            cont.append('<ul id="actions-menu-ul"></ul>');
-            for(var i=0;i<chars.length;i++){
-                $("#actions-menu-ul").append('<li id="'+chars[i].name+'" class="btn btn-default" func="createCharacterMenu">'+chars[i].name+'</li>');
-            }
-            $("#actions-menu-ul").append('<li id="ac-back" class="btn btn-default" func="removeCharacterMenu">Back</li>');
-            $("#actions-menu-ul li").click(function(){
-                $("#actions-menu-ul li").removeClass("selected-color");
-                $(this).addClass("selected-color");
-                Q.locationController[$(this).attr("func")]($(this).attr("id"));
-            });
-            $("#actions-menu-ul li").first().trigger("click");
-        },
-        createCharacterMenu:function(name){
-            if(this.p.characterMenu) this.p.characterMenu.destroy();
-            var char = Q.state.get("allies").filter(function(obj){
-                return name == obj.name;
-            })[0];
-            this.p.characterMenu = this.stage.insert(new Q.BigStatusBox({target:{p:char}}));
-        },
-        removeCharacterMenu:function(){
-            this.p.characterMenu.destroy();
-            this.createMainMenu();
-        },
-        createOptionsMenu:function(){
-            
-        }
-    });
     
     
-    /*
-    //Using CSS/Jquery, create the story dialogue with options
-    Q.GameObject.extend("StoryController",{
-        init:function(p){
-            this._super(p,{
-                x:0,y:0,
-                cx:0,cy:0,
-                w:Q.width/2,
-                h:Q.height-100
-            });
-            this.p.x+=10;
-            this.p.y+=10;
-            this.p.container = ;
-            this.p.textContent = ;
-            $(this.p.container).append(this.p.textContent);
-            $(document.body).append(this.p.container);
-            this.insertPage(0);
-        },
-        insertPage:function(num){
-            var page = this.p.pages[num];
-            console.log(page)
-            //Do the onload conditions/effects
-            Q.textModules.processCondEffects(this,page.onload);
-            if(!this.p.changedPage){
-                //Make the background correct
-                this.p.bgImage.p.asset = page.bg;
-                //Play the music for the page
-                Q.playMusic(page.music);
-                var txt = this.beautifyText(Q.textModules.processTextVars(page.text));
-                var contentBox = this.p.textContent;
-                if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
-                //Show the choices
-                $(contentBox).append('<ul class="choice-list"></ul>');
-                page.choices.forEach(function(choice){
-                    if(choice.disabled==="Enabled"){
-                        $(contentBox).children(".choice-list").last().append('<li>'+choice.displayText+'</li>');
-                    }
-                });
-            } else {
-                this.p.changedPage = false;
-            }
-        },
-        beautifyText:function(txt){
-            //Split up all of the text by paragraph into an array(at \n)
-            var beau = txt.split("\n").filter(
-                    //Remove any \n that has no text in it
-                    function(itm){
-                        return itm.length;
-                    //Rework the items into paragraphs.
-                    }).map(function(itm){
-                        var pClass = "story";
-                        if(itm[0]==="\"") pClass = "dialogue";
-                        return "<p class='"+pClass+"'>"+itm+"</p>";
-                    //Join the array back into a string
-                    }).join(" ");
-            if(beau.length) beau = "<div class='text-header-line'></div>"+beau;
-            return beau;
-        },
-        insertChoiceDesc:function(desc){
-            //this.removePage();
-            this.removeChoices();
-            var contentBox = this.p.textContent;
-            var txt = this.beautifyText(Q.textModules.processTextVars(desc));
-            if(txt.length) $(contentBox).append('<p>'+txt+'</p>');
-            
-        },
-        removeChoices:function(){
-            $(".choice-list").remove();
-        },
-        removePage:function(){
-            $(this.p.textContent).empty();
-        },
-        getPageNum:function(pageName){
-            for(var i=0;i<this.p.pages.length;i++){
-                if(this.p.pages[i].name===pageName){
-                    return i;
-                }
-            }
-        },
-        changePage:function(pageName){
-            var lastPage = this.p.pages[this.p.pageNum];
-            var pageNum = this.p.pageNum = this.getPageNum(pageName);
-            //this.removePage();
-            this.insertPage(pageNum);
-        },
-        getChoice:function(page,choice){
-            return page.choices.filter(function(ch){
-                return ch.displayText===choice;
-            })[0];
-        },
-        effectFuncs:{
-            setVar:function(t,obj){
-                Q.textModules.effectFuncs.setVar(t,obj);
-            },
-            changePage:function(t,obj){
-                t.changePage(obj.page);
-                t.p.changedPage = true;
-            },
-            enableChoice:function(t,obj){
-                //Find the page choice and enable or disable it.
-                t.getChoice(t.p.pages[t.p.pageNum],obj.choice).disabled = obj.toggle;
-            },
-            changeEvent:function(t,obj){
-                Q.startScene(obj.type,obj.scene,obj.event);
-                $("#text-container").remove();
-            },
-            goToAnchorEvent:function(){
-                var anchor = Q.state.get("anchorEvent");
-                Q.startScene(anchor.type,anchor.scene,anchor.event);
-                $("#text-container").remove();
-            },
-            recruitChar:function(t,obj){
-                var data = Q.state.get("characters")[obj.name];
-                var char = Q.charGen.generateCharacter(data,"officer");
-                Q.state.get("allies").push(char);
-            },
-            changeStat:function(t,obj){
-                obj.val = parseInt(obj.val);
-                switch(obj.stat){
-                    case "Pragmatic":
-                    case "Kind":
-                    case "Intuitive":
-                    case "Egoist":
-                    case "Altruist":
-                    case "Nepotist":
-                        var influence = Q.state.get("saveData").influence;
-                        influence[obj.stat]+=obj.val;
-                        break;
-                    case "Money":
-                        Q.state.get("saveData").money+=obj.val;
-                        break;
-                    case "Morale":
-                        Q.changeMorale(obj.val);
-                        break;
-                    default:
-                        var props = obj.stat.split("-");
-                        if(props[0]==="Reputation"){
-                            Q.state.get("saveData").relations[props[1]][0]+=obj.val;
-                        } else if(props[1]==="Stability"){
-                            Q.state.get("saveData").relations[props[1]][1]+=obj.val;
-                        }
-                        break;
-                }
-            },
-            tempStatChange:function(t,obj){
-                obj.val = parseInt(obj.val);
-                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
-                if(!char) return;
-                char.tempStatChange[obj.stat] += obj.val;
-                char.eachTempStatChange.push(obj);
-            },
-            equipItem:function(t,obj){
-                if(obj.char==="Bag"){
-                    Q.state.get("Bag").addItem(obj.eqType,{gear:obj.gear,material:obj.material,quality:obj.quality});
-                    return;
-                }
-                var eq = Q.charGen.convertEquipment([obj.material,obj.gear],obj.quality);
-                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
-                if(!char) return;
-                switch(obj.eqType){
-                    case "Weapons":
-                    case "Shields":
-                        Q.state.get("Bag").unequipItem(char,"righthand","toBag");
-                        char.equipment.righthand = eq;
-                        break;
-                    case "Armour":
-                        Q.state.get("Bag").unequipItem(char,"armour","toBag");
-                        char.equipment.armour = eq;
-                        break;
-                    case "Footwear":
-                        Q.state.get("Bag").unequipItem(char,"footwear","toBag");
-                        char.equipment.footwear = eq;
-                    break;
-                    case "Accesories":
-                        Q.state.get("Bag").unequipItem(char,"accessory","toBag");
-                        char.equipment.accessory = eq;
-                        break;
-                }
-                var hp = char.combatStats.hp;
-                var tp = char.combatStats.tp;
-                char.combatStats = Q.charGen.getCombatStats(char);
-                char.combatStats.hp = hp;
-                char.combatStats.tp = tp;
-            },
-            unequipItem:function(t,obj){
-                var char = Q.state.get("allies").filter(function(ally){return ally.name===obj.char;})[0];
-                if(!char) return;
-                if(obj.from==="all"){
-                    var keys = Object.keys(char.equipment);
-                    keys.forEach(function(k){
-                        char.equipment[k] = false;
-                    });
-                }
-                else {
-                    Q.state.get("Bag").unequipItem(char,obj.from,obj.options);
-                }
-            },
-            changeItemQuantity:function(t,obj){
-                if(obj.amount<0){
-                    Q.state.get("Bag").decreaseItem("Consumables",{gear:obj.name},parseInt(obj.amount));
-                } else {
-                    Q.state.get("Bag").addItem("Consumables",{gear:obj.name,amount:parseInt(obj.amount)});
-                }    
-            }
-        }
-    });*/
     Q.UI.Container.extend("DialogueController",{
         init:function(p){
             this._super(p,{

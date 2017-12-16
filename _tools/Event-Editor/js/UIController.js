@@ -281,7 +281,7 @@ function UIC(p){
                                 $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
                             });
                             $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Impact ("+$(elm).children(".UIC-cont").children(".UIC-group").length+")");
-                            uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
+                            uic.minimizeGroup($(elm),"+");
                         }
                         
                         if(!props){
@@ -304,7 +304,6 @@ function UIC(p){
                 return [
                     "Add Condition",
                     function(obj){
-                        console.log(obj)
                         var which = $(this).index();
                         var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
                         $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.impactConditionsFuncs,"impactConditionsProps",uic.impactConditionsFuncs[0],false,true));
@@ -336,6 +335,24 @@ function UIC(p){
                     ],
                     props
                 ];
+            case "Options":
+                return [
+                    "Add Effect",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.optionsFuncs,"optionProps",uic.optionsFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Effects ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
+                    },
+                    "Effects ("+props.length+")",
+                    [
+                        uic.optionsFuncs,
+                        "optionProps"
+                    ],
+                    props
+                ];
+                break;
         }
     };
     this.createGroup = function(categories,baseProps){
@@ -388,28 +405,39 @@ function UIC(p){
         $(group).children(".UIC-group-cont").children(".UIC-cont").disableSelection();
         return group;
     };
-    this.createChoiceGroup = function(cont,p){
-        p = p || ["New Choice",false];
-        var effects = p[2] || [["changePage"]]; //Default to having a changePage func as this will be usually used.
-        var impacts = p[3] || false;
-        var group = $(
+    function choiceGroup(title){
+        var group =  $(
         '<div class="UIC-choice UIC-group-cont">\n\
             <div class="UIC-choice-hud">\n\
                 <div class="UIC-choice-title-cont">\n\
                     <div class="UIC-group-minimize"><span>-</span></div>\n\
-                    <div class="UIC-choice-title"><span>'+p[0].substr(0,25)+'</span></div>\n\
+                    <div class="UIC-choice-title"><span>'+title.substr(0,25)+'</span></div>\n\
                 </div>\n\
                 <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
         </div>');
-        $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").click(this.minimizeChoice);
-        $(group).children(".UIC-choice-hud").children(".remove-choice-deep").click(this.removeDeepItem);
+        $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").click(uic.minimizeChoice);
+        $(group).children(".UIC-choice-hud").children(".remove-choice-deep").click(uic.removeDeepItem);
+        return group;
+    }
+    function choiceTop(title,disabled,linkTo){
+        var top = $("<div class='UIC-choice-item-top'></div>");
+        top.append(uic.Input("Text",title,"text"));
+        top.append(uic.Checkbox("Disabled",disabled));
+        if(linkTo){
+            uic.linkValueToText($(top).children("input")[0],linkTo,25);
+        }
+        return top;
+    };
+    //Used for story choices
+    this.createChoiceGroup = function(cont,p){
+        p = p || ["New Choice",false];
+        var effects = p[2] || [["changePage"]]; //Default to having a changePage func as this will be usually used.
+        var impacts = p[3] || false;
+        var group = choiceGroup(p[0]);
         
         var choiceCont = $("<div class='UIC-cont'></div>");
-        var top = $("<div class='UIC-choice-item-top'></div>");
-        top.append(this.Input("Text",p[0],"text"));
-        top.append(this.Checkbox("Disabled",p[1]));
-        choiceCont.append(top);
+        choiceCont.append(choiceTop(p[0],p[1],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title")));
         choiceCont.append(this.createGroup(
             [
                 this.getPremadeGroup("Effects",effects),
@@ -419,11 +447,34 @@ function UIC(p){
                 
             ]
         ));
-        this.linkValueToText($(choiceCont).children(".UIC-choice-item-top").children("input")[0],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title"),25);
+        
         group.append(choiceCont);
         $(cont).append(group);
         
+        //Hide the contents unless it's a new choice.
         if(p[0] !== "New Choice"){
+            $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").trigger("click");
+        }
+    };
+    //Used in locations
+    this.createOptionsGroup = function(cont,props){
+        props = props || ["New Option",false];
+        var options = props[2] || false;
+        var group = choiceGroup(props[0]);
+        var optionCont = $("<div class='UIC-cont'></div>");
+        optionCont.append(choiceTop(props[0],props[1],$(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title")));
+        optionCont.append(this.createGroup(
+            [
+                this.getPremadeGroup("Options",options)
+            ],
+            [
+                
+            ]
+        ));
+        group.append(optionCont);
+        $(cont).append(group);
+        
+        if(p[0] !== "New Option"){
             $(group).children(".UIC-choice-hud").children(".UIC-choice-title-cont").trigger("click");
         }
     };
@@ -550,12 +601,16 @@ function UIC(p){
         var choices = [];
         $(cont).children(".UIC-choice").each(function(){
             var groups = uic.getSaveGroups($(this).children(".UIC-cont"));
-            choices.push([
+            var choice = [
                 $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").first().val(),
-                $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").last().is(":checked"),
-                groups[0][0],
-                groups[0][1] || []
-            ]);
+                $(this).children(".UIC-cont").children(".UIC-choice-item-top").children(".UIC-prop").last().is(":checked")
+            ];
+            for(var i=0;i<groups.length;i++){
+                for(var j=0;j<groups[i].length;j++){
+                    choice.push(groups[i][j]);
+                }
+            }
+            choices.push(choice);
         });
         return choices;
     };
