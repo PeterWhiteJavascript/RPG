@@ -178,6 +178,30 @@
             "range":1,
             "cost":0.25,
             "hands":1
+        },
+        "Wand":{
+            "materials":["Wood"],
+            "weight":1,
+            "wield":10,
+            "mindmg":1,
+            "maxdmg":35,
+            "reach":0,
+            "speed":40,
+            "range":1,
+            "cost":0.25,
+            "hands":1
+        },
+        "Staff":{
+            "materials":["Wood"],
+            "weight":1,
+            "wield":10,
+            "mindmg":1,
+            "maxdmg":35,
+            "reach":0,
+            "speed":40,
+            "range":1,
+            "cost":0.25,
+            "hands":1
         }
     },
     "Armour":{

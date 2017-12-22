@@ -1,17 +1,14 @@
 <?php
-$filename = $_POST['file-name'].'.json';
+$filename = $_POST['filename'].'.json';
 
 
 if ($handle = opendir('../../data/json/story/characters')) {
     while (false !== ($entry = readdir($handle))) {
         if($filename==$entry){
-            header("Location:select-characters-file.php?err=File already exists!");
             exit();
         }
     }
 }
-
-
-file_put_contents('../../data/json/story/characters/'.$filename, json_encode((object)[],JSON_PRETTY_PRINT));
-
-header( "Location:create-characters.php?file-name=$filename");
+$newFile = json_encode((object)[],JSON_PRETTY_PRINT);
+file_put_contents('../../data/json/story/characters/'.$filename, $newFile);
+echo($newFile);

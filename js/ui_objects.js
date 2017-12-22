@@ -676,13 +676,55 @@ Quintus.UIObjects=function(Q){
         }
     });
     
+    Q.GameObject.extend("CharacterStatsMenu",{
+        createMenu:function(){
+            $("#main-container").append("<div id='character-stats-display-cont' class='big-box'></div>");
+            $("#character-stats-display-cont").append(
+                    "<div class='char-stats-cont-main inner-box'></div>\n\
+                    <div class='char-stats-cont-derived inner-box'></div>\n\
+                    <div class='char-stats-cont-skills inner-box'></div>"
+            );
+        },
+        //Show a character's data
+        showCharacterData:function(character){
+            //Remove the previous character's data
+            $("#character-stats-display-cont").contents().empty();
+            $("#character-stats-display-cont").children(".char-stats-cont-main").append(this.mainCharData(character));
+            $("#character-stats-display-cont").children(".char-stats-cont-derived").append(this.derivedCharData(character));
+            $("#character-stats-display-cont").children(".char-stats-cont-skills").append(this.skillsCharData(character));
+            
+        },
+        //Adds a character for comparing
+        addCharacterData:function(){
+            
+        },
+        //Removes a character if viewing more than one
+        removeCharacterData:function(){
+            
+        },
+        //Remove this menu (must call createMenu to make it again)
+        removeMenu:function(){
+            $("#character-stats-display-cont").remove();
+        },
+        
+        mainCharData:function(data){
+            console.log(data)
+        },
+        derivedCharData:function(data){
+            
+        },
+        skillsCharData:function(data){
+            
+            
+        }
+    });
+    
     //All menus created in the editor
     Q.component("locationsMenus",{
         extend:{
             createRecruitMenu:function(){
                 $("#main-container").empty();
-                $("#main-container").append("<div id='character-stats-display-cont' class='big-box'></div>");
-                $("#character-stats-display-cont").append("<div class='char-stats-cont-main inner-box'></div><div class='char-stats-cont-derived inner-box'></div><div class='char-stats-cont-skills inner-box'></div>");
+                Q.characterStatsMenu.createMenu();
                 $("#main-container").append("<div id='roster-characters-options' class='big-box'></div>");
                 $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
                 var optionsList = $("#options-cont-location").children(".options-list");
@@ -698,10 +740,10 @@ Quintus.UIObjects=function(Q){
                     $("#roster-characters-options").children(".option").last().click(function(){
                         $(".selected-option").removeClass("selected-option");
                         $(this).addClass("selected-option");
-                        var money = 100;
+                        var money = 100; //TODO: come up with costs for each character based on equipment/stats
                         optionsList.children(".option").first().children("span").text("Recruit "+$(this).text()+" for "+money+" money?");
                         optionsList.children(".option").first().children("span").attr("cost",money);
-                        $("#character-stats-display-cont").contents().empty();
+                        Q.characterStatsMenu.showCharacterData(roster[$(this).index()]);
                     });
                 }
                 optionsList.append(this.newOption("Recruit"));
@@ -754,10 +796,72 @@ Quintus.UIObjects=function(Q){
             this.add("locationsMenus");
             this.setUpCont();
             this.data = data;
+            this.startPage = data.pages[0].name;
+            //Set up the menu options that are always available, regardless of which location the player is at.
             data.pages.unshift({
-                name:"base",
+                name:"_entourage",
                 music:data.pages[0].music,
                 bg:data.pages[0].bg,
+                options:[
+                    [
+                        "Equip",
+                        false,
+                        [
+                            [
+                                "entourageEquipmentMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "Reward",
+                        false,
+                        [
+                            [
+                                "entourageRewardMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "Manage Taskforces",
+                        false,
+                        [
+                            [
+                                "entourageTaskForcesMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "View Status",
+                        false,
+                        [
+                            [
+                                "entourageStatusMenu",
+                                []
+                            ]
+                        ]
+                    ],
+                    [
+                        "Go Back",
+                        false,
+                        [
+                            [
+                                "changePage",
+                                [
+                                    "_base"
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                onload:[]
+            });
+            data.pages.unshift({
+                name:"_base",
+                music:data.pages[1].music,
+                bg:data.pages[1].bg,
                 options:[
                     [
                         "View Entourage",
@@ -786,7 +890,7 @@ Quintus.UIObjects=function(Q){
                             [
                                 "changePage",
                                 [
-                                    data.pages[0].name
+                                    data.pages[1].name
                                 ]
                             ]
                         ]
@@ -826,8 +930,8 @@ Quintus.UIObjects=function(Q){
             $("#background-image").attr('src', 'images/bg/'+this.currentPage.bg);
             Q.groupsProcessor.processGroups(this.currentPage.onload,this);
             $("#options-cont-location").append(this.newPage(this.currentPage));
-            //If we're at the first set of options ([0] is for the base options)
-            if(this.currentPage.name === this.data.pages[1].name){ 
+            //If we're at the first set of user created options, add a go back button to go to the default options
+            if(this.currentPage.name === this.startPage){ 
                 $("#options-cont-location").children(".options-list").append($(this.newOption("Back")).click(function(){
                     $("#main-container").empty();
                     Q.locationController.setUpCont();
@@ -862,8 +966,25 @@ Quintus.UIObjects=function(Q){
         
         //Base options funcs below
         loadEntourageMenu:function(){
+            $("#options-cont-location").children(".options-list").empty();
+            this.currentPage = this.getPageData("_entourage");
+            $("#options-cont-location").append(this.getOptions(this.currentPage.options,$("#options-cont-location").children(".options-list")));
+        },
+        entourageEquipmentMenu:function(){
             
         },
+        entourageRewardMenu:function(){
+            
+        },
+        entourageTaskForcesMenu:function(){
+            
+        },
+        entourageStatusMenu:function(){
+            $("#main-container").empty();
+            Q.characterStatsMenu.createMenu();
+            console.log("hi")
+        },
+        
         loadBrionyMenu:function(){
             
         },

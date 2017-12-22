@@ -221,7 +221,13 @@
                     []
                 ]
             ],
-            "onload": [],
+            "onload": [
+                [
+                    "All",
+                    [],
+                    []
+                ]
+            ],
             "modules": [
                 [
                     "alexGender",

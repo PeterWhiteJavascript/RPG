@@ -2747,6 +2747,7 @@ Quintus.GameObjects=function(Q){
     });
     //Used for searching by
     Q.component("stability",{});
+    /*
     Q.GameObject.extend("CharacterGenerator",{
         init:function(){
             var data = Q.state.get("charGeneration");
@@ -2853,9 +2854,6 @@ Quintus.GameObjects=function(Q){
                     char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
                     char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
                     char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
-                    /*char.combatStats = this.getCombatStats(char);
-                    char.combatStats.hp = char.combatStats.maxHp;
-                    char.combatStats.tp = char.combatStats.maxTp;*/
                     char.exp = data.exp || 0;
                     char.loyalty = data.loyalty || 50;
                     char.morale = data.morale || 50;
@@ -2898,11 +2896,6 @@ Quintus.GameObjects=function(Q){
                     char.loyalty = data.loyalty;
                     char.morale = data.morale;
                     char.personality = data.personality;
-                    
-                    /*char.combatStats = this.getCombatStats(char);
-                    char.combatStats.hp = data.hp || char.combatStats.maxHp;
-                    char.combatStats.tp = data.maxTp || char.combatStats.maxTp;*/
-                    
                     char.awards = data.awards || emptyAwards();
                     
                     char.completedEvents = data.completedEvents || [];
@@ -2940,9 +2933,9 @@ Quintus.GameObjects=function(Q){
                     char.gender = data.gender==="Random"?this.generateGender(char.charClass,char.natNum):data.gender;//Requires charClass and natNum
                     char.name = data.name.length ? data.name : this.generateName(char.natNum,char.gender);
                     
-                    /*char.combatStats = this.getCombatStats(char);
+                    char.combatStats = this.getCombatStats(char);
                     char.combatStats.hp = char.combatStats.maxHp;
-                    char.combatStats.tp = char.combatStats.maxTp;*/
+                    char.combatStats.tp = char.combatStats.maxTp;
                     char.completedEvents = [];
                     break;
                 //Creates a simple character sprite used in battle scenes.
@@ -3472,4 +3465,4 @@ Quintus.GameObjects=function(Q){
             return this.trimBaseStat(p.baseStats.eff);
         }
     });
-};
+};*/

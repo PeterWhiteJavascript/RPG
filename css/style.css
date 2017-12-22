@@ -168,6 +168,7 @@ body{
     top:15%;
     right:5%;
     width:20%;
+    height:40%;
 }
 .options-list{
     text-align:center;
@@ -195,6 +196,7 @@ body{
     top:15%;
     left:5%;
     width:20%;
+    height:40%;
 }
 #roster-characters-options:empty {
    display: none;
@@ -204,22 +206,20 @@ body{
     height:40%;
     left:25%;
     top:15%;
+    display: flex;
 }
 .char-stats-cont-main{
     width:35%;
     height:100%;
-    display:inline-block;
     border-right:none;
 }
 .char-stats-cont-derived{
     width:30%;
     height:100%;
-    display:inline-block;
 }
 .char-stats-cont-skills{
     width:35%;
     height:100%;
-    display:inline-block;
     border-left:none;
 }
 

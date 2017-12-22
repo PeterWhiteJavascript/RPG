@@ -7,7 +7,7 @@
         <style>
             .desc-text{
                 width:50%;
-                font-size:1.2vw;
+                font-size:1vw;
                 display:inline-block;
                 color:var(--desc-text-color);
             }

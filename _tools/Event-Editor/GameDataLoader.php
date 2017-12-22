@@ -1,10 +1,14 @@
 <?php
 
-$type = isset($_POST['type']) ? $_POST['type'] : "Story";
-$scene = isset($_POST['scene']) ? $_POST['scene'] : "Act-2-2";
-$name = isset($_POST['event']) ? $_POST['event'] : "Arrive-in-village";
+$type = isset($_POST['type']) ? $_POST['type'] : false;
+$scene = isset($_POST['scene']) ? $_POST['scene'] : false;
+$name = isset($_POST['event']) ? $_POST['event'] : $_POST['filename'];
 
-$event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
+if($type && $scene && $name){
+    $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
+} else {
+    $event = json_decode(file_get_contents('../../data/json/story/characters/'.$name), true);
+}
 
 
 $maps_directory = '../../data/maps';
@@ -73,7 +77,7 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
         bgFiles:<?php echo json_encode($bgs); ?>
     };
     //Makes sure empty object is not converted to array (not sure what is really happening here).
-    if(Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
+    if(GDATA.event.vrs && Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
     var formatScenes = function(){
         var story = GDATA.dataFiles["scenes-list.json"];
         var flavour = GDATA.dataFiles["flavour-events-list.json"];

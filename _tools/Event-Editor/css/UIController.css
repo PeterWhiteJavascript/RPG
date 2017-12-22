@@ -146,11 +146,26 @@
     height:30px;
     display:inline-block;
 }
+.UIC-group-item-props{
+    font-size:0;
+}
 .UIC-group-item-top div, .UIC-group-item-props input,.UIC-group-item-props textarea,.UIC-group-item-props select, .UIC-group-item-props span{
     display:inline-block;
     height:30px;
     line-height:30px;
     vertical-align:top;
+    font-size:1vw;
+    user-select:none;
+}
+.UIC-group-item-props p{
+    display:inline-block;
+    line-height:30px;
+    vertical-align:top;
+    font-size:1vw;
+    text-align:left;
+    cursor:auto;
+    padding:20px;
+    padding-top:0;
 }
 /*COND-EFFECT END*/
 /* CHOICE START*/
@@ -217,6 +232,15 @@ input[type=checkbox]{
 }
 
 /* SCRIPT ITEM END*/
+.UIC-button{
+    background-color:var(--button-background-color);
+    color:var(--button-text-color);
+    user-select:none;
+}
+.UIC-button:hover{
+    cursor:pointer;
+    background-color:var(--button-hover-color); 
+}
 
 /* MODULES TEXT START*/
 .UIC-text-groups{
@@ -370,6 +394,9 @@ textarea{
 
 .tenth-width{
     width:10% !important;
+}
+.sixth-width{
+    width:16.6666% !important;
 }
 .quarter-width{
     width:25% !important;

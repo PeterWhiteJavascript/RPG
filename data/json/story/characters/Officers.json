@@ -7,29 +7,30 @@
             "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Short Sword",
                     "Bronze",
-                    "Short Sword"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
+                [
+                    "Small Shield",
                     "Hard Leather",
-                    "Small Shield"
+                    "Average"
                 ],
-                "armour": [
-                    "Average",
+                [
+                    "Outfit",
                     "Wool",
-                    "Outfit"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 20,
@@ -59,29 +60,30 @@
             "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Spear",
                     "Bronze",
-                    "Spear"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
+                [
+                    "Shield",
                     "Bronze",
-                    "Shield"
+                    "Average"
                 ],
-                "armour": [
-                    "Average",
+                [
+                    "Breastplate",
                     "Bronze",
-                    "Breastplate"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 25,
@@ -111,29 +113,26 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Great Ax",
                     "Iron",
-                    "Great Ax"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "armour": [
-                    "Average",
+                "None",
+                [
+                    "Vest",
                     "Silk",
-                    "Vest"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 25,
                 "end": 20,
@@ -163,29 +162,26 @@
             "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Pike",
                     "Brass",
-                    "Pike"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "armour": [
-                    "Average",
+                "None",
+                [
+                    "Shirt",
                     "Wool",
-                    "Shirt"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 16,
@@ -215,29 +211,26 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Bow",
                     "Wood",
-                    "Bow"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Average",
+                "Default",
+                [
+                    "Capelet",
                     "Fur",
-                    "Capelet"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 16,
                 "end": 20,
@@ -267,29 +260,30 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Mace",
                     "Bronze",
-                    "Mace"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
+                [
+                    "Body Shield",
                     "Wicker",
-                    "Body Shield"
+                    "Average"
                 ],
-                "armour": [
-                    "Average",
+                [
+                    "Lamellar",
                     "Bronze",
-                    "Lamellar"
+                    "Average"
                 ],
-                "footwear": [
-                    "Average",
+                [
+                    "Shoes",
                     "Soft Leather",
-                    "Shoes"
+                    "Average"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 20,
@@ -319,29 +313,22 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Glaive",
                     "Bronze",
-                    "Glaive"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "armour": [
-                    "Quality",
+                "None",
+                [
+                    "Outfit",
                     "Silk",
-                    "Outfit"
+                    "Quality"
                 ],
-                "footwear": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "accessory": "None"
-            },
+                "None",
+                "None"
+            ],
             "baseStats": {
                 "str": 16,
                 "end": 16,
@@ -371,29 +358,22 @@
             "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Dagger",
                     "Steel",
-                    "Dagger"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Average",
+                [
+                    "Sling",
                     "Soft Leather",
-                    "Sling"
+                    "Average"
                 ],
-                "armour": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "footwear": [
-                    "Average",
-                    "None",
-                    "None"
-                ],
-                "accessory": "None"
-            },
+                "None",
+                "None",
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 16,
@@ -423,29 +403,26 @@
             "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Average",
+            "promotion": 1,
+            "equipment": [
+                [
+                    "Sword",
                     "Iron",
-                    "Sword"
+                    "Average"
                 ],
-                "lefthand": [
-                    "Default",
+                [
+                    "Ax",
                     "Iron",
-                    "Ax"
-                ],
-                "armour": [
-                    "Average",
-                    "Iron",
-                    "Maille"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
                     "Default"
                 ],
-                "accessory": "None"
-            },
+                [
+                    "Maille",
+                    "Iron",
+                    "Average"
+                ],
+                "Default",
+                "None"
+            ],
             "baseStats": {
                 "str": 16,
                 "end": 16,
@@ -475,29 +452,30 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "equipment": {
-                "righthand": [
-                    "Default",
+            "promotion": "1",
+            "equipment": [
+                [
+                    "Javelin",
                     "Bone",
-                    "Javelin"
+                    "Default"
                 ],
-                "lefthand": [
-                    "Default",
+                [
+                    "Knife",
                     "Bone",
-                    "Knife"
+                    "Default"
                 ],
-                "armour": [
+                [
                     "Default",
                     "Default",
                     "Default"
                 ],
-                "footwear": [
+                [
                     "Default",
                     "Default",
                     "Default"
                 ],
-                "accessory": "None"
-            },
+                "None"
+            ],
             "baseStats": {
                 "str": 20,
                 "end": 16,
@@ -519,60 +497,6 @@
             ],
             "nationality": "Talumpatuan",
             "charClass": "Elementalist"
-        }
-    },
-    "wet": {
-        "NewCharacter2": {
-            "handle": "NewCharacter2",
-            "name": "",
-            "levelmin": 1,
-            "levelmax": 1,
-            "gender": "Male",
-            "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": {
-                "str": 1233,
-                "end": 16,
-                "dex": 15,
-                "wsk": 15,
-                "rfl": 14,
-                "ini": 11,
-                "enr": 16,
-                "skl": 19,
-                "eff": 11
-            },
-            "techniques": [
-                "Forced March",
-                "Fortify",
-                "Embolden",
-                "Fervour",
-                "Direct",
-                "Phalanx"
-            ],
-            "nationality": "Venorian",
-            "charClass": "Legionnaire"
         }
     }
 }

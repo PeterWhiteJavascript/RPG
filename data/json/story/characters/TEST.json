@@ -7,32 +7,16 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
             "baseStats": [
                 "Random",
-                "Medium"
+                "Low"
             ],
             "techniques": [
                 "Push",
@@ -43,7 +27,8 @@
                 "War Cry"
             ],
             "nationality": "Venorian",
-            "charClass": "Berserker"
+            "charClass": "Berserker",
+            "promotion": 1
         },
         "Monster-Assassin": {
             "handle": "Monster-Assassin",
@@ -52,32 +37,16 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
             "baseStats": [
                 "Random",
-                "Medium"
+                "Low"
             ],
             "techniques": [
                 "Bleeding Strike",
@@ -88,7 +57,8 @@
                 "Poison Strike"
             ],
             "nationality": "Venorian",
-            "charClass": "Assassin"
+            "charClass": "Assassin",
+            "promotion": 1
         },
         "Dungeon-Man": {
             "handle": "Dungeon-Man",
@@ -97,32 +67,16 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
             "baseStats": [
                 "Random",
-                "Medium"
+                "Low"
             ],
             "techniques": [
                 "Critical Strike",
@@ -133,7 +87,8 @@
                 "Whirlwind Strike"
             ],
             "nationality": "Venorian",
-            "charClass": "Vanguard"
+            "charClass": "Vanguard",
+            "promotion": 1
         }
     }
 }

@@ -73,6 +73,18 @@ function UIC(p){
         });
         return opts;
     };
+    //https://stackoverflow.com/questions/9577747/jquery-javascript-select-option-randomly
+    this.selectRandom = function(select){
+        function getRand(){
+            return ~~(Math.random() * opts.length);
+        }
+        var opts = $(select).children('option'),
+            random = getRand();
+        //Don't select disabled options
+        while(opts.eq(random).prop("disabled")) random = getRand();
+        opts.eq(random).prop('selected', true);
+        $(select).trigger("change");
+    };
     //Select the initial-value property of all selects in a cont
     this.selectInitialValue = function(cont){
         $(cont).children("select").each(function(){

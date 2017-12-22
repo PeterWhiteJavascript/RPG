@@ -7,40 +7,17 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": {
-                "str": 1,
-                "end": 5,
-                "dex": 1,
-                "wsk": 1,
-                "rfl": 1,
-                "ini": 1,
-                "enr": 1,
-                "skl": 1,
-                "eff": 1
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
             "techniques": [
                 "Critical Strike",
                 "Rapid Strike",
@@ -50,7 +27,8 @@
                 "Whirlwind Strike"
             ],
             "nationality": "Venorian",
-            "charClass": "Vanguard"
+            "charClass": "Vanguard",
+            "promotion": 1
         },
         "Lettuce": {
             "handle": "Lettuce",
@@ -59,40 +37,17 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": {
-                "str": 1,
-                "end": 1,
-                "dex": 1,
-                "wsk": 5,
-                "rfl": 1,
-                "ini": 1,
-                "enr": 1,
-                "skl": 1,
-                "eff": 1
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
             "techniques": [
                 "Forced March",
                 "Fortify",
@@ -102,7 +57,8 @@
                 "Phalanx"
             ],
             "nationality": "Venorian",
-            "charClass": "Legionnaire"
+            "charClass": "Legionnaire",
+            "promotion": 1
         },
         "Bun": {
             "handle": "Bun",
@@ -111,40 +67,17 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": {
-                "str": 1,
-                "end": 1,
-                "dex": 1,
-                "wsk": 1,
-                "rfl": 1,
-                "ini": 1,
-                "enr": 5,
-                "skl": 1,
-                "eff": 1
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
             "techniques": [
                 "Stability Field",
                 "Heal",
@@ -154,7 +87,8 @@
                 "Resurrect"
             ],
             "nationality": "Venorian",
-            "charClass": "Healer"
+            "charClass": "Healer",
+            "promotion": 1
         },
         "Patty": {
             "handle": "Patty",
@@ -163,40 +97,17 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "lefthand": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "armour": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "footwear": [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                "accessory": "None"
-            },
-            "baseStats": {
-                "str": 5,
-                "end": 1,
-                "dex": 1,
-                "wsk": 1,
-                "rfl": 1,
-                "ini": 1,
-                "enr": 1,
-                "skl": 1,
-                "eff": 1
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
             "techniques": [
                 "Push",
                 "Staredown",
@@ -206,7 +117,8 @@
                 "War Cry"
             ],
             "nationality": "Venorian",
-            "charClass": "Berserker"
+            "charClass": "Berserker",
+            "promotion": 1
         }
     }
 }

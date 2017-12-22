@@ -142,7 +142,7 @@ body {
 }
 .menu-button{
     width:100%;
-    font-size:2vw;
+    font-size:28px;
     padding:10px;
     text-align:center;
     user-select:none;
@@ -199,7 +199,7 @@ body {
     overflow-y:auto;
     background-color:var(--menu-background-color);
 }
-
+/*
 .character-cont{
     width:100%;
     height:30px;
@@ -216,7 +216,7 @@ body {
     vertical-align:top;
     padding:10px;
     height:100%;
-}
+}*/
 .menu-divider{
     width:100%;
     height:5%;
@@ -274,12 +274,24 @@ body {
     width:90%;
     height:30px;
 }
+.sub-title-text{
+    text-align:center;
+    height:30px;
+    line-height:30px;
+    font-size:24px;
+    background-color:var(--content-button-background-color);
+    color:var(--content-button-text-color);
+    user-select:none;
+    display:inline-block;
+    width:100%;
+    vertical-align:top;
+}
 
 .title-text{
     text-align:center;
     height:30px;
     line-height:30px;
-    font-size:1.5vw;
+    font-size:24px;
     font-family: var(--heading-font-family);
     background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
     color:var(--heading-text-color);

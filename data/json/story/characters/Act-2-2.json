@@ -7,29 +7,13 @@
             "levelmax": 1,
             "gender": "Random",
             "team": "Enemy",
-            "equipment": {
-                "righthand": [
-                    "Default",
-                    "None",
-                    "None"
-                ],
-                "lefthand": [
-                    "Default",
-                    "None",
-                    "None"
-                ],
-                "armour": [
-                    "Default",
-                    "None",
-                    "None"
-                ],
-                "footwear": [
-                    "Default",
-                    "None",
-                    "None"
-                ],
-                "accessory": "None"
-            },
+            "equipment": [
+                "None",
+                "None",
+                "None",
+                "None",
+                "None"
+            ],
             "baseStats": {
                 "str": 1,
                 "end": 1,
@@ -50,7 +34,8 @@
                 "Phalanx"
             ],
             "nationality": "Random",
-            "charClass": "Legionnaire"
+            "charClass": "Legionnaire",
+            "promotion": 1
         }
     }
 }

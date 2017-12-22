@@ -244,6 +244,8 @@ Q.load(toLoad.join(","),function(){
     //The character generator used to create random characters and fill in properties from the save data.
     Q.charGen = new Q.CharacterGenerator();
     
+    //Creates a character stats menu (used in locations and battles)
+    Q.characterStatsMenu = new Q.CharacterStatsMenu();
     
     //Any variable functions (set and get)
     Q.variableProcessor = new Q.VariableProcessor();
