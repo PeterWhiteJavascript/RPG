@@ -6,6 +6,7 @@
 #group-menu{
     width:20%;
     border-right:thick double;
+    overflow-x:hidden;
 }
 #char-box-left{
     left:20%;
