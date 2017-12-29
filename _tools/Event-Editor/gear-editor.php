@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <?php include 'config.php';?>
+        <title>Create Gear</title>
+        <link rel="stylesheet" type="text/css" href="css/new-style.css">
+        <style>
+            body{
+                width:100%;
+                height:100%;
+                background-color:var(--background-color);
+            }
+            #left-cont{
+                width:33.33%;
+                top:60px;
+                position:absolute;
+                left:0%;
+                border:1px solid black;
+            }
+            #mid-cont{
+                width:33.34%;
+                top:60px;
+                position:absolute;
+                left:33.33%;
+                border:1px solid black;
+            }
+            #right-cont{
+                width:33.33%;
+                top:60px;
+                position:absolute;
+                left:66.67%;
+                border:1px solid black;
+            }
+            .title-text{
+                cursor:pointer;
+            }
+            .UIC-group-item{
+                overflow:hidden;
+                padding:0;
+                border:0;
+            }
+            .minimizer:hover{
+                background-color:var(--content-button-hover-color);
+            }
+            .selected{
+                background-color:var(--button-hover-color);
+            }
+        </style>
+        <script>
+            $(function(){
+                var FileSaver = {
+                    fileData:{},
+                    saveFile:function(){
+                        function setSaveValues(cont,order,category){
+                            var gear = $(cont).children(".sub-title-text").text();
+                            var props = $(cont).children(".gear-props").children(".UIC-prop");
+                            props.each(function(i){
+                                if(!$(this).val()) return;
+                                FileSaver.fileData[category][gear][order[i]] = uic.processValue($(this).val());
+                            });
+                            
+                        }
+                        $("#weapons-cont").children(".UIC-group-item").each(function(){
+                            setSaveValues(this,["weight","wield","mindmg","maxdmg","reach","speed","range","cost","hands"],"Weapons");
+                        });
+                        $("#shields-cont").children(".UIC-group-item").each(function(){
+                            setSaveValues(this,["weight","block","cost","hands"],"Shields");
+                        });
+                        $("#armour-cont").children(".UIC-group-item").each(function(){
+                            setSaveValues(this,["weight","damageReduction","cost"],"Armour");
+                        });
+                        $("#footwear-cont").children(".UIC-group-item").each(function(){
+                            setSaveValues(this,["weight","move","cost"],"Footwear");
+                        });
+                        $("#accessories-cont").children(".UIC-group-item").each(function(){
+                            setSaveValues(this,["weight","effect","cost"],"Accessories");
+                        });
+                        
+                        $.ajax({
+                            type:'POST',
+                            url:'save-gear.php',
+                            data:{data:JSON.stringify(FileSaver.fileData)},
+                            dataType:'json'
+                        })
+                        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
+                        .fail(function(data){console.log(data)});
+                    }
+                };
+                var uic = new UIC({
+                    topBarProps:{
+                        Save:function(){
+                            FileSaver.saveFile();
+                        },
+                        Back:function(){
+                            if(confirm("Are you sure you want to go back without saving?")){
+                                var to = "index.php";
+                                $.redirect(to);
+                            }
+                        }
+                    }
+                });
+                uic.createTopMenu($("#editor-content"));
+                function gearCont(name){
+                    return $("<div class='UIC-group-item'><div class='sub-title-text minimizer'>"+name+"</div><div class='gear-props UIC-group-item-props minimizable'></div></div>");
+                };
+                function Weapon(w){
+                    return uic.Input("Weight",w.weight,"number",1,100)+
+                            uic.Input("Wield",w.wield,"number",1,1000)+
+                            uic.Input("Min Damage",w.mindmg,"number",1,1000)+
+                            uic.Input("Max Damage",w.maxdmg,"number",1,1000)+
+                            uic.Input("Reach",w.reach,"number",1,1000)+
+                            uic.Input("Speed",w.speed,"number",1,1000)+
+                            uic.Input("Range",w.range,"number",1,20)+
+                            uic.Input("Cost",w.cost,"number",1,10000)+
+                            uic.Input("Hands",w.hands,"number",1,2);
+                }
+                function Shield(s){
+                    return uic.Input("Weight",s.weight,"number",1,100)+
+                            uic.Input("Block",s.block,"number",1,1000)+
+                            uic.Input("Cost",s.cost,"number",1,10000)+
+                            uic.Input("Hands",s.hands,"number",1,2);
+                }
+                function Armour(a){
+                    return uic.Input("Weight",a.weight,"number",1,100)+
+                            uic.Input("Dmg Reduction",a.damageReduction,"number",1,1000)+
+                            uic.Input("Cost",a.cost,"number",1,10000);
+                }
+                function Footwear(f){
+                    return uic.Input("Weight",f.weight,"number",1,100)+
+                            uic.Input("Move",f.move,"number",1,10)+
+                            uic.Input("Cost",f.cost,"number",1,10000);
+                }
+                function Accessory(a){
+                    return uic.Input("Weight",a.weight,"number",1,100)+
+                            uic.Input("Effect",a.effect,"text")+
+                            uic.Input("Cost",a.cost,"number",1,10000);
+                }
+                function Materials(materials){
+                    var cont = $(uic.Container("Materials",materials));
+                    cont.children("span").addClass("sub-title-text");
+                    for(var i=0;i<materials.length;i++){
+                        var mat = $("<span class='quarter-width'>"+materials[i]+"</span>");
+                        mat.on("click",function(){
+                            $(this).siblings().removeClass("selected");
+                            $(this).addClass("selected");
+                        });
+                        cont.append(mat);
+                    }
+                    return cont;
+                }
+                $.getJSON("../../data/json/data/equipment.json",function(data){
+                    FileSaver.fileData = data;
+                    var weapons = Object.keys(data.Weapons);
+                    for(var i=0;i<weapons.length;i++){
+                        var cont = gearCont(weapons[i]);
+                        cont.children(".gear-props").append(Weapon(FileSaver.fileData.Weapons[weapons[i]]));
+                        cont.children(".gear-props").append(Materials(FileSaver.fileData.Weapons[weapons[i]].materials));
+                        $("#weapons-cont").append(cont);
+                    }
+                    var shields = Object.keys(data.Shields);
+                    for(var i=0;i<shields.length;i++){
+                        var cont = gearCont(shields[i]);
+                        cont.children(".gear-props").append(Shield(FileSaver.fileData.Shields[shields[i]]));
+                        cont.children(".gear-props").append(Materials(FileSaver.fileData.Shields[shields[i]].materials));
+                        $("#shields-cont").append(cont);
+                    }
+                    var armour = Object.keys(data.Armour);
+                    for(var i=0;i<armour.length;i++){
+                        var cont = gearCont(armour[i]);
+                        cont.children(".gear-props").append(Armour(FileSaver.fileData.Armour[armour[i]]));
+                        cont.children(".gear-props").append(Materials(FileSaver.fileData.Armour[armour[i]].materials));
+                        $("#armour-cont").append(cont);
+                    }
+                    var footwear = Object.keys(data.Footwear);
+                    for(var i=0;i<footwear.length;i++){
+                        var cont = gearCont(footwear[i]);
+                        cont.children(".gear-props").append(Footwear(FileSaver.fileData.Footwear[footwear[i]]));
+                        cont.children(".gear-props").append(Materials(FileSaver.fileData.Footwear[footwear[i]].materials));
+                        $("#footwear-cont").append(cont);
+                    }
+                    var accessories = Object.keys(data.Accessories);
+                    for(var i=0;i<accessories.length;i++){
+                        var cont = gearCont(accessories[i]);
+                        cont.children(".gear-props").append(Accessory(FileSaver.fileData.Accessories[accessories[i]]));
+                        $("#accessories-cont").append(cont);
+                    }
+                    var materials = Object.keys(data.Materials);
+                    for(var i=0;i<materials.length;i++){
+                        var cont = gearCont(materials[i]);
+                        cont.children(".gear-props").append(
+                            uic.Input("Effect A",FileSaver.fileData.Materials[materials[i]][0])+
+                            uic.Input("Effect B",FileSaver.fileData.Materials[materials[i]][1])+
+                            uic.Input("Cost Multiplier",FileSaver.fileData.Materials[materials[i]][2])
+                        );
+                        $("#materials-cont").append(cont);
+                    }
+                    
+                    var quality = Object.keys(data.Quality);
+                    for(var i=0;i<quality.length;i++){
+                        var cont = gearCont(quality[i]);
+                        cont.children(".gear-props").append(
+                            uic.Input("Effect C",FileSaver.fileData.Quality[quality[i]][0])+
+                            uic.Input("Cost Multiplier",FileSaver.fileData.Quality[quality[i]][1])
+                        );
+                        $("#quality-cont").append(cont);
+                    }
+                    
+                    $(".minimizer").on("click",function(){
+                        if($(this).next().is(":visible")){
+                            $(this).next().hide();
+                        } else {
+                            $(this).next().show();
+                        }
+                    });
+                    $(".sub-title-text.minimizer").trigger("click");
+                    $(".title-text.minimizer").trigger("click");
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id="editor-content">
+            <div id="left-cont">
+                <p class="title-text minimizer">Weapons</p>
+                <div id="weapons-cont" class="minimizable">
+                    
+                </div>
+                <p class="title-text minimizer">Shields</p>
+                <div id="shields-cont" class="minimizable">
+                    
+                </div>
+                
+            </div>
+            
+            <div id="mid-cont">
+                <p class="title-text minimizer">Armour</p>
+                <div id="armour-cont" class="minimizable">
+                    
+                </div>
+                <p class="title-text minimizer">Footwear</p>
+                <div id="footwear-cont" class="minimizable">
+                    
+                </div>
+                <p class="title-text minimizer">Accessories</p>
+                <div id="accessories-cont" class="minimizable">
+                    
+                </div>
+            </div>
+            <div id="right-cont">
+                <p class="title-text minimizer">Materials</p>
+                <div id="materials-cont" class="minimizable">
+                    
+                </div>
+                
+                <p class="title-text minimizer">Quality</p>
+                <div id="quality-cont" class="minimizable">
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

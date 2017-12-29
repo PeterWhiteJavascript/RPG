@@ -330,6 +330,15 @@ textarea{
 .UIC-container{
     height:auto;
 }
+.UIC-container span, .UIC-container input, .UIC-container select{
+    display:inline-block;
+    height:30px;
+    line-height:30px;
+    vertical-align:top;
+    font-size:1vw;
+    user-select:none;
+    
+}
 
 
 .minimize-choice{

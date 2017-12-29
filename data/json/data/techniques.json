@@ -1,0 +1,54 @@
+{   
+    "Active":{
+        "Stab":[
+            "Find a weak point in the target's armour which reduces the damage reduction from armour for this attack.",
+            ["Damage","Physical"],
+            [1,"All"],
+            [0,"Cross"],
+            2,
+            [20]
+        ],
+        "Ready Attack":[
+            "Ready an attack to do extra damage next turn.",
+            ["Support","Mental"],
+            [0,"Self"],
+            [0,"Cross"],
+            6,
+            [2]
+        ],
+        "Parry":[
+            "Dodge one physical attack until next turn.",
+            ["Support","Physical"],
+            [0,"Self"],
+            [0,"Cross"],
+            12,
+            []
+        ],
+        "Sharpen Blade":[
+            "Increase attack power for 3 turns.",
+            ["Support","Physical"],
+            [0,"Self"],
+            [0,"Cross"],
+            10,
+            [20]
+        ],
+        "Heavy Strike":[
+            "Stike with great force, dealing additional damage.",
+            ["Damage","Physical"],
+            [1,"All"],
+            [0,"Cross"],
+            15,
+            [50]
+        ]
+    },
+    "Passive":{
+        "ATK+":[
+            "Increased Atk Power.",
+            [20]
+        ],
+        "DEF+":[
+            "Increased Defence",
+            [10]
+        ]
+    }
+}

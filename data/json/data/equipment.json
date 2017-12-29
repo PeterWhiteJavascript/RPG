@@ -1,299 +1,625 @@
 {
-    "Shields":{
-        "Shield":{
-            "materials":["Hide","Hard Leather","Brass","Bronze","Wicker","Wood"],
-            "weight":10,
-            "block":25,
-            "cost":1.5,
-            "hands":1
+    "Shields": {
+        "Shield": {
+            "materials": [
+                "Hide",
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Wicker",
+                "Wood"
+            ],
+            "weight": 10,
+            "block": 25,
+            "cost": 1,
+            "hands": 1
         },
-        "Small Shield":{
-            "materials":["Hide","Hard Leather","Brass","Bronze","Iron","Steel","Wicker","Wood"],
-            "weight":7,
-            "block":15,
-            "cost":1,
-            "hands":1
+        "Small Shield": {
+            "materials": [
+                "Hide",
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Wicker",
+                "Wood"
+            ],
+            "weight": 7,
+            "block": 15,
+            "cost": 1,
+            "hands": 1
         },
-        "Body Shield":{
-            "materials":["Hide","Wicker","Wood"],
-            "weight":15,
-            "block":40,
-            "cost":2,
-            "hands":1
+        "Body Shield": {
+            "materials": [
+                "Hide",
+                "Wicker",
+                "Wood"
+            ],
+            "weight": 15,
+            "block": 40,
+            "cost": 2,
+            "hands": 1
         }
     },
-    "Weapons":{
-        "Short Sword":{
-            "materials":["Brass","Bronze","Iron","Steel"],
-            "weight":2,
-            "wield":40,
-            "mindmg":6,
-            "maxdmg":70,
-            "reach":2,
-            "speed":20,
-            "range":1,
-            "cost":1,
-            "hands":1
+    "Weapons": {
+        "Short Sword": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 2,
+            "wield": 40,
+            "mindmg": 6,
+            "maxdmg": 70,
+            "reach": 2,
+            "speed": 20,
+            "range": 1,
+            "cost": 1,
+            "hands": 1
         },
-        "Sword":{
-            "materials":["Iron","Steel"],
-            "weight":2,
-            "wield":50,
-            "mindmg":11,
-            "maxdmg":75,
-            "reach":3,
-            "speed":10,
-            "range":1,
-            "cost":1.25,
-            "hands":1
+        "Sword": {
+            "materials": [
+                "Iron",
+                "Steel"
+            ],
+            "weight": 2,
+            "wield": 50,
+            "mindmg": 11,
+            "maxdmg": 75,
+            "reach": 3,
+            "speed": 10,
+            "range": 1,
+            "cost": 1,
+            "hands": 1,
+            "techniques": {
+                "Base": {
+                    "name": "Stab",
+                    "cost": [
+                        2,
+                        4,
+                        6,
+                        8,
+                        10,
+                        12
+                    ],
+                    "props": [
+                        [
+                            20
+                        ],
+                        [
+                            35
+                        ],
+                        [
+                            50
+                        ],
+                        [
+                            65
+                        ],
+                        [
+                            80
+                        ],
+                        [
+                            95
+                        ]
+                    ]
+                },
+                "Iron": [
+                    {
+                        "name": "Ready Attack",
+                        "cost": [
+                            6,
+                            12
+                        ],
+                        "props": [
+                            [
+                                2
+                            ],
+                            [
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "Parry",
+                        "cost": [
+                            12,
+                            8
+                        ],
+                        "props": []
+                    },
+                    {
+                        "name": "ATK+",
+                        "props": [
+                            20,
+                            40
+                        ]
+                    }
+                ],
+                "Steel": [
+                    {
+                        "name": "Parry",
+                        "cost": [
+                            10,
+                            6
+                        ],
+                        "props": []
+                    },
+                    {
+                        "name": "Sharpen Blade",
+                        "cost": [
+                            10,
+                            15
+                        ],
+                        "props": [
+                            [
+                                20
+                            ],
+                            [
+                                30
+                            ]
+                        ]
+                    },
+                    {
+                        "name": "Heavy Strike",
+                        "cost": [
+                            15,
+                            20
+                        ],
+                        "props": [
+                            [
+                                50
+                            ],
+                            [
+                                100
+                            ]
+                        ]
+                    }
+                ]
+            }
         },
-        "Spear":{
-            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
-            "weight":4,
-            "wield":30,
-            "mindmg":11,
-            "maxdmg":75,
-            "reach":7,
-            "speed":10,
-            "range":2,
-            "cost":0.75,
-            "hands":1
+        "Spear": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Bone",
+                "Flint"
+            ],
+            "weight": 4,
+            "wield": 30,
+            "mindmg": 11,
+            "maxdmg": 75,
+            "reach": 7,
+            "speed": 10,
+            "range": 2,
+            "cost": 0,
+            "hands": 1
         },
-        "Pike":{
-            "materials":["Brass","Bronze","Iron","Steel"],
-            "weight":5,
-            "wield":5,
-            "mindmg":6,
-            "maxdmg":70,
-            "reach":11,
-            "speed":10,
-            "range":3,
-            "cost":1,
-            "hands":2
+        "Pike": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 5,
+            "wield": 5,
+            "mindmg": 6,
+            "maxdmg": 70,
+            "reach": 11,
+            "speed": 10,
+            "range": 3,
+            "cost": 1,
+            "hands": 2
         },
-        "Ax":{
-            "materials":["Brass","Bronze","Iron","Steel","Flint"],
-            "weight":4,
-            "wield":35,
-            "mindmg":31,
-            "maxdmg":80,
-            "reach":2,
-            "speed":5,
-            "range":1,
-            "cost":0.5,
-            "hands":1
+        "Ax": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Flint"
+            ],
+            "weight": 4,
+            "wield": 35,
+            "mindmg": 31,
+            "maxdmg": 80,
+            "reach": 2,
+            "speed": 5,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         },
-        "Great Ax":{
-            "materials":["Iron","Steel"],
-            "weight":5,
-            "wield":10,
-            "mindmg":41,
-            "maxdmg":100,
-            "reach":3,
-            "speed":0,
-            "range":1,
-            "cost":0.75,
-            "hands":2
+        "Great Ax": {
+            "materials": [
+                "Iron",
+                "Steel"
+            ],
+            "weight": 5,
+            "wield": 10,
+            "mindmg": 41,
+            "maxdmg": 100,
+            "reach": 3,
+            "speed": 0,
+            "range": 1,
+            "cost": 0,
+            "hands": 2
         },
-        "Mace":{
-            "materials":["Brass","Bronze","Iron","Steel"],
-            "weight":5,
-            "wield":35,
-            "mindmg":51,
-            "maxdmg":60,
-            "reach":2,
-            "speed":3,
-            "range":1,
-            "cost":0.75,
-            "hands":1
+        "Mace": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 5,
+            "wield": 35,
+            "mindmg": 51,
+            "maxdmg": 60,
+            "reach": 2,
+            "speed": 3,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         },
-        "Dagger":{
-            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
-            "weight":1,
-            "wield":25,
-            "mindmg":1,
-            "maxdmg":40,
-            "reach":1,
-            "speed":30,
-            "range":1,
-            "cost":0.75,
-            "hands":1
+        "Dagger": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Bone",
+                "Flint"
+            ],
+            "weight": 1,
+            "wield": 25,
+            "mindmg": 1,
+            "maxdmg": 40,
+            "reach": 1,
+            "speed": 30,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         },
-        "Sling":{
-            "materials":["Soft Leather"],
-            "weight":1,
-            "wield":0,
-            "mindmg":1,
-            "maxdmg":20,
-            "reach":0,
-            "speed":0,
-            "range":4,
-            "cost":0.25,
-            "hands":1
+        "Sling": {
+            "materials": [
+                "Soft Leather"
+            ],
+            "weight": 1,
+            "wield": 0,
+            "mindmg": 1,
+            "maxdmg": 20,
+            "reach": 0,
+            "speed": 0,
+            "range": 4,
+            "cost": 0,
+            "hands": 1
         },
-        "Javelin":{
-            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
-            "weight":3,
-            "wield":10,
-            "mindmg":1,
-            "maxdmg":50,
-            "reach":4,
-            "speed":20,
-            "range":5,
-            "cost":1.5,
-            "hands":1
+        "Javelin": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Bone",
+                "Flint"
+            ],
+            "weight": 3,
+            "wield": 10,
+            "mindmg": 1,
+            "maxdmg": 50,
+            "reach": 4,
+            "speed": 20,
+            "range": 5,
+            "cost": 1,
+            "hands": 1
         },
-        "Bow":{
-            "materials":["Bone","Wood"],
-            "weight":2,
-            "wield":15,
-            "mindmg":1,
-            "maxdmg":35,
-            "reach":0,
-            "speed":10,
-            "range":7,
-            "cost":6,
-            "hands":2
+        "Bow": {
+            "materials": [
+                "Bone",
+                "Wood"
+            ],
+            "weight": 2,
+            "wield": 15,
+            "mindmg": 1,
+            "maxdmg": 35,
+            "reach": 0,
+            "speed": 10,
+            "range": 7,
+            "cost": 6,
+            "hands": 2
         },
-        "Glaive":{
-            "materials":["Brass","Bronze","Iron","Steel"],
-            "weight":6,
-            "wield":15,
-            "mindmg":31,
-            "maxdmg":90,
-            "reach":6,
-            "speed":1,
-            "range":2,
-            "cost":2,
-            "hands":2
+        "Glaive": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 6,
+            "wield": 15,
+            "mindmg": 31,
+            "maxdmg": 90,
+            "reach": 6,
+            "speed": 1,
+            "range": 2,
+            "cost": 2,
+            "hands": 2
         },
-        "Knife":{
-            "materials":["Brass","Bronze","Iron","Steel","Bone","Flint"],
-            "weight":1,
-            "wield":10,
-            "mindmg":1,
-            "maxdmg":35,
-            "reach":0,
-            "speed":40,
-            "range":1,
-            "cost":0.25,
-            "hands":1
+        "Knife": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Bone",
+                "Flint"
+            ],
+            "weight": 1,
+            "wield": 10,
+            "mindmg": 1,
+            "maxdmg": 35,
+            "reach": 0,
+            "speed": 40,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         },
-        "Wand":{
-            "materials":["Wood"],
-            "weight":1,
-            "wield":10,
-            "mindmg":1,
-            "maxdmg":35,
-            "reach":0,
-            "speed":40,
-            "range":1,
-            "cost":0.25,
-            "hands":1
+        "Wand": {
+            "materials": [
+                "Wood"
+            ],
+            "weight": 1,
+            "wield": 10,
+            "mindmg": 1,
+            "maxdmg": 35,
+            "reach": 0,
+            "speed": 40,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         },
-        "Staff":{
-            "materials":["Wood"],
-            "weight":1,
-            "wield":10,
-            "mindmg":1,
-            "maxdmg":35,
-            "reach":0,
-            "speed":40,
-            "range":1,
-            "cost":0.25,
-            "hands":1
+        "Staff": {
+            "materials": [
+                "Wood"
+            ],
+            "weight": 1,
+            "wield": 10,
+            "mindmg": 1,
+            "maxdmg": 35,
+            "reach": 0,
+            "speed": 40,
+            "range": 1,
+            "cost": 0,
+            "hands": 1
         }
     },
-    "Armour":{
-        "Capelet":{
-            "materials":["Wool","Hide","Fur","Silk"],
-            "weight":5,
-            "damageReduction":10,
-            "cost":1
+    "Armour": {
+        "Capelet": {
+            "materials": [
+                "Wool",
+                "Hide",
+                "Fur",
+                "Silk"
+            ],
+            "weight": 5,
+            "damageReduction": 10,
+            "cost": 1
         },
-        "Vest":{
-            "materials":["Wool","Hide","Fur","Soft Leather","Silk"],
-            "weight":5,
-            "damageReduction":15,
-            "cost":2
+        "Vest": {
+            "materials": [
+                "Wool",
+                "Hide",
+                "Fur",
+                "Soft Leather",
+                "Silk"
+            ],
+            "weight": 5,
+            "damageReduction": 15,
+            "cost": 2
         },
-        "Shirt":{
-            "materials":["Wool","Hide","Fur","Soft Leather","Silk"],
-            "weight":8,
-            "damageReduction":20,
-            "cost":2.5
+        "Shirt": {
+            "materials": [
+                "Wool",
+                "Hide",
+                "Fur",
+                "Soft Leather",
+                "Silk"
+            ],
+            "weight": 8,
+            "damageReduction": 20,
+            "cost": 2
         },
-        "Breastplate":{
-            "materials":["Hard Leather","Brass","Bronze","Iron","Steel"],
-            "weight":10,
-            "damageReduction":30,
-            "cost":3
+        "Breastplate": {
+            "materials": [
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 10,
+            "damageReduction": 30,
+            "cost": 3
         },
-        "Cuirass":{
-            "materials":["Hard Leather","Brass","Bronze","Iron","Steel"],
-            "weight":15,
-            "damageReduction":30,
-            "cost":4
+        "Cuirass": {
+            "materials": [
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 15,
+            "damageReduction": 30,
+            "cost": 4
         },
-        "Maille":{
-            "materials":["Brass","Bronze","Iron","Steel"],
-            "weight":20,
-            "damageReduction":40,
-            "cost":8
+        "Maille": {
+            "materials": [
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel"
+            ],
+            "weight": 20,
+            "damageReduction": 40,
+            "cost": 8
         },
-        "Lamellar":{
-            "materials":["Hard Leather","Brass","Bronze","Iron","Steel","Bone","Wood"],
-            "weight":20,
-            "damageReduction":50,
-            "cost":9
+        "Lamellar": {
+            "materials": [
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Bone",
+                "Wood"
+            ],
+            "weight": 20,
+            "damageReduction": 50,
+            "cost": 9
         },
-        "Outfit":{
-            "materials":["Wool","Hide","Fur","Soft Leather","Hard Leather","Brass","Bronze","Iron","Steel","Silk"],
-            "weight":30,
-            "damageReduction":60,
-            "cost":10
+        "Outfit": {
+            "materials": [
+                "Wool",
+                "Hide",
+                "Fur",
+                "Soft Leather",
+                "Hard Leather",
+                "Brass",
+                "Bronze",
+                "Iron",
+                "Steel",
+                "Silk"
+            ],
+            "weight": 30,
+            "damageReduction": 60,
+            "cost": 10
         }
     },
-    "Footwear":{
-        "Shoes":{
-            "materials":["Soft Leather","Iron","Wood"],
-            "weight":2,
-            "move":1,
-            "cost":5
+    "Footwear": {
+        "Shoes": {
+            "materials": [
+                "Soft Leather",
+                "Iron",
+                "Wood"
+            ],
+            "weight": 2,
+            "move": 1,
+            "cost": 5
         }
     },
-    "Accessories":{
-        "Ruby Ring":{
-            "materials":["None"],
-            "weight":0.5,
-            "effect":"Immune to blind.",
-            "cost":2000
+    "Accessories": {
+        "Ruby Ring": {
+            "weight": 1,
+            "effect": "Immune to blind.",
+            "cost": 2000
         }
     },
-    "Materials":{
-        "None":[0,1,1],
-        "Wool":[0.5,0.5,5],
-        "Hide":[0.75,0.6,7],
-        "Fur":[1,0.6,6],
-        "Soft Leather":[0.75,0.7,15],
-        "Hard Leather":[1,0.8,50],
-        "Brass":[2,0.9,150],
-        "Bronze":[1.5,1,400],
-        "Iron":[1.5,1.25,2000],
-        "Steel":[1.25,1.5,15000],
-        "Wicker":[0.25,0.7,15],
-        "Bone":[0.25,0.7,5],
-        "Wood":[1,0.9,250],
-        "Flint":[0.5,0.5,2],
-        "Silk":[0.25,0.6,300]
+    "Materials": {
+        "Wool": [
+            0.5,
+            0.5,
+            5
+        ],
+        "Hide": [
+            0.75,
+            0.6,
+            7
+        ],
+        "Fur": [
+            1,
+            0.6,
+            6
+        ],
+        "Soft Leather": [
+            0.75,
+            0.7,
+            15
+        ],
+        "Hard Leather": [
+            1,
+            0.8,
+            50
+        ],
+        "Brass": [
+            2,
+            0.9,
+            150
+        ],
+        "Bronze": [
+            1.5,
+            1,
+            400
+        ],
+        "Iron": [
+            1.5,
+            1.25,
+            2000
+        ],
+        "Steel": [
+            1.25,
+            1.5,
+            15000
+        ],
+        "Wicker": [
+            0.25,
+            0.7,
+            15
+        ],
+        "Bone": [
+            0.25,
+            0.7,
+            5
+        ],
+        "Wood": [
+            1,
+            0.9,
+            250
+        ],
+        "Flint": [
+            0.5,
+            0.5,
+            2
+        ],
+        "Silk": [
+            0.25,
+            0.6,
+            300
+        ]
     },
-    "Quality":{
-        "Shoddy":[0.75,0.5],
-        "Average":[1,1],
-        "Quality":[1.2,2],
-        "Excellent":[1.4,3],
-        "Phenomenal":[1.6,4],
-        "Masterwork":[1.8,5],
-        "Magic":[2,10]
+    "Quality": {
+        "Shoddy": [
+            0.75,
+            0.5
+        ],
+        "Average": [
+            1,
+            1
+        ],
+        "Quality": [
+            1.2,
+            2
+        ],
+        "Excellent": [
+            1.4,
+            3
+        ],
+        "Phenomenal": [
+            1.6,
+            4
+        ],
+        "Masterwork": [
+            1.8,
+            5
+        ],
+        "Magic": [
+            2,
+            10
+        ]
     }
 }

@@ -73,7 +73,6 @@ function UIC(p){
         });
         return opts;
     };
-    //https://stackoverflow.com/questions/9577747/jquery-javascript-select-option-randomly
     this.selectRandom = function(select){
         function getRand(){
             return ~~(Math.random() * opts.length);

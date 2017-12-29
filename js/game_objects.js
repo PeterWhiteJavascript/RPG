@@ -1,5 +1,4 @@
 Quintus.GameObjects=function(Q){
-    
     //Used to place allies at the start of a battle
     Q.component("pointerPlaceAllies",{
         added:function(){
