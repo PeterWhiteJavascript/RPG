@@ -53,31 +53,14 @@
             $(function(){
                 var FileSaver = {
                     fileData:{},
+                    order:{
+                        Weapons:["weight","wield","mindmg","maxdmg","reach","attackSpeed","range","cost","hands"],
+                        Shields:["weight","block","cost","hands"],
+                        Armour:["weight","damageReduction","cost"],
+                        Footwear:["weight","move","initiative","cost"],
+                        Accessories:["weight","effect","cost"]
+                    },
                     saveFile:function(){
-                        function setSaveValues(cont,order,category){
-                            var gear = $(cont).children(".sub-title-text").text();
-                            var props = $(cont).children(".gear-props").children(".UIC-prop");
-                            props.each(function(i){
-                                if(!$(this).val()) return;
-                                FileSaver.fileData[category][gear][order[i]] = uic.processValue($(this).val());
-                            });
-                        }
-                        $("#weapons-cont").children(".UIC-group-item").each(function(){
-                            setSaveValues(this,["weight","wield","mindmg","maxdmg","reach","attackSpeed","range","cost","hands"],"Weapons");
-                        });
-                        $("#shields-cont").children(".UIC-group-item").each(function(){
-                            setSaveValues(this,["weight","block","cost","hands"],"Shields");
-                        });
-                        $("#armour-cont").children(".UIC-group-item").each(function(){
-                            setSaveValues(this,["weight","damageReduction","cost"],"Armour");
-                        });
-                        $("#footwear-cont").children(".UIC-group-item").each(function(){
-                            setSaveValues(this,["weight","move","initiative","cost"],"Footwear");
-                        });
-                        $("#accessories-cont").children(".UIC-group-item").each(function(){
-                            setSaveValues(this,["weight","effect","cost"],"Accessories");
-                        });
-                        
                         $.ajax({
                             type:'POST',
                             url:'save-gear.php',
@@ -197,8 +180,15 @@
                     for(var i=0;i<weapons.length;i++){
                         var cont = gearCont(weapons[i]);
                         cont.children(".gear-props").append(Weapon(FileSaver.fileData.Weapons[weapons[i]]));
+                        $(cont).children(".gear-props").children("input").on("focusout",function(){
+                            var gear = $(this).parent().siblings(".sub-title-text").text();
+                            var idx = $(this).parent().children("input").index(this);
+                            var key = FileSaver.order.Weapons[idx];
+                            FileSaver.fileData.Weapons[gear][key] = $(this).val();
+                            $(this).siblings(".UIC-container").children("span:eq(1)").trigger("click");
+                        });
                         cont.children(".gear-props").append(Materials(FileSaver.fileData.Weapons[weapons[i]].materials));
-                        cont.children(".gear-props").append(uic.Select("Quality",FileSaver.fileData["Quality"],"Average"));
+                        cont.children(".gear-props").append("<span class='quarter-width'>Quality</span><select class='three-quarter-width' initial-value='Average'>"+uic.getOptions(FileSaver.fileData["Quality"])+"</select>");
                         $(cont.children(".gear-props").children("select:eq(0)")).on("change",function(){$(this).siblings(".UIC-container").children("span.selected").trigger("click");});
                         uic.selectInitialValue(cont.children(".gear-props"));
                         $("#weapons-cont").append(cont);
@@ -208,8 +198,15 @@
                     for(var i=0;i<shields.length;i++){
                         var cont = gearCont(shields[i]);
                         cont.children(".gear-props").append(Shield(FileSaver.fileData.Shields[shields[i]]));
+                        $(cont).children(".gear-props").children("input").on("focusout",function(){
+                            var gear = $(this).parent().siblings(".sub-title-text").text();
+                            var idx = $(this).parent().children("input").index(this);
+                            var key = FileSaver.order.Shields[idx];
+                            FileSaver.fileData.Shields[gear][key] = uic.processValue($(this).val());
+                            $(this).siblings(".UIC-container").children("span:eq(1)").trigger("click");
+                        });
                         cont.children(".gear-props").append(Materials(FileSaver.fileData.Shields[shields[i]].materials));
-                        cont.children(".gear-props").append(uic.Select("Quality",FileSaver.fileData["Quality"],"Average"));
+                        cont.children(".gear-props").append("<span class='quarter-width'>Quality</span><select class='three-quarter-width' initial-value='Average'>"+uic.getOptions(FileSaver.fileData["Quality"])+"</select>");
                         $(cont.children(".gear-props").children("select:eq(0)")).on("change",function(){$(this).siblings(".UIC-container").children("span.selected").trigger("click");});
                         uic.selectInitialValue(cont.children(".gear-props"));
                         $("#shields-cont").append(cont);
@@ -219,8 +216,15 @@
                     for(var i=0;i<armour.length;i++){
                         var cont = gearCont(armour[i]);
                         cont.children(".gear-props").append(Armour(FileSaver.fileData.Armour[armour[i]]));
+                        $(cont).children(".gear-props").children("input").on("focusout",function(){
+                            var gear = $(this).parent().siblings(".sub-title-text").text();
+                            var idx = $(this).parent().children("input").index(this);
+                            var key = FileSaver.order.Armour[idx];
+                            FileSaver.fileData.Armour[gear][key] = uic.processValue($(this).val());
+                            $(this).siblings(".UIC-container").children("span:eq(1)").trigger("click");
+                        });
                         cont.children(".gear-props").append(Materials(FileSaver.fileData.Armour[armour[i]].materials));
-                        cont.children(".gear-props").append(uic.Select("Quality",FileSaver.fileData["Quality"],"Average"));
+                        cont.children(".gear-props").append("<span class='quarter-width'>Quality</span><select class='three-quarter-width' initial-value='Average'>"+uic.getOptions(FileSaver.fileData["Quality"])+"</select>");
                         $(cont.children(".gear-props").children("select:eq(0)")).on("change",function(){$(this).siblings(".UIC-container").children("span.selected").trigger("click");});
                         uic.selectInitialValue(cont.children(".gear-props"));
                         $("#armour-cont").append(cont);
@@ -230,8 +234,15 @@
                     for(var i=0;i<footwear.length;i++){
                         var cont = gearCont(footwear[i]);
                         cont.children(".gear-props").append(Footwear(FileSaver.fileData.Footwear[footwear[i]]));
+                        $(cont).children(".gear-props").children("input").on("focusout",function(){
+                            var gear = $(this).parent().siblings(".sub-title-text").text();
+                            var idx = $(this).parent().children("input").index(this);
+                            var key = FileSaver.order.Footwear[idx];
+                            FileSaver.fileData.Footwear[gear][key] = uic.processValue($(this).val());
+                            $(this).siblings(".UIC-container").children("span:eq(1)").trigger("click");
+                        });
                         cont.children(".gear-props").append(Materials(FileSaver.fileData.Footwear[footwear[i]].materials));
-                        cont.children(".gear-props").append(uic.Select("Quality",FileSaver.fileData["Quality"],"Average"));
+                        cont.children(".gear-props").append("<span class='quarter-width'>Quality</span><select class='three-quarter-width' initial-value='Average'>"+uic.getOptions(FileSaver.fileData["Quality"])+"</select>");
                         $(cont.children(".gear-props").children("select:eq(0)")).on("change",function(){$(this).siblings(".UIC-container").children("span.selected").trigger("click");});
                         uic.selectInitialValue(cont.children(".gear-props"));
                         $("#footwear-cont").append(cont);
@@ -241,6 +252,13 @@
                     for(var i=0;i<accessories.length;i++){
                         var cont = gearCont(accessories[i]);
                         cont.children(".gear-props").append(Accessory(FileSaver.fileData.Accessories[accessories[i]]));
+                        $(cont).children(".gear-props").children("input").on("focusout",function(){
+                            var gear = $(this).parent().siblings(".sub-title-text").text();
+                            var idx = $(this).parent().children("input").index(this);
+                            var key = FileSaver.order.Accessories[idx];
+                            FileSaver.fileData.Accessories[gear][key] = uic.processValue($(this).val());
+                            $(this).siblings(".UIC-container").children("span:eq(1)").trigger("click");
+                        });
                         $("#accessories-cont").append(cont);
                     }
                     var materials = Object.keys(data.Materials);
@@ -252,10 +270,10 @@
                             uic.Input("Cost Multiplier",FileSaver.fileData.Materials[materials[i]][2],"number",0,100000,0.01)
                         );
                         $(cont).children(".gear-props").children("input").each(function(){
-                            $(this).on("change",function(){
+                            $(this).on("focusout",function(){
                                 var idx = $(this).parent().children("input").index(this);
                                 var material = $(this).parent().siblings(".sub-title-text").text();
-                                FileSaver.fileData.Materials[material][idx] = parseFloat($(this).val());
+                                FileSaver.fileData.Materials[material][idx] = uic.processValue($(this).val());
                                 $(".UIC-container").children(".selected").each(function(){
                                     if($(this).text() === material){
                                         $(this).trigger("click");
@@ -274,10 +292,10 @@
                             uic.Input("Cost Multiplier",FileSaver.fileData.Quality[quality[i]][1],"number",1,100,0.01)
                         );
                         $(cont).children(".gear-props").children("input").each(function(){
-                            $(this).on("change",function(){
+                            $(this).on("focusout",function(){
                                 var idx = $(this).parent().children("input").index(this);
                                 var quality = $(this).parent().siblings(".sub-title-text").text();
-                                FileSaver.fileData.Quality[quality][idx] = parseFloat($(this).val());
+                                FileSaver.fileData.Quality[quality][idx] = uic.processValue($(this).val());
                                 $(".UIC-group-item-props").children("select").each(function(){
                                     if($(this).val() === quality){
                                         $(this).siblings(".UIC-container").children(".selected").trigger("click");
