@@ -11,8 +11,318 @@
             ],
             "weight": 10,
             "block": 25,
-            "cost": 1,
-            "hands": 1
+            "cost": 1.5,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ],
+                "Hide": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ],
+                "Hard Leather": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ],
+                "Brass": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ],
+                "Bronze": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ],
+                "Wicker": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ],
+                "Wood": [
+                    [
+                        "DEF+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ],
+                    [
+                        "Defend",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ],
+                        [
+                            12,
+                            13
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                12,
+                                10
+                            ],
+                            [
+                                16,
+                                10
+                            ]
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Small Shield": {
             "materials": [
@@ -28,7 +338,33 @@
             "weight": 7,
             "block": 15,
             "cost": 1,
-            "hands": 1
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            14
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            18
+                        ],
+                        [
+                            20
+                        ],
+                        [
+                            22
+                        ],
+                        [
+                            26
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Body Shield": {
             "materials": [
@@ -39,7 +375,33 @@
             "weight": 15,
             "block": 40,
             "cost": 2,
-            "hands": 1
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            14
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            18
+                        ],
+                        [
+                            20
+                        ],
+                        [
+                            22
+                        ],
+                        [
+                            26
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         }
     },
     "Weapons": {
@@ -55,10 +417,36 @@
             "mindmg": 6,
             "maxdmg": 70,
             "reach": 2,
-            "speed": 20,
+            "attackSpeed": 20,
             "range": 1,
             "cost": 1,
-            "hands": 1
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            12
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            12
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            12
+                        ],
+                        [
+                            16
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Sword": {
             "materials": [
@@ -70,22 +458,14 @@
             "mindmg": 11,
             "maxdmg": 75,
             "reach": 3,
-            "speed": 10,
+            "attackSpeed": 10,
             "range": 1,
-            "cost": 1,
+            "cost": 1.25,
             "hands": 1,
             "techniques": {
-                "Base": {
-                    "name": "Stab",
-                    "cost": [
-                        2,
-                        4,
-                        6,
-                        8,
-                        10,
-                        12
-                    ],
-                    "props": [
+                "Base": [
+                    "Stab",
+                    [
                         [
                             20
                         ],
@@ -104,81 +484,90 @@
                         [
                             95
                         ]
+                    ],
+                    [
+                        2,
+                        4,
+                        6,
+                        8,
+                        10,
+                        12
                     ]
-                },
+                ],
                 "Iron": [
-                    {
-                        "name": "Ready Attack",
-                        "cost": [
-                            6,
-                            12
-                        ],
-                        "props": [
+                    [
+                        "Ready Attack",
+                        [
                             [
                                 2
                             ],
                             [
                                 3
                             ]
+                        ],
+                        [
+                            6,
+                            12
                         ]
-                    },
-                    {
-                        "name": "Parry",
-                        "cost": [
+                    ],
+                    [
+                        "Parry",
+                        [],
+                        [
                             12,
                             8
-                        ],
-                        "props": []
-                    },
-                    {
-                        "name": "ATK+",
-                        "props": [
-                            20,
-                            40
                         ]
-                    }
-                ],
-                "Steel": [
-                    {
-                        "name": "Parry",
-                        "cost": [
-                            10,
-                            6
-                        ],
-                        "props": []
-                    },
-                    {
-                        "name": "Sharpen Blade",
-                        "cost": [
-                            10,
-                            15
-                        ],
-                        "props": [
+                    ],
+                    [
+                        "ATK+",
+                        [
                             [
                                 20
                             ],
                             [
-                                30
+                                40
                             ]
                         ]
-                    },
-                    {
-                        "name": "Heavy Strike",
-                        "cost": [
-                            15,
-                            20
-                        ],
-                        "props": [
+                    ]
+                ],
+                "Steel": [
+                    [
+                        "Ready Attack",
+                        [
                             [
-                                50
+                                2
                             ],
                             [
-                                100
+                                3
+                            ]
+                        ],
+                        [
+                            6,
+                            12
+                        ]
+                    ],
+                    [
+                        "Parry",
+                        [],
+                        [
+                            12,
+                            8
+                        ]
+                    ],
+                    [
+                        "ATK+",
+                        [
+                            [
+                                20
+                            ],
+                            [
+                                40
                             ]
                         ]
-                    }
+                    ]
                 ]
-            }
+            },
+            "undefined": "Average"
         },
         "Spear": {
             "materials": [
@@ -194,10 +583,50 @@
             "mindmg": 11,
             "maxdmg": 75,
             "reach": 7,
-            "speed": 10,
+            "attackSpeed": 10,
             "range": 2,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.75,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Pike": {
             "materials": [
@@ -211,10 +640,50 @@
             "mindmg": 6,
             "maxdmg": 70,
             "reach": 11,
-            "speed": 10,
+            "attackSpeed": 10,
             "range": 3,
             "cost": 1,
-            "hands": 2
+            "hands": 2,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Ax": {
             "materials": [
@@ -229,10 +698,36 @@
             "mindmg": 31,
             "maxdmg": 80,
             "reach": 2,
-            "speed": 5,
+            "attackSpeed": 5,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.5,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            14
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            18
+                        ],
+                        [
+                            20
+                        ],
+                        [
+                            22
+                        ],
+                        [
+                            26
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Great Ax": {
             "materials": [
@@ -244,10 +739,50 @@
             "mindmg": 41,
             "maxdmg": 100,
             "reach": 3,
-            "speed": 0,
+            "attackSpeed": 0,
             "range": 1,
-            "cost": 0,
-            "hands": 2
+            "cost": 0.75,
+            "hands": 2,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Mace": {
             "materials": [
@@ -261,10 +796,36 @@
             "mindmg": 51,
             "maxdmg": 60,
             "reach": 2,
-            "speed": 3,
+            "attackSpeed": 3,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.75,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            14
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            18
+                        ],
+                        [
+                            20
+                        ],
+                        [
+                            22
+                        ],
+                        [
+                            26
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Dagger": {
             "materials": [
@@ -280,10 +841,50 @@
             "mindmg": 1,
             "maxdmg": 40,
             "reach": 1,
-            "speed": 30,
+            "attackSpeed": 30,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.75,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Sling": {
             "materials": [
@@ -294,10 +895,50 @@
             "mindmg": 1,
             "maxdmg": 20,
             "reach": 0,
-            "speed": 0,
+            "attackSpeed": 0,
             "range": 4,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.25,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Javelin": {
             "materials": [
@@ -313,10 +954,36 @@
             "mindmg": 1,
             "maxdmg": 50,
             "reach": 4,
-            "speed": 20,
+            "attackSpeed": 20,
             "range": 5,
-            "cost": 1,
-            "hands": 1
+            "cost": 1.5,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "DEF+",
+                    [
+                        [
+                            14
+                        ],
+                        [
+                            16
+                        ],
+                        [
+                            18
+                        ],
+                        [
+                            20
+                        ],
+                        [
+                            22
+                        ],
+                        [
+                            26
+                        ]
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Bow": {
             "materials": [
@@ -328,10 +995,50 @@
             "mindmg": 1,
             "maxdmg": 35,
             "reach": 0,
-            "speed": 10,
+            "attackSpeed": 10,
             "range": 7,
             "cost": 6,
-            "hands": 2
+            "hands": 2,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Glaive": {
             "materials": [
@@ -345,10 +1052,50 @@
             "mindmg": 31,
             "maxdmg": 90,
             "reach": 6,
-            "speed": 1,
+            "attackSpeed": 1,
             "range": 2,
             "cost": 2,
-            "hands": 2
+            "hands": 2,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Knife": {
             "materials": [
@@ -364,10 +1111,50 @@
             "mindmg": 1,
             "maxdmg": 35,
             "reach": 0,
-            "speed": 40,
+            "attackSpeed": 40,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.25,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Wand": {
             "materials": [
@@ -378,10 +1165,50 @@
             "mindmg": 1,
             "maxdmg": 35,
             "reach": 0,
-            "speed": 40,
+            "attackSpeed": 40,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.25,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         },
         "Staff": {
             "materials": [
@@ -392,10 +1219,50 @@
             "mindmg": 1,
             "maxdmg": 35,
             "reach": 0,
-            "speed": 40,
+            "attackSpeed": 40,
             "range": 1,
-            "cost": 0,
-            "hands": 1
+            "cost": 0.25,
+            "hands": 1,
+            "techniques": {
+                "Base": [
+                    "Defend",
+                    [
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ],
+                        [
+                            10,
+                            10
+                        ]
+                    ],
+                    [
+                        12,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                ]
+            },
+            "undefined": "Average"
         }
     },
     "Armour": {
@@ -408,7 +1275,8 @@
             ],
             "weight": 5,
             "damageReduction": 10,
-            "cost": 1
+            "cost": 1,
+            "undefined": "Average"
         },
         "Vest": {
             "materials": [
@@ -420,7 +1288,8 @@
             ],
             "weight": 5,
             "damageReduction": 15,
-            "cost": 2
+            "cost": 2,
+            "undefined": "Average"
         },
         "Shirt": {
             "materials": [
@@ -432,7 +1301,8 @@
             ],
             "weight": 8,
             "damageReduction": 20,
-            "cost": 2
+            "cost": 2.5,
+            "undefined": "Average"
         },
         "Breastplate": {
             "materials": [
@@ -444,7 +1314,8 @@
             ],
             "weight": 10,
             "damageReduction": 30,
-            "cost": 3
+            "cost": 3,
+            "undefined": "Average"
         },
         "Cuirass": {
             "materials": [
@@ -456,7 +1327,8 @@
             ],
             "weight": 15,
             "damageReduction": 30,
-            "cost": 4
+            "cost": 4,
+            "undefined": "Average"
         },
         "Maille": {
             "materials": [
@@ -467,7 +1339,8 @@
             ],
             "weight": 20,
             "damageReduction": 40,
-            "cost": 8
+            "cost": 8,
+            "undefined": "Average"
         },
         "Lamellar": {
             "materials": [
@@ -481,7 +1354,8 @@
             ],
             "weight": 20,
             "damageReduction": 50,
-            "cost": 9
+            "cost": 9,
+            "undefined": "Average"
         },
         "Outfit": {
             "materials": [
@@ -498,7 +1372,8 @@
             ],
             "weight": 30,
             "damageReduction": 60,
-            "cost": 10
+            "cost": 10,
+            "undefined": "Average"
         }
     },
     "Footwear": {
@@ -509,15 +1384,24 @@
                 "Wood"
             ],
             "weight": 2,
+            "initiative": 10,
             "move": 1,
-            "cost": 5
+            "cost": 10,
+            "undefined": "Average"
         }
     },
     "Accessories": {
         "Ruby Ring": {
-            "weight": 1,
+            "materials": [],
+            "weight": 0.5,
             "effect": "Immune to blind.",
-            "cost": 2000
+            "cost": 2000,
+            "techniques": {
+                "Base": [
+                    "Blind Immunity",
+                    []
+                ]
+            }
         }
     },
     "Materials": {
@@ -602,19 +1486,15 @@
             1
         ],
         "Quality": [
-            1.2,
+            1.25,
             2
         ],
         "Excellent": [
-            1.4,
+            1.5,
             3
         ],
-        "Phenomenal": [
-            1.6,
-            4
-        ],
         "Masterwork": [
-            1.8,
+            1.75,
             5
         ],
         "Magic": [

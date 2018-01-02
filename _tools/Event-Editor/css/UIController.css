@@ -35,6 +35,12 @@
 .UIC-hud-buttons{
     width:80%;
 }
+.UIC-hud-buttons div{
+    height:30px;
+    line-height:30px;
+    text-align:center;
+    display:inline-block;
+}
 
 /* one item */
 .UIC-hud-button:first-child:nth-last-child(1) {
@@ -403,6 +409,9 @@ textarea{
 
 .tenth-width{
     width:10% !important;
+}
+.twelve-n-five-width{
+    width:12.5%;
 }
 .sixth-width{
     width:16.6666% !important;

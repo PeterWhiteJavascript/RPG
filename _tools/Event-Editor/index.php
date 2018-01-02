@@ -24,6 +24,8 @@
                         <div id="edit-vars" class="menu-button">Edit Global Vars</div>
                         <div id="select-characters-file" class="menu-button">Create Characters</div>
                         <div id="gear-editor" class="menu-button">Edit Gear</div>
+                        <div id="techniques-editor" class="menu-button">Edit Techniques</div>
+                        <div id="gear-techniques-editor" class="menu-button">Edit Gear Techniques</div>
                         <div id="options" class="menu-button">Options</div>
                         <div id="help" class="menu-button">Help</div>
                         <div id="about" class="menu-button">About</div>

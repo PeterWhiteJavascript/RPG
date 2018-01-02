@@ -1,0 +1,67 @@
+body{
+    width:100%;
+    height:100%;
+    background-color:var(--background-color);
+}
+#left-cont{
+    width:33.33%;
+    top:60px;
+    position:absolute;
+    left:0%;
+    border:1px solid black;
+}
+#mid-cont{
+    width:33.34%;
+    top:60px;
+    position:absolute;
+    left:33.33%;
+    border:1px solid black;
+}
+#right-cont{
+    width:33.33%;
+    top:60px;
+    position:absolute;
+    left:66.67%;
+    border:1px solid black;
+}
+.UIC-group-item{
+    overflow:hidden;
+    padding:0;
+    border:0;
+}
+.UIC-hud-buttons{
+    width:100%;
+    color:var(--button-text-color);
+    background-color:var(--button-background-color)
+}
+.gear-props{
+    border-top:1px solid black;
+    border-bottom:1px solid black;
+    padding-left:10px;
+    padding-right:10px;
+}
+.minimizer{
+    cursor:pointer;
+}
+.minimizer:hover{
+    background-color:var(--content-button-hover-color);
+}
+.selected{
+    background-color:var(--button-hover-color);
+}
+.technique-args-cont:empty{
+    display:none;
+}
+.technique-args-cont{
+    padding:10px;
+}
+.technique-props{
+    padding:10px;
+}
+.remove-choice{
+    width:10%;
+    display:inline-block;
+}
+.remove-choice:hover{
+    background-color:var(--button-hover-color);
+}

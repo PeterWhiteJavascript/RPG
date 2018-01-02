@@ -3037,8 +3037,8 @@ Quintus.GameObjects=function(Q){
             var talents = Q.state.get("talents");
             //Each character gets at least two talents.
             var t = [talents.General[charGroup][0].name,talents.CharClass[charClass][0].name];
-                /*t.push(talents.CharClass[charClass][1].name);
-                t.push(talents.CharClass[charClass][2].name);*/
+                t.push(talents.CharClass[charClass][1].name);
+                t.push(talents.CharClass[charClass][2].name);
             if(promo===1){
                 t.push(talents.CharClass[charClass][1].name);
             } else if(promo===2){
@@ -3463,5 +3463,5 @@ Quintus.GameObjects=function(Q){
         get_efficiency:function(p){
             return this.trimBaseStat(p.baseStats.eff);
         }
-    });
-};*/
+    });*/
+};

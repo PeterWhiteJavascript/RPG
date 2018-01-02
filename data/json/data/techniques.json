@@ -1,54 +1,335 @@
-{   
-    "Active":{
-        "Stab":[
+{
+    "Active": [
+        [
+            "Stab",
             "Find a weak point in the target's armour which reduces the damage reduction from armour for this attack.",
-            ["Damage","Physical"],
-            [1,"All"],
-            [0,"Cross"],
-            2,
-            [20]
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [
+                "Physical",
+                "Dodge",
+                "Block"
+            ],
+            0,
+            "Stabbing",
+            "slashing",
+            [
+                [
+                    "Max Damage Reduction Reduced",
+                    20
+                ]
+            ]
         ],
-        "Ready Attack":[
+        [
+            "Ready Attack",
             "Ready an attack to do extra damage next turn.",
-            ["Support","Mental"],
-            [0,"Self"],
-            [0,"Cross"],
-            6,
-            [2]
+            [
+                "Support",
+                "Mental"
+            ],
+            [
+                0,
+                "Self"
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [],
+            0,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "ATK % increased",
+                    100
+                ]
+            ]
         ],
-        "Parry":[
+        [
+            "Parry",
             "Dodge one physical attack until next turn.",
-            ["Support","Physical"],
-            [0,"Self"],
-            [0,"Cross"],
-            12,
+            [
+                "Support",
+                "Physical"
+            ],
+            [
+                0,
+                "Self"
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [],
+            0,
+            "Charging",
+            "slashing",
             []
         ],
-        "Sharpen Blade":[
+        [
+            "Sharpen Blade",
             "Increase attack power for 3 turns.",
-            ["Support","Physical"],
-            [0,"Self"],
-            [0,"Cross"],
+            [
+                "Support",
+                "Physical"
+            ],
+            [
+                0,
+                "Self"
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [],
             10,
-            [20]
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Attack Power increased",
+                    20
+                ]
+            ]
         ],
-        "Heavy Strike":[
+        [
+            "Heavy Strike",
             "Stike with great force, dealing additional damage.",
-            ["Damage","Physical"],
-            [1,"All"],
-            [0,"Cross"],
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal"
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [
+                "Physical",
+                "Dodge",
+                "Block"
+            ],
             15,
-            [50]
-        ]
-    },
-    "Passive":{
-        "ATK+":[
-            "Increased Atk Power.",
-            [20]
+            "Smashing",
+            "slashing",
+            [
+                [
+                    "% increase of ATK",
+                    50
+                ],
+                [
+                    "% increase of ATK",
+                    50
+                ],
+                [
+                    "% increase of ATK",
+                    50
+                ]
+            ]
         ],
-        "DEF+":[
+        [
+            "Defend",
+            "Increases Defense for 3 turns.",
+            [
+                "Support",
+                "Physical"
+            ],
+            [
+                0,
+                "Self"
+            ],
+            [
+                0,
+                "Normal"
+            ],
+            [],
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "% increase of defense",
+                    20
+                ]
+            ]
+        ]
+    ],
+    "Passive": [
+        [
+            "ATK+",
+            "Increased Atk Power.",
+            [
+                [
+                    "ATK increased",
+                    20
+                ]
+            ]
+        ],
+        [
+            "DEF+",
             "Increased Defence",
-            [10]
+            [
+                [
+                    "DEF increased",
+                    10
+                ]
+            ]
+        ],
+        [
+            "Blind Immunity",
+            "Immune to blind.",
+            []
+        ]
+    ],
+    "CharClass": {
+        "Legionnaire": [
+            [
+                "Forced March",
+                "Target allies increase their Move by 1\/10 of user's Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Self",
+                    []
+                ],
+                [
+                    1,
+                    "HLine",
+                    [
+                        "ExcludeCenter"
+                    ]
+                ],
+                [],
+                25,
+                "Charging",
+                "slashing",
+                [
+                    [
+                        "% of the user's skill (rounded down)",
+                        0.1
+                    ]
+                ]
+            ],
+            [
+                "Fortify",
+                "Target allies increase their Defensive Ability by the user's Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Self",
+                    []
+                ],
+                [
+                    1,
+                    "HLine",
+                    [
+                        "ExcludeCenter"
+                    ]
+                ],
+                [],
+                30,
+                "Charging",
+                "slashing",
+                [
+                    [
+                        "% of the user's skill",
+                        1
+                    ]
+                ]
+            ],
+            [],
+            [],
+            [],
+            []
+        ],
+        "Berserker": [],
+        "Vanguard": [],
+        "Archer": [],
+        "Skirmisher": [],
+        "Assassin": [],
+        "Elementalist": [],
+        "Illusionist": [],
+        "Healer": []
+    },
+    "data": {
+        "techTypes1": [
+            "Damage",
+            "Support",
+            "Debilitate"
+        ],
+        "techTypes2": [
+            "Physical",
+            "Magical",
+            "Mental"
+        ],
+        "rangeTypes": [
+            "Normal",
+            "Self",
+            "MeleeWeapon",
+            "RangedWeapon",
+            "Custom"
+        ],
+        "rangeProps": [
+            "AllyNoMiss",
+            "CanTargetGround",
+            "MustTargetGround",
+            "TargetDead",
+            "EnemyFacingUser"
+        ],
+        "aoeTypes": [
+            "Normal",
+            "VLine",
+            "HLine",
+            "T",
+            "X",
+            "Custom"
+        ],
+        "aoeProps": [
+            "ExcludeCenter"
+        ],
+        "resistProps": [
+            "Physical",
+            "Magical",
+            "Mental",
+            "Dodge",
+            "Block",
+            "Counter"
+        ],
+        "animations": [
+            "Slashing",
+            "Stabbing",
+            "Smashing",
+            "Shooting",
+            "Charging",
+            "Casting"
+        ],
+        "sounds": [
+            "none",
+            "slashing",
+            "fireball",
+            "whirlwind",
+            "frosty"
         ]
     }
 }

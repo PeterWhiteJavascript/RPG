@@ -91,8 +91,8 @@ function UIC(p){
         });
     };
     
-    this.Input = function(text,val,type,min,max){
-        return "<span class='quarter-width'>"+text+"</span><input class='UIC-prop three-quarter-width' value='"+val+"' type='"+type+"' min='"+min+"' max='"+max+"'>";
+    this.Input = function(text,val,type,min,max,step){
+        return '<span class="quarter-width">'+text+'</span><input class="UIC-prop three-quarter-width" value="'+val+'" type="'+type+'" min="'+min+'" max="'+max+'" step="'+step+'">';
     };
     this.Checkbox = function(text,val){
         var box = $("<span class='quarter-width'>"+text+"</span><input class='UIC-prop quarter-width' type='checkbox'><div class='half-width'></div>");
@@ -102,15 +102,38 @@ function UIC(p){
     this.TextArea = function(text,val){
         return "<span class='full-width'>"+text+"</span><textarea class='UIC-prop full-width group-text-area'>"+val+"</textarea>";
     };
-    this.Container = function(text,data){
-        return "<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width'>"+text+"</span></div>";
+    this.Container = function(text,data,fillWith,fillData){
+        data = data || [];
+        var cont = $("<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width sub-title-text minimizer'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
+        switch(fillWith){
+            case "checkbox":
+                for(var i=0;i<fillData.length;i++){
+                    var d = fillData[i];
+                    var box = $("<span class='quarter-width'>"+d+"</span><input class='UIC-prop quarter-width' type='checkbox'>");
+                    $(box).prop("checked",data.find(function(res){return d === res;}));
+                    cont.children(".UIC-cont-props").append(box);
+                }
+                cont.children(".UIC-cont-props").children("input").on("change",function(){
+                    var data = [];
+                    $(this).parent().children("input").each(function(){
+                        if($(this).prop("checked")) data.push($(this).prev().text());
+                    });
+                    $(this).parent().parent().attr("data",JSON.stringify(data));
+                    
+                });
+                break;
+        }
+        return cont;
     };
     this.Select = function(text,opts,value,cl){
         return "<span class='quarter-width'>"+text+"</span><select class='UIC-prop three-quarter-width "+(cl?cl:'')+"' initial-value='"+value+"'>"+this.getOptions(opts)+"</select>";
     };
+    this.Text = function(name,text){
+        return "<span class='quarter-width'>"+name+"</span><p class='three-quarter-width'>"+text+"</p>";
+    };
     
     this.processValue = function(value){
-        var val = parseInt(value);
+        var val = parseFloat(value);
         if(isNaN(val)) val = value;
         if(value == 'true') val = true;
         if(value == 'false') val = false;
