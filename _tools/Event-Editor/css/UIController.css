@@ -335,6 +335,7 @@ textarea{
 }
 .UIC-container{
     height:auto;
+    cursor:pointer;
 }
 .UIC-container span, .UIC-container input, .UIC-container select{
     display:inline-block;
@@ -343,7 +344,7 @@ textarea{
     vertical-align:top;
     font-size:1vw;
     user-select:none;
-    
+    text-align:center;
 }
 
 

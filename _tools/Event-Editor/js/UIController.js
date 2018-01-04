@@ -102,9 +102,18 @@ function UIC(p){
     this.TextArea = function(text,val){
         return "<span class='full-width'>"+text+"</span><textarea class='UIC-prop full-width group-text-area'>"+val+"</textarea>";
     };
-    this.Container = function(text,data,fillWith,fillData){
+    this.Container = function(text,data,fillWith,fillData,minimizer){
         data = data || [];
-        var cont = $("<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width sub-title-text minimizer'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
+        var cont = $("<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width sub-title-text'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
+        if(minimizer){
+            $(cont).children(".sub-title-text").on("click",function(){
+                if($(this).siblings(".UIC-cont-props").is(":visible")){
+                    $(this).siblings(".UIC-cont-props").hide();
+                } else {
+                    $(this).siblings(".UIC-cont-props").show();
+                }
+            });
+        }
         switch(fillWith){
             case "checkbox":
                 for(var i=0;i<fillData.length;i++){

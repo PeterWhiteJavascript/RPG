@@ -47,6 +47,7 @@ body{
     background-color:var(--content-button-hover-color);
 }
 .selected{
+    color:var(--button-text-color);
     background-color:var(--button-hover-color);
 }
 .technique-args-cont:empty{

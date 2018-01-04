@@ -37,9 +37,17 @@ $(function(){
             var tech = FileSaver.getTechnique($(this).parent().parent().parent().parent().parent().parent().siblings(".title-text").text(),$(this).parent().parent().parent().parent().siblings(".sub-title-text").text());
             tech[(tech.length-1)][argIdx][inputIdx] = uic.processValue($(this).val());
         };
+        function removeArg(cont){
+            var idx = cont.parent().children().index(cont);
+            var type = cont.parent().parent().parent().parent().parent().siblings(".title-text").text();
+            var name = cont.parent().parent().parent().siblings(".sub-title-text").text();
+            var tech = FileSaver.getTechnique(type,name);
+            tech[tech.length-1].splice(idx,1);
+        }
         function addArg(desc,val){
             var arg = $('<div class="technique-arg"><input placeholder="Describe this argument please" class="sixty-five-width" type="text" value="'+desc+'"><input class="quarter-width" type="number" value="'+val+'"><div class="remove-choice"><span>x</span></div></div>');
             arg.children(".remove-choice").on("click",function(){
+               removeArg($(this).parent());
                $(this).parent().remove();
             });
             arg.children("input").on("focusout",saveArg);
