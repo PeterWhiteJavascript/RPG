@@ -1,3 +1,21 @@
+function convertEquipment(data){
+    var obj = {
+        gear:{},
+        Quality:data.Quality,
+        Materials:data.Materials
+    };
+    var keys = ["Weapons","Shields","Armour","Footwear","Accessories"];
+    keys.forEach(function(key){
+        var gears = Object.keys(data[key]);
+        gears.forEach(function(gear){
+            obj.gear[gear] = data[key][gear];
+            obj.gear[gear].kind = key;
+            obj.gear[gear].name = gear;
+        });
+    });
+    return obj;
+};
+
 var CharacterGenerator = {
     init:function(data,equipment,defaultEquipment,techniques,talents,awards){
         this.characterGeneration = data;
@@ -22,7 +40,7 @@ var CharacterGenerator = {
         this.levelUpGraph = data.levelUpGraph;
         this.levelUpMultiplier = data.levelUpMultiplier;
         
-        this.equipment = equipment;
+        this.equipment = convertEquipment(equipment);
         this.qualityKeys = Object.keys(this.equipment.Quality);
         
         this.defaultEquipment = defaultEquipment;
@@ -56,7 +74,7 @@ var CharacterGenerator = {
 
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
-        char.equipment = this.getEquipment(data.equipment,char.classNum,char.natNum,char.level);
+        char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
         char.techniques = this.getTechniques(data.techniques,char.charClass) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
         char.talents = this.getTalents(char.charClass,char.charGroup);
         char.lean = [this.getStatLean(),this.getStatLean()];
@@ -125,19 +143,30 @@ var CharacterGenerator = {
                 return val;
         }
     },
+    generateEquipment:function(classNum,natNum,level){
+        return [
+            this.convertEquipment(this.equipGear("Default",false,classNum,natNum,0),this.equipQuality("Default",level)),
+            this.convertEquipment(this.equipGear("Default",false,classNum,natNum,1),this.equipQuality("Default",level)),
+            this.convertEquipment(this.equipGear("Default",false,classNum,natNum,2),this.equipQuality("Default",level)),
+            this.convertEquipment(this.equipGear("Default",false,classNum,natNum,3),this.equipQuality("Default",level)),
+            "None"
+        ];
+    },
     //Position is rh,lh,armour, etc..
     equipGear:function(gearName,material,classNum,natNum,position){
+        if(!gearName) return false;
         switch(gearName){
             case "Default":
                 var gear = this.defaultEquipment.gear;
                 var eq = gear[classNum][natNum][position];
                 //Randomize between the few that are here
                 //The 0th position is reserved for the random chance array.
-                return eq[this.getIdx(eq[0],this.rand())+1];
+                var itm = eq[this.getIdx(eq[0],this.rand())+1];
+                return itm;
             case "None":
                 return false;
             default:
-                return [gearName,material];
+                return [material,gearName];
         }
     },
     //Changes the equipment from an array to an object containing all of the stats from equipment.json
@@ -183,25 +212,19 @@ var CharacterGenerator = {
         return t;
     },
     getEquipment:function(val,classNum,natNum,level){
-        var rh = typeof val.righthand==="string" ? false : this.convertEquipment(this.equipGear(val.righthand[1],val.righthand[2],classNum,natNum,0),this.equipQuality(val.righthand[0],level));
+        var rh = typeof val[0]==="string" ? false : this.convertEquipment(this.equipGear(val[0][0],val[0][1],classNum,natNum,0),this.equipQuality(val[0][2],level));
         var lh = false;
         if(!rh||rh.hands!==2){
-            lh = typeof val.lefthand==="string" ? false : this.convertEquipment(this.equipGear(val.lefthand[1],val.lefthand[2],classNum,natNum,1),this.equipQuality(val.lefthand[0],level));
+            lh = typeof val[1]==="string" ? false : this.convertEquipment(this.equipGear(val[1][0],val[1][1],classNum,natNum,1),this.equipQuality(val[1][2],level));
         }
-        var ar = typeof val.armour==="string" ? false : this.convertEquipment(this.equipGear(val.armour[1],val.armour[2],classNum,natNum,2),this.equipQuality(val.armour[0],level));
-        var ft = typeof val.footwear==="string" ? false : this.convertEquipment(this.equipGear(val.footwear[1],val.footwear[2],classNum,natNum,3),this.equipQuality(val.footwear[0],level));
+        var ar = typeof val[2]==="string" ? false : this.convertEquipment(this.equipGear(val[2][0],val[2][1],classNum,natNum,2),this.equipQuality(val[2][2],level));
+        var ft = typeof val[3]==="string" ? false : this.convertEquipment(this.equipGear(val[3][0],val[3][1],classNum,natNum,3),this.equipQuality(val[3][2],level));
         //Accessory is always either set or not. No Random.
         var ac = false;
-        if(val.accessory&&val.accessory!=="None"){
-            ac = this.equipment.gear[val.accessory];
+        if(val[4]&&val[4]!=="None"){
+            ac = this.equipment.gear[val[4]];
         }
-        return {
-           righthand:rh,
-           lefthand:lh,
-           armour:ar,
-           footwear:ft,
-           accessory:ac
-        };
+        return [rh,lh,ar,ft,ac];
     },
     convertTechniques:function(data){
         var charClasses = this.characterGeneration.classNames;
@@ -489,7 +512,7 @@ var CharacterGenerator = {
         //If there is a left hand equipped, we need an average of the two.
         var equipped = p.equipment.lefthand?2:1;
         var wsk = p.combatStats.weaponSkill,
-            wield = ((this.getEquipmentProp("wield",p.equipment.righthand)+this.getEquipmentProp("wield",p.equipment.lefthand))/equipped), 
+            wield = ((this.getEquipmentProp("wield",p.equipment[0])+this.getEquipmentProp("wield",p.equipment.lefthand))/equipped), 
             encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
             level = p.level;
         //I multiplied by 2 to get some better accuracies.
@@ -506,26 +529,26 @@ var CharacterGenerator = {
         return Math.min(75,Math.floor(defensiveAbility/g));
     },
     get_atkSpeed:function(p){
-        var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment.righthand),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
+        var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment[0]),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
         var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
         var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
         var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
         return amount;
     },
     get_atkRange:function(p){
-        var attackRangeRight = this.getEquipmentProp("range",p.equipment.righthand), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
+        var attackRangeRight = this.getEquipmentProp("range",p.equipment[0]), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
         var range = attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
         if(range>1&&p.talents.includes("Sniper")) range+=2;
         return range || 1;
     },
     get_maxAtkDmg:function(p){
-        var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
+        var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment[0]), handed = this.getEquipmentProp("handed",p.equipment[0]),charGroup = p.charGroup;
         var t = handed===1?1:1.5;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
         return Math.floor((str*t)+(level*h)+maxDamageRight);
     },
     get_minAtkDmg:function(p){
-        var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment.righthand), handed = this.getEquipmentProp("handed",p.equipment.righthand),charGroup = p.charGroup;
+        var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment[0]), handed = this.getEquipmentProp("handed",p.equipment[0]),charGroup = p.charGroup;
         var t = handed===1?1:1.5;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
         return Math.floor((str*t)+(level*h)+minDamageRight);
@@ -559,7 +582,7 @@ var CharacterGenerator = {
         return Math.floor(str*e);
     },
     get_totalWeight:function(p){
-        var rightHandWeight = this.getEquipmentProp("weight",p.equipment.righthand), leftHandWeight = this.getEquipmentProp("weight",p.equipment.lefthand), armourWeight = this.getEquipmentProp("weight",p.equipment.armour), shoesWeight = this.getEquipmentProp("weight",p.equipment.shoes), accessoryWeight = this.getEquipmentProp("weight",p.equipment.accessory);
+        var rightHandWeight = this.getEquipmentProp("weight",p.equipment[0]), leftHandWeight = this.getEquipmentProp("weight",p.equipment.lefthand), armourWeight = this.getEquipmentProp("weight",p.equipment.armour), shoesWeight = this.getEquipmentProp("weight",p.equipment.shoes), accessoryWeight = this.getEquipmentProp("weight",p.equipment.accessory);
         return rightHandWeight+leftHandWeight+armourWeight+shoesWeight+accessoryWeight;
     },
     get_encumbrancePenalty:function(p){
@@ -610,4 +633,3 @@ var CharacterGenerator = {
         return this.trimBaseStat(p.baseStats.eff);
     }
 };
-CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['skills.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);

@@ -195,7 +195,7 @@ Quintus.UIObjects=function(Q){
         //Set the global and scene variables. Event vars are set when the scene is staged.
         init:function(){
             var obj = this;
-            Object.assign(obj.vars.Global,GDATA.game['global-vars.json'].vrs);
+            Object.assign(obj.vars.Global,GDATA.dataFiles['global-vars.json'].vrs);
             Q.state.get("scenesList").Story.forEach(function(sc){
                 obj.vars.Scene[sc.name] = sc.vrs;
                 obj.vars.Event[sc.name] = {};
@@ -314,7 +314,7 @@ Quintus.UIObjects=function(Q){
                 switch(category){
                     //{@his}, {@hers}, etc... 
                     case "@":
-                        newText = GDATA.game["modules.json"].gender[Q.partyManager.alex.gender][prop];
+                        newText = GDATA.dataFiles["modules.json"].gender[Q.partyManager.alex.gender][prop];
                         break;
                     //{g@myGlobalVar}
                     case "g":
@@ -506,8 +506,18 @@ Quintus.UIObjects=function(Q){
                     case "loadOptionsMenu":
                         obj.loadOptionsMenu();
                         break;
-                    
-                        
+                    case "entourageEquipmentMenu":
+                        obj.entourageEquipmentMenu();
+                        break;
+                    case "entourageRewardMenu":
+                        obj.entourageRewardMenu();
+                        break;
+                    case "entourageTaskForcesMenu":
+                        obj.entourageTaskForcesMenu();
+                        break;
+                    case "entourageStatusMenu":
+                        obj.entourageStatusMenu();
+                        break;
                 }
             }
         },
@@ -963,7 +973,6 @@ Quintus.UIObjects=function(Q){
             return cont;
         },
         
-        
         //Base options funcs below
         loadEntourageMenu:function(){
             $("#options-cont-location").children(".options-list").empty();
@@ -980,8 +989,8 @@ Quintus.UIObjects=function(Q){
             
         },
         entourageStatusMenu:function(){
-            $("#main-container").empty();
-            Q.characterStatsMenu.createMenu();
+            /*$("#main-container").empty();
+            Q.characterStatsMenu.createMenu();*/
             console.log("hi")
         },
         

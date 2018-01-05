@@ -9,7 +9,7 @@
 */
 
 $dataDirectories = array(
-    array("data/json/data/","game"),
+    array("data/json/data/","dataFiles"),
     array("data/json/story/characters/","chars")
 );
 $otherDirectories = array(
@@ -37,7 +37,7 @@ foreach(array_merge($dataDirectories,$otherDirectories) as $key=>$value){
     $data -> $name = $dirData;
 }
 $globalName = "global-vars.json";
-$data -> game -> $globalName = json_decode(file_get_contents("data/json/story/global-vars.json"));
+$data -> dataFiles -> $globalName = json_decode(file_get_contents("data/json/story/global-vars.json"));
 ?>
 <!--Libraries-->
 <script src='lib/quintus.js'></script>

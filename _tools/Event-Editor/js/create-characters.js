@@ -1,4 +1,5 @@
 $(function(){
+    CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['skills.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
     var uic = new UIC({
         dataP:{
             charGen:GDATA.dataFiles["character-generation.json"],

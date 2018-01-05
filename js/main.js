@@ -69,7 +69,7 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
 
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
-    Q.state.set("saveData",GDATA.game["new-game.json"]);
+    Q.state.set("saveData",GDATA.dataFiles["new-game.json"]);
 
     Q.state.set("potentialEvents",[]);
 
@@ -77,26 +77,20 @@ Q.newGame=function(options){
     var alex = GDATA.chars["Officers.json"]["Officers"].Alex;
     //Gender is based on what the player selected
     alex.gender = options.gender;
-    var storyAlex = Q.charGen.generateCharacter(alex,"officer");
-    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"officer");
+    var storyAlex = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,alex);
+    var astraea = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Astraea);
     astraea.combatStats.hp = 0;
     astraea.wounded = 111;
-    var random1 = Q.charGen.generateCharacter({},"roster");
-    random1.combatStats.hp = 0;
-    random1.wounded = 5;
-    var random2 = Q.charGen.generateCharacter({},"roster");
-    random2.combatStats.hp = 0;
-    random2.wounded = 5;
     //console.log(legion)
     Q.partyManager.alex = storyAlex;
-    Q.partyManager.allies = [storyAlex,astraea,random1,random2];
+    Q.partyManager.allies = [storyAlex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
-        var char = Q.charGen.generateCharacter({nationality:"Venorian"},"roster");
+        var char = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,{});
         Q.partyManager.roster.push(char);
     };
     Q.state.set(
@@ -127,8 +121,8 @@ Q.startGame=function(save){
         storyChars.push(Q.charGen.generateCharacter(ally));
     });*/
     
-    var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex,"officer");
-    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea,"officer");
+    var alex = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Alex);
+    var astraea = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Astraea);
     Q.partyManager.alex = alex;
     Q.partyManager.allies = [alex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
@@ -142,29 +136,12 @@ Q.startGame=function(save){
     //This will be passed in from the save file.
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
-        Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"},"roster"));
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,{nationality:"Venorian"}));
     };
     //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 
-function convertEquipment(data){
-    var obj = {
-        gear:{},
-        Quality:data.Quality,
-        Materials:data.Materials
-    };
-    var keys = ["Weapons","Shields","Armour","Footwear","Accessories"];
-    keys.forEach(function(key){
-        var gears = Object.keys(data[key]);
-        gears.forEach(function(gear){
-            obj.gear[gear] = data[key][gear];
-            obj.gear[gear].kind = key;
-            obj.gear[gear].name = gear;
-        });
-    });
-    return obj;
-};
 function convertSkills(data){
     var charClasses = Q.state.get("charGeneration").classNames;
     var techs = {};
@@ -191,40 +168,39 @@ for(var i=0;i<fileKeys.length;i++){
 toLoad.push("json/story/global-vars.json");
 toLoad.push("json/data/ui-objects.json");
 Q.load(toLoad.join(","),function(){
-    //All equipment data
-    Q.state.set("equipment",convertEquipment(GDATA.game["equipment.json"]));
+    CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['skills.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
     //Items that are not equipment. I may make key items seperate.
-    Q.state.set("items",GDATA.game["items.json"]);
+    Q.state.set("items",GDATA.dataFiles["items.json"]);
     //All base settings for character classes
-    Q.state.set("charClasses",GDATA.game['character-classes.json']);
+    Q.state.set("charClasses",GDATA.dataFiles['character-classes.json']);
     
     //A bunch of values for generating random characters
-    Q.state.set("charGeneration",GDATA.game['character-generation.json']);
+    Q.state.set("charGeneration",GDATA.dataFiles['character-generation.json']);
     //The list of skills and their effects
-    Q.state.set("skills",GDATA.game['skills.json']);
+    Q.state.set("skills",GDATA.dataFiles['skills.json']);
     //Puts all of the skills in a single object for easy access
     Q.state.set("allSkills",convertSkills(Q.state.get("skills")));
     //The talents list
-    Q.state.set("talents",GDATA.game['talents.json']);
+    Q.state.set("talents",GDATA.dataFiles['talents.json']);
     //The list of awards and descriptions
-    Q.state.set("awards",GDATA.game['awards.json']);
+    Q.state.set("awards",GDATA.dataFiles['awards.json']);
     //The descriptions for status effects
-    Q.state.set("status",GDATA.game['status.json']);
+    Q.state.set("status",GDATA.dataFiles['status.json']);
     //The attributes of each type of tile that can be stepped on.
-    Q.state.set("tileTypes",GDATA.game['tile-types.json']);
+    Q.state.set("tileTypes",GDATA.dataFiles['tile-types.json']);
     
     //The modules for text replacement
-    //Q.state.set("modules",GDATA.game["modules.json"]);
+    //Q.state.set("modules",GDATA.dataFiles["modules.json"]);
     //All important story events that happen on a certain week
-    //Q.state.set("storyEvents",GDATA.game["story-events.json"].events);
+    //Q.state.set("storyEvents",GDATA.dataFiles["story-events.json"].events);
     //The list of events
-    Q.state.set("scenesList",GDATA.game["scenes-list.json"]);
+    Q.state.set("scenesList",GDATA.dataFiles["scenes-list.json"]);
     //All of the character files
     Q.state.set("characterFiles",GDATA.chars);
     //Default equipment for enemy generation
-    Q.state.set("defaultEquipment",GDATA.game["default-equipment.json"]);
+    Q.state.set("defaultEquipment",GDATA.dataFiles["default-equipment.json"]);
     //Events that are triggered after doing things
-    Q.state.set("flavourEvents",GDATA.game["flavour-events-list.json"]);
+    Q.state.set("flavourEvents",GDATA.dataFiles["flavour-events-list.json"]);
     
     //UI Objects
     Q.compileSheets("ui/ui-objects.png","json/data/ui-objects.json");
@@ -242,7 +218,7 @@ Q.load(toLoad.join(","),function(){
     //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
     Q.BattleGrid = new Q.BattleGridObject();
     //The character generator used to create random characters and fill in properties from the save data.
-    Q.charGen = new Q.CharacterGenerator();
+    Q.charGen = CharacterGenerator;
     
     //Creates a character stats menu (used in locations and battles)
     Q.characterStatsMenu = new Q.CharacterStatsMenu();
