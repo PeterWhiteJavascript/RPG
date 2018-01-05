@@ -14,14 +14,15 @@
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [
                 "Physical",
                 "Dodge",
                 "Block"
             ],
-            0,
+            10,
             "Stabbing",
             "slashing",
             [
@@ -40,14 +41,18 @@
             ],
             [
                 0,
-                "Self"
+                "Normal",
+                [
+                    "TargetSelf"
+                ]
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [],
-            0,
+            10,
             "Charging",
             "slashing",
             [
@@ -66,14 +71,18 @@
             ],
             [
                 0,
-                "Self"
+                "Normal",
+                [
+                    "TargetSelf"
+                ]
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [],
-            0,
+            10,
             "Charging",
             "slashing",
             []
@@ -87,11 +96,13 @@
             ],
             [
                 0,
-                "Self"
+                "Normal",
+                []
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [],
             10,
@@ -113,11 +124,13 @@
             ],
             [
                 1,
-                "Normal"
+                "Normal",
+                []
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [
                 "Physical",
@@ -143,11 +156,13 @@
             ],
             [
                 0,
-                "Self"
+                "Normal",
+                []
             ],
             [
                 0,
-                "Normal"
+                "Normal",
+                []
             ],
             [],
             10,
@@ -192,40 +207,1113 @@
         "Legionnaire": [
             [
                 "Forced March",
-                "Target allies increase their Move by 1\/10 of user's Skill for 2 Rounds.",
+                "Target allies increase their Move by 1\/10 of user\u2019s Skill for 2 Rounds.",
                 [
                     "Support",
                     "Mental"
                 ],
                 [
                     0,
-                    "Self",
+                    "Normal",
                     []
                 ],
                 [
                     1,
-                    "HLine",
-                    [
-                        "ExcludeCenter"
-                    ]
+                    "Normal",
+                    []
                 ],
                 [],
                 25,
                 "Charging",
                 "slashing",
+                []
+            ],
+            [
+                "Fortify",
+                "Target allies increase their Defensive Ability by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                30,
+                "Charging",
+                "slashing",
+                []
+            ],
+            [
+                "Embolden",
+                "Target allies increase their Skill by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Charging",
+                "slashing",
+                []
+            ],
+            [
+                "Fervour",
+                "Target allies increase their Strength by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Charging",
+                "slashing",
+                []
+            ],
+            [
+                "Direct",
+                "Target allies increase their Efficiency by half of the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Charging",
+                "slashing",
+                []
+            ],
+            [
+                "Phalanx",
+                "Target allies increase their DR by half of the user\u2019s Skill for 2 Rounds and also gain +100 to their Physical Resistance for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Custom",
+                    []
+                ],
+                [],
+                25,
+                "Charging",
+                "slashing",
+                []
+            ]
+        ],
+        "Berserker": [
+            [
+                "Push",
+                "Target character is pushed backwards one space, or, if pushed onto an Icy space, is pushed backwards until they collide with another a wall, or are no longer crossing Icy Spaces.  however if they collide with another character, that character will be Pushed along too.",
+                [
+                    "Debilitate",
+                    "Physical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge"
+                ],
+                20,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Staredown",
+                "Enemy Attack Accuracy is reduced by the attacking character\u2019s Skill for 3 Rounds.",
+                [
+                    "Debilitate",
+                    "Mental"
+                ],
+                [
+                    6,
+                    "Normal",
+                    [
+                        "EnemyFacingUser"
+                    ]
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Mental"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Charge Through",
+                "The user charges through the target-- there must be a free space on the opposite side of the target character to be able to use this ability. After using the ability, the character may reset their Facing.",
+                [
+                    "Debilitate",
+                    "Physical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge"
+                ],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Headbutt",
+                "The target character\u2019s Initiative is reduced by twice the attacking character\u2019s Skill for 3 Rounds. Note that an Initiative roll below zero indicates that the character does not get to participate in a given Round.",
+                [
+                    "Debilitate",
+                    "Physical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                40,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Pull",
+                "Target character and attacking character both move one space backwards, relative to the attacking character, provided that there is a free space to move into.",
+                [
+                    "Debilitate",
+                    "Physical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge"
+                ],
+                20,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "War Cry",
+                "Affected characters Move is reduced to 1 for 2 Rounds.",
+                [
+                    "Debilitate",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    [
+                        "TargetSelf"
+                    ]
+                ],
+                [
+                    4,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Mental"
+                ],
+                60,
+                "Slashing",
+                "slashing",
                 [
                     [
-                        "% of the user's skill (rounded down)",
-                        0.1
+                        "Range Increase (skl\/x)",
+                        10
+                    ]
+                ]
+            ]
+        ],
+        "Vanguard": [
+            [
+                "Critical Strike",
+                "The character makes an attack as usual but adds their Skill to Crit Chance.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Rapid Strike",
+                "The character makes an attack as usual but adds their Skill to Atk Speed.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Surprising Strike",
+                "The character makes an attack as usual but there is no defense against this attack.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                35,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Armour Piercing Strike",
+                "The character makes an attack as usual but enemy Damage Reduction is reduced by the attacker\u2019s Skill.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Painful Strike",
+                "The character makes an attack as usual but the enemy\u2019s Pain Tolerance is reduced by the attacker\u2019s Skill for the consideration of this attack.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Whirlwind Strike",
+                "The character attacks all units adjacent to them, friend or foe. The damage is equal to half of their regular damage, plus Skill.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "Normal",
+                    [
+                        "TargetSelf"
+                    ]
+                ],
+                [
+                    1,
+                    "Normal",
+                    [
+                        "ExcludeCenter"
+                    ]
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                80,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ],
+        "Assassin": [
+            [
+                "Bleeding Strike",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Bleeding equal to half of the damage sustained. Bleeding lasts until Cured and reduces a character\u2019s Pain Tolerance by the amount of Bleeding they have.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "Weapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Caltrops",
+                "Places caltrops in area of effect which slows movement. Entering the caltrops ends a character\u2019s movement and deals 1-10 damage, and leaving the caltrops ends a character\u2019s movement. Movement within the mud is at a maximum of 2 Spaces per round.",
+                [
+                    "Debilitate",
+                    "Physical"
+                ],
+                [
+                    5,
+                    "Normal",
+                    [
+                        "CanTargetGround"
+                    ]
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Weakening Strike",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "Weapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Nerve Strike",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "Weapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Acid Bomb",
+                "Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker\u2019s Skill. This lasts until the combat is finished.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    3,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Magical",
+                    "Dodge"
+                ],
+                50,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Poison Strike",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character\u2019s Hit Points by a like amount at the end of every Round.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "Weapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                50,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ],
+        "Skirmisher": [
+            [
+                "Quicken",
+                "Target allies increase their Initiative by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Forewarn",
+                "Target allies increase their Counter Chance by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                40,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Sharpen",
+                "Target allies increase their Attack Accuracy by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Vitalize",
+                "Target allies increase their Critical Chance by half of the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                40,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Vivify",
+                "Target allies increase their Attack Speed by the user\u2019s Skill for 2 Rounds.",
+                [
+                    "Support",
+                    "Mental"
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                35,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Coordinated Attack",
+                "The user attacks the enemy as usual, but if granted an additional attack due to their Attack Speed, causes all target allies to attack the enemy target as well. Additional attacks beyond the first additional attack do not trigger allies to attack.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "MeleeWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                80,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ],
+        "Archer": [
+            [
+                "Long Shot",
+                "Character attacks as usual with their ranged weapon, but gains +1 range for every 10 Skill they have (minimum 1).",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "RangedWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                20,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "Range+",
+                        1
+                    ],
+                    [
+                        "Every x Skill",
+                        10
                     ]
                 ]
             ],
             [
-                "Fortify",
-                "Target allies increase their Defensive Ability by the user's Skill for 2 Rounds.",
+                "Armour Piercing Shot",
+                "Character attacks as usual with their ranged weapon, but enemy\u2019s Damage Reduction from armour is reduced by attacker\u2019s Skill.",
                 [
-                    "Support",
-                    "Mental"
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "RangedWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Rapid Shot",
+                "The character makes an attack as usual but adds their Skill to Atk Speed.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "RangedWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Critical Shot",
+                "The character makes an attack as usual but adds their Skill to Crit Chance.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "RangedWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                25,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Painful Shot",
+                "The character makes an attack as usual but the enemy\u2019s Pain Tolerance is reduced by the attacker\u2019s Skill for the consideration of this attack.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    0,
+                    "RangedWeapon",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                30,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Sniper Shot",
+                "The character makes an attack as usual but uses Skill instead of Weapon Skill to see if they hit-- they may target any enemy on an outdoor tile.",
+                [
+                    "Damage",
+                    "Physical"
+                ],
+                [
+                    20,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                60,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ],
+        "Illusionist": [
+            [
+                "Unnerve",
+                "Target character(s) suffers a penalty to their Pain Tolerance equal to half the caster\u2019s Skill until the caster\u2019s next Turn, at which point the caster makes a Skill check (1-100, check whether equal to or under Skill). If the caster succeeds at this check, the target remains Unnerved. If the caster Faints or is Knocked Out then all of their spell effects cease. ",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    3,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                35,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "AOE Radius (skl\/x)",
+                        20
+                    ]
+                ]
+            ],
+            [
+                "Stun",
+                "Target character is Stunned (Must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster\u2019s random 1-100 + Skill + Level) at the start of each turn or lose that turn (once Skill roll has succeeded, character is no longer Stunned).)",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                60,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "AOE Radius (skl\/x)",
+                        20
+                    ]
+                ]
+            ],
+            [
+                "Hypnotic Mirage",
+                "All characters within affected area must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster\u2019s random 1-100 + Skill + Level) or be drawn to the \u201cMirage\u201d (the space on which the spell was cast). A character drawn to the \u201cMirage\u201d will automatically spend each turn walking towards it until any character touches it and it is dispelled, thereby ending the effect for all. This spell affects friendly characters including the caster.",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    5,
+                    "Normal",
+                    []
+                ],
+                [
+                    4,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Blind",
+                "Character is Blinded. (Target character\u2019s Attack Accuracy and Defensive Ability are reduced by half for three turns.)",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    3,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                60,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "AOE Radius (skl\/x)",
+                        20
+                    ]
+                ]
+            ],
+            [
+                "Temporary Insanity",
+                "Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster\u2019s random 1-100 + Skill + Level) at the start of each turn or remain Insane. While Insane, a character will select a random target, friend, foe, or even self, and select a random action to do (using a Technique provided they have the TP, giving an item, attacking, etc.)",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                30,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "AOE Radius (skl\/x)",
+                        20
+                    ]
+                ]
+            ],
+            [
+                "Antithesis",
+                "Target character must succeed at opposed Skill roll (random 1-100 + Skill + Level versus caster\u2019s random 1-100 + Skill + Level) or lose TP equal to the cost of the spell (300). If the target didn\u2019t have at least 300 TP, they lose 1 HP for every full 10 TP they had under 300.",
+                [
+                    "Debilitate",
+                    "Magical"
+                ],
+                [
+                    2,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                150,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ],
+        "Elementalist": [
+            [
+                "Stone",
+                "Deals 10-20 + Skill damage to target.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    4,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                20,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Flamethrower",
+                "Deals 50-80 + Skill damage to all characters within spell\u2019s area of effect. Character in first space of area of effect gains no Damage Reduction from armour against this damage. Damage halved for back spaces if first space is occupied.",
+                [
+                    "Damage",
+                    "Magical"
                 ],
                 [
                     0,
@@ -234,35 +1322,285 @@
                 ],
                 [
                     1,
-                    "HLine",
-                    [
-                        "ExcludeCenter"
-                    ]
+                    "T",
+                    []
                 ],
                 [],
-                30,
-                "Charging",
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Fireball",
+                "Deals 50-80 + Skill damage to all characters within spell\u2019s area of effect. Character in central space of area of effect gains no Damage Reduction from armour against this damage.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    5,
+                    "Normal",
+                    []
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Frost Ray",
+                "Deals 10-50 + Skill damage to all characters within spell\u2019s Target Type, plus  target characters who failed their Physical Resistance are Frozen for 2 Rounds (Character cannot move or take any action, but also gains 50 Damage Reduction). All spaces touched by the attack are made Icy. Icy Spaces cost 2 Spaces of movement to cross, and any character Pushed on them will continue moving until they reach a non Icy Space or collide with an object, however if they collide with another character, that character will be Pushed along too.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "VLine",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
                 "slashing",
                 [
                     [
-                        "% of the user's skill",
-                        1
+                        "AOE Length (skl\/x)",
+                        10
                     ]
                 ]
             ],
-            [],
-            [],
-            [],
-            []
+            [
+                "Choke",
+                "Target character takes 100-200 + Skill damage. Target gains no Damage Reduction from armour against this damage.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    3,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Lightning Storm",
+                "Three different random spaces in the spell\u2019s area of effect are struck by lightning. Any character in a space that is struck takes 150-200 + Skill damage, and then any characters adjacent to them take 25-50 + Skill damage. Characters adjacent to spaces that were struck but did not contain another character take no damage. Targets of this spell gain no Damage Reduction from armour against this damage.",
+                [
+                    "Damage",
+                    "Magical"
+                ],
+                [
+                    6,
+                    "Normal",
+                    []
+                ],
+                [
+                    2,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ]
         ],
-        "Berserker": [],
-        "Vanguard": [],
-        "Archer": [],
-        "Skirmisher": [],
-        "Assassin": [],
-        "Elementalist": [],
-        "Illusionist": [],
-        "Healer": []
+        "Healer": [
+            [
+                "Stability Field",
+                "All characters, friend or foe, within this spell\u2019s effects are considered 'stable'. Lasts for 3 rounds.",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    4,
+                    "Normal",
+                    []
+                ],
+                [],
+                40,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "Range (1+skl\/x)",
+                        5
+                    ]
+                ]
+            ],
+            [
+                "Heal",
+                "All characters, friend or foe, within this spell\u2019s effects immediately regain a random number of HP from Skill to Skill x 2",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                75,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "Range (1+skl\/x)",
+                        20
+                    ],
+                    [
+                        "AOE (skl\/x)",
+                        30
+                    ]
+                ]
+            ],
+            [
+                "Cure",
+                "Removes all Debilitate effects from all characters within spell\u2019s effects.",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                50,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "Range (1+skl\/x)",
+                        25
+                    ],
+                    [
+                        "AOE (skl\/x)",
+                        35
+                    ]
+                ]
+            ],
+            [
+                "Revitalize",
+                "Targeted character immediately recovers from Fainting but not from Bleeding Out",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    [
+                        "TargetDead"
+                    ]
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                50,
+                "Slashing",
+                "slashing",
+                []
+            ],
+            [
+                "Energize",
+                "Target character gains TP equal to 25+ the caster\u2019s Skill.",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    []
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                75,
+                "Slashing",
+                "slashing",
+                [
+                    [
+                        "Range (1+skl\/x)",
+                        20
+                    ]
+                ]
+            ],
+            [
+                "Resurrect",
+                "Targeted character immediately recovers from Bleeding Out and regains a random number of HP from Skill to Skill x 2",
+                [
+                    "Support",
+                    "Magical"
+                ],
+                [
+                    1,
+                    "Normal",
+                    [
+                        "TargetDead"
+                    ]
+                ],
+                [
+                    0,
+                    "Normal",
+                    []
+                ],
+                [],
+                100,
+                "Slashing",
+                "slashing",
+                []
+            ]
+        ]
     },
     "data": {
         "techTypes1": [
@@ -277,15 +1615,17 @@
         ],
         "rangeTypes": [
             "Normal",
-            "Self",
+            "Weapon",
             "MeleeWeapon",
             "RangedWeapon",
             "Custom"
         ],
         "rangeProps": [
+            "TargetSelf",
             "AllyNoMiss",
             "CanTargetGround",
             "MustTargetGround",
+            "TargetFainted",
             "TargetDead",
             "EnemyFacingUser"
         ],
@@ -295,6 +1635,7 @@
             "HLine",
             "T",
             "X",
+            "Box",
             "Custom"
         ],
         "aoeProps": [

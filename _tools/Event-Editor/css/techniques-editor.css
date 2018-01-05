@@ -13,7 +13,7 @@ body{
 #mid-cont{
     width:33.34%;
     top:60px;
-    position:absolute;
+    position:fixed;
     left:33.33%;
     border:1px solid black;
 }
@@ -42,6 +42,7 @@ body{
 }
 .minimizer{
     cursor:pointer;
+    background-color:var(--content-button-background-color);
 }
 .minimizer:hover{
     background-color:var(--content-button-hover-color);
@@ -58,11 +59,20 @@ body{
 }
 .technique-props{
     padding:10px;
+    background-color:var(--menu-background-color);
+    color:var(--menu-text-color);
 }
 .remove-choice{
     width:10%;
     display:inline-block;
+    text-align:center;
 }
-.remove-choice:hover{
+.remove-tech{
+    width:10%;
+    position:absolute;
+    line-height:30px;
+    user-select:none;
+}
+.remove-choice:hover, .remove-tech:hover{
     background-color:var(--button-hover-color);
 }

@@ -1,8 +1,15 @@
 $(function(){
     var FileSaver = {
         fileData:{},
-        getTechnique:function(category,name){
-            return FileSaver.techniqueData[category].find(function(t){return t[0] === name;});
+        getTechnique:function(category,name,charClass){
+            if(category === "CharClass"){
+                var charClass = charClass || $(".sub-title-text:contains("+(name)+")").parent().parent().siblings(".title-text").filter(function(){
+                    return $(this).text() !== "Active";
+                }).eq(0).text();
+                return FileSaver.techniqueData[category][charClass].find(function(t){return t[0] === name;});
+            } else {
+                return FileSaver.techniqueData[category].find(function(t){return t[0] === name;});
+            }
         },
         saveFile:function(){
             $.ajax({
@@ -18,6 +25,7 @@ $(function(){
     var uic = new UIC({
         topBarProps:{
             Save:function(){
+                saveCurrentTech();
                 FileSaver.saveFile();
             },  
             Back:function(){
@@ -31,202 +39,198 @@ $(function(){
     uic.createTopMenu($("#editor-content"));
     
     function techniqueArguments(data){
-        function saveArg(){
-            var argIdx = $(this).parent().index();
-            var inputIdx = $(this).parent().children("input").index(this);
-            var tech = FileSaver.getTechnique($(this).parent().parent().parent().parent().parent().parent().siblings(".title-text").text(),$(this).parent().parent().parent().parent().siblings(".sub-title-text").text());
-            tech[(tech.length-1)][argIdx][inputIdx] = uic.processValue($(this).val());
-        };
-        function removeArg(cont){
-            var idx = cont.parent().children().index(cont);
-            var type = cont.parent().parent().parent().parent().parent().siblings(".title-text").text();
-            var name = cont.parent().parent().parent().siblings(".sub-title-text").text();
-            var tech = FileSaver.getTechnique(type,name);
-            tech[tech.length-1].splice(idx,1);
-        }
         function addArg(desc,val){
             var arg = $('<div class="technique-arg"><input placeholder="Describe this argument please" class="sixty-five-width" type="text" value="'+desc+'"><input class="quarter-width" type="number" value="'+val+'"><div class="remove-choice"><span>x</span></div></div>');
             arg.children(".remove-choice").on("click",function(){
-               removeArg($(this).parent());
                $(this).parent().remove();
             });
-            arg.children("input").on("focusout",saveArg);
-            
             return arg;
         };
         var cont = $("<div class='technique-arguments'><div class='UIC-hud-buttons'><div class='UIC-hud-button'><span>Add Argument</span></div></div><div class='technique-args-cont'></div></div>");
         cont.children(".UIC-hud-buttons").children(".UIC-hud-button").on("click",function(){
             var data = ["",0];
             $(this).parent().parent().children(".technique-args-cont").append(addArg(data[0],data[1]));
-            var tech = FileSaver.getTechnique($(this).parent().parent().parent().parent().parent().siblings(".title-text").text(),$(this).parent().parent().parent().siblings(".sub-title-text").text());
-            tech[(tech.length-1)].push(data);
         });
         for(var i=0;i<data.length;i++){
             cont.children(".technique-args-cont").append(addArg(data[i][0],data[i][1]));
         }
         return cont;
     };
-    function ActiveTechnique(data){
-        var cont = $("<div class='technique UIC-group-item'><div class='sub-title-text minimizer'>"+data[0]+"</div><div class='technique-props UIC-group-item-props'></div></div>");
-        cont.children(".technique-props").append(uic.Input("Name",data[0]));
-        uic.linkValueToText(cont.children(".technique-props").children("input:eq(0)"),cont.children(".sub-title-text"),100);
-        //Save the old value
-        cont.children(".technique-props").children("input:eq(0)").on('focusin', function(){
-            $(this).data('val', $(this).val());
-        });
-        //Make sure to change any select that references this technique
-        cont.children(".technique-props").children("input:eq(0)").on("focusout",function(){
-            var oldVal = $(this).data('val');
-            var newVal = $(this).val();
-            $(".technique-cont").each(function(){
-                $(this).children("select:eq(1)").children("option").each(function(){
-                    if($(this).text() === oldVal){
-                        $(this).text(newVal);
-                        $(this).attr("value",newVal);
-                    }
-                });
-                if($(this).children("select:eq(1)").val() === oldVal){
-                    $(this).children("select:eq(1)").val(newVal);
-                }
+    function saveCurrentTech(){
+        function getArgs(args){
+            var argums = [];
+            args.each(function(){
+                argums.push([
+                   $(this).children("input:eq(0)").val(), 
+                   uic.processValue($(this).children("input:eq(1)").val())
+                ]);
             });
-            FileSaver.getTechnique("Active",oldVal)[0] = newVal;
-        });
-        cont.children(".technique-props").append(uic.TextArea("Desc",data[1]));
-        cont.children(".technique-props").append(uic.Select("Tech Type 1",FileSaver.techniqueData.data["techTypes1"],data[2][0]));
-        cont.children(".technique-props").append(uic.Select("Tech Type 2",FileSaver.techniqueData.data["techTypes2"],data[2][1]));
-
-        cont.children(".technique-props").append(uic.Input("Range",data[3][0],"number"));
-        cont.children(".technique-props").append(uic.Select("Range Type",FileSaver.techniqueData.data["rangeTypes"],data[3][1]));
-        var rangeOpts = $(uic.Container("Range Options",data[3][2],"checkbox",FileSaver.techniqueData.data["rangeProps"]));
-        cont.children(".technique-props").append(rangeOpts);
-
-        cont.children(".technique-props").append(uic.Input("AOE",data[4][0],"number"));
-        cont.children(".technique-props").append(uic.Select("AOE Type",FileSaver.techniqueData.data["aoeTypes"],data[4][1]));
-        var aoeOpts = $(uic.Container("AOE Options",data[4][2],"checkbox",FileSaver.techniqueData.data["aoeProps"]));
-        cont.children(".technique-props").append(aoeOpts);
-        
-        var resist = $(uic.Container("Resisted By",data[5],"checkbox",FileSaver.techniqueData.data["resistProps"]));
-        cont.children(".technique-props").append(resist);
-        cont.children(".technique-props").append(uic.Input("Default TP Cost",data[6],"number"));
-        cont.children(".technique-props").append(uic.Select("Animation",FileSaver.techniqueData.data["animations"],data[7]));
-        cont.children(".technique-props").append(uic.Select("Sound",FileSaver.techniqueData.data["sounds"],data[8]));
-        function checkboxChanged(){
-            var tech = $(this).parent().parent().parent().siblings(".sub-title-text").text();
-            var data = FileSaver.getTechnique("Active",tech);
-            switch($(this).parent().siblings(".sub-title-text").text()){
-                case "Range Options":
-                    data[3][2] = JSON.parse($(this).parent().parent().attr("data"));
-                    break;
-                case "AOE Options":
-                    data[4][2] = JSON.parse($(this).parent().parent().attr("data"));
-                    break;
-                case "Resisted By":
-                    data[5] = JSON.parse($(this).parent().parent().attr("data"));
-                    break;
-            }
+            return argums;
         }
-        $(rangeOpts).children(".UIC-cont-props").children("input").on("change",checkboxChanged);
-        $(aoeOpts).children(".UIC-cont-props").children("input").on("change",checkboxChanged);
-        $(resist).children(".UIC-cont-props").children("input").on("change",checkboxChanged);
-        
-        cont.children(".technique-props").append(techniqueArguments(data[9]));
-        uic.selectInitialValue(cont.children(".technique-props"));
-        $(cont).children(".technique-props").children("input, select, textarea").on("focusout",function(){
-            var elementGroup = $(this).parent().children("input, select, textarea");
-            var conts = $(this).parent().children("div.UIC-prop");
-            var idx = elementGroup.index(this);
-            var technique = $(this).parent().siblings(".sub-title-text").text();
-            var data = FileSaver.getTechnique("Active",technique);
-            var thisVal = $(this).val();
-            switch(idx){
-                case 0:
-                case 1:
-                case 6:
-                case 8:
-                case 9:
-                case 10:
-                    data[idx] = uic.processValue(thisVal);
-                    break;
-                case 2:
-                    data[2] = [uic.processValue(thisVal),uic.processValue(elementGroup.eq(idx+1).val())];
-                    break;
-                case 3:
-                    data[2] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue(thisVal)];
-                    break
-                case 4:
-                    data[3] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(0).attr("data"))];
-                    break;
-                case 5:
-                    data[3] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(0).attr("data"))];
-                    break;
-                case 6:
-                    data[4] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(1).attr("data"))];
-                    break;
-                case 7:
-                    data[4] = [uic.processValue(elementGroup.eq(idx+1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(1).attr("data"))];
-                    break;
-            }
-        });
-        
-        return cont;
-    }
-    function PassiveTechnique(data){
-        var cont = $("<div class='technique UIC-group-item'><div class='sub-title-text minimizer'>"+data[0]+"</div><div class='technique-props UIC-group-item-props'></div></div>");
-        
-        cont.children(".technique-props").append(uic.Input("Name",data[0]));
-        uic.linkValueToText(cont.children(".technique-props").children("input:eq(0)"),cont.children(".sub-title-text"),100);
-        //Save the old value
-        cont.children(".technique-props").children("input:eq(0)").on('focusin', function(){
-            $(this).data('val', $(this).val());
-        });
-        //Make sure to change any select that references this technique
-        cont.children(".technique-props").children("input:eq(0)").on("focusout",function(){
-            var oldVal = $(this).data('val');
-            var newVal = $(this).val();
-            $(".technique-cont").each(function(){
-                $(this).children("select:eq(1)").children("option").each(function(){
-                    if($(this).text() === oldVal){
-                        $(this).text(newVal);
-                        $(this).attr("value",newVal);
-                    }
-                });
-                if($(this).children("select:eq(1)").val() === oldVal){
-                    $(this).children("select:eq(1)").val(newVal);
+        var type = $(".sub-title-text.selected").closest(".tech-group").attr("class").split(" ")[1];
+        var tech = $(".sub-title-text.selected").text();
+        var cont = $(".technique-props");
+        var data;
+        if(type === "Active" || type === "CharClass"){
+            data = [
+                cont.children("input:eq(0)").val(),
+                cont.children("textarea:eq(0)").val(),
+                [cont.children("select:eq(0)").val(),cont.children("select:eq(1)").val()],
+                [uic.processValue(cont.children("input:eq(1)").val()),cont.children("select:eq(2)").val(),JSON.parse(cont.children(".UIC-container:eq(0)").attr("data"))],
+                [uic.processValue(cont.children("input:eq(2)").val()),cont.children("select:eq(3)").val(),JSON.parse(cont.children(".UIC-container:eq(1)").attr("data"))],
+                JSON.parse(cont.children(".UIC-container:eq(2)").attr("data")),
+                uic.processValue(cont.children("input:eq(3)").val()),
+                cont.children("select:eq(4)").val(),
+                cont.children("select:eq(5)").val(),
+                getArgs(cont.children(".technique-arguments").children(".technique-args-cont").children(".technique-arg"))
+            ];
+        } else {
+            data = [
+                cont.children("input:eq(0)").val(),
+                cont.children("input:eq(1)").val(),
+                getArgs(cont.children(".technique-arguments").children(".technique-args-cont").children(".technique-arg"))
+            ];
+        }
+        if(type === "CharClass"){
+            var charClass = $(".sub-title-text:contains("+tech+")").filter(function() {
+                return $(this).text() === tech;
+            }).parent().parent().siblings(".title-text").text();
+            FileSaver.techniqueData[type][charClass][FileSaver.techniqueData[type][charClass].indexOf(FileSaver.getTechnique(type,tech,charClass))] = data;
+        } else {
+            FileSaver.techniqueData[type][FileSaver.techniqueData[type].indexOf(FileSaver.getTechnique(type,tech))] = data;
+        }
+    };
+    function removeTech(pass){
+        var type = $(this).parent().parent().siblings(".title-text").text();
+        var tech = $(this).siblings(".sub-title-text").text();
+        if(confirm("Remove "+tech+"?")){
+            FileSaver.techniqueData[type].splice(FileSaver.techniqueData[type].indexOf(FileSaver.getTechnique(type,tech)),1);
+            $(this).parent().remove();
+        }
+    };
+    var TechFuncs = {
+        Active:function(data){
+            var cont = $("<div class='technique-props UIC-group-item-props'></div>");
+            cont.append(uic.Input("Name",data[0]));
+            uic.linkValueToText(cont.children("input:eq(0)"),$(".sub-title-text.selected"),100);
+            cont.children("input:eq(0)").attr("orig-name",data[0]);
+            $(cont).children("input").on("focusout",function(){
+                var type = $(".sub-title-text.selected").closest(".tech-group").attr("class").split(" ")[1];
+                var charClass;
+                if(type === "CharClass"){
+                    charClass =$(".sub-title-text.selected").parent().parent().siblings(".title-text").text();
+                }
+                FileSaver.getTechnique(type,$(this).attr("orig-name"),charClass)[0] = uic.processValue($(this).val());
+            });
+            cont.append(uic.TextArea("Desc",data[1]));
+            cont.append(uic.Select("Tech Type 1",FileSaver.techniqueData.data["techTypes1"],data[2][0]));
+            cont.append(uic.Select("Tech Type 2",FileSaver.techniqueData.data["techTypes2"],data[2][1]));
+
+            cont.append(uic.Input("Range",data[3][0],"number"));
+            cont.append(uic.Select("Range Type",FileSaver.techniqueData.data["rangeTypes"],data[3][1]));
+            var rangeOpts = $(uic.Container("Range Options",data[3][2],"checkbox",FileSaver.techniqueData.data["rangeProps"]));
+            cont.append(rangeOpts);
+
+            cont.append(uic.Input("AOE",data[4][0],"number"));
+            cont.append(uic.Select("AOE Type",FileSaver.techniqueData.data["aoeTypes"],data[4][1]));
+            var aoeOpts = $(uic.Container("AOE Options",data[4][2],"checkbox",FileSaver.techniqueData.data["aoeProps"]));
+            cont.append(aoeOpts);
+
+            var resist = $(uic.Container("Resisted By",data[5],"checkbox",FileSaver.techniqueData.data["resistProps"]));
+            cont.append(resist);
+            cont.append(uic.Input("Default TP Cost",data[6],"number"));
+            cont.append(uic.Select("Animation",FileSaver.techniqueData.data["animations"],data[7]));
+            cont.append(uic.Select("Sound",FileSaver.techniqueData.data["sounds"],data[8]));
+
+            cont.append(techniqueArguments(data[9]));
+            uic.selectInitialValue(cont);
+            $(cont).children(".technique-props").children("input, select, textarea").on("focusout",function(){
+                var elementGroup = $(this).parent().children("input, select, textarea");
+                var conts = $(this).parent().children("div.UIC-prop");
+                var idx = elementGroup.index(this);
+                var technique = $(this).parent().siblings(".sub-title-text").text();
+                var data = FileSaver.getTechnique("Active",technique);
+                var thisVal = $(this).val();
+                switch(idx){
+                    case 0:
+                    case 1:
+                    case 6:
+                    case 8:
+                    case 9:
+                    case 10:
+                        data[idx] = uic.processValue(thisVal);
+                        break;
+                    case 2:
+                        data[2] = [uic.processValue(thisVal),uic.processValue(elementGroup.eq(idx+1).val())];
+                        break;
+                    case 3:
+                        data[2] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue(thisVal)];
+                        break
+                    case 4:
+                        data[3] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(0).attr("data"))];
+                        break;
+                    case 5:
+                        data[3] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(0).attr("data"))];
+                        break;
+                    case 6:
+                        data[4] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(1).attr("data"))];
+                        break;
+                    case 7:
+                        data[4] = [uic.processValue(elementGroup.eq(idx+1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(1).attr("data"))];
+                        break;
                 }
             });
-            FileSaver.getTechnique("Passive",oldVal)[0] = newVal;
+            return cont;
+        },
+        Passive:function(data){
+            var cont = $("<div class='technique-props UIC-group-item-props'></div>");
+            cont.append(uic.Input("Name",data[0]));
+            uic.linkValueToText(cont.children("input:eq(0)"),$(".sub-title-text.selected"),100);
+            cont.children("input:eq(0)").attr("orig-name",data[0]);
+            cont.append(uic.Input("Desc",data[1]));
+            $(cont).children("input").on("focusout",function(){
+                FileSaver.getTechnique("Passive",$(this).attr("orig-name"))[0] = uic.processValue($(this).val());
+            });
+            cont.append(techniqueArguments(data[2]));
+            return cont;
+        }
+    };
+    function techName(name,type){
+        var cont = $("<div class='technique UIC-group-item'><div class='sub-title-text'>"+name+"</div></div>");
+        if(type !== "CharClass"){
+            cont.prepend("<div class='remove-tech'><span>x</span></div>");
+            cont.children(".remove-tech").on("click",removeTech);
+        }
+        cont.children(".sub-title-text").on("click",function(){
+            if($(".sub-title-text.selected").length){
+                saveCurrentTech();
+                $(".sub-title-text.selected").removeClass("selected");
+            }
+            $(this).addClass("selected");
+            $("#mid-cont").empty();
+            var type = $(this).closest(".tech-group").attr("class").split(" ")[1];
+            var data = FileSaver.getTechnique(type,$(this).text());
+            if(type === "CharClass") type = "Active";
+            $("#mid-cont").append(TechFuncs[type](data));
         });
-        cont.children(".technique-props").append(uic.Input("Desc",data[1]));
-        $(cont).children(".technique-props").children("input").on("focusout",function(){
-            FileSaver.getTechnique("Passive",$(this).parent().siblings(".sub-title-text").text())[$(this).parent().children("input").index(this)] = uic.processValue($(this).val());
-            
-        });
-        cont.children(".technique-props").append(techniqueArguments(data[2]));
         return cont;
     }
     $.getJSON("../../data/json/data/techniques.json",function(data){
         FileSaver.techniqueData = data;
-        FileSaver.techniqueNames = {
-            Active:data.Active.map(function(tech){return tech[0];}),
-            Passive:data.Passive.map(function(tech){return tech[0];})
-        };
-
         var activeTechs = FileSaver.techniqueData.Active;
         for(var i=0;i<activeTechs.length;i++){
-            $("#active-techniques-cont").append(ActiveTechnique(activeTechs[i]));
+            $("#active-techniques-cont").append(techName(activeTechs[i][0],"Active"));
         }
 
         var passiveTechs = FileSaver.techniqueData.Passive;
         for(var i=0;i<passiveTechs.length;i++){
-            $("#passive-techniques-cont").append(PassiveTechnique(passiveTechs[i]));
+            $("#passive-techniques-cont").append(techName(passiveTechs[i][0],"Passive"));
         }
-
         var charClasses = Object.keys(FileSaver.techniqueData.CharClass);
         for(var i=0;i<charClasses.length;i++){
             var cont = $('<div class="UIC-group-item"><p class="title-text minimizer">'+charClasses[i]+'</p><div class="tech-props"></div></div>');
             for(var j=0;j<FileSaver.techniqueData.CharClass[charClasses[i]].length;j++){
-                if(!FileSaver.techniqueData.CharClass[charClasses[i]][j].length) continue;
-                cont.children(".tech-props").append(ActiveTechnique(FileSaver.techniqueData.CharClass[charClasses[i]][j]));
+                cont.children(".tech-props").append(techName(FileSaver.techniqueData.CharClass[charClasses[i]][j][0],"CharClass"));
             }
             $("#char-classes-cont").append(cont);
         }
@@ -244,7 +248,6 @@ $(function(){
                 "slashing",
                 []
             ];
-            $("#active-techniques-cont").append(ActiveTechnique(data));
             FileSaver.techniqueData["Active"].push(data);
         });
         $("#add-passive-tech").click(function(){
@@ -253,7 +256,6 @@ $(function(){
                 "",
                 []
             ];
-            $("#passive-techniques-cont").append(PassiveTechnique(data));
             FileSaver.techniqueData["Passive"].push(data);
         });
 
@@ -265,8 +267,10 @@ $(function(){
                 $(this).next().show();
             }
         });
-
+        
         $(".UIC-group-item").children(".sub-title-text.minimizer").trigger("click");
-        //$(".title-text.minimizer").trigger("click");
+        $("#char-classes-cont").children(".UIC-group-item").children(".title-text.minimizer").trigger("click");
+        $(".title-text:contains(Char Classes)").trigger("click");
+        $(".technique").first().children(".sub-title-text").trigger("click");
     });
 });
