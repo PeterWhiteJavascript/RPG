@@ -657,13 +657,39 @@
                     "top": "229px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "testbattle"
+                        ]
+                    ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Location-Test",
                     "type": "location",
                     "left": "477px",
                     "top": "84px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "testbattle"
+                        ],
+                        [
+                            "Story",
+                            "Act-2-3",
+                            "testbattle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "testbattle",
+                    "type": "battle",
+                    "left": "161px",
+                    "top": "85px"
                 }
             ],
             "vrs": {

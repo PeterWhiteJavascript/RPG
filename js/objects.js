@@ -263,7 +263,7 @@ Quintus.Objects=function(Q){
                     user.revealStatusDisplay();
                     if(callback) callback();
                 }});
-                Q.playSound("shooting.mp3");
+                Q.audioController.playSound("shooting.mp3");
             },
             pushed:function(tileTo,callback){
                 var posTo = Q.BatCon.getXY(tileTo);
@@ -275,7 +275,7 @@ Quintus.Objects=function(Q){
                     this.revealStatusDisplay();
                     if(callback) callback();
                 }});
-                Q.playSound("shooting.mp3");
+                Q.audioController.playSound("shooting.mp3");
             },
             chargedThrough:function(tileTo,target,callback){
                 var posTo = Q.BatCon.getXY(tileTo);
@@ -288,19 +288,19 @@ Quintus.Objects=function(Q){
                     if(callback) callback();
                 }});
                 target.playMiss(target.p.dir);
-                Q.playSound("shooting.mp3");
+                Q.audioController.playSound("shooting.mp3");
             },
             //Displays the miss dynamic number
             showMiss:function(attacker,callback){
                 //Face the attacker
                 this.playMiss(Q.compareLocsForDirection(this.p.loc,attacker.p.loc,this.p.dir),callback);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
-                Q.playSound("cannot_do.mp3");
+                Q.audioController.playSound("cannot_do.mp3");
             },
             showResisted:function(attacker,callback){
                 this.playMiss(this.p.dir,callback);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Resisted!",z:this.p.z}));
-                Q.playSound("cannot_do.mp3");
+                Q.audioController.playSound("cannot_do.mp3");
             },
             //Displays the damage dynamic number
             showDamage:function(dmg,sound,callback){
@@ -309,10 +309,10 @@ Quintus.Objects=function(Q){
                 if(this.p.combatStats.hp<=0){
                     this.playDying(this.p.dir,callback);
                     //Probably want to do unit specific death sounds
-                    Q.playSound("dying.mp3");
+                    Q.audioController.playSound("dying.mp3");
                 } else {
                     sound = sound?sound:"hit1.mp3";
-                    Q.playSound(sound);
+                    Q.audioController.playSound(sound);
                     if(callback){
                         setTimeout(function(){
                             callback();
@@ -322,7 +322,7 @@ Quintus.Objects=function(Q){
             },
             showCounter:function(toCounter,callback){
                 this.playCounter(Q.compareLocsForDirection(this.p.loc,toCounter.p.loc,this.p.dir),callback);
-                Q.playSound("slashing.mp3");
+                Q.audioController.playSound("slashing.mp3");
             },
             showExpGain:function(exp,leveledUp,callback){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
@@ -331,9 +331,9 @@ Quintus.Objects=function(Q){
                     this.stage.insert(new Q.DynamicNumber({color:"white", loc:this.p.loc, text:"Lv. up!",z:this.p.z}));
                     this.playLevelUp(this.p.dir);
                     time = 1000;
-                    Q.playSound("confirm.mp3");
+                    Q.audioController.playSound("confirm.mp3");
                 } else {
-                    Q.playSound("coin.mp3");
+                    Q.audioController.playSound("coin.mp3");
                 }
                 if(callback){
                     setTimeout(function(){
@@ -344,7 +344,7 @@ Quintus.Objects=function(Q){
             },
             showHealed:function(amount,callback){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
-                Q.playSound("coin.mp3");
+                Q.audioController.playSound("coin.mp3");
                 if(!this.p.fainted&&this.p.combatStats.hp){
                     this.playStand(this.p.dir);
                 }
@@ -485,7 +485,7 @@ Quintus.Objects=function(Q){
                     this.p.combatStats[props.name] += props.amount;
                     this.generateRelevantStats(props.name);
                 }
-                Q.playSound("inflict_status.mp3");
+                Q.audioController.playSound("inflict_status.mp3");
                 if(callback) callback();
             },
             refreshStatus:function(name,turns,user,props,callback){
@@ -501,7 +501,7 @@ Quintus.Objects=function(Q){
                 } else {
                     this.p.status[name].turns = turns;
                 }
-                Q.playSound("coin.mp3");
+                Q.audioController.playSound("coin.mp3");
                 if(callback) callback();
             },
             addToHitBy:function(obj){
@@ -520,7 +520,7 @@ Quintus.Objects=function(Q){
                 //If there's a dir, use that, else if there's a target, face it, else default
                 var dir = dir ? dir : target ? Q.compareLocsForDirection(this.p.loc,target.p.loc,this.p.dir) : this.p.dir;
                 this["play"+animation](dir,callback);
-                Q.playSound(sound+".mp3");
+                Q.audioController.playSound(sound+".mp3");
             },
             
             advanceStatus:function(){
@@ -844,11 +844,11 @@ Quintus.Objects=function(Q){
                 this.p.stabilityField.p.turns--;
                 if(this.p.stabilityField.p.turns<=0){
                     this.p.stabilityField.destroy();
-                    Q.playSound("shooting.mp3");
+                    Q.audioController.playSound("shooting.mp3");
                     this.p.stabilityField = false;
                 }
             }
-            this.p.cannotRecallMove = Q.state.get("options").cannotRecallMove;
+            this.p.cannotRecallMove = Q.optionsController.cannotRecallMove;
             //Get the grid for walking from this position
             this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn,this));
             //Get the grid for attacking from this position
@@ -1069,7 +1069,7 @@ Quintus.Objects=function(Q){
                     }
                 }
             });
-            Q.playSound("shooting.mp3");
+            Q.audioController.playSound("shooting.mp3");
         },
         removeGaveStatus:function(){}
     });

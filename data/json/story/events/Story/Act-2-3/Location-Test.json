@@ -7,7 +7,7 @@
     "pages": [
         {
             "name": "Action 1",
-            "music": "demo.mp3",
+            "music": "prebattle.mp3",
             "bg": "Pumpkins.jpg",
             "options": [
                 [
@@ -17,6 +17,20 @@
                         [
                             "createRecruitMenu",
                             []
+                        ]
+                    ]
+                ],
+                [
+                    "Go to battle",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-2-3",
+                                "testbattle"
+                            ]
                         ]
                     ]
                 ]

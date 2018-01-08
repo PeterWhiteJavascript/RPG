@@ -1,4 +1,4 @@
-window.addEventListener("load", function() {
+$(function() {
 var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, QFunctions, AI, Animations, HUD, Music, Objects, UIObjects, SceneFuncs, GameObjects")
         .setup({development: true})
@@ -27,6 +27,7 @@ Q.progressCallback = function(loaded,total){
         $("#loading-bar").hide();
     }
 };
+$(document.body).append("<div id=main-container></div>");
 //Wraps the text to fit inside a container.
 //Really useful for long descriptions
 //Automatically run when the label is changed and the text is inside a container
@@ -77,11 +78,10 @@ Q.newGame=function(options){
     var alex = GDATA.chars["Officers.json"]["Officers"].Alex;
     //Gender is based on what the player selected
     alex.gender = options.gender;
-    var storyAlex = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,alex);
-    var astraea = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Astraea);
+    var storyAlex = Q.charGen.generateCharacter(alex);
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
     astraea.combatStats.hp = 0;
-    astraea.wounded = 111;
-    //console.log(legion)
+    astraea.wounded = 4;
     Q.partyManager.alex = storyAlex;
     Q.partyManager.allies = [storyAlex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
@@ -90,7 +90,7 @@ Q.newGame=function(options){
     //Set up the applications roster
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
-        var char = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,{});
+        var char = Q.charGen.generateCharacter({});
         Q.partyManager.roster.push(char);
     };
     Q.state.set(
@@ -100,7 +100,6 @@ Q.newGame=function(options){
         })[0].vrs
     );
     
-    //Start a scene
     Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
 };
@@ -121,8 +120,8 @@ Q.startGame=function(save){
         storyChars.push(Q.charGen.generateCharacter(ally));
     });*/
     
-    var alex = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Alex);
-    var astraea = Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,GDATA.chars["Officers.json"]["Officers"].Astraea);
+    var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex);
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
     Q.partyManager.alex = alex;
     Q.partyManager.allies = [alex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
@@ -136,7 +135,7 @@ Q.startGame=function(save){
     //This will be passed in from the save file.
     var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
-        Q.partyManager.addToRoster(Q.charGen.generateCharacter("Act-"+Q.state.get("saveData").act,{nationality:"Venorian"}));
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
     };
     //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));

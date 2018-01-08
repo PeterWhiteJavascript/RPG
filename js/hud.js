@@ -6,8 +6,9 @@ Quintus.HUD=function(Q){
                 cx:0,cy:0,
                 w:250,h:95,
                 type:Q.SPRITE_NONE,
-                fill:"blue",
-                opacity:0.5
+                fill:"#DDD",
+                opacity:0.5,
+                radius:0
             });
             this.on("inserted");
         },
@@ -51,7 +52,7 @@ Quintus.HUD=function(Q){
                 cx:0,cy:0,
                 w:300,h:0,
                 type:Q.SPRITE_NONE,
-                fill:"blue",
+                fill:"#DDD",
                 opacity:0.5
             });
             this.p.x=Q.width-this.p.w;
@@ -72,8 +73,8 @@ Quintus.HUD=function(Q){
         displayTarget:function(obj){
             if(obj.isA("Mirage")) return;
             this.show();
-            if(obj.p.team==="ally") this.p.fill = "blue";
-            if(obj.p.team==="enemy") this.p.fill = "crimson";
+            if(obj.p.team==="Ally") this.p.fill = "blue";
+            if(obj.p.team==="Enemy") this.p.fill = "crimson";
             var objStats = obj.p.combatStats;
             var stats = this.p.stats;
             var labels = [
@@ -353,9 +354,9 @@ Quintus.HUD=function(Q){
             });
         },
         cycle:function(to){
-            this.entity.p.conts[this.selected].p.fill="red";
+            this.entity.p.conts[this.selected].p.fill="#BBB";
             this.selected=to;
-            this.entity.p.conts[this.selected].p.fill="green";
+            this.entity.p.conts[this.selected].p.fill="#999";
             this.entity.trigger("hoverOption",to);
         },
         checkInBoundsUp:function(to){
@@ -422,12 +423,13 @@ Quintus.HUD=function(Q){
             this._super(p, {
                 w:200,h:350,
                 cx:0,cy:0,
-                fill:"blue",
+                fill:"#DDD",
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
                 options:[["Move","Attack","Skill","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
-                conts:[]
+                conts:[],
+                radius:0
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
@@ -498,7 +500,7 @@ Quintus.HUD=function(Q){
             var opts = [];
             var funcs = [];
             var itms = [];
-            var items = Q.state.get("Bag").items.Consumables;
+            var items = Q.partyManager.bag.items.Consumables;
             //If there are items in the bag
             if(items.length){
                 items.forEach(function(item){
@@ -544,7 +546,7 @@ Quintus.HUD=function(Q){
             if(this.p.target.p.didMove&&menuNum===0) selected++;
             this.p.conts = [];
             for(var i=0;i<options.length;i++){
-                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0,func:funcs[i]}));
+                var cont = this.insert(new Q.UI.Container({x:10,y:50+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"#BBB",radius:0,func:funcs[i]}));
                 var name = cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i],cx:0,size:16}));
                 //Skills menu
                 if(menuNum===2){
@@ -621,7 +623,7 @@ Quintus.HUD=function(Q){
             
         },
         noItems:function(){
-            Q.playSound("cannot_do.mp3");
+            Q.audioController.playSound("cannot_do.mp3");
         },
         //When the user selects an item, ask to use it and show what it does
         loadItem:function(){
@@ -986,20 +988,20 @@ Quintus.HUD=function(Q){
                     range = this.getCustomRange(skill,user);
                     break;
                 case "weapon":
-                    var lh = user.p.equipment.lefthand;
+                    var lh = user.p.equipment[1];
                     if(lh) range = lh.range;
-                    var rh = user.p.equipment.righthand;
+                    var rh = user.p.equipment[0];
                     if(rh) range = rh.range;
                     break;
                 case "rangedWeapon":
-                    var rh = user.p.equipment.righthand || {range:0};
-                    var lh = user.p.equipment.lefthand || {range:0};
+                    var rh = user.p.equipment[0] || {range:0};
+                    var lh = user.p.equipment[0] || {range:0};
                     range = rh.range>lh.range?rh.range:lh.range;
                     break;
                 case "meleeWeapon":
-                    var lh = user.p.equipment.lefthand;
+                    var lh = user.p.equipment[1];
                     if(lh.range===1||lh.range===2) range = lh.range;
-                    var rh = user.p.equipment.righthand;
+                    var rh = user.p.equipment[0];
                     if(rh.range===1||rh.range===2) range = rh.range;
                     break;
             }
@@ -1079,7 +1081,7 @@ Quintus.HUD=function(Q){
             return false;
         },
         cannotDo:function(){
-            Q.playSound("cannot_do.mp3");
+            Q.audioController.playSound("cannot_do.mp3");
             this.p.cannotDo = true;
         },
         checkConfirmMove:function(){
@@ -1233,7 +1235,7 @@ Quintus.HUD=function(Q){
                 this.p.cannotDo=false;
             } else if(Q.inputs['esc']){
                 //Hide the zoc
-                Q.BattleGrid.hideZOC(this.p.user.p.team==="enemy"?"ally":"enemy");
+                Q.BattleGrid.hideZOC(this.p.user.p.team==="Enemy"?"Ally":"Enemy");
                 Q.stage(2).ActionMenu.show();
                 Q.stage(2).ActionMenu.menuControls.turnOnInputs();
                 Q.pointer.show();
@@ -1611,18 +1613,20 @@ Quintus.HUD=function(Q){
             }
         }
     });
+    
     Q.UI.Container.extend("CharacterSelectionMenu",{
        init:function(p){
             this._super(p,{
                 w:200,
                 h:350,
-                fill:"blue",
+                fill:"#DDD",
                 opacity:0.5,
-                border:2,
+                stroke:"#000",
                 cx:0,cy:0,
                 options:[],
                 conts:[],
-                selected:0
+                selected:0,
+                radius:0
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
@@ -1652,7 +1656,7 @@ Quintus.HUD=function(Q){
             var options = this.p.options[menuNum];
             this.p.conts = [];
             for(var i=0;i<options.length;i++){
-                var cont = this.insert(new Q.UI.Container({x:10,y:10+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"red",radius:0}));
+                var cont = this.insert(new Q.UI.Container({x:10,y:10+i*40,w:this.p.w-20,h:40,cx:0,cy:0,fill:"#BBB",radius:0}));
                 cont.insert(new Q.UI.Text({x:cont.p.w/2,y:12,label:options[i].name,cx:0,size:16}));
                 this.p.conts.push(cont);
             }

@@ -1,45 +1,4 @@
 Quintus.QFunctions=function(Q){
-    /*Q.convertCombatStat = function(name){
-        switch(name){
-            case "Max Hit Points":
-                return "maxHp";
-            case "Max Technique Points":
-                return "maxTp";
-            case "Pain Tolerance":
-                return "painTolerance";
-            case "Damage Reduction":
-                return "damageReduction";
-            case "Physical Resistance":
-                return "physicalResistance";
-            case "Mental Resistance":
-                return "mentalResistance";
-            case "Magical Resistance":
-                return "magicalResistance";
-            case "Attack Range":
-                return "atkRange";
-            case "Max Attack Damage":
-                return "maxAtkDmg";
-            case "Encumbrance Threshold":
-                return "encumbranceThreshold";
-            case "Total Weight":
-                return "totalWeight";
-            case "Encumbrance Penalty":
-                return "encumbrancePenalty";
-            case "Defensive Ability":
-                return "defensiveAbility";
-            case "Attack Accuracy":
-                return "atkAccuracy";
-            case "Critical Chance":
-                return "critChance";
-            case "Counter Chance":
-                return "counterChance";
-            case "Attack Speed":
-                return "atkSpeed";
-            case "Move Speed":
-                return "moveSpeed";
-        }
-    };
-    */
     Q.getCharClassNum = function(c){
         return Q.state.get("charGeneration").classNames.indexOf(c);
     };
@@ -52,33 +11,11 @@ Quintus.QFunctions=function(Q){
             ally.morale+=morale;
         });
     };
-    
-    //Loads all unique assets that are used in a scene
-   /* Q.loadSceneAssets = function(data,callback){
-        var musicAssets = [];
-        for(var i=0;i<data.length;i++){
-            if(musicAssets.indexOf("bgm/"+data[i].music)<0) {
-                musicAssets.push("bgm/"+data[i].music);
-            }
-        }
-        $("#loading-screen").show();
-        Q.load(musicAssets,callback,{
-            progressCallback:Q.progressCallback
-        });
-    };*/
     Q.setAward = function(obj,prop,amount){
         if(!obj["awards"]) return;
         obj["awards"][prop] += amount;
     };
     
-   /* Q.getPathData=function(data,path){
-        var newData = data;
-        var arr = path.split('/');
-        for(var i=0;i<arr.length;i++){
-            newData = newData[arr[i]];
-        }
-        return newData;
-    };*/
     Q.setOption=function(opt,value){
         Q.state.p.options[opt]=value;
     };

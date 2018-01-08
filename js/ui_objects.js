@@ -1610,7 +1610,7 @@ Quintus.UIObjects=function(Q){
             obj.playStand(props[1]);
         },
         playAnim:function(obj,props){
-            Q.playSound(props[0]);
+            Q.audioController.playSound(props[0]);
             this.getChar(props[0]);["play"+anim](dir);
         },
         changeMoveSpeed:function(obj,props){

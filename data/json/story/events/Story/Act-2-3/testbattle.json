@@ -1,0 +1,96 @@
+{
+    "name": "testbattle",
+    "kind": "battle",
+    "map": "Venoria\/Venoria-Castle-Outside.tmx",
+    "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+    "placementSquares": [
+        [
+            14,
+            14
+        ],
+        [
+            15,
+            14
+        ],
+        [
+            15,
+            15
+        ],
+        [
+            14,
+            15
+        ],
+        [
+            14,
+            16
+        ],
+        [
+            15,
+            16
+        ]
+    ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "testbattle"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-2-3",
+            "testbattle"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            0,
+            [
+                14,
+                9
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Lettuce",
+            0,
+            [
+                14,
+                8
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Patty",
+            0,
+            [
+                15,
+                8
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Bun",
+            0,
+            [
+                15,
+                9
+            ],
+            "down"
+        ]
+    ]
+}

@@ -53,7 +53,6 @@ Quintus.SceneFuncs=function(Q){
     Q.placeCharacters = function(characters,stage){
         var charData = [];
         //Find the character in the files
-        
         var files = Q.state.get("characterFiles");
         characters.forEach(function(char){
             var ref = files[char[0]][char[1]][char[2]];
@@ -76,42 +75,7 @@ Quintus.SceneFuncs=function(Q){
             };
             charData.push(newChar);
              stage.insert(new Q.StoryCharacter(newChar));
-        });/*
-        var chars = [];
-        charData.forEach(function(char){
-            var character;
-
-            if(char.nationality){
-                char.natNum = Q.charGen.getNatNum(char.nationality);
-            }
-            if(char.charClass){
-                char.classNum = Q.charGen.getClassNum(char.charClass);
-            }
-            //If the character is an ally, get the data from the allies array
-            if(char.team==="ally"){
-                //Find the data in the allies array
-                var data = Q.state.get("allies").filter(function(ally){
-                    return ally.name===char.name;
-                })[0];
-                if(data){
-                    character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"ally"));
-
-                } else {
-                    character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"ally"));
-                }
-            } else {
-                character = new Q.StoryCharacter(Q.charGen.generateCharacter(char,"enemy"));
-            }
-            chars.push(character);
-            character.p.loc = char.loc;
-            character.p.anim = char.anim;
-            if(char.hidden==="hide"){
-                character.hide();
-            }
         });
-        chars.forEach(function(char){
-            stage.insert(char);
-        });*/
     };
     Q.scene("battleScene",function(stage){
         Q.inputs['confirm'] = false;
@@ -123,7 +87,7 @@ Quintus.SceneFuncs=function(Q){
                 Q.stageScene("fader",11);
                 //Display the tmx tile map
                 //If one is not passed in, we are re-using the map from the previous battle
-                if(map){
+                if(map){//TODO
                     Q.stageTMX(map, stage);
                 }
                 stage.lists.TileLayer[0].p.z = 0;
@@ -157,6 +121,7 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         var map = "maps/"+battleData.map;
         Q.loadTMX(map, function() {
+            $("#background-image").attr("src","images/bg/battle-bg.png");
             Q.audioController.playMusic(battleData.music,function(){
                 Q.stageScene("fader",11);
                 //Display the tmx tile map
@@ -180,8 +145,14 @@ Quintus.SceneFuncs=function(Q){
                 for(var i=0;i<battleData.characters.length;i++){
                     chars.push(battleData.characters[i]);
                 }
+                var files = Q.state.get("characterFiles");
                 chars.forEach(function(char){
-                    stage.insert(new Q.Character(Q.charGen.generateCharacter(char,"battleChar")));
+                    var charData = files[char[0]][char[1]][char[2]];
+                    var c = Q.charGen.generateCharacter(charData);
+                    c.uniqueId = char[3];
+                    c.loc = char[4];
+                    c.dir = char[5];
+                    stage.insert(new Q.Character(c));
                 });
                 //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
                 Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));

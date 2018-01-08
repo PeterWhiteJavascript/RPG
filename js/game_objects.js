@@ -121,7 +121,7 @@ Quintus.GameObjects=function(Q){
             var loc = this.entity.p.loc;
             var objAt = user.p.lifting;
             if(!Q.BattleGrid.getObject(loc)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),objAt)!=="impassable"){
-                if(Q.BattleGrid.getTileDistance(user.p.loc,loc)>1) return Q.playSound("cannot_do.mp3");
+                if(Q.BattleGrid.getTileDistance(user.p.loc,loc)>1) return Q.audioController.playSound("cannot_do.mp3");
                 Q.BatCon.dropObject(user,objAt,loc);
                 user.p.didAction = true;
                 objAt.hideStatusDisplay();
@@ -134,7 +134,7 @@ Quintus.GameObjects=function(Q){
                     Q.stage(2).ActionMenu.displayMenu(0,0);
                 }
             } else {
-                Q.playSound("cannot_do.mp3");
+                Q.audioController.playSound("cannot_do.mp3");
             }
         },
         showMenu:function(){
@@ -170,7 +170,7 @@ Quintus.GameObjects=function(Q){
             var loc = this.entity.p.loc;
             var objAt = Q.BattleGrid.getObject(loc);
             if(objAt&&objAt.validToCarry()){
-                if(Q.BattleGrid.getTileDistance(user.p.loc,objAt.p.loc)>1) return Q.playSound("cannot_do.mp3");
+                if(Q.BattleGrid.getTileDistance(user.p.loc,objAt.p.loc)>1) return Q.audioController.playSound("cannot_do.mp3");
                 Q.BatCon.liftObject(user,objAt);
                 user.p.didAction = true;
                 user.p.lifting = objAt;
@@ -185,7 +185,7 @@ Quintus.GameObjects=function(Q){
                     Q.stage(2).ActionMenu.displayMenu(0,0);
                 }
             } else {
-                Q.playSound("cannot_do.mp3");
+                Q.audioController.playSound("cannot_do.mp3");
             }
         },
         showMenu:function(){
@@ -368,7 +368,7 @@ Quintus.GameObjects=function(Q){
         },/*
         checkStartBattle:function(){
             var ready = false;
-            var allies = Q.state.get("allies");
+            var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
                 var ally = allies[i];
                 if(ally.placedOnMap){
@@ -592,7 +592,7 @@ Quintus.GameObjects=function(Q){
         },
         //Returns the correct grid
         getGrid:function(obj){
-            return obj.p.team==="enemy"?this.enemyZocGrid:this.allyZocGrid;
+            return obj.p.team==="Enemy"?this.enemyZocGrid:this.allyZocGrid;
         },/*
         //Show a team's zoc
         showZOC:function(team){
@@ -898,7 +898,7 @@ Quintus.GameObjects=function(Q){
         },
         checkPlacement:function(pointer){
             //If there's a character there, select it and go to the directional phase
-            var allies = Q.state.get("allies");
+            var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
                 var ally = allies[i];
                 if(ally.placedOnMap){
@@ -939,7 +939,7 @@ Quintus.GameObjects=function(Q){
                 Q.stageScene("placeCharacterMenu",1);
                 pointer.pointerPlaceAllies.remove();
             } else {
-                Q.playSound("cannot_do.mp3");
+                Q.audioController.playSound("cannot_do.mp3");
             }
         },
         showPlacementSquares:function(){
@@ -956,7 +956,8 @@ Quintus.GameObjects=function(Q){
         genPlaceableAllies:function(){
             //All placeable allies (not wounded, must be preset, not already placed)
             var placeableAllies = [];
-            Q.state.get("allies").forEach(function(ally){
+            
+            Q.partyManager.allies.forEach(function(ally){
                 if(ally.wounded) return;
                 else if(ally.unavailable) return;
                 else if(ally.placedOnMap) return;
@@ -976,7 +977,7 @@ Quintus.GameObjects=function(Q){
         //Confirms when a character is placed after their direction is set
         confirmPlacement:function(char){
             //Find the character in placeable allies and set placedOnMap to true
-            var allies = Q.state.get("allies");
+            var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
                 var ally = allies[i];
                 if(ally.name===char.p.name&&ally.uniqueId===char.p.uniqueId){
@@ -985,12 +986,13 @@ Quintus.GameObjects=function(Q){
                     i = allies.length;
                 }
             }
+            this.genPlaceableAllies();
             //If all allies are placed, start the battle.
             var numPlaced = allies.filter(function(c){return c.placedOnMap;}).length;
-            if(numPlaced===this.placeableAllies.length||numPlaced===this.stage.options.data.maxAllies){
+            if(!this.placeableAllies.length||numPlaced===this.stage.options.data.maxAllies){
                 this.startBattle();
             } else {
-                this.startPlacingAllies();
+                Q.pointer.add("pointerPlaceAllies");
             }
         },
         //Run once at the start of battle
@@ -1004,10 +1006,10 @@ Quintus.GameObjects=function(Q){
             */
             this.removePlacementSquares();
             this.allies = this.stage.lists[".interactable"].filter(function(char){
-                return char.p.team==="ally"; 
+                return char.p.team==="Ally"; 
             });
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
-                return char.p.team==="enemy"; 
+                return char.p.team==="Enemy"; 
             });
             this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
             //Do start battle animation, and then start turn (TODO)
@@ -1017,7 +1019,7 @@ Quintus.GameObjects=function(Q){
             //Save some of the properties for allies
             this.allies.forEach(function(ally){
                 //Find the associated saved ally
-                var char = Q.state.get("allies").filter(function(c){
+                var char = Q.partyManager.allies.filter(function(c){
                     return c.name===ally.p.name&&c.uniqueId===ally.p.uniqueId;
                 })[0];
                 if(!char) return;
@@ -1038,7 +1040,7 @@ Quintus.GameObjects=function(Q){
                     char.wounded = 5-ally.hasStatus("bleedingOut").turns+1;
                 }
             });
-            Q.state.get("allies").forEach(function(char){
+            Q.partyManager.allies.forEach(function(char){
                 char.placedOnMap = false;
             });
             //TODO: checks
@@ -1205,7 +1207,7 @@ Quintus.GameObjects=function(Q){
             }
             //Hide and disable the pointer if it's not an ally's turn
             //TEMP (Take out false to enable)
-            if(false&&obj.p.team!=="ally"&&Q.pointer){
+            if(false&&obj.p.team!=="Ally"&&Q.pointer){
                /* Q.pointer.hide();
                 Q.pointer.off("checkInputs");
                 Q.pointer.off("checkConfirm");
@@ -1330,13 +1332,13 @@ Quintus.GameObjects=function(Q){
             //this.turnOrder.splice(this.turnOrder.indexOf(this.turnOrder.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
         },
         addToTeam:function(obj){
-            var team = obj.p.team==="ally"?this.allies:this.enemies;
+            var team = obj.p.team==="Ally"?this.allies:this.enemies;
             team.push(obj);
         },
         removeFromTeam:function(obj){
-            if(obj.p.team==="ally"){
+            if(obj.p.team==="Ally"){
                 this.allies.splice(this.allies.indexOf(this.allies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
-            } else if(obj.p.team==="enemy"){
+            } else if(obj.p.team==="Enemy"){
                 this.enemies.splice(this.enemies.indexOf(this.enemies.filter(function(ob){return ob.p.id===obj.p.id;})[0]),1);
             }
         },
@@ -1405,7 +1407,7 @@ Quintus.GameObjects=function(Q){
             }
         },
         getOtherTeam:function(team){
-            return team==="enemy"?"ally":"enemy";
+            return team==="Enemy"?"Ally":"Enemy";
         },
 
         //Loads the preview to the attack when the user presses enter on an enemy while in the attack menu
@@ -1420,7 +1422,7 @@ Quintus.GameObjects=function(Q){
             } else if((Q._isNumber(skill.aoe[0])&&skill.aoe[0]>0)||skill.aoe[0]==="custom"||skill.aoe[0]==="customRadius"){
                 targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
                 //Don't allow for unnaffected targets
-                if(skill.range[1]==="enemy") this.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
+                if(skill.range[1]==="Enemy") this.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
             } else {
                 targets[0] = Q.BattleGrid.getObject(loc);
             }
@@ -2386,7 +2388,7 @@ Quintus.GameObjects=function(Q){
                     active.p.canSetDir = false;
                 }
                 //TEMP
-                else if(true||active.p.team!=="enemy"){
+                else if(true||active.p.team!=="Enemy"){
                     //Q.BatCon.showEndTurnDirection(active);
                     Q.BatCon.endTurn();
                 } else {
@@ -2403,7 +2405,7 @@ Quintus.GameObjects=function(Q){
                 Q.pointer.snapTo(active);
                 //If the current character is not AI
                 //TEMP
-                if(true||active.p.team!=="enemy"){
+                if(true||active.p.team!=="Enemy"){
                     Q.stage(2).ActionMenu.show();
                     Q.stage(2).ActionMenu.menuControls.turnOnInputs();
                     Q.stage(2).ActionMenu.displayMenu(0,0);
@@ -2663,11 +2665,11 @@ Quintus.GameObjects=function(Q){
                                 Q.BattleGrid.icy.setTile(a.p.loc[0],a.p.loc[1],6);
                             }
                         });
-                        Q.playSound("confirm.mp3");
+                        Q.audioController.playSound("confirm.mp3");
                     }
                 });
                 iceAnim.play("frostGoingOut");
-                Q.playSound("frosty.mp3");
+                Q.audioController.playSound("frosty.mp3");
                 anims.push(iceAnim);
             };    
             makeIce();
@@ -2696,7 +2698,7 @@ Quintus.GameObjects=function(Q){
                 lightning.add("animation");
                 lightning.play("booming");
                 if(i===0){
-                    Q.playSound("fireball.mp3");
+                    Q.audioController.playSound("fireball.mp3");
                 }
                 var obj = this;
                 obj.entity.attackFuncs.text.push({func:"waitTime",obj:this.entity.attackFuncs,props:[300]});
@@ -2734,7 +2736,7 @@ Quintus.GameObjects=function(Q){
                             this.destroy();
                         });
                         if(j===locs.length-1){
-                            Q.playSound("fireball.mp3");
+                            Q.audioController.playSound("fireball.mp3");
                             obj.entity.attackFuncs.text.push({func:"waitTime",obj:obj.entity.attackFuncs,props:[300]});
                             chainLightning.on("doneAttack",obj.entity.attackFuncs,"processText");
                         }
@@ -2802,7 +2804,7 @@ Quintus.GameObjects=function(Q){
                 //Data will not be completely random, but will be based on the act/chapter.
                 //Seeds are taken from the character-genartion.json file.
                 case "roster":
-                    char.team = "ally";
+                    char.team = "Ally";
                     //Generate the level based on the Act
                     char.level = data.level || this.generateLevel(act);
                     char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
@@ -2863,7 +2865,7 @@ Quintus.GameObjects=function(Q){
                 //Take the save data and create an ally character based on it.
                 //This is done only when the game is initialized.
                 case "saved":
-                    char.team = "ally";
+                    char.team = "Ally";
                     char.name = data.name;
                     char.uniqueId = data.uniqueId;
                     char.level = data.level;

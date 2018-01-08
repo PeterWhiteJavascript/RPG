@@ -50,20 +50,20 @@ table {
 /* Start my style */
 
 :root {
-    --background-color: lightgrey;
-    --menu-background-color:orange;
-    --menu-text-color:white;
-    --menu-button-hover-color:lightgrey;
-    --button-text-color:white;
-    --button-background-color:#EEE;
-    --button-hover-color:lightgrey;
-    --content-button-text-color:white;
-    --content-button-background-color:#EEE;
-    --content-button-hover-color:lightgrey;
+    --background-color: #DDD;
+    --menu-background-color:#BBD;
+    --menu-text-color:black;
+    --menu-button-hover-color:#CCD;
+    --button-text-color:#EEE;
+    --button-background-color:#666;
+    --button-hover-color:#777;
+    --content-button-text-color:black;
+    --content-button-background-color:#CCC;
+    --content-button-hover-color:#DDD;
     --form-elm-text-color:black;
-    --form-elm-background-color:white;
-    --heading-font-family:"Helvetica";
-    --heading-text-color:black;
+    --form-elm-background-color:#FFF;
+    --heading-font-family:"Kalam";
+    --heading-text-color:white;
     --heading-gradient-one:black;
     --heading-gradient-two:grey;
 }
@@ -329,4 +329,57 @@ body {
 */
 .thirty-height{
     height:30px;
+}
+
+//Taken from https://chrisbracco.com/a-simple-css-tooltip/
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 200;
+  cursor: pointer;
+}
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -80px;
+  padding: 7px;
+  width: 200px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
 }

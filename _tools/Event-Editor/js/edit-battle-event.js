@@ -485,8 +485,8 @@ $(function(){
                 }
             }
         },
-        condsFuncs:["rounds","charHealth"],
-        condProps:function(func,props){
+        conditionsFuncs:["rounds","charHealth"],
+        conditionProps:function(func,props){
             var cont = $("<div class='UIC-group-item-props'></div>");
             var dataP = this.dataP;
             func = func || "rounds";

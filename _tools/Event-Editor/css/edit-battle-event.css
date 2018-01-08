@@ -25,6 +25,22 @@
 #event-chars-cont{
     left:50%;
 }
+.character-cont{
+    height:30px;
+    line-height:30px;
+}
+.character{
+    vertical-align:top;
+    width:90%;
+    display:inline-block;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+}
+.remove-choice{
+    width:10%;
+    text-align:center;
+}
 #char-files-cont{
     left:75%;
 }

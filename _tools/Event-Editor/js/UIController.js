@@ -174,6 +174,7 @@ function UIC(p){
                 $(cont).children("div").first().addClass("quarter-width");
                 $(cont).children("div:nth-child(2)").addClass("three-quarter-width");
             }
+            console.log(funcProps,func,props)
             group.append(uic[funcProps](func,props));
             $(group).children(".UIC-group-item-top").children("div").children(".UIC-func").change(function(){
                 $(this).parent().parent().parent().children(".UIC-group-item-props").remove();
@@ -571,7 +572,7 @@ function UIC(p){
                     uic.getPremadeGroup("Conditions")
                 ],
                 [
-                    uic.Select("Conds Req",["All","Some","One"],["All"])
+                    uic.Select("Req",["All","Some","One"],["All"])
                     +uic.TextArea("Text","")
                 ]
             ));
@@ -595,7 +596,7 @@ function UIC(p){
                     this.getPremadeGroup("Conditions",props[2][i][2])
                 ],
                 [
-                    this.Select("Conds Req",["All","Some","One"],props[2][i][0])
+                    this.Select("Req",["All","Some","One"],props[2][i][0])
                     +this.TextArea("Text",props[2][i][1])
                 ]
             ));
@@ -612,7 +613,7 @@ function UIC(p){
                 this.getPremadeGroup("Effects",props[2])
             ],
             [
-                this.Select("Conds Req",["All","Some","One"],props[0])
+                this.Select("Req",["All","Some","One"],props[0])
             ]
         ));
 

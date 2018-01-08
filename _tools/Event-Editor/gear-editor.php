@@ -269,6 +269,10 @@
                             uic.Input("Effect B",FileSaver.fileData.Materials[materials[i]][1],"number",0,100,0.01)+
                             uic.Input("Cost Multiplier",FileSaver.fileData.Materials[materials[i]][2],"number",0,100000,0.01)
                         );
+                        var tips = ["+Weight","+DMG/Block/DMG RD","+Cost"];
+                        $(cont).children(".gear-props").children("span").each(function(i){   
+                            $(this).attr("data-tooltip",tips[i]);
+                        });
                         $(cont).children(".gear-props").children("input").each(function(){
                             $(this).on("focusout",function(){
                                 var idx = $(this).parent().children("input").index(this);
@@ -291,6 +295,10 @@
                             uic.Input("Effect C",FileSaver.fileData.Quality[quality[i]][0],"number",1,100,0.01)+
                             uic.Input("Cost Multiplier",FileSaver.fileData.Quality[quality[i]][1],"number",1,100,0.01)
                         );
+                        var tips = ["+Wield/Block/DMG RD","+Cost"];
+                        $(cont).children(".gear-props").children("span").each(function(i){   
+                            $(this).attr("data-tooltip",tips[i]);
+                        });
                         $(cont).children(".gear-props").children("input").each(function(){
                             $(this).on("focusout",function(){
                                 var idx = $(this).parent().children("input").index(this);

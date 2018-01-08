@@ -50,11 +50,12 @@ var CharacterGenerator = {
         this.talents = talents;
         this.awards = awards;
     },
-    generateCharacter:function(act,data){
+    generateCharacter:function(data){
+        var act = Q ? "Act-"+Q.state.get("saveData").act : "Act-1-1";
         var char = {
             tempStatChanges:[]
         };
-        char.team = "ally";
+        char.team = data.team;
         //Generate the level based on the Act
         char.level = data.level || this.generateLevel(act);
         char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
@@ -75,10 +76,10 @@ var CharacterGenerator = {
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
-        char.techniques = this.getTechniques(data.techniques,char.charClass) || this.generateTechniques(char.charClass,char.level);//Requires charClass and level
+        char.techniques = this.getTechniques(data.techniques,char.charClass,char.equipment) || this.generateTechniques(char.charClass,char.level,char.equipment);
         char.talents = this.getTalents(char.charClass,char.charGroup);
-        char.lean = [this.getStatLean(),this.getStatLean()];
-        char.baseStats = data.baseStats || this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
+        char.lean = data.lean || [this.getStatLean(),this.getStatLean()];
+        char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
         char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
         char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
         char.exp = data.exp || 0;
@@ -87,6 +88,7 @@ var CharacterGenerator = {
         char.awards =  this.emptyAwards();
 
         char.completedEvents =  [];
+        char.combatStats = this.getCombatStats(char);
         return char;
     },
     emptyAwards:function(){
@@ -236,7 +238,19 @@ var CharacterGenerator = {
         }
         return techs;
     },
-    getTechniques:function(techs,charClass){
+    generateTechniques:function(charClass,level){
+        var skills = Q.state.get("skills");
+        var techs = [];
+        //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
+        var len = Math.floor(level/4)+1;
+        //For now, always give class specific techniques.
+        if(len>6) len = 6;
+        for(var i=0;i<len;i++){
+            techs.push(skills[charClass][i]);
+        }
+        return this.setLevelTechniques(techs,level);
+    },
+    getTechniques:function(techs,charClass,equipment){
         if(!techs) return;
         var fullTechs = [];
         var allTechs = this.allTechs;
@@ -265,8 +279,7 @@ var CharacterGenerator = {
         }
         return techniques;
     },
-    //TO REWORK (LOOK AT CREATE-CHARACTERS.JS)
-    enemyBaseStats:function(val,level,primary,primaryCoordinate,lean){
+    getBaseStats:function(val,primary,primaryCoordinate,level,lean){
         if(Q._isArray(val)){
             switch(val[0]){
                 case "Random":
@@ -391,7 +404,7 @@ var CharacterGenerator = {
         stats[primary]+=5;
         for(var idx=0;idx<level;idx++){
             stats = this.levelUp(stats,primary,primaryCoordinate,lean);
-        }  
+        }
         return stats;
     },
     //Generate lv 1 base stats for a character with control over the range of random values (default 10-20)
@@ -403,18 +416,6 @@ var CharacterGenerator = {
             stats[st] = Math.floor(Math.random()*variance)+min;
         });
         return stats;
-    },
-    generateTechniques:function(charClass,level){
-        var skills = Q.state.get("skills");
-        var techs = [];
-        //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
-        var len = Math.floor(level/4)+1;
-        //For now, always give class specific techniques.
-        if(len>6) len = 6;
-        for(var i=0;i<len;i++){
-            techs.push(skills[charClass][i]);
-        }
-        return this.setLevelTechniques(techs,level);
     },
     //Generates a random piece of equipment by filling in the vars that are to be randomized.
     randomizeEquipment:function(quality,material,gear){
@@ -448,6 +449,7 @@ var CharacterGenerator = {
         char.combatStats = baseCombatStats;
         //var stats = ["maxHp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","maxAtkDmg","minAtkDmg","maxSecondaryDmg","minSecondaryDmg","maxTp","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"];
         char.combatStats.maxHp = this.get_maxHp(char);
+        char.combatStats.hp = char.combatStats.maxHp;
         char.combatStats.painTolerance = this.get_painTolerance(char);
         char.combatStats.damageReduction = this.get_damageReduction(char);
         char.combatStats.physicalResistance = this.get_physicalResistance(char);
@@ -461,6 +463,7 @@ var CharacterGenerator = {
         char.combatStats.minSecondaryDmg = this.get_minSecondaryDmg(char);
 
         char.combatStats.maxTp = this.get_maxTp(char);
+        char.combatStats.tp = char.combatStats.maxTp;
 
         char.combatStats.encumbranceThreshold = this.get_encumbranceThreshold(char);
         char.combatStats.totalWeight = this.get_totalWeight(char);
@@ -489,12 +492,12 @@ var CharacterGenerator = {
         var rfl = p.combatStats.reflexes, 
             encPenalty = p.talents.includes("Armoured Defense")?0:p.combatStats.encumbrancePenalty,
             level = p.level,
-            block = this.getEquipmentProp("block",p.equipment.lefthand);
-        var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
+            block = this.getEquipmentProp("block",p.equipment[1]);
+        var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
         return rfl+encPenalty+level+block+dualWield;
     },
     get_damageReduction:function(p){
-        return this.getEquipmentProp("damageReduction",p.equipment.armour);
+        return this.getEquipmentProp("damageReduction",p.equipment[2]);
     },
     get_physicalResistance:function(p){
         var str = p.combatStats.strength, end = p.combatStats.endurance;
@@ -510,9 +513,9 @@ var CharacterGenerator = {
     },
     get_atkAccuracy:function(p){
         //If there is a left hand equipped, we need an average of the two.
-        var equipped = p.equipment.lefthand?2:1;
+        var equipped = p.equipment[1]?2:1;
         var wsk = p.combatStats.weaponSkill,
-            wield = ((this.getEquipmentProp("wield",p.equipment[0])+this.getEquipmentProp("wield",p.equipment.lefthand))/equipped), 
+            wield = ((this.getEquipmentProp("wield",p.equipment[0])+this.getEquipmentProp("wield",p.equipment[1]))/equipped), 
             encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
             level = p.level;
         //I multiplied by 2 to get some better accuracies.
@@ -529,14 +532,14 @@ var CharacterGenerator = {
         return Math.min(75,Math.floor(defensiveAbility/g));
     },
     get_atkSpeed:function(p){
-        var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment[0]),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment.lefthand),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
+        var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment[0]),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment[1]),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
         var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
-        var dualWield = p.talents.includes("Dual Wielder")&&p.equipment.lefthand.wield?5:0;
+        var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
         var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
         return amount;
     },
     get_atkRange:function(p){
-        var attackRangeRight = this.getEquipmentProp("range",p.equipment[0]), attackRangeLeft = this.getEquipmentProp("range",p.equipment.lefthand);
+        var attackRangeRight = this.getEquipmentProp("range",p.equipment[0]), attackRangeLeft = this.getEquipmentProp("range",p.equipment[1]);
         var range = attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
         if(range>1&&p.talents.includes("Sniper")) range+=2;
         return range || 1;
@@ -554,12 +557,12 @@ var CharacterGenerator = {
         return Math.floor((str*t)+(level*h)+minDamageRight);
     },
     get_maxSecondaryDmg:function(p){
-        var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment.lefthand), charGroup = p.charGroup;
+        var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment[1]), charGroup = p.charGroup;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
         return Math.floor((str*0.5)+(level*h)+maxDamageLeft);
     },
     get_minSecondaryDmg:function(p){
-        var str = p.combatStats.strength, level = p.level, minDamageLeft = this.getEquipmentProp("mindmg",p.equipment.lefthand), charGroup = p.charGroup;
+        var str = p.combatStats.strength, level = p.level, minDamageLeft = this.getEquipmentProp("mindmg",p.equipment[1]), charGroup = p.charGroup;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
         return Math.floor((str*0.5)+(level*h)+minDamageLeft);
     },
@@ -573,7 +576,7 @@ var CharacterGenerator = {
         var encPenalty = p.talents.includes("Armoured March")?0:p.combatStats.encumbrancePenalty,
             charGroup = p.charGroup;
         var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
-        var shoes = this.getEquipmentProp("move",p.equipment.footwear);
+        var shoes = this.getEquipmentProp("move",p.equipment[3]);
         return m + Math.floor(encPenalty/10) + shoes;
     },
     get_encumbranceThreshold:function(p){
@@ -582,7 +585,7 @@ var CharacterGenerator = {
         return Math.floor(str*e);
     },
     get_totalWeight:function(p){
-        var rightHandWeight = this.getEquipmentProp("weight",p.equipment[0]), leftHandWeight = this.getEquipmentProp("weight",p.equipment.lefthand), armourWeight = this.getEquipmentProp("weight",p.equipment.armour), shoesWeight = this.getEquipmentProp("weight",p.equipment.shoes), accessoryWeight = this.getEquipmentProp("weight",p.equipment.accessory);
+        var rightHandWeight = this.getEquipmentProp("weight",p.equipment[0]), leftHandWeight = this.getEquipmentProp("weight",p.equipment[1]), armourWeight = this.getEquipmentProp("weight",p.equipment[2]), shoesWeight = this.getEquipmentProp("weight",p.equipment[3]), accessoryWeight = this.getEquipmentProp("weight",p.equipment[4]);
         return rightHandWeight+leftHandWeight+armourWeight+shoesWeight+accessoryWeight;
     },
     get_encumbrancePenalty:function(p){
