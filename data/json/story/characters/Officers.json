@@ -51,7 +51,21 @@
                 "Phalanx"
             ],
             "nationality": "Venorian",
-            "charClass": "Random"
+            "charClass": "Random",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Astraea": {
             "handle": "Astraea",
@@ -104,7 +118,21 @@
                 "Whirlwind Strike"
             ],
             "nationality": "Venorian",
-            "charClass": "Vanguard"
+            "charClass": "Vanguard",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Nicodemus": {
             "handle": "Nicodemus",
@@ -153,7 +181,21 @@
                 "War Cry"
             ],
             "nationality": "Dardoian",
-            "charClass": "Berserker"
+            "charClass": "Berserker",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Lysandra": {
             "handle": "Lysandra",
@@ -202,7 +244,21 @@
                 "Antithesis"
             ],
             "nationality": "Venorian",
-            "charClass": "Illusionist"
+            "charClass": "Illusionist",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Gaios": {
             "handle": "Gaios",
@@ -251,7 +307,21 @@
                 "Sniper Shot"
             ],
             "nationality": "Venorian",
-            "charClass": "Archer"
+            "charClass": "Archer",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Rutendo": {
             "handle": "Rutendo",
@@ -304,7 +374,21 @@
                 "Phalanx"
             ],
             "nationality": "Aliudramilan",
-            "charClass": "Legionnaire"
+            "charClass": "Legionnaire",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Imamu": {
             "handle": "Imamu",
@@ -349,7 +433,21 @@
                 "Resurrect"
             ],
             "nationality": "Aliudramilan",
-            "charClass": "Healer"
+            "charClass": "Healer",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Nala": {
             "handle": "Nala",
@@ -394,7 +492,21 @@
                 "Poison Strike"
             ],
             "nationality": "Aliudramilan",
-            "charClass": "Assassin"
+            "charClass": "Assassin",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Sjrna": {
             "handle": "Sjrna",
@@ -443,7 +555,21 @@
                 "Coordinated Attack"
             ],
             "nationality": "Dardoian",
-            "charClass": "Skirmisher"
+            "charClass": "Skirmisher",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         },
         "Eko": {
             "handle": "Eko",
@@ -452,7 +578,7 @@
             "levelmax": 1,
             "gender": "Male",
             "team": "Ally",
-            "promotion": "1",
+            "promotion": 1,
             "equipment": [
                 [
                     "Javelin",
@@ -464,16 +590,8 @@
                     "Bone",
                     "Default"
                 ],
-                [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
-                [
-                    "Default",
-                    "Default",
-                    "Default"
-                ],
+                "Default",
+                "Default",
                 "None"
             ],
             "baseStats": {
@@ -496,7 +614,21 @@
                 "Lightning Storm"
             ],
             "nationality": "Talumpatuan",
-            "charClass": "Elementalist"
+            "charClass": "Elementalist",
+            "lean": [
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ],
+                [
+                    25,
+                    25,
+                    25,
+                    25
+                ]
+            ]
         }
     }
 }

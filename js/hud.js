@@ -426,7 +426,7 @@ Quintus.HUD=function(Q){
                 fill:"#DDD",
                 opacity:0.5,
                 titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
-                options:[["Move","Attack","Skill","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
+                options:[["Move","Attack","Technique","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[],
                 radius:0
@@ -800,6 +800,7 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
+            console.log(target.p.techniques)
             var skills = target.p.techniques;
             for(var i=0;i<skills.length;i++){
                 this.insert(new Q.UI.Text({label:skills[i].name,x:5,y:5+i*28,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
@@ -1632,7 +1633,7 @@ Quintus.HUD=function(Q){
             this.p.y = Q.height-this.p.h;
             
             //Fill this menu with the placeable characters
-            this.p.options.push(Q.BatCon.placeableAllies);
+            this.p.options.push(Q.BatCon.battlePlacement.placeableAllies);
             //Add the inputs for the menu
             this.add("menuControls");
             this.on("inserted");
@@ -1668,7 +1669,7 @@ Quintus.HUD=function(Q){
             var idx = this.menuControls.selected;
             this.placingCharacter.add("directionControls");
             this.placingCharacter.on("pressedConfirm",function(){
-                Q.BatCon.confirmPlacement(this);
+                Q.BatCon.battlePlacement.confirmPlacement(this);
                 this.directionControls.removeControls();
             });
             this.placingCharacter.on("pressedBack",function(){
@@ -1692,7 +1693,7 @@ Quintus.HUD=function(Q){
             Q.clearStage(1);
         },
         hoverOption:function(num){
-            var char = Q.BatCon.placeableAllies[num];
+            var char = Q.BatCon.battlePlacement.placeableAllies[num];
             char.loc = Q.pointer.p.loc;
             if(this.placingCharacter){
                 this.placingCharacter.destroy();

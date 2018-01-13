@@ -235,7 +235,7 @@ Quintus.Objects=function(Q){
             }
         }
     });
-    //Given to characters, interactables, and pickups
+    //Given to characters, interactables, and pickups (all these are added to the turn oder, but pickups at least should be skipped TODO)
     //Checked to see if this object should be placed in the BattleGrid, and also if it has ZOC.
     Q.component("interactable",{
         added:function(){
@@ -407,7 +407,7 @@ Quintus.Objects=function(Q){
                     this.addStatus("bleedingOut",5,"debuff",this);
                     if(this.p.mirage) this.p.mirage.dispellMirage();
                     this.p.fainted = false;
-                    if(!this.p.died){
+                    /*if(!this.p.died){
                         //Set died to true so that if the character comes back to life, it will not give exp
                         this.p.died = true;
                         //Only give exp if possible (if an ally killed this character, no exp is given)
@@ -419,7 +419,7 @@ Quintus.Objects=function(Q){
                             }
                             
                         }
-                    }
+                    }*/
                 } else {
                     if(this.p.talents.includes("Second Wind")&&this.p.tempHp<=Math.floor(this.p.combatStats.maxHp/10)){
                         Q.BatCon.removeFromTurnOrder(this);
@@ -429,7 +429,7 @@ Quintus.Objects=function(Q){
                         this.playStand(this.p.dir);
                     }
                 }
-                Q.BatCon.processTrigger("charHealth",this);
+                Q.BatCon.battleTriggers.processTrigger("charHealth",this);
                 if(callback) callback();
             },
             //Generates stats based on buffs (called after adding and removing a buff)
@@ -769,7 +769,7 @@ Quintus.Objects=function(Q){
                 canMoveOn:{
                     waterWalk:false
                 },
-                //All enemies that hit this character are added so the exp can be divided when this character dies
+                //All enemies that hit this character
                 hitBy:[],
                 //The current exp
                 exp:0

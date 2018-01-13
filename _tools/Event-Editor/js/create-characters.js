@@ -1,5 +1,5 @@
 $(function(){
-    CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['skills.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
+    CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['techniques.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
     var uic = new UIC({
         dataP:{
             charGen:GDATA.dataFiles["character-generation.json"],
@@ -40,6 +40,8 @@ $(function(){
         //Saves the currently selected character
         saveCharacter:function(){
             if(!$(".character.selected").length) return;
+            //Make sure the lean is = 100;
+            $("#fix-lean").trigger("click");
             var data = this.getCurrentCharacter();
             data.handle = $("#char-props input:eq(0)").val();
             data.name = $("#char-props input:eq(1)").val();
@@ -74,6 +76,25 @@ $(function(){
                 $("#technique-props select:eq(4)").val(),
                 $("#technique-props select:eq(5)").val()
             ];
+            if($("#using-rand-lean").text() === "Use Rand Lean"){
+                data.lean = false;
+            } else {
+                data.lean =  [
+                    [
+                        parseInt($("#lean-props input:eq(0)").val()),
+                        parseInt($("#lean-props input:eq(1)").val()),
+                        parseInt($("#lean-props input:eq(2)").val()),
+                        parseInt($("#lean-props input:eq(3)").val())
+                    ],
+                    [
+                        parseInt($("#lean-props input:eq(4)").val()),
+                        parseInt($("#lean-props input:eq(5)").val()),
+                        parseInt($("#lean-props input:eq(6)").val()),
+                        parseInt($("#lean-props input:eq(7)").val())
+                    ]
+                ];
+            }
+            
             if($("#using-base-stats").text() === "Using Rand"){
                 data.baseStats = [$("#using-base-stats").siblings("select:eq(0)").val(),$("#using-base-stats").siblings("select:eq(1)").val()];
             } else {
@@ -89,6 +110,7 @@ $(function(){
                     eff:parseInt($("#base-stat-props input:eq(8)").val())
                 };
             }
+            
         },
         saveFile:function(){
             this.saveCharacter();
@@ -245,6 +267,22 @@ $(function(){
             $("#technique-props").children("select").each(function(i){
                 $(this).val(data.techniques[i]);
             });
+            if(data.lean){
+                $("#using-rand-lean").children("span").text("Use Set Lean");
+                $("#random-lean").hide();
+                $("#neutralize-lean").show();
+                $("#fix-lean").show();
+                var leans = data.lean[0].concat(data.lean[1]);
+                $("#lean-props").children("input").each(function(i){
+                    $(this).val(leans[i]);
+                });
+            } else {
+                $("#using-rand-lean").children("span").text("Use Rand Lean");
+                $("#random-lean").show();
+                $("#neutralize-lean").hide();
+                $("#fix-lean").hide();
+                $("#random-lean").trigger("click");
+            }
             
             if(Array.isArray(data.baseStats)){
                 $("#using-base-stats").children("span").text("Using Rand");
@@ -443,8 +481,42 @@ $(function(){
                 $("#talent-props").children("div:eq(3)").children(".minimizer").children("span").last().text(classTalents[2].name);
                 $("#talent-props").children("div:eq(3)").children("p").last().text(classTalents[2].desc);
                 
+                var center = uic.dataP.charGen.primaryCoords[classNum];
+                function inBounds(num){
+                    return num>2 ? 0 : num<0 ? 2 : num;
+                };
+                function getSecondaries(center){
+                    var graph = CharacterGenerator.levelUpGraph;
+                    var mult = CharacterGenerator.levelUpMultiplier;
+                    return [
+                        graph[inBounds(center[1]+mult[0][1])][inBounds(center[0]+mult[0][0])],
+                        graph[inBounds(center[1]+mult[1][1])][inBounds(center[0]+mult[1][0])],
+                        graph[inBounds(center[1]+mult[2][1])][inBounds(center[0]+mult[2][0])],
+                        graph[inBounds(center[1]+mult[3][1])][inBounds(center[0]+mult[3][0])]
+                    ];
+                }
+                function getTertiaries(center){
+                    var graph = CharacterGenerator.levelUpGraph;
+                    var graph = CharacterGenerator.levelUpGraph;
+                    var mult = CharacterGenerator.levelUpMultiplier;
+                    return [
+                        graph[inBounds(center[1]+mult[4][1])][inBounds(center[0]+mult[4][0])],
+                        graph[inBounds(center[1]+mult[5][1])][inBounds(center[0]+mult[5][0])],
+                        graph[inBounds(center[1]+mult[6][1])][inBounds(center[0]+mult[6][0])],
+                        graph[inBounds(center[1]+mult[7][1])][inBounds(center[0]+mult[7][0])]
+                    ];
+                }
+                var stats = getSecondaries(center).concat(getTertiaries(center));
+                $("#lean-props").children("span.quarter-width").each(function(i){
+                    $(this).text(stats[i]);
+                });
+                
                 if($("#using-base-stats").text() === "Using Rand"){
+                    if($("#using-rand-lean").children("span").text() === "Use Rand Lean"){
+                        $("#random-lean").trigger("click");
+                    }
                     $("#random-base-stats").trigger("click");
+                    
                 }
                 
             });
@@ -453,6 +525,80 @@ $(function(){
             uic.linkSelects($("#equipment-props").children("select:eq(3)"),$("#equipment-props").children("select:eq(4)"),processedMaterialsObj);
             uic.linkSelects($("#equipment-props").children("select:eq(6)"),$("#equipment-props").children("select:eq(7)"),processedMaterialsObj);
             uic.linkSelects($("#equipment-props").children("select:eq(9)"),$("#equipment-props").children("select:eq(10)"),processedMaterialsObj);
+            
+            $("#using-rand-lean").click(function(){
+                if($(this).siblings("#random-lean").is(":visible")){
+                    $(this).children("span").text("Use Set Lean");
+                    $("#neutralize-lean").show();
+                    $("#random-lean").hide();
+                    $("#fix-lean").show();
+                    $(this).siblings("select").hide();
+                } else {
+                    $(this).children("span").text("Use Rand Lean");
+                    $("#neutralize-lean").hide();
+                    $("#random-lean").show();
+                    $("#fix-lean").hide();
+                    $(this).siblings("select").show();
+                }
+            });
+            $("#neutralize-lean").click(function(){
+                $("#lean-props").children("input").each(function(){
+                    $(this).val(25);
+                });
+            });
+            
+            $("#random-lean").click(function(){
+                var randLean = CharacterGenerator.generateStatLean().concat(CharacterGenerator.generateStatLean());
+                $("#lean-props").children("input").each(function(i){
+                    $(this).val(randLean[i]);
+                });
+            });
+            $("#lean-props").children("input").focusout(function(){
+                if(parseInt($(this).val()) > 97) $(this).val(97);
+                if(parseInt($(this).val()) < 1) $(this).val(1);
+            });
+            function fixLean(){
+                function getVals(dif,arr){
+                    var divide = dif / 4;
+                    if(dif<0) divide = Math.ceil(divide);
+                    else divide = Math.floor(divide);
+                    var extra = dif % 4;
+                    var vals = [
+                        arr[0] - divide,
+                        arr[1] - divide,
+                        arr[2] - divide,
+                        arr[3] - divide
+                    ];
+                    vals[vals.indexOf(Math.max.apply(null,vals),vals)] -= extra;
+                    return vals;
+                }
+                function processLeanVal(val){
+                    return Math.min(97,Math.max(1,parseInt(val)));
+                }
+                do {
+                    var lean = [processLeanVal($("#lean-props").children("input:eq(0)").val()),processLeanVal($("#lean-props").children("input:eq(1)").val()),processLeanVal($("#lean-props").children("input:eq(2)").val()),processLeanVal($("#lean-props").children("input:eq(3)").val())]
+                    var secDif  = lean.reduce(function(acc,cur){return acc + cur;}) - 100;
+                    var vals = getVals(secDif,lean);
+                    $("#lean-props").children("input:eq(0)").val(vals[0]);
+                    $("#lean-props").children("input:eq(1)").val(vals[1]);
+                    $("#lean-props").children("input:eq(2)").val(vals[2]);
+                    $("#lean-props").children("input:eq(3)").val(vals[3]);
+                } while(vals.filter(function(elm){return elm < 1 || elm > 97;}).length);
+                do {
+                    var lean = [processLeanVal($("#lean-props").children("input:eq(4)").val()),processLeanVal($("#lean-props").children("input:eq(5)").val()),processLeanVal($("#lean-props").children("input:eq(6)").val()),processLeanVal($("#lean-props").children("input:eq(7)").val())];
+                    var terDif = lean.reduce(function(acc,cur){return acc + cur;}) - 100;
+                    var vals = getVals(terDif,lean);
+                    console.log(vals);
+                    $("#lean-props").children("input:eq(4)").val(vals[0]);
+                    $("#lean-props").children("input:eq(5)").val(vals[1]);
+                    $("#lean-props").children("input:eq(6)").val(vals[2]);
+                    $("#lean-props").children("input:eq(7)").val(vals[3]);
+                } while(vals.filter(function(elm){return elm < 1 || elm > 97;}).length);
+                
+            };
+            $("#fix-lean").click(function(){
+                fixLean();
+            });
             
             $("#using-base-stats").click(function(){
                 if($(this).siblings("#random-base-stats").is(":visible")){
@@ -474,7 +620,17 @@ $(function(){
                 var min = parseInt($("#char-props input:eq(2)").val());
                 var max = parseInt($("#char-props input:eq(3)").val());
                 var level = min + ~~(Math.random()*(max-min));
-                var lean = [[25,25,25,25],[25,25,25,25]];
+                var lean = [
+                    [parseInt($("#lean-props").children("input:eq(0)").val()),parseInt($("#lean-props").children("input:eq(1)").val()),parseInt($("#lean-props").children("input:eq(2)").val()),parseInt($("#lean-props").children("input:eq(3)").val())],
+                    [parseInt($("#lean-props").children("input:eq(4)").val()),parseInt($("#lean-props").children("input:eq(5)").val()),parseInt($("#lean-props").children("input:eq(6)").val()),parseInt($("#lean-props").children("input:eq(7)").val())]
+                ];
+                //reducer = (accumulator, currentValue) => accumulator + currentValue;
+                var sec = lean[0].reduce(function(acc,cur){return acc + cur;});
+                var ter = lean[1].reduce(function(acc,cur){return acc + cur;});
+                if(sec !== 100 || ter !== 100){
+                    alert("Secondary lean is: "+sec+". Tertiary lean is: "+ter+". Make both of these 100.");
+                    return;
+                }
                 var stats = {};
                 var minStat = 10;
                 var varianceStat = 5;

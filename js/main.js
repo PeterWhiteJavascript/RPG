@@ -88,7 +88,7 @@ Q.newGame=function(options){
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
-    var freeSpaces = 10;
+    var freeSpaces = 0;//10;
     for(var i=0;i<freeSpaces;i++){
         var char = Q.charGen.generateCharacter({});
         Q.partyManager.roster.push(char);
@@ -133,7 +133,7 @@ Q.startGame=function(save){
     $("#hud-week").text(Q.state.get("saveData").week);
     
     //This will be passed in from the save file.
-    var freeSpaces = 10;
+    var freeSpaces = 0;//10;
     for(var i=0;i<freeSpaces;i++){
         Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
     };
@@ -141,7 +141,7 @@ Q.startGame=function(save){
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
 };
 
-function convertSkills(data){
+function convertTechs(data){
     var charClasses = Q.state.get("charGeneration").classNames;
     var techs = {};
     for(var i=0;i<charClasses.length;i++){
@@ -167,7 +167,6 @@ for(var i=0;i<fileKeys.length;i++){
 toLoad.push("json/story/global-vars.json");
 toLoad.push("json/data/ui-objects.json");
 Q.load(toLoad.join(","),function(){
-    CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['skills.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
     //Items that are not equipment. I may make key items seperate.
     Q.state.set("items",GDATA.dataFiles["items.json"]);
     //All base settings for character classes
@@ -176,9 +175,9 @@ Q.load(toLoad.join(","),function(){
     //A bunch of values for generating random characters
     Q.state.set("charGeneration",GDATA.dataFiles['character-generation.json']);
     //The list of skills and their effects
-    Q.state.set("skills",GDATA.dataFiles['skills.json']);
+    Q.state.set("techniques",GDATA.dataFiles['techniques.json']);
     //Puts all of the skills in a single object for easy access
-    Q.state.set("allSkills",convertSkills(Q.state.get("skills")));
+    //Q.state.set("allTechniques",convertTechs(Q.state.get("techniques")));
     //The talents list
     Q.state.set("talents",GDATA.dataFiles['talents.json']);
     //The list of awards and descriptions
@@ -196,6 +195,7 @@ Q.load(toLoad.join(","),function(){
     Q.state.set("scenesList",GDATA.dataFiles["scenes-list.json"]);
     //All of the character files
     Q.state.set("characterFiles",GDATA.chars);
+    Q.state.set("equipment",GDATA.dataFiles['equipment.json']);
     //Default equipment for enemy generation
     Q.state.set("defaultEquipment",GDATA.dataFiles["default-equipment.json"]);
     //Events that are triggered after doing things
@@ -203,6 +203,8 @@ Q.load(toLoad.join(","),function(){
     
     //UI Objects
     Q.compileSheets("ui/ui-objects.png","json/data/ui-objects.json");
+    
+    CharacterGenerator.init(Q.state.get("charGeneration"),Q.state.get("equipment"),Q.state.get("defaultEquipment"),Q.state.get("techniques"),Q.state.get("talents"),Q.state.get("awards"));
     
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();

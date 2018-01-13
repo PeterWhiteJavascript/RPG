@@ -155,6 +155,8 @@ Quintus.QFunctions=function(Q){
         var end = graph.grid[toLoc[0]][toLoc[1]];
         return Q.astar.search(graph, start, end, {maxScore:max});
     };
+    
+    //Make the character look at the pointer when moving.
     Q.compareLocsForDirection = function(userLoc,loc,dir){
         var difX = userLoc[0]-loc[0];
         var difY = userLoc[1]-loc[1];

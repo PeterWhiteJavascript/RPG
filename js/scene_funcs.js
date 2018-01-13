@@ -162,9 +162,9 @@ Quintus.SceneFuncs=function(Q){
 
                 //Display the hud which shows character and terrain information
                 Q.stageScene("battleHUD",3);
-                Q.BatCon.setUpTriggers(battleData.events);
-                Q.BatCon.showPlacementSquares();
-                Q.BatCon.startPlacingAllies();
+                Q.BatCon.battleTriggers.setUpTriggers(battleData.events);
+                Q.BatCon.battlePlacement.showPlacementSquares();
+                Q.BatCon.battlePlacement.startPlacingAllies();
                 
             });
         },{

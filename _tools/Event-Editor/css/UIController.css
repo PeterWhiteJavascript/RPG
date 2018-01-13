@@ -42,6 +42,9 @@
     text-align:center;
     display:inline-block;
 }
+.UIC-hud-buttons div span{
+    height:30px;
+}
 
 /* one item */
 .UIC-hud-button:first-child:nth-last-child(1) {
@@ -420,6 +423,9 @@ textarea{
 }
 .sixth-width{
     width:16.6666% !important;
+}
+.fifth-width{
+    width:20% !important;
 }
 .quarter-width{
     width:25% !important;

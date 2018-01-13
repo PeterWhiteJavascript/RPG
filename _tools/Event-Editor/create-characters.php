@@ -82,6 +82,29 @@
                     </div>
                 </div>
                 
+                <p class="title-text">Lean</p>
+                <div class="UIC-hud-buttons hud-buttons">
+                    <div id="using-rand-lean" class="UIC-hud-button"><span>Use Rand Lean</span></div>
+                    <div id="random-lean" class="UIC-hud-button"><span>Randomize</span></div>
+                    <div id="neutralize-lean" class="UIC-hud-button"><span>Neutralize</span></div>
+                    <div id="fix-lean" class="UIC-hud-button"><span>Repair Lean</span></div>
+                </div>
+                <div class="UIC-group-item">
+                    <div id="lean-props" class="UIC-group-item-props">
+                        <span class='sub-title-text'>Secondary</span>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        
+                        <span class='sub-title-text'>Tertiary</span>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                        <span class='quarter-width'></span><input class='UIC-prop quarter-width' type='number'  min='1' max='97'>
+                    </div>                    
+                </div>
+                
                 <p class="title-text">Base Stats</p>
                 <div class="UIC-hud-buttons hud-buttons">
                     <div id="using-base-stats" class="UIC-hud-button"><span>Using Rand</span></div>
@@ -106,6 +129,7 @@
                         
                     </div>
                 </div>
+                
                 <p class="title-text">Talents</p>
                 <div class="UIC-group-item">
                     <div id="talent-props" class="UIC-group-item-props">

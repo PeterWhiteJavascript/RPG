@@ -50,6 +50,9 @@ var CharacterGenerator = {
         this.talents = talents;
         this.awards = awards;
     },
+    generateCharFromSave:function(data){
+        
+    },
     generateCharacter:function(data){
         var act = Q ? "Act-"+Q.state.get("saveData").act : "Act-1-1";
         var char = {
@@ -76,9 +79,10 @@ var CharacterGenerator = {
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
-        char.techniques = this.getTechniques(data.techniques,char.charClass,char.equipment) || this.generateTechniques(char.charClass,char.level,char.equipment);
+        //Generate techniques is used to generate defaults for the roster. All characters created in the editor should at least have "Default" set.
+        char.techniques = data.techniques ? this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment) : this.generateTechniques(char.charClass,char.level,char.equipment);
         char.talents = this.getTalents(char.charClass,char.charGroup);
-        char.lean = data.lean || [this.getStatLean(),this.getStatLean()];
+        char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
         char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
         char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
         char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
@@ -100,14 +104,19 @@ var CharacterGenerator = {
         });
         return obj;
     },
+    getLean:function(lean){
+        if(!lean) return false;
+        //If we need to process the lean, do it here
+        return lean;
+    },
     //Generates four random numbers that all add up to 100
-    getStatLean:function(){
+    generateStatLean:function(){
         //Force at least 1 percent chance for each stat
         var lean = [1,1,1,1];
         //Start at 96 since 4 is already taken.
         var num = 96;
         //The skew is how far apart the numbers will probably be. Higher skew = higher chance of very big/very small numbers.
-        var skew = 15;
+        var skew = 12;
         //Generate some pretty decent random numbers
         while(num>0){
             var rand = Math.ceil(Math.random()*skew);
@@ -146,6 +155,7 @@ var CharacterGenerator = {
         }
     },
     generateEquipment:function(classNum,natNum,level){
+        //TODO: primary/secondary hands wand/staff/bow
         return [
             this.convertEquipment(this.equipGear("Default",false,classNum,natNum,0),this.equipQuality("Default",level)),
             this.convertEquipment(this.equipGear("Default",false,classNum,natNum,1),this.equipQuality("Default",level)),
@@ -229,44 +239,60 @@ var CharacterGenerator = {
         return [rh,lh,ar,ft,ac];
     },
     convertTechniques:function(data){
-        var charClasses = this.characterGeneration.classNames;
-        var techs = {};
-        for(var i=0;i<charClasses.length;i++){
-            for(var j=0;j<data[charClasses[i]].length;j++){
-                techs[data[charClasses[i]][j].name] = data[charClasses[i]][j];
-            }
+        var charClassKeys = Object.keys(data.CharClass);
+        var techs = data.Active.concat(data.Passive);
+        for(var i=0;i<charClassKeys.length;i++){
+            techs = techs.concat(data.CharClass[charClassKeys[i]]);
         }
         return techs;
     },
-    generateTechniques:function(charClass,level){
-        var skills = Q.state.get("skills");
+    generateTechniques:function(charClass,level,equipment){
+        var techniques = this.techniques;
         var techs = [];
         //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
         var len = Math.floor(level/4)+1;
         //For now, always give class specific techniques.
         if(len>6) len = 6;
         for(var i=0;i<len;i++){
-            techs.push(skills[charClass][i]);
+            techs.push(techniques.CharClass[charClass][i]);
         }
-        return this.setLevelTechniques(techs,level);
+        return this.setLevelTechniques(techs,level).concat(this.getEquipmentTechniques(equipment));
+    },
+    findTechnique:function(name){
+        return this.allTechs.find(function(tech){return tech[0] === name;});
+    },
+    getEquipmentTechniques:function(equipment){
+        function getTech(eq){
+            var data = CharacterGenerator.equipment.gear[eq.name];
+            var rank = Math.ceil(CharacterGenerator.qualityKeys.indexOf(eq.quality));
+            var t = [CharacterGenerator.findTechnique(data.techniques.Base[0])];
+            data.techniques[eq.material].slice(0,rank).forEach(function(tech){
+                t.push(CharacterGenerator.findTechnique(tech[0]));
+            });
+            return t;
+        }
+        var techs = [];
+        var primary = equipment[0];
+        if(primary) techs = techs.concat(getTech(primary));
+        var secondary = equipment[1];
+        if(secondary) techs = techs.concat(getTech(secondary));
+        return techs;
     },
     getTechniques:function(techs,charClass,equipment){
         if(!techs) return;
-        var fullTechs = [];
-        var allTechs = this.allTechs;
-        var skills = this.techniques;
+        var techniques = [];
         for(var i=0;i<techs.length;i++){
             if(techs[i].length){
                 if(techs[i]==="Default"){
-                    fullTechs.push(skills[charClass][i]);
+                    techniques.push(this.techniques.CharClass[charClass][i]);
                 } else {
-                    fullTechs.push(allTechs[techs[i]]);
+                    techniques.push(this.findTechnique(techs[i]));
                 }
             } else {
                 i = techs.length;
             }
         }
-        return fullTechs;
+        return techniques.concat(this.getEquipmentTechniques(equipment));
     },
     //Remove some later techniques if the level is not enough
     setLevelTechniques:function(techs,level){
@@ -385,7 +411,7 @@ var CharacterGenerator = {
         var secStats = [];
         for(var i=0;i<3;i++){
             var secStat;
-            do{
+            do {
                 var secondary = this.getIdx(lean[0],this.rand());
                 var secPos = [inBounds(center[0]+mult[secondary][0]),inBounds(center[1]+mult[secondary][1])];
                 secStat = graph[secPos[1]][secPos[0]];

@@ -35,7 +35,21 @@
             ],
             "nationality": "Random",
             "charClass": "Legionnaire",
-            "promotion": 1
+            "promotion": 1,
+            "lean": [
+                [
+                    74,
+                    5,
+                    15,
+                    6
+                ],
+                [
+                    20,
+                    24,
+                    21,
+                    35
+                ]
+            ]
         }
     }
 }
