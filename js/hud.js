@@ -418,6 +418,7 @@ Quintus.HUD=function(Q){
         }
     });
     //The menu that loads in battle that allows the user to do things with a character
+    //TODO: Make the visuals for the menu in Jquery and make it better.
     Q.UI.Container.extend("ActionMenu",{
         init: function(p) {
             this._super(p, {
@@ -489,7 +490,7 @@ Quintus.HUD=function(Q){
             var techniques = [];
             //Set possible techniques
             for(var i=0;i<target.p.techniques.length;i++){
-                opts.push(target.p.techniques[i].name);
+                opts.push(target.p.techniques[i][0]);
                 funcs.push("loadTechnique");
                 techniques.push(target.p.techniques[i]);
             }
@@ -552,7 +553,8 @@ Quintus.HUD=function(Q){
                 if(menuNum===2){
                     name.p.x = 4;
                     name.p.align="left";
-                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.techniques[i].cost,cx:0,align:"right",size:16}));
+                    console.log(options)
+                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.techniques[i][6],cx:0,align:"right",size:16}));
                 }
                 this.p.conts.push(cont);
             }
@@ -561,42 +563,37 @@ Quintus.HUD=function(Q){
             Q.pointer.checkTarget();
             this.trigger("checkGray",menuNum);
         },
+        changeToPointer:function(controls){
+            Q.rangeController.target = this.p.target;
+            this.menuControls.turnOffInputs();
+            this.hide();
+            Q.pointer.p.user = this.p.target;
+            Q.pointer.add(controls);
+        },
         //Shows the move grid and zoc
         loadMove:function(){
             //Q.BattleGrid.showZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"walk"}));
-            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.menuControls.turnOffInputs();
-            this.hide();
-            Q.pointer.p.user = this.p.target;
-            Q.pointer.add("pointerMoveControls");
+            this.changeToPointer("pointerMoveControls");
+            Q.rangeController.setTiles(1,this.p.target.p.loc,this.p.target.p.combatStats.moveSpeed,this.p.target.p.walkMatrix);
+            Q.rangeController.pulse();
         },
         //Shows the attack grid
         loadAttack:function(){
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"attack"}));
-            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.menuControls.turnOffInputs();
-            this.hide();
-            Q.pointer.p.user = this.p.target;
-            Q.pointer.add("pointerAttackControls");
+            this.changeToPointer("pointerAttackControls");
+            Q.rangeController.setTiles(2,this.p.target.p.loc,this.p.target.p.combatStats.atkRange,this.p.target.p.attackMatrix);
+            Q.rangeController.pulse();
         },
         //Show the range for lifting (4 squares around the user)
         loadLift:function(){
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"lift"}));
-            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.menuControls.turnOffInputs();
-            this.hide();
-            Q.pointer.p.user = this.p.target;
-            Q.pointer.add("pointerLiftControls");
+            this.changeToPointer("pointerLiftControls");
+            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
+            Q.rangeController.pulse();
         },
         //Shows the range for dropping
         loadDrop:function(){
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"drop"}));
-            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.menuControls.turnOffInputs();
-            this.hide();
-            Q.pointer.p.user = this.p.target;
-            Q.pointer.add("pointerDropControls");
+            this.changeToPointer("pointerDropControls");
+            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
+            Q.rangeController.pulse();
         },
         //Loads the special skills menu
         loadTechniquesMenu:function(){
@@ -605,21 +602,20 @@ Quintus.HUD=function(Q){
         //Show the attack grid for the skill
         loadTechnique:function(){
             var skill = this.p.techniques[this.menuControls.selected];
+            console.log(this.p.techniques)
             if(!skill) return this.loadItem();
-            if(this.p.target.p.combatStats.tp-(skill.cost-this.p.target.p.combatStats.efficiency)<0){
+            var cost = Q.BatCon.attackFuncs.getTechniqueCost(skill[6],this.p.target.p.combatStats.efficiency);
+            if(this.p.target.p.combatStats.tp - cost < 0){
                 alert("Not Enough TP!");
                 return;
             }
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
-            //Hide this options box. Once the user confirms where he wants to go, destroy this. If he presses 'back' the selection num should be the same
-            this.menuControls.turnOffInputs();
-            this.hide();
+            this.changeToPointer("pointerAttackControls");
             Q.pointer.p.skill = skill;
-            Q.pointer.p.user = this.p.target;
             Q.pointer.snapTo(this.p.target);
-            //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
-            Q.pointer.add("pointerAttackControls");
+            
+            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
+            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
             
         },
         noItems:function(){
@@ -904,7 +900,159 @@ Quintus.HUD=function(Q){
             this.p.y = Q.height/2-this.p.h/2;
         }
     });
-    
+    //Make it again. This time, it doesn't get destroyed. Include options for aoe
+    Q.GameObject.extend("RangeController",{
+        pulse:function(){
+            Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.5} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.pulse();}});
+        },
+        setTiles:function(tile,loc,range,matrix,special){
+            var bounds = Q.BattleGrid.getBounds(loc,range);
+            var rangeTileLayer = Q.RangeTileLayer;
+            var tiles = [];
+            //Get all possible move locations that are within the bounds
+            for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
+                for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                    if(matrix.grid[i][j].weight<10000){
+                        tiles.push(matrix.grid[i][j]);
+                    }
+                }
+            }
+            if(special){
+                tiles = this.process[special](tiles,loc);
+            }
+            //If there is at least one place to move
+            if(tiles.length){
+                //Loop through the possible tiles
+                for(var i=0;i<tiles.length;i++){
+                    //Get the path and then slice it if it goes across caltrops
+                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],matrix,range+1000);
+                    var pathCost = 0;
+                    for(var j=0;j<path.length;j++){
+                        pathCost+=path[j].weight;
+                    }
+                    if(path.length>0&&path.length<=range&&pathCost<=range+1000){
+                        //If the path is normal
+                        if(pathCost<=range){
+                            rangeTileLayer.setTile(tiles[i].x,tiles[i].y,tile);
+                        } 
+                        //If the path includes a single caltrops tile
+                        else if(pathCost>=1000) {
+                            //Only include this path if the last tile is the ZOC tile
+                            if(path[path.length-1].weight===1000){
+                                rangeTileLayer.setTile(tiles[i].x,tiles[i].y,tile);
+                            }
+                        }
+                    }
+                }
+            //If there's nowhere to move
+            } else {
+                
+            }
+            this.tiles = tiles;
+        },
+        resetGrid:function(){
+            this.tiles.forEach(function(tile){
+                Q.RangeTileLayer.setTile(tile.x,tile.y,0);
+            });
+            this.tiles = [];
+        },
+        checkConfirmMove:function(){
+            if(this.checkValidPointerLoc(1)){
+                var user = this.target;
+                if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
+                    //Make the character move to the spot
+                    user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p.walkMatrix));
+                    //Destroy this range grid
+                    this.resetGrid();
+                    Q.pointer.pointerMoveControls.disable();
+                } else {this.cannotDo();}
+            } else {this.cannotDo();}
+        },
+        
+        //TODO:REDO
+        validateSkill:function(user){
+            /*
+            var skill = Q.pointer.p.skill;
+            //Make sure there's a target
+            var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles);
+            if(skill.range[2]!=="dead"){
+                targets = Q.BattleGrid.removeDead(targets);
+            }
+            if(skill.type==="Debilitate"){
+                targets = Q.BattleGrid.removeDebilitateResisted(targets);
+            }
+            //Remove any characters that are not affected.
+            if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
+            //Remove characters that are not facing the user if the skill has enemyFacingThis
+            if(skill.range[2]==="enemyFacingThis") Q.BatCon.removeNotFacing(targets,user);
+            //If the ability targets the ground, check if an object is there.
+            if(skill.range[2]==="ground"){
+                var tileType = Q.BatCon.getTileType(Q.pointer.p.loc);
+                if(Q.BattleGrid.getObject(Q.pointer.p.loc)||tileType==="impassable"||tileType==="water"){
+                    targets = [];
+                } else targets.push(true);
+            }
+            if(skill.range[2]==="allGround"){
+                targets = [true];
+            }
+            if(skill.range[2]==="all"&&!targets.length) targets.push(true);
+            //If there is at least one target
+            if(targets.length){
+                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
+                this.resetGrid();
+                Q.pointer.pointerAttackControls.remove();
+            } else {this.cannotDo();}*/
+        },
+        validateAttack:function(user){
+            var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
+            //Make sure the target hasn't died (due to extra attacks)
+            if(obj&&Q.BattleGrid.removeDead([obj]).length){
+                Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
+                //Destroy this range grid
+                this.resetGrid();
+                Q.pointer.pointerAttackControls.remove();
+            } else {this.cannotDo();}
+        },
+        checkConfirmAttack:function(){
+            if(this.checkValidPointerLoc(2)){
+                if(Q.pointer.p.skill){
+                    this.validateSkill(this.target);
+                } else {
+                    this.validateAttack(this.target);
+                }
+            }
+        },
+        refresh:function(){
+            this.cannotDo --;
+            if(this.cannotDo < 0){
+                this.cannotDo = 0;
+                this.off("step",this,"refresh");
+            }
+        },
+        cannotDo:function(){
+            if(this.cannotDo) return;
+            Q.audioController.playSound("cannot_do.mp3");
+            this.cannotDo = 100;
+            this.on("step",this,"refresh");
+        },
+        //Checks if we've selected a tile
+        checkValidPointerLoc:function(valid){
+            var loc = Q.pointer.p.loc;
+            if(Q.RangeTileLayer.getTile(loc[0],loc[1]) === valid) return true;
+        },
+        //Any custom ranges
+        process:{
+            straight:function(tiles,center){
+                for(var i=0;i<tiles.length;i++){
+                    if(tiles[i].x!==center[0]&&tiles[i].y!==center[1]){
+                        tiles.splice(i,1);
+                        i--;
+                    }
+                }
+                return tiles;
+            }
+        }
+    });/*
     Q.UI.Container.extend("RangeGrid",{
         init:function(p){
             this._super(p,{
@@ -1008,292 +1156,11 @@ Quintus.HUD=function(Q){
             }
             return range;
         },
-        fullDestroy:function(){
-            this.p.moveGuide.forEach(function(itm){
-                itm.destroy();
-            });
-            this.destroy();
-        },
-        process:{
-            straight:function(tiles,center){
-                for(var i=0;i<tiles.length;i++){
-                    if(tiles[i].x!==center[0]&&tiles[i].y!==center[1]){
-                        tiles.splice(i,1);
-                        i--;
-                    }
-                }
-                return tiles;
-            }
-        },
-        
-        getTileRange:function(loc,stat,graph,special){
-            var bounds = Q.BattleGrid.getBounds(loc,stat);
-            var tiles=[];
-            //Get all possible move locations that are within the bounds
-            for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
-                for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
-                    if(graph.grid[i][j].weight<10000){
-                        tiles.push(graph.grid[i][j]);
-                    }
-                }
-            }
-            if(special){
-                tiles = this.process[special](tiles,loc);
-            }
-            //If there is at least one place to move
-            if(tiles.length){
-                //Loop through the possible tiles
-                for(var i=0;i<tiles.length;i++){
-                    //Get the path and then slice it if it goes across enemy ZOC or caltrops
-                    var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],graph,stat+1000);
-                    var pathCost = 0;
-                    for(var j=0;j<path.length;j++){
-                        pathCost+=path[j].weight;
-                    }
-                    if(path.length>0&&path.length<=stat&&pathCost<=stat+1000){
-                        //If the path is normal
-                        if(pathCost<=stat){
-                            this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
-                        } 
-                        //If the path includes a single ZOC or caltrops tile
-                        else if(pathCost>=1000) {
-                            //Only include this path if the last tile is the ZOC tile
-                            if(path[path.length-1].weight===1000){
-                                this.p.moveGuide.push(this.insert(new Q.RangeTile({loc:[tiles[i].x,tiles[i].y]})));
-                            }
-                        }
-                    }
-                }
-            //If there's nowhere to move
-            } else {
-                
-            }
-        },
-        //Checks if we've selected a tile
-        checkValidPointerLoc:function(){
-            var loc = Q.pointer.p.loc;
-            var valid = false;
-            this.p.moveGuide.forEach(function(tile){
-                if(tile.p.loc[0]===loc[0]&&tile.p.loc[1]===loc[1]){
-                    valid=true;
-                }
-            });
-            if(valid) return true;
-            return false;
-        },
-        cannotDo:function(){
-            Q.audioController.playSound("cannot_do.mp3");
-            this.p.cannotDo = true;
-        },
-        checkConfirmMove:function(){
-            if(this.checkValidPointerLoc()){
-                var user = this.p.user;
-                if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
-                    //Hide the zoc
-                    //Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
-                    //Make the character move to the spot
-                    user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
-                    //Destroy this range grid
-                    this.fullDestroy();
-                    Q.pointer.pointerMoveControls.disable();
-                } else {this.cannotDo();}
-            } else {this.cannotDo();}
-        },
-        checkConfirmAttack:function(){
-            if(this.checkValidPointerLoc()){
-                var user = this.p.user;
-                if(Q.pointer.p.skill){
-                    var skill = Q.pointer.p.skill;
-                    //Make sure there's a target
-                    var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles);
-                    if(skill.range[2]!=="dead"){
-                        targets = Q.BattleGrid.removeDead(targets);
-                    }
-                    if(skill.type==="Debilitate"){
-                        targets = Q.BattleGrid.removeDebilitateResisted(targets);
-                    }
-                    //Remove any characters that are not affected.
-                    if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
-                    //Remove characters that are not facing the user if the skill has enemyFacingThis
-                    if(skill.range[2]==="enemyFacingThis") Q.BatCon.removeNotFacing(targets,user);
-                    //If the ability targets the ground, check if an object is there.
-                    if(skill.range[2]==="ground"){
-                        var tileType = Q.BatCon.getTileType(Q.pointer.p.loc);
-                        if(Q.BattleGrid.getObject(Q.pointer.p.loc)||tileType==="impassable"||tileType==="water"){
-                            targets = [];
-                        } else targets.push(true);
-                    }
-                    if(skill.range[2]==="allGround"){
-                        targets = [true];
-                    }
-                    if(skill.range[2]==="all"&&!targets.length) targets.push(true);
-                    //If there is at least one target
-                    if(targets.length){
-                        Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
-                        this.fullDestroy();
-                        Q.pointer.pointerAttackControls.remove();
-                    } else {this.cannotDo();}
-
-                } else {
-                    var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
-                    if(obj&&Q.BattleGrid.removeDead([obj]).length){
-                        Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
-                        //Destroy this range grid
-                        this.fullDestroy();
-                        Q.pointer.pointerAttackControls.remove();
-                    } else {this.cannotDo();}
-                }
-            }
-        },
-        step:function(){
-            return;
-            //Run this when pressing confirm on a range tile
-            if(Q.inputs['confirm']){
-                //Make sure the pointer is on a valid tile
-                if(this.checkValidPointerLoc()){
-                    var user = this.p.user;
-                    switch(this.p.kind){
-                       /* case "walk":
-                            if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
-                                //Hide the zoc
-                                Q.BattleGrid.hideZOC(user.p.team==="enemy"?"ally":"enemy");
-                                //Make the character move to the spot
-                                user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p[this.p.kind+"Matrix"]));
-                            } else {this.cannotDo();}
-                            break;*/
-                        case "attack":
-                            //Make sure there's a target there
-                            /*if(Q.BattleGrid.getObject(Q.pointer.p.loc)){
-                                Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
-                                Q.pointer.off("checkInputs");
-                                Q.pointer.off("checkConfirm");
-                            } else {this.cannotDo();}*/
-                            break;
-                        case "skill":
-                            /*var skill = this.p.skill?this.p.skill:this.p.item;
-                            //Use the skill's aoe, else it's a normal single target
-                            var aoe = skill.aoe?skill.aoe:["normal",0];
-                            //Make sure there's a target 
-                            var targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.p.loc,aoe,user));
-                            //Remove any characters that are not affected.
-                            if(skill.affects) Q.BatCon.removeTeamObjects(targets,skill.affects);
-                            //If there is at least one target
-                            if(targets.length){
-                                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,this.p.item?this.p.item:skill);
-                                Q.pointer.off("checkInputs");
-                                Q.pointer.off("checkConfirm");
-                            } else {this.cannotDo();}
-                            */
-                            break;
-                        case "lift":
-                            var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
-                            if(obj&&Q.BatCon.isLiftable(user,obj)){
-                                Q.BatCon.liftObject(user,obj);
-                                user.p.didAction = true;
-                                if(user.p.didMove){
-                                    Q.BatCon.showEndTurnDirection(user);
-                                } else {
-                                    Q.pointer.off("checkInputs");
-                                    Q.pointer.off("checkConfirm");
-                                    Q.pointer.snapTo(user);
-                                    //Go back to the menu right away
-                                    Q.stage(2).ActionMenu.displayMenu(0,0);
-                                    Q.stage(2).ActionMenu.show();
-                                    Q.stage(2).ActionMenu.menuControls.turnOnInputs();
-                                }
-                            } else {this.cannotDo();}
-                            break;
-                        case "drop":
-                            var lifting = user.p.lifting;
-                            //The location the user wants to drop the object on
-                            var locTo = Q.pointer.p.loc;
-                            //If there's nothing on the square
-                            if(!Q.BattleGrid.getObject(locTo)&&Q.BatCon.getTileType(locTo)!=="impassable"){
-                                Q.BatCon.dropObject(user,lifting,locTo);
-                                user.p.didAction = true;
-                                if(user.p.didMove){
-                                    Q.BatCon.showEndTurnDirection(user);
-                                } else {
-                                    Q.pointer.off("checkInputs");
-                                    Q.pointer.off("checkConfirm");
-                                    Q.pointer.snapTo(user);
-                                    //Go back to the menu right away
-                                    Q.stage(2).ActionMenu.displayMenu(0,0);
-                                    Q.stage(2).ActionMenu.show();
-                                    Q.stage(2).ActionMenu.menuControls.turnOnInputs();
-                                }
-                            } else {this.cannotDo();}
-                            break;
-                    }
-                    if(!this.p.cannotDo){
-                        this.fullDestroy();
-                        if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
-                    }
-                } else {
-                    this.cannotDo();
-                }
-                Q.inputs['confirm']=false;
-                this.p.cannotDo=false;
-            } else if(Q.inputs['esc']){
-                //Hide the zoc
-                Q.BattleGrid.hideZOC(this.p.user.p.team==="Enemy"?"Ally":"Enemy");
-                Q.stage(2).ActionMenu.show();
-                Q.stage(2).ActionMenu.menuControls.turnOnInputs();
-                Q.pointer.show();
-                Q.pointer.snapTo(this.p.user);
-                Q.pointer.off("checkInputs");
-                Q.pointer.off("checkConfirm");
-                this.fullDestroy();
-                if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
-                Q.inputs['esc']=false;
-            }
-        } 
-        
-    });
-    Q.Sprite.extend("RangeTile",{
-        init:function(p){
-            this._super(p,{
-                sheet:"range_tile",
-                frame:0,
-                opacity:0.3,
-                w:Q.tileW,h:Q.tileH,
-                type:Q.SPRITE_NONE
-            });
-            this.on("inserted");
-        },
-        inserted:function(){
-            Q.BatCon.setXY(this);
-            this.p.z = this.p.y-Q.tileH;
-        }
-    });
-    Q.Sprite.extend("AOETile",{
-        init:function(p){
-            this._super(p,{
-                sheet:"aoe_tile",
-                frame:0,
-                opacity:0.8,
-                w:Q.tileW,h:Q.tileH,
-                type:Q.SPRITE_NONE
-            });
-            Q.BatCon.setXY(this);
-            this.p.z = 3;
-        }
-    });
-    Q.Sprite.extend("ZOCTile",{
-        init:function(p){
-            this._super(p,{
-                sheet:"zoc_tile",
-                frame:0,
-                opacity:0.8,
-                w:Q.tileW,h:Q.tileH,
-                type:Q.SPRITE_NONE,
-                hidden:true,
-                number:1
-            });
-            Q.BatCon.setXY(this);
-            this.p.z = this.p.y-Q.tileH/2;
-        }
-    });
+        */
+    
+    //Definitely need to remake this.
+    //It could include attack prediction (accuracy/damage)
+    //Use Jquery to display text container.
     Q.UI.Container.extend("AttackPreviewBox",{
         init:function(p){
             this._super(p,{
@@ -1336,50 +1203,6 @@ Quintus.HUD=function(Q){
         inserted:function(){
             //targetting the ground
             if(!this.p.targets.length) return;
-            //Get the comparison between the two char's directions
-            this.p.attackingFrom = Q.BatCon.attackFuncs.compareDirection(this.p.attacker,this.p.targets[0]);
-            var attacker = this.p.attacker;
-            var defender = this.p.targets[0];
-            var atkTile = attacker.p.tileEffect;
-            var defTile = defender.p.tileEffect;
-            var low = attacker.p.combatStats.minAtkDmg;
-            var high = attacker.p.combatStats.maxAtkDmg;
-            /*if(atkTile.stat==="damage"){
-                low*=atkTile.amount;
-                high*=atkTile.amount;
-            }
-            var strike = attacker.p.strike;
-            if(atkTile.stat==="strike") strike*=atkTile.amount;
-            var armour = defender.p.armour;
-            if(defTile.stat==="armour") armour*=defTile.amount;
-            if(defender.p.status.sturdy) armour*=1.5;
-            var parry = defender.p.parry;
-            if(defTile.stat==="parry") parry*=defTile.amount;*/
-            //The comparison between the attacker's dir and defender's dir
-            var dir = Q.BatCon.attackFuncs.compareDirection(attacker,defender);
-            var accuracy = attacker.p.combatStats.atkAccuracy;
-            //If the attack is a skill, display different information
-            if(this.p.skill){
-                if(this.p.skill.damageLow&&this.p.skill.damageHigh){
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:accuracy+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
-                    var skillLow = this.p.skill.damageLow;
-                    var skillHigh = this.p.skill.damageHigh;
-                    if(atkTile.stat==="damage"){
-                        skillLow*=atkTile.amount;
-                        skillHigh*=atkTile.amount;
-                    }
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+Math.floor(low+skillLow-armour)+" and "+Math.floor(high+skillHigh-armour)+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:70,label:"The skill's name is "+this.p.skill.name+".",size:12,cx:0,cy:0,align:"center"}));
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:90,label:"It is targetting "+this.p.targets.length+" targets.",size:12,cx:0,cy:0,align:"center"}));
-                }
-                //The the skill has an effect, display some info on it
-                if(this.p.skill.effect){
-                    this.insert(new Q.UI.Text({x:10+this.p.w/2,y:110,label:"This skill has a special effect. "+"The function is "+this.p.skill.effect.func,size:12,cx:0,cy:0,align:"center"}));
-                }
-            } else {
-                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:10,label:accuracy+"% chance of hitting.",size:12,cx:0,cy:0,align:"center"}));
-                this.insert(new Q.UI.Text({x:10+this.p.w/2,y:50,label:"It'll do between "+Math.floor(low)+" and "+Math.floor(high)+" damage, I reckon.",size:12,cx:0,cy:0,align:"center"}));
-            }
             this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
         }
     });

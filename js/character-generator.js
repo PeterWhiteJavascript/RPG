@@ -19,6 +19,7 @@ function convertEquipment(data){
 var CharacterGenerator = {
     init:function(data,equipment,defaultEquipment,techniques,talents,awards){
         this.characterGeneration = data;
+        console.log(data)
         this.personalityNames = data.personalityNames;
         this.personalities = data.personalities;
         this.traitsKeys = Object.keys(this.personalities.traits);
@@ -64,14 +65,8 @@ var CharacterGenerator = {
         char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
         char.natNum = this.getNatNum(char.nationality);
         
-        if(data.personality){
-            char.personality = data.personality;
-        } else {
-            char.personality = [];
-            for(var i=0,j=Math.ceil(Math.random()*3);i<j;i++){
-                char.personality.push(this.generatePersonality());
-            }
-        }
+        char.personality = data.personality ? data.personality : this.getPersonality();
+        
         char.charClass = data.charClass==="Random" || !data.charClass ? this.generateCharClass(char.nationality) : data.charClass;
         char.classNum = this.getClassNum(char.charClass);
         char.charGroup = this.generateCharGroup(char.classNum);
@@ -80,7 +75,7 @@ var CharacterGenerator = {
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
         //Generate techniques is used to generate defaults for the roster. All characters created in the editor should at least have "Default" set.
-        char.techniques = data.techniques ? this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment) : this.generateTechniques(char.charClass,char.level,char.equipment);
+        char.techniques = data.techniques ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment)) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment));
         char.talents = this.getTalents(char.charClass,char.charGroup);
         char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
         char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
@@ -93,6 +88,9 @@ var CharacterGenerator = {
 
         char.completedEvents =  [];
         char.combatStats = this.getCombatStats(char);
+        
+        char = this.applyPassiveTechniques(char);
+        console.log(char)
         return char;
     },
     emptyAwards:function(){
@@ -238,6 +236,17 @@ var CharacterGenerator = {
         }
         return [rh,lh,ar,ft,ac];
     },
+    categorizeTechniques:function(techs){
+        var processed = {
+            active:[],
+            passive:[]
+        };
+        for(var i=0;i<techs.length;i++){
+            if(techs[i].length<10) processed.passive.push(techs[i]);
+            else processed.active.push(techs[i]);
+        }
+        return processed;
+    },
     convertTechniques:function(data){
         var charClassKeys = Object.keys(data.CharClass);
         var techs = data.Active.concat(data.Passive);
@@ -276,7 +285,24 @@ var CharacterGenerator = {
         if(primary) techs = techs.concat(getTech(primary));
         var secondary = equipment[1];
         if(secondary) techs = techs.concat(getTech(secondary));
-        return techs;
+        //https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
+        function uniq(a) {
+            var seen = {};
+            return a.filter(function(item) {
+                return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+            });
+        }
+        return uniq(techs);
+    },
+    applyPassiveTechniques:function(char){
+        var techs = char.techniques.passive;
+        for(var i=0;i<techs.length;i++){
+            this.applyPassiveTech(char,techs[i]);
+        }
+        return char;
+    },
+    applyPassiveTech:function(char,tech){
+        
     },
     getTechniques:function(techs,charClass,equipment){
         if(!techs) return;
@@ -361,6 +387,13 @@ var CharacterGenerator = {
                 return i;
             }
         }
+    },
+    getPersonality:function(){
+        var personality = [];
+        for(var i=0,j=Math.ceil(Math.random()*3);i<j;i++){
+            personality.push(this.generatePersonality());
+        }
+        return personality;
     },
     generatePersonality:function(){
         return [this.personalities.muchValues[Math.floor(Math.random()*this.personalities.muchValues.length)],this.personalityNames[this.traitsKeys[Math.floor(Math.random()*this.traitsKeys.length)]]];

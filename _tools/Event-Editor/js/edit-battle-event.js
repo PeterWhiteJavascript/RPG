@@ -403,7 +403,7 @@ $(function(){
             charStatProps:["Base Stats","Derived Stats"],
             charStatValues:{
                 "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
-                "Derived Stats":GDATA.dataFiles["character-generation.json"].derivedStats
+                "Derived Stats":GDATA.dataFiles["character-generation.json"].combatStats
             },
             sceneTypes:["Story","Flavour"],
             conditionalEquals:["==","!="],
@@ -686,6 +686,7 @@ $(function(){
                         kind:"battle",
                         map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
                         music:$("#prop-music .music-select").val(),
+                        defaultDir:$("#dir-select").val(),
                         placementSquares:FileSaver.getPlacementSquares(),
                         maxAllies:uic.processValue($("#prop-maxAllies input").val()),
                         victory:{
@@ -750,6 +751,8 @@ $(function(){
         $("#map-select-group").append(uic.getOptions(Object.keys(GDATA.mapFileNames)));
         $("#map-select-group").trigger("change");
         $(".music-select").append(uic.getOptions(GDATA.musicFileNames));
+        
+        $("#dir-select").append(uic.getOptions(["up","right","down","left"]));
         
         $("#placement-squares-button").on("click",function(){
             $(this).toggleClass("selected");

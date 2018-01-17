@@ -48,6 +48,11 @@
                         <span class="item-desc half-width">Max Allies</span>
                         <input type="number" class="half-width" min="1" value="6">
                     </div>
+                    <div id="prop-direction" class="initial-props-item">
+                        <span class="item-desc half-width">Default Direction</span>
+                        <select id="dir-select" class="half-width"></select>
+                    </div>
+                    
                     <div id="prop-placementSquares" class="initial-props-item">
                         <span id="placement-squares-button" class="item-desc full-width">Placement Squares</span>
                         <span id="placement-squares-cont"></span>

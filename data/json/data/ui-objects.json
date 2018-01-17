@@ -7,18 +7,18 @@
         "w":32,
         "h":32
     },
-    "range_tile":{
+    "ui_tiles":{
         "tilew":32,
         "tileh":32,
         "sx":32,
         "sy":0,
-        "w":32,
+        "w":128,
         "h":32
     },
     "turn_start_exclamation_mark":{
         "tilew":32,
         "tileh":32,
-        "sx":64,
+        "sx":192,
         "sy":0,
         "w":32,
         "h":32

@@ -11,12 +11,12 @@
         <div id="editor-content">
             <div id="left-cont">
                 <div class="tech-group Active">
-                    <div class='UIC-hud-buttons'><div id='add-active-tech' class='UIC-hud-button'><span>Add Active Technique</span></div></div>
+                    <div class='hud-buttons'><div id='add-active-tech' class='hud-button'><span>Add Active Technique</span></div></div>
                     <p class="title-text minimizer">Active</p>
                     <div id="active-techniques-cont" class="minimizable"></div>
                 </div>
                 <div class="tech-group Passive">
-                    <div class='UIC-hud-buttons'><div id='add-passive-tech'class='UIC-hud-button'><span>Add Passive Technique</span></div></div>
+                    <div class='hud-buttons'><div id='add-passive-tech'class='hud-button'><span>Add Passive Technique</span></div></div>
                     <p class="title-text minimizer">Passive</p>
                     <div id="passive-techniques-cont" class="minimizable"></div>
                 </div>

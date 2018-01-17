@@ -3,6 +3,7 @@
     "kind": "battle",
     "map": "Venoria\/Venoria-Castle-Outside.tmx",
     "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+    "defaultDir": "up",
     "placementSquares": [
         [
             14,
@@ -91,6 +92,17 @@
                 9
             ],
             "down"
+        ],
+        [
+            "Act-2-2.json",
+            "Dummies",
+            "Legion",
+            0,
+            [
+                14,
+                13
+            ],
+            "up"
         ]
     ]
 }

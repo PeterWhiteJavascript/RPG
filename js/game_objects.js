@@ -19,7 +19,7 @@ Quintus.GameObjects=function(Q){
     Q.component("pointerMoveControls",{
         added:function(){
             this.entity.show();
-            this.entity.on("pressedConfirm",Q.RangeGridObj,"checkConfirmMove");
+            this.entity.on("pressedConfirm",Q.rangeController,"checkConfirmMove");
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkInputs");
             this.entity.on("checkConfirm");
@@ -28,7 +28,7 @@ Quintus.GameObjects=function(Q){
         },
         disable:function(){
             this.entity.hide();
-            this.entity.off("pressedConfirm",Q.RangeGridObj,"checkConfirmMove");
+            this.entity.off("pressedConfirm",Q.rangeController,"checkConfirmMove");
             this.entity.off("pressedBack",this,"pressedBack");
             this.entity.off("checkInputs");
             this.entity.off("checkConfirm");
@@ -42,8 +42,8 @@ Quintus.GameObjects=function(Q){
             this.entity.p.user = false;
         },
         pressedBack:function(){
-            this.entity.snapTo(Q.RangeGridObj.p.user);
-            Q.RangeGridObj.fullDestroy();
+            this.entity.snapTo(Q.rangeController.target);
+            Q.rangeController.resetGrid();
             this.disable();
             this.remove();
         },
@@ -126,7 +126,7 @@ Quintus.GameObjects=function(Q){
                 user.p.didAction = true;
                 objAt.hideStatusDisplay();
                 if(user.p.didMove){
-                    Q.RangeGridObj.fullDestroy();
+                    Q.rangeController.resetGrid();
                     this.remove();
                     Q.BatCon.endTurn();
                 } else {
@@ -143,7 +143,7 @@ Quintus.GameObjects=function(Q){
         },
         pressedBack:function(){
             this.entity.snapTo(Q.BatCon.turnOrder[0]);
-            Q.RangeGridObj.fullDestroy();
+            Q.rangeController.resetGrid();
             this.remove();
             this.showMenu();
         }
@@ -177,7 +177,7 @@ Quintus.GameObjects=function(Q){
                 objAt.p.lifted = user;
                 objAt.hideStatusDisplay();
                 if(user.p.didMove){
-                    Q.RangeGridObj.fullDestroy();
+                    Q.rangeController.resetGrid();
                     this.remove();
                     Q.BatCon.endTurn();
                 } else {
@@ -194,16 +194,17 @@ Quintus.GameObjects=function(Q){
         },
         pressedBack:function(){
             this.entity.snapTo(Q.BatCon.turnOrder[0]);
-            Q.RangeGridObj.fullDestroy();
+            Q.rangeController.resetGrid();
             this.remove();
             this.showMenu();
+            Q.rangeController.resetGrid();
         }
     });
     
     Q.component("pointerAttackControls",{
         added:function(){
             this.entity.show();
-            this.entity.on("pressedConfirm",Q.RangeGridObj,"checkConfirmAttack");
+            this.entity.on("pressedConfirm",Q.rangeController,"checkConfirmAttack");
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkConfirm");
             //Set up an aoe guide
@@ -256,7 +257,7 @@ Quintus.GameObjects=function(Q){
         inputMoved:function(){},
         remove:function(){
             this.entity.hide();
-            this.entity.off("pressedConfirm",Q.RangeGridObj,"checkConfirmAttack");
+            this.entity.off("pressedConfirm",Q.rangeController,"checkConfirmAttack");
             this.entity.off("pressedBack",this,"pressedBack");
             if(this.entity.p.skill){
                 if(this.entity.p.skill.aoe[1]==="straight"){
@@ -292,7 +293,7 @@ Quintus.GameObjects=function(Q){
         },
         pressedBack:function(){
             this.entity.snapTo(Q.BatCon.turnOrder[0]);
-            Q.RangeGridObj.fullDestroy();
+            Q.rangeController.resetGrid();
             this.remove();
             this.showMenu();
         }
@@ -763,13 +764,13 @@ Quintus.GameObjects=function(Q){
                     if(ally.loc[0]===pointer.p.loc[0]&&ally.loc[1]===pointer.p.loc[1]){
                         ally.placedOnMap = false;
                         //Re-create the list of possible allies
-                        Q.BatCon.genPlaceableAllies();
+                        Q.BatCon.battlePlacement.genPlaceableAllies();
                         //Find the ally's sprite and set up directional controls for this character
                         Q.stage(0).lists['Character'].forEach(function(char,j){
                             if(char.p.name===ally.name&&char.p.uniqueId===ally.uniqueId){
                                 char.add("directionControls");
                                 char.on("pressedConfirm",function(){
-                                    Q.BatCon.confirmPlacement(this);
+                                    Q.BatCon.battlePlacement.confirmPlacement(this);
                                     this.directionControls.removeControls();
                                 });
                                 char.on("pressedBack",function(){
@@ -800,9 +801,8 @@ Quintus.GameObjects=function(Q){
                 Q.audioController.playSound("cannot_do.mp3");
             }
         },
-        showPlacementSquares:function(){
+        showPlacementSquares:function(tiles){
             var stage = this.entity.stage;
-            var tiles = stage.options.data.placementSquares;
             tiles.forEach(function(tile){
                 var sq = stage.insert(new Q.PlacementSquare({loc:tile}));
                 Q.BatCon.setXY(sq);
@@ -823,12 +823,20 @@ Quintus.GameObjects=function(Q){
             });
             this.placeableAllies = placeableAllies;
         },
+        setAlliesDir:function(dir){
+            dir = dir || "up";
+            Q.partyManager.allies.forEach(function(ally){
+                ally.dir = dir;
+            });
+        },
         //Start placing allies at the start of a battle
-        startPlacingAllies:function(){
+        startPlacingAllies:function(data){
             /*var t = this;
                 t.startBattle();
                 
             return;*/
+            //Set all allies to the direction they should be facing for this battle
+            this.setAlliesDir(data.defaultDir);
             this.genPlaceableAllies();
             Q.pointer.add("pointerPlaceAllies");
         },
@@ -1337,8 +1345,6 @@ Quintus.GameObjects=function(Q){
         added:function(){
             //Any feedback from the attack is stored here
             this.text = [];
-            //If any defenders dies from an attack, save the feedback and add it on to text at the end
-            //this.expText = [];
             this.previousDamage = 0;
         },
         getDiagDirs:function(aLoc,dLoc){
@@ -2132,6 +2138,9 @@ Quintus.GameObjects=function(Q){
                     break;
             }
         },
+        getTechniqueCost:function(cost,efficiency){
+            return Math.max(1,cost - efficiency);
+        },
         doAttack:function(attacker,targets,skill){
             console.log(attacker,targets,skill)
             this.text = [];
@@ -2142,7 +2151,7 @@ Quintus.GameObjects=function(Q){
             attacker.p.tempHp = attacker.p.combatStats.hp;
             if(skill){
                 if(skill.type!=="Item"&&skill.cost) {
-                    attacker.p.combatStats.tp-=(skill.cost-attacker.p.combatStats.efficiency);
+                    attacker.p.combatStats.tp-=this.getTechniqueCost(skill.cost,attacker.p.combatStats.efficiency);
                 }
                 if(skill.anim) anim = skill.anim;
                 if(skill.sound) sound = skill.sound;

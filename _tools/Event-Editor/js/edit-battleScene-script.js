@@ -384,7 +384,7 @@ $(function(){
             charStatProps:["Base Stats","Derived Stats"],
             charStatValues:{
                 "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
-                "Derived Stats":GDATA.dataFiles["character-generation.json"].derivedStats
+                "Derived Stats":GDATA.dataFiles["character-generation.json"].combatStats
             },
             sceneTypes:["Story","Flavour"],
             conditionalEquals:["==","!="],

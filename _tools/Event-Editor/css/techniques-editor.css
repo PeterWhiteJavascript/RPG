@@ -13,7 +13,7 @@ body{
 #mid-cont{
     width:33.34%;
     top:60px;
-    position:fixed;
+    position:absolute;
     left:33.33%;
     border:1px solid black;
 }
@@ -24,15 +24,22 @@ body{
     left:66.67%;
     border:1px solid black;
 }
-.UIC-group-item{
-    overflow:hidden;
-    padding:0;
-    border:0;
-}
-.UIC-hud-buttons{
+.hud-buttons{
     width:100%;
     color:var(--button-text-color);
-    background-color:var(--button-background-color)
+    background-color:var(--button-background-color);
+    height:30px;
+    text-align:center;
+    line-height:30px;
+    cursor:pointer;
+}
+.hud-button:hover{
+    
+    background-color:var(--button-hover-color);
+}
+.group-item{
+    text-align:center;
+    cursor:pointer;
 }
 .gear-props{
     border-top:1px solid black;
@@ -67,12 +74,21 @@ body{
     display:inline-block;
     text-align:center;
 }
+.remove-arg{
+    width:10%;
+    display:inline-block;
+    float:right;
+    line-height:30px;
+    user-select:none;
+    text-align:center;
+    cursor:pointer;
+}
 .remove-tech{
     width:10%;
     position:absolute;
     line-height:30px;
     user-select:none;
 }
-.remove-choice:hover, .remove-tech:hover{
+.remove-choice:hover, .remove-tech:hover, .remove-arg:hover{
     background-color:var(--button-hover-color);
 }

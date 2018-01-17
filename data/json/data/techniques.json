@@ -27,8 +27,45 @@
             "slashing",
             [
                 [
-                    "Max Damage Reduction Reduced",
-                    20
+                    "Change Stat",
+                    [
+                        "Target",
+                        "combatStats",
+                        "magicalResistance",
+                        "-",
+                        20,
+                        0,
+                        100
+                    ]
+                ],
+                [
+                    "Apply Status Effect",
+                    [
+                        "Target",
+                        "Poison",
+                        3,
+                        65
+                    ]
+                ],
+                [
+                    "Change Ground",
+                    [
+                        "changeTile",
+                        "Icy",
+                        3,
+                        4,
+                        100
+                    ]
+                ],
+                [
+                    "Change Ground",
+                    [
+                        "addObjectOnTop",
+                        "Mirage",
+                        100,
+                        100,
+                        100
+                    ]
                 ]
             ]
         ],
@@ -57,8 +94,20 @@
             "slashing",
             [
                 [
-                    "ATK % increased",
-                    100
+                    "Change Stat",
+                    [
+                        "Target",
+                        "combatStats",
+                        "minAtkDmg",
+                        "-",
+                        20,
+                        0,
+                        100
+                    ]
+                ],
+                [
+                    null,
+                    []
                 ]
             ]
         ],

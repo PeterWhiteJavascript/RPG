@@ -130,7 +130,27 @@ Quintus.SceneFuncs=function(Q){
                 stage.lists.TileLayer[1].p.z = -4;
                 stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
                 stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
-
+                //The range tiles
+                var matrix = [];
+                for(var i=0; i<stage.mapWidth; i++) {
+                    matrix[i] = [];
+                    for(var j=0; j<stage.mapHeight; j++) {
+                        matrix[i][j] = 0;
+                    }
+                }
+                Q.RangeTileLayer = stage.insert(new Q.TileLayer({
+                    tileW:Q.tileW,
+                    tileH:Q.tileH,
+                    sheet:"ui_tiles",
+                    tiles:matrix,
+                    w:32,
+                    h:32,
+                    type:Q.SPRITE_NONE,
+                    opacity:0.7,
+                    z:-3
+                }));
+                Q.RangeTileLayer.add("tween");
+                
                 //Set the battlegrid's stage
                 Q.BattleGrid.stage = stage;
                 //Reset the battle grid for this battle
@@ -163,8 +183,8 @@ Quintus.SceneFuncs=function(Q){
                 //Display the hud which shows character and terrain information
                 Q.stageScene("battleHUD",3);
                 Q.BatCon.battleTriggers.setUpTriggers(battleData.events);
-                Q.BatCon.battlePlacement.showPlacementSquares();
-                Q.BatCon.battlePlacement.startPlacingAllies();
+                Q.BatCon.battlePlacement.showPlacementSquares(battleData.placementSquares);
+                Q.BatCon.battlePlacement.startPlacingAllies(battleData);
                 
             });
         },{

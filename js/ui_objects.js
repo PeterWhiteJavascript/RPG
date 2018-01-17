@@ -50,46 +50,6 @@ Quintus.UIObjects=function(Q){
             }
             return name;
         },
-        convertCombatStat:function(stat){
-            switch(stat){
-                case "Max Hit Points":
-                    return "maxHp";
-                case "Max Technique Points":
-                    return "maxTp";
-                case "Pain Tolerance":
-                    return "painTolerance";
-                case "Damage Reduction":
-                    return "damageReduction";
-                case "Physical Resistance":
-                    return "physicalResistance";
-                case "Mental Resistance":
-                    return "mentalResistance";
-                case "Magical Resistance":
-                    return "magicalResistance";
-                case "Attack Range":
-                    return "atkRange";
-                case "Max Attack Damage":
-                    return "maxAtkDmg";
-                case "Encumbrance Threshold":
-                    return "encumbranceThreshold";
-                case "Total Weight":
-                    return "totalWeight";
-                case "Encumbrance Penalty":
-                    return "encumbrancePenalty";
-                case "Defensive Ability":
-                    return "defensiveAbility";
-                case "Attack Accuracy":
-                    return "atkAccuracy";
-                case "Critical Chance":
-                    return "critChance";
-                case "Counter Chance":
-                    return "counterChance";
-                case "Attack Speed":
-                    return "atkSpeed";
-                case "Move Speed":
-                    return "moveSpeed";
-            }
-        },
         hasPersonality:function(character,much,value){
             if(!character.personality) return;
             for(var i=0;i<character.personality.length;i++){
@@ -1302,7 +1262,7 @@ Quintus.UIObjects=function(Q){
                                 prop = char.baseStats[obj[2]];
                                 break;
                             case "Derived Stats":
-                                prop = char.combatStats[Q.convertCombatStat(obj[2])];
+                                prop = char.combatStats[obj[2]];
                                 break;
                         }
                         return Q.textModules.evaluateStringOperator(prop,obj[3],obj[4]);

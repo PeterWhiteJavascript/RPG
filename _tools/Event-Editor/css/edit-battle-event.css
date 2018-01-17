@@ -125,9 +125,9 @@
     display:inline-block;
     width:33.33%;
     height:30px;
-    font-size:1.2vw;
+    font-size:1vw;
     text-align:center;
-    padding:10px;
+    padding:5px;
     user-select:none;
     cursor:pointer;
 }
@@ -163,10 +163,10 @@
     font-family: var(--heading-font-family);
     background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
     color:var(--heading-text-color);
-    font-size:1.4vw;
+    font-size:1.2vw;
     height:30px;
     vertical-align:top;
-    padding:6px;
+    padding:8px;
     user-select:none;
 }
 .group-text-area{

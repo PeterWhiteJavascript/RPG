@@ -107,7 +107,7 @@ var uic = new UIC({
         charStatProps:["Base Stats","Derived Stats"],
         charStatValues:{
             "Base Stats":GDATA.dataFiles["character-generation.json"].statNames,
-            "Derived Stats":GDATA.dataFiles["character-generation.json"].derivedStats
+            "Derived Stats":GDATA.dataFiles["character-generation.json"].combatStats
         },
         keywords:["partySize","rosterSize"],
         sceneTypes:["Story","Flavour"],

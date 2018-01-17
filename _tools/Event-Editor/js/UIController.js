@@ -174,7 +174,6 @@ function UIC(p){
                 $(cont).children("div").first().addClass("quarter-width");
                 $(cont).children("div:nth-child(2)").addClass("three-quarter-width");
             }
-            console.log(funcProps,func,props)
             group.append(uic[funcProps](func,props));
             $(group).children(".UIC-group-item-top").children("div").children(".UIC-func").change(function(){
                 $(this).parent().parent().parent().children(".UIC-group-item-props").remove();
@@ -397,6 +396,24 @@ function UIC(p){
                     props
                 ];
                 break;
+            case "TechniqueArguments":
+                return [
+                    "Add Argument",
+                    function(){
+                        var which = $(this).index();
+                        var elm = $(this).parentsUntil(".UIC-group").siblings(".UIC-group-cont")[which];
+                        $(elm).children(".UIC-cont").append(uic.getGroupItem(uic.techniquesFuncs,"techniqueProps",uic.techniquesFuncs[0],false,true));
+                        $(elm).children(".UIC-group-hud").children(".UIC-title").children("span").text("Arguments ("+$(elm).children(".UIC-cont").children(".UIC-group-item").length+")");
+                        uic.minimizeGroup($(elm).children(".UIC-group-hud"),"+");
+                    },
+                    "Arguments ("+props.length+")",
+                    [
+                        uic.techniquesFuncs,
+                        "techniqueProps"
+                    ],
+                    props
+                ];
+                break
         }
     };
     this.createGroup = function(categories,baseProps){
@@ -407,9 +424,11 @@ function UIC(p){
                 <div class="UIC-hud-buttons"></div>\n\
                 <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
-            <div class="UIC-base-props">'+baseProps+'</div>\n\
         </div>');
-        uic.selectInitialValue($(group).children(".UIC-base-props"));
+        if(baseProps){
+            $(group).append('<div class="UIC-base-props">'+baseProps+'</div>');
+            uic.selectInitialValue($(group).children(".UIC-base-props"));
+        }
         $(group).children(".UIC-hud").children(".minimize-choice").click(uic.minimizeScript);
         $(group).children(".UIC-hud").children(".remove-choice-deep").on("click",uic.removeDeepItem);
         for(var i=0;i<categories.length;i++){

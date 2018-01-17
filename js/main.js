@@ -214,7 +214,7 @@ Q.load(toLoad.join(","),function(){
     //Sets and gets options
     Q.optionsController = new Q.OptionsController();
     
-    //The battle controller holds all battle specific functions
+    //The battle controller holds all battle specific functions. Includes getting range/aoe and the damage calculations in the attackFuncs component
     Q.BatCon = new Q.BattleController();
     //Create the grid which keeps track of all interactable objects. This allows for easy searching of objects by location
     Q.BattleGrid = new Q.BattleGridObject();
@@ -223,6 +223,8 @@ Q.load(toLoad.join(","),function(){
     
     //Creates a character stats menu (used in locations and battles)
     Q.characterStatsMenu = new Q.CharacterStatsMenu();
+    //Shows the ranges and aoe
+    Q.rangeController = new Q.RangeController();
     
     //Any variable functions (set and get)
     Q.variableProcessor = new Q.VariableProcessor();
@@ -234,6 +236,7 @@ Q.load(toLoad.join(","),function(){
     Q.storyController = new Q.StoryController();
     //Functions for the location scene
     Q.locationController = new Q.LocationController();
+    
     //Changes week and does other time-related functions
     Q.timeController = new Q.TimeController();
     
