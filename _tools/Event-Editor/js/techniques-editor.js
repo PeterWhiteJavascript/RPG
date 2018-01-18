@@ -5,7 +5,7 @@ $(function(){
         getTechnique:function(category,name,charClass){
             if(category === "CharClass"){
                 var charClass = charClass || $(".sub-title-text:contains("+(name)+")").parent().parent().siblings(".title-text").filter(function(){
-                    return $(this).text() !== "Active";
+                    return $(this).text() === name;
                 }).eq(0).text();
                 return FileSaver.techniqueData[category][charClass].find(function(t){return t[0] === name;});
             } else {
@@ -41,14 +41,14 @@ $(function(){
                         }
                     }
                 },
-                techniquesFuncs:["Change Stat Active","Change Stat Passive","Apply Status Effect","Change Ground"],
+                techniquesFuncs:["Change Stat Active","Change Stat Passive","Apply Status Effect","Change Ground","Move Character"],
                 targets:["Target","User"],
                 techniqueProps:function(func,props){
                     var cont = $("<div class='UIC-group-item-props'></div>");
                     func = func || "Target";
                     switch(func){
                         case "Change Stat Active":
-                            props = props || ["Target","combatStats","physicalResistance","+","Number",null,null,10,0,100];
+                            props = props || ["Target","combatStats","physicalResistance","+","Number",null,null,0,0,100];
                             cont.append(uic.Select("Affects",uic.targets,props[0]));
                             
                             cont.append(uic.Select("Stat Type",uic.argumentTargetProps,props[1]));
@@ -77,14 +77,14 @@ $(function(){
                             cont.append(uic.Input("Amount",props[3],"number"));
                             break;
                         case "Apply Status Effect":
-                            props = props || ["Target","Poison",3,100];
+                            props = props || ["Target","Poisoned",3,100];
                             cont.append(uic.Select("Affects",uic.targets,props[0]));
                             cont.append(uic.Select("Status Effect",FileSaver.charGen.statuses,props[1]));
                             cont.append(uic.Input("Turns",props[2],"number",0));
                             cont.append(uic.Input("Accuracy",props[3],"number",1,100));
                             break;
                         case "Change Ground":
-                            props = props || ["Icy",3,4,100];
+                            props = props || ["changeTile","Icy",3,4,100];
                             cont.append(uic.Select("Target",uic.argumentGroundProps,props[0]));
                             cont.append(uic.Select("Tile",uic.argumentGroundProps[props[0]],props[1]));
                             uic.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],uic.argumentGroundProps);
@@ -93,6 +93,13 @@ $(function(){
                             cont.append(uic.Input("Max Turns",props[3],"number",1));
                             cont.append(uic.Input("Accuracy",props[4],"number",1,100));
                             break;
+                        case "Move Character":
+                            props = props || ["Both","Forward",1,[]];
+                            cont.append(uic.Select("Target",uic.moveCharacterProps.Target,props[0]));
+                            cont.append(uic.Select("Direction",uic.moveCharacterProps.Dir,props[1]));
+                            cont.append(uic.Input("Num Tiles",props[2],"number",1));
+                            cont.append(uic.Container("Options",props[3],"checkbox",uic.moveCharacterProps.Options));
+                            break;
                     }
                     this.selectInitialValue(cont);
                     return cont;
@@ -100,23 +107,33 @@ $(function(){
                 amountTypes:{
                     "Number":[null],
                     "User Base Stats":FileSaver.charGen.statNames,
-                    "Target Base Stats":FileSaver.charGen.statNames
+                    "Target Base Stats":FileSaver.charGen.statNames,
+                    "User Combat Stats":FileSaver.charGen.combatStats,
+                    "Target Combat Stats":FileSaver.charGen.combatStats
                 },
                 amountTypeOpers:{
                     "Number":[null],
-                    "User Base Stats":["+","-","*","/"],
-                    "Target Base Stats":["+","-","*","/"]
+                    "User Base Stats":["+","-","*","/","="],
+                    "Target Base Stats":["+","-","*","/","="],
+                    "User Combat Stats":["+","-","*","/","="],
+                    "Target Combat Stats":["+","-","*","/","="]
                 },
                 argumentTargetProps:{
                     combatStats:FileSaver.charGen.combatStats,
+                    baseStats:FileSaver.charGen.statNames,
                     dmgResistance:FileSaver.techniqueData.data["techTypes2"],
                     statusResistance:FileSaver.charGen.statuses
                 },
                 argumentGroundProps:{
-                    changeTile:["Icy","Burning"],
+                    changeTile:["Icy","Burning","Stable"],
                     addObjectOnTop:["Caltrops","Mirage"]
                 },
-                operators:["+","-","*","/"]
+                operators:["+","-","*","/","="],
+                moveCharacterProps:{
+                    Target:["User","Target","Both"],
+                    Dir:["Forward","Backward","Left","Right"],
+                    Options:["Pierce","Jump Over"]
+                }
             });
             uic.createTopMenu($("#editor-content"));
 
@@ -137,6 +154,8 @@ $(function(){
                         [uic.processValue(cont.children("input:eq(2)").val()),cont.children("select:eq(3)").val(),JSON.parse(cont.children(".UIC-container:eq(1)").attr("data"))],
                         JSON.parse(cont.children(".UIC-container:eq(2)").attr("data")),
                         uic.processValue(cont.children("input:eq(3)").val()),
+                        uic.processValue(cont.children("input:eq(4)").val()),
+                        uic.processValue(cont.children("input:eq(5)").val()),
                         cont.children("select:eq(4)").val(),
                         cont.children("select:eq(5)").val(),
                         uic.getSaveGroups(cont)[0][0]
@@ -175,68 +194,43 @@ $(function(){
                         var type = $(".sub-title-text.selected").closest(".tech-group").attr("class").split(" ")[1];
                         var charClass;
                         if(type === "CharClass"){
-                            charClass =$(".sub-title-text.selected").parent().parent().siblings(".title-text").text();
+                            charClass = $(".sub-title-text.selected").parent().parent().siblings(".title-text").text();
                         }
                         FileSaver.getTechnique(type,$(this).attr("orig-name"),charClass)[0] = uic.processValue($(this).val());
                     });
                     cont.append(uic.TextArea("Desc",data[1]));
                     cont.append(uic.Select("Tech Type 1",FileSaver.techniqueData.data["techTypes1"],data[2][0]));
                     cont.append(uic.Select("Tech Type 2",FileSaver.techniqueData.data["techTypes2"],data[2][1]));
-
+                    
                     cont.append(uic.Input("Range",data[3][0],"number"));
                     cont.append(uic.Select("Range Type",FileSaver.techniqueData.data["rangeTypes"],data[3][1]));
                     var rangeOpts = $(uic.Container("Range Options",data[3][2],"checkbox",FileSaver.techniqueData.data["rangeProps"]));
                     cont.append(rangeOpts);
-
+                    
                     cont.append(uic.Input("AOE",data[4][0],"number"));
                     cont.append(uic.Select("AOE Type",FileSaver.techniqueData.data["aoeTypes"],data[4][1]));
                     var aoeOpts = $(uic.Container("AOE Options",data[4][2],"checkbox",FileSaver.techniqueData.data["aoeProps"]));
                     cont.append(aoeOpts);
-
+                    
                     var resist = $(uic.Container("Resisted By",data[5],"checkbox",FileSaver.techniqueData.data["resistProps"]));
                     cont.append(resist);
-                    cont.append(uic.Input("Default TP Cost",data[6],"number"));
-                    cont.append(uic.Select("Animation",FileSaver.techniqueData.data["animations"],data[7]));
-                    cont.append(uic.Select("Sound",FileSaver.techniqueData.data["sounds"],data[8]));
-
-                    cont.append(techniqueArguments(data[9]));
+                    cont.append(uic.Input("Base Damage",data[6],"number"));
+                    //TEMP
+                    if(typeof data[7] === "string"){
+                        data.splice(6,0,0);
+                    }
+                    if(typeof data[8] === "string"){
+                        data.splice(7,0,100);
+                    }
+                    cont.append(uic.Input("Base Accuracy",data[7],"number"));
+                    cont.append(uic.Input("Default TP Cost",data[8],"number"));
+                    cont.append(uic.Select("Animation",FileSaver.techniqueData.data["animations"],data[9]));
+                    cont.append(uic.Select("Sound",FileSaver.techniqueData.data["sounds"],data[10]));
+                    
+                    cont.append(techniqueArguments(data[11]));
+                    cont.children(".UIC-group").children(".UIC-group-cont").children(".UIC-group-hud").children(".UIC-title").trigger("click");
                     uic.selectInitialValue(cont);
-                    $(cont).children(".technique-props").children("input, select, textarea").on("focusout",function(){
-                        var elementGroup = $(this).parent().children("input, select, textarea");
-                        var conts = $(this).parent().children("div.UIC-prop");
-                        var idx = elementGroup.index(this);
-                        var technique = $(this).parent().siblings(".sub-title-text").text();
-                        var data = FileSaver.getTechnique("Active",technique);
-                        var thisVal = $(this).val();
-                        switch(idx){
-                            case 0:
-                            case 1:
-                            case 6:
-                            case 8:
-                            case 9:
-                            case 10:
-                                data[idx] = uic.processValue(thisVal);
-                                break;
-                            case 2:
-                                data[2] = [uic.processValue(thisVal),uic.processValue(elementGroup.eq(idx+1).val())];
-                                break;
-                            case 3:
-                                data[2] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue(thisVal)];
-                                break
-                            case 4:
-                                data[3] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(0).attr("data"))];
-                                break;
-                            case 5:
-                                data[3] = [uic.processValue(elementGroup.eq(idx-1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(0).attr("data"))];
-                                break;
-                            case 6:
-                                data[4] = [uic.processValue($(this).val()),uic.processValue(elementGroup.eq(idx+1).val()),JSON.parse(conts.eq(1).attr("data"))];
-                                break;
-                            case 7:
-                                data[4] = [uic.processValue(elementGroup.eq(idx+1).val()),uic.processValue($(this).val()),JSON.parse(conts.eq(1).attr("data"))];
-                                break;
-                        }
-                    });
+                    
                     return cont;
                 },
                 Passive:function(data){
@@ -266,7 +260,8 @@ $(function(){
                     $(this).addClass("selected");
                     $("#mid-cont").empty();
                     var type = $(this).closest(".tech-group").attr("class").split(" ")[1];
-                    var data = FileSaver.getTechnique(type,$(this).text());
+                    
+                    var data = FileSaver.getTechnique(type,$(this).text(),$(this).parent().parent().siblings(".title-text").text());
                     if(type === "CharClass") type = "Active";
                     $("#mid-cont").append(TechFuncs[type](data));
                 });
@@ -298,6 +293,8 @@ $(function(){
                     [1,"Normal",[]],
                     [0,"Normal",[]],
                     [],
+                    0,
+                    100,
                     10,
                     "Charging",
                     "slashing",
@@ -328,7 +325,7 @@ $(function(){
 
             $(".UIC-group-item").children(".sub-title-text.minimizer").trigger("click");
             $("#char-classes-cont").children(".UIC-group-item").children(".title-text.minimizer").trigger("click");
-            $(".title-text:contains(Char Classes)").trigger("click");
+            //$(".title-text:contains(Char Classes)").trigger("click");
             $(".technique").first().children(".sub-title-text").trigger("click");
         });
     });

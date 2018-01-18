@@ -792,7 +792,7 @@ Quintus.Objects=function(Q){
         },
         startTurn:function(){
             //This will be put in a 'process status at start of turn' function
-            if(this.hasStatus("poisoned")){
+            if(this.hasStatus("Poisoned")){
                 var text = [];
                 var damage = this.p.buffs.poisonDamage;
                 this.showDamage(damage);

@@ -22,6 +22,8 @@
                 "Dodge",
                 "Block"
             ],
+            20,
+            100,
             10,
             "Stabbing",
             "slashing",
@@ -63,6 +65,8 @@
                 []
             ],
             [],
+            0,
+            100,
             10,
             "Charging",
             "slashing",
@@ -75,8 +79,8 @@
                         "atkDmg",
                         "*",
                         "Number",
-                        null,
-                        null,
+                        "null",
+                        "null",
                         2,
                         1,
                         100
@@ -104,6 +108,8 @@
                 []
             ],
             [],
+            0,
+            100,
             10,
             "Charging",
             "slashing",
@@ -137,6 +143,8 @@
                 []
             ],
             [],
+            0,
+            100,
             10,
             "Charging",
             "slashing",
@@ -149,8 +157,8 @@
                         "atkDmg",
                         "+",
                         "Number",
-                        null,
-                        null,
+                        "null",
+                        "null",
                         20,
                         3,
                         100
@@ -180,6 +188,8 @@
                 "Dodge",
                 "Block"
             ],
+            50,
+            90,
             15,
             "Smashing",
             "slashing",
@@ -192,8 +202,8 @@
                         "atkDmg",
                         "+",
                         "Number",
-                        null,
-                        null,
+                        "null",
+                        "null",
                         50,
                         0,
                         100
@@ -219,6 +229,8 @@
                 []
             ],
             [],
+            0,
+            100,
             10,
             "Charging",
             "slashing",
@@ -231,8 +243,8 @@
                         "defensiveAbility",
                         "+",
                         "Number",
-                        null,
-                        null,
+                        "null",
+                        "null",
                         20,
                         3,
                         100
@@ -310,6 +322,8 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 25,
                 "Charging",
                 "slashing",
@@ -351,10 +365,28 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 30,
                 "Charging",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "defensiveAbility",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Embolden",
@@ -376,10 +408,28 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 25,
                 "Charging",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "baseStats",
+                            "skl",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Fervour",
@@ -401,6 +451,8 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 25,
                 "Charging",
                 "slashing",
@@ -426,6 +478,8 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 25,
                 "Charging",
                 "slashing",
@@ -451,6 +505,8 @@
                     ]
                 ],
                 [],
+                0,
+                100,
                 25,
                 "Charging",
                 "slashing",
@@ -479,10 +535,22 @@
                     "Physical",
                     "Dodge"
                 ],
+                0,
+                100,
                 20,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Move Character",
+                        [
+                            "Target",
+                            "Forward",
+                            1,
+                            []
+                        ]
+                    ]
+                ]
             ],
             [
                 "Staredown",
@@ -506,10 +574,28 @@
                 [
                     "Mental"
                 ],
+                0,
+                100,
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "atkAccuracy",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            3,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Charge Through",
@@ -532,10 +618,24 @@
                     "Physical",
                     "Dodge"
                 ],
+                0,
+                100,
                 25,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Move Character",
+                        [
+                            "User",
+                            "Forward",
+                            2,
+                            [
+                                "Pierce"
+                            ]
+                        ]
+                    ]
+                ]
             ],
             [
                 "Headbutt",
@@ -559,10 +659,28 @@
                     "Dodge",
                     "Block"
                 ],
+                0,
+                100,
                 40,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "baseStats",
+                            "ini",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "*",
+                            2,
+                            3,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Pull",
@@ -585,10 +703,22 @@
                     "Physical",
                     "Dodge"
                 ],
+                0,
+                100,
                 20,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Move Character",
+                        [
+                            "Both",
+                            "Backward",
+                            1,
+                            []
+                        ]
+                    ]
+                ]
             ],
             [
                 "War Cry",
@@ -612,13 +742,26 @@
                 [
                     "Mental"
                 ],
+                0,
+                100,
                 60,
                 "Slashing",
                 "slashing",
                 [
                     [
-                        "Range Increase (skl\/x)",
-                        10
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "moveSpeed",
+                            "-",
+                            "Target Combat Stats",
+                            "moveSpeed",
+                            "+",
+                            1,
+                            2,
+                            100
+                        ]
                     ]
                 ]
             ]
@@ -646,10 +789,28 @@
                     "Dodge",
                     "Block"
                 ],
-                25,
+                0,
+                100,
+                100,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "critChance",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Rapid Strike",
@@ -673,10 +834,28 @@
                     "Dodge",
                     "Block"
                 ],
-                25,
+                0,
+                100,
+                0,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "atkSpeed",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Surprising Strike",
@@ -696,7 +875,9 @@
                     []
                 ],
                 [],
-                35,
+                0,
+                100,
+                0,
                 "Slashing",
                 "slashing",
                 []
@@ -723,10 +904,28 @@
                     "Dodge",
                     "Block"
                 ],
-                30,
+                0,
+                100,
+                0,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "damageReduction",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Painful Strike",
@@ -750,10 +949,28 @@
                     "Dodge",
                     "Block"
                 ],
-                30,
+                0,
+                100,
+                0,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "painTolerance",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Whirlwind Strike",
@@ -781,10 +998,28 @@
                     "Dodge",
                     "Block"
                 ],
-                80,
+                0,
+                100,
+                0,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "atkDmg",
+                            "\/",
+                            "Number",
+                            "null",
+                            "null",
+                            2,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ]
         ],
         "Assassin": [
@@ -810,10 +1045,37 @@
                     "Dodge",
                     "Block"
                 ],
+                10,
+                100,
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "str",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ],
+                    [
+                        "Apply Status Effect",
+                        [
+                            "Target",
+                            "Bleeding",
+                            10,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Caltrops",
@@ -835,14 +1097,27 @@
                     []
                 ],
                 [],
+                0,
+                100,
                 100,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Ground",
+                        [
+                            "addObjectOnTop",
+                            "Caltrops",
+                            3,
+                            3,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Weakening Strike",
-                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to one tenth of the damage sustained. This reduced Strength lasts until Cured.",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Strength equal to User's skl\/2. This reduced Strength lasts for 3 turns.",
                 [
                     "Damage",
                     "Physical"
@@ -862,14 +1137,47 @@
                     "Dodge",
                     "Block"
                 ],
+                10,
+                100,
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "str",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "baseStats",
+                            "str",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            2,
+                            3,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Nerve Strike",
-                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to one tenth of the damage sustained. These reduced resistances last until Cured.",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers a reduction to Physical Resistance and Mental Resistance equal to User's skl\/2. These reduced resistances last 3 Rounds.",
                 [
                     "Damage",
                     "Physical"
@@ -889,14 +1197,62 @@
                     "Dodge",
                     "Block"
                 ],
+                10,
+                100,
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "str",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "physicalResistance",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            2,
+                            3,
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "mentalResistance",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            2,
+                            3,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Acid Bomb",
-                "Target receives 10-40+Skill damage from the attacker, and has their DR reduced by the attacker\u2019s Skill. This lasts until the combat is finished.",
+                "Target receives 40+Skill damage from the attacker, and has their DR reduced by the attacker\u2019s Skill. This lasts until the combat is finished.",
                 [
                     "Damage",
                     "Magical"
@@ -915,14 +1271,47 @@
                     "Magical",
                     "Dodge"
                 ],
+                40,
+                100,
                 50,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "damageReduction",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "str",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Poison Strike",
-                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison equal to one quarter of the damage sustained. Poison lasts until Cured and reduces a character\u2019s Hit Points by a like amount at the end of every Round.",
+                "Target is attacked as usual, but the attacker adds Skill instead of Strength to their damage, and the target suffers from Poison. Poison lasts for 3 turns.",
                 [
                     "Damage",
                     "Physical"
@@ -942,10 +1331,37 @@
                     "Dodge",
                     "Block"
                 ],
+                10,
+                100,
                 50,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Apply Status Effect",
+                        [
+                            "Target",
+                            "Poisoned",
+                            3,
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "str",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ]
         ],
         "Skirmisher": [
@@ -967,6 +1383,8 @@
                     []
                 ],
                 [],
+                25,
+                100,
                 25,
                 "Slashing",
                 "slashing",
@@ -991,6 +1409,8 @@
                 ],
                 [],
                 40,
+                100,
+                40,
                 "Slashing",
                 "slashing",
                 []
@@ -1013,6 +1433,8 @@
                     []
                 ],
                 [],
+                30,
+                100,
                 30,
                 "Slashing",
                 "slashing",
@@ -1037,6 +1459,8 @@
                 ],
                 [],
                 40,
+                100,
+                40,
                 "Slashing",
                 "slashing",
                 []
@@ -1059,6 +1483,8 @@
                     []
                 ],
                 [],
+                35,
+                100,
                 35,
                 "Slashing",
                 "slashing",
@@ -1083,6 +1509,8 @@
                 ],
                 [],
                 80,
+                100,
+                80,
                 "Slashing",
                 "slashing",
                 []
@@ -1106,18 +1534,31 @@
                     "Normal",
                     []
                 ],
-                [],
+                [
+                    "Physical",
+                    "Dodge",
+                    "Block"
+                ],
+                20,
+                100,
                 20,
                 "Slashing",
                 "slashing",
                 [
                     [
-                        "Range+",
-                        1
-                    ],
-                    [
-                        "Every x Skill",
-                        10
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "atkRange",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            10,
+                            0,
+                            100
+                        ]
                     ]
                 ]
             ],
@@ -1140,9 +1581,27 @@
                 ],
                 [],
                 30,
+                100,
+                30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "damageReduction",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Rapid Shot",
@@ -1162,6 +1621,8 @@
                     []
                 ],
                 [],
+                25,
+                100,
                 25,
                 "Slashing",
                 "slashing",
@@ -1186,6 +1647,8 @@
                 ],
                 [],
                 25,
+                100,
+                25,
                 "Slashing",
                 "slashing",
                 []
@@ -1209,6 +1672,8 @@
                 ],
                 [],
                 30,
+                100,
+                30,
                 "Slashing",
                 "slashing",
                 []
@@ -1231,6 +1696,8 @@
                     []
                 ],
                 [],
+                60,
+                100,
                 60,
                 "Slashing",
                 "slashing",
@@ -1257,12 +1724,14 @@
                 ],
                 [],
                 35,
+                100,
+                35,
                 "Slashing",
                 "slashing",
                 [
                     [
-                        "AOE Radius (skl\/x)",
-                        20
+                        null,
+                        []
                     ]
                 ]
             ],
@@ -1285,12 +1754,14 @@
                 ],
                 [],
                 60,
+                100,
+                60,
                 "Slashing",
                 "slashing",
                 [
                     [
-                        "AOE Radius (skl\/x)",
-                        20
+                        null,
+                        []
                     ]
                 ]
             ],
@@ -1312,6 +1783,8 @@
                     []
                 ],
                 [],
+                100,
+                100,
                 100,
                 "Slashing",
                 "slashing",
@@ -1335,15 +1808,12 @@
                     []
                 ],
                 [],
+                0,
+                100,
                 60,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "AOE Radius (skl\/x)",
-                        20
-                    ]
-                ]
+                []
             ],
             [
                 "Temporary Insanity",
@@ -1364,14 +1834,11 @@
                 ],
                 [],
                 30,
+                100,
+                30,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "AOE Radius (skl\/x)",
-                        20
-                    ]
-                ]
+                []
             ],
             [
                 "Antithesis",
@@ -1391,6 +1858,8 @@
                     []
                 ],
                 [],
+                150,
+                100,
                 150,
                 "Slashing",
                 "slashing",
@@ -1488,12 +1957,7 @@
                 100,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "AOE Length (skl\/x)",
-                        10
-                    ]
-                ]
+                []
             ],
             [
                 "Choke",
@@ -1553,7 +2017,9 @@
                 [
                     1,
                     "Normal",
-                    []
+                    [
+                        "CanTargetGround"
+                    ]
                 ],
                 [
                     4,
@@ -1561,15 +2027,12 @@
                     []
                 ],
                 [],
-                40,
+                0,
+                100,
+                10,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Range (1+skl\/x)",
-                        5
-                    ]
-                ]
+                []
             ],
             [
                 "Heal",
@@ -1592,16 +2055,7 @@
                 75,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Range (1+skl\/x)",
-                        20
-                    ],
-                    [
-                        "AOE (skl\/x)",
-                        30
-                    ]
-                ]
+                []
             ],
             [
                 "Cure",
@@ -1624,16 +2078,7 @@
                 50,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Range (1+skl\/x)",
-                        25
-                    ],
-                    [
-                        "AOE (skl\/x)",
-                        35
-                    ]
-                ]
+                []
             ],
             [
                 "Revitalize",
@@ -1681,12 +2126,7 @@
                 75,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Range (1+skl\/x)",
-                        20
-                    ]
-                ]
+                []
             ],
             [
                 "Resurrect",

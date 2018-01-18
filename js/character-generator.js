@@ -79,7 +79,7 @@ var CharacterGenerator = {
         char.talents = this.getTalents(char.charClass,char.charGroup);
         char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
         char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
-        char.gender = data.gender || this.generateGender(char.charClass,char.natNum);//Requires charClass and natNum
+        char.gender = data.gender === "Random" || !data.gender ? this.generateGender(char.charClass,char.natNum) : data.gender;
         char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
         char.exp = data.exp || 0;
         char.loyalty = data.loyalty || 50;

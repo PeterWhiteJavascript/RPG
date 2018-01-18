@@ -572,28 +572,27 @@ Quintus.HUD=function(Q){
         },
         //Shows the move grid and zoc
         loadMove:function(){
-            //Q.BattleGrid.showZOC(this.p.target.p.team==="enemy"?"ally":"enemy");
-            this.changeToPointer("pointerMoveControls");
             Q.rangeController.setTiles(1,this.p.target.p.loc,this.p.target.p.combatStats.moveSpeed,this.p.target.p.walkMatrix);
             Q.rangeController.pulse();
+            this.changeToPointer("pointerMoveControls");
         },
         //Shows the attack grid
         loadAttack:function(){
-            this.changeToPointer("pointerAttackControls");
             Q.rangeController.setTiles(2,this.p.target.p.loc,this.p.target.p.combatStats.atkRange,this.p.target.p.attackMatrix);
             Q.rangeController.pulse();
+            this.changeToPointer("pointerAttackControls");
         },
         //Show the range for lifting (4 squares around the user)
         loadLift:function(){
-            this.changeToPointer("pointerLiftControls");
             Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
             Q.rangeController.pulse();
+            this.changeToPointer("pointerLiftControls");
         },
         //Shows the range for dropping
         loadDrop:function(){
-            this.changeToPointer("pointerDropControls");
             Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
             Q.rangeController.pulse();
+            this.changeToPointer("pointerDropControls");
         },
         //Loads the special skills menu
         loadTechniquesMenu:function(){
@@ -920,6 +919,7 @@ Quintus.HUD=function(Q){
             if(special){
                 tiles = this.process[special](tiles,loc);
             }
+            this.tiles = [];
             //If there is at least one place to move
             if(tiles.length){
                 //Loop through the possible tiles
@@ -934,12 +934,14 @@ Quintus.HUD=function(Q){
                         //If the path is normal
                         if(pathCost<=range){
                             rangeTileLayer.setTile(tiles[i].x,tiles[i].y,tile);
+                            this.tiles.push(tiles[i]);  
                         } 
                         //If the path includes a single caltrops tile
                         else if(pathCost>=1000) {
                             //Only include this path if the last tile is the ZOC tile
                             if(path[path.length-1].weight===1000){
                                 rangeTileLayer.setTile(tiles[i].x,tiles[i].y,tile);
+                                this.tiles.push(tiles[i]);  
                             }
                         }
                     }
@@ -948,7 +950,6 @@ Quintus.HUD=function(Q){
             } else {
                 
             }
-            this.tiles = tiles;
         },
         resetGrid:function(){
             this.tiles.forEach(function(tile){
@@ -1051,6 +1052,15 @@ Quintus.HUD=function(Q){
                 }
                 return tiles;
             }
+        },
+        getPossibleTargets:function(tiles){
+            console.log(tiles)
+            var targets = [];
+            for(var i=0;i<tiles.length;i++){
+                var target = Q.BattleGrid.getObject([tiles[i].x,tiles[i].y]);
+                if(target) targets.push(target);
+            }
+            return targets;
         }
     });/*
     Q.UI.Container.extend("RangeGrid",{

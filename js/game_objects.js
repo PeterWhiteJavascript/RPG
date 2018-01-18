@@ -252,6 +252,11 @@ Quintus.GameObjects=function(Q){
             } else {
                 this.entity.on("checkInputs");
                 this.entity.on("inputMoved",this,"inputMoved");
+                var possibleTargets = Q.rangeController.getPossibleTargets(Q.rangeController.tiles);
+                if(possibleTargets.length){
+                    //Set the pointer on the first target
+                    this.entity.snapTo(possibleTargets[0]);
+                }
             }
         },
         inputMoved:function(){},
