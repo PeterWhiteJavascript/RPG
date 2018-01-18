@@ -1054,7 +1054,6 @@ Quintus.HUD=function(Q){
             }
         },
         getPossibleTargets:function(tiles){
-            console.log(tiles)
             var targets = [];
             for(var i=0;i<tiles.length;i++){
                 var target = Q.BattleGrid.getObject([tiles[i].x,tiles[i].y]);
@@ -1213,7 +1212,12 @@ Quintus.HUD=function(Q){
         inserted:function(){
             //targetting the ground
             if(!this.p.targets.length) return;
-            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h-30,label:"Press enter to DO IT.",size:12,cx:0,cy:0,align:"center"}));
+            var text = "Press enter to DO IT.";
+            var teamObjs = Q.BatCon.filterByTeam(this.p.targets,Q.BatCon.turnOrder[0].p.team);
+            if(teamObjs.length){
+                text += " This attack will hit a teammate!";
+            };
+            this.insert(new Q.UI.Text({x:10+this.p.w/2,y:this.p.h/2,label:text,size:12,cx:0,cy:0,align:"center"}));
         }
     });
     //The in-battle dialogue equivalent

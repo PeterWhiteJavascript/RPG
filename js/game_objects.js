@@ -253,6 +253,7 @@ Quintus.GameObjects=function(Q){
                 this.entity.on("checkInputs");
                 this.entity.on("inputMoved",this,"inputMoved");
                 var possibleTargets = Q.rangeController.getPossibleTargets(Q.rangeController.tiles);
+                Q.BatCon.removeTeamObjects(possibleTargets,Q.BatCon.getOtherTeam(Q.BatCon.turnOrder[0].p.team));
                 if(possibleTargets.length){
                     //Set the pointer on the first target
                     this.entity.snapTo(possibleTargets[0]);
@@ -1203,6 +1204,11 @@ Quintus.GameObjects=function(Q){
         },
         getOtherTeam:function(team){
             return team==="Enemy"?"Ally":"Enemy";
+        },
+        filterByTeam:function(arr,team){
+            return arr.filter(function(char){
+                return char.p.team === team;
+            });
         },
         addToTeam:function(obj){
             var team = obj.p.team==="Ally"?this.allies:this.enemies;

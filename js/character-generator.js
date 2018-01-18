@@ -19,7 +19,6 @@ function convertEquipment(data){
 var CharacterGenerator = {
     init:function(data,equipment,defaultEquipment,techniques,talents,awards){
         this.characterGeneration = data;
-        console.log(data)
         this.personalityNames = data.personalityNames;
         this.personalities = data.personalities;
         this.traitsKeys = Object.keys(this.personalities.traits);
