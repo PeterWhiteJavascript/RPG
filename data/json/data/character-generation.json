@@ -17,10 +17,10 @@
         ["ini","dex","rfl"],
         ["skl","eff","enr"]
     ],
-    "derivedStats":["Max Hit Points","Max Technique Points","Pain Tolerance","Damage Reduction","Physical Resistance","Mental Resistance","Magical Resistance","Attack Range","Min Attack Damage","Max Attack Damage","Encumbrance Threshold","Total Weight","Encumbrance Penalty","Defensive Ability","Attack Accuracy","Critical Chance","Counter Chance","Attack Speed","Move Speed"],
-    "combatStats":["maxHp","maxTp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","minAtkDmg","maxAtkDmg","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"],
+    "derivedStats":["Max Hit Points","Max Technique Points","Pain Tolerance","Damage Reduction","Physical Resistance","Mental Resistance","Magical Resistance","Attack Range","Min Attack Damage","Max Attack Damage","Attack Damage","Encumbrance Threshold","Total Weight","Encumbrance Penalty","Defensive Ability","Attack Accuracy","Critical Chance","Counter Chance","Attack Speed","Move Speed"],
+    "combatStats":["maxHp","maxTp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","minAtkDmg","maxAtkDmg","atkDmg","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"],
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
-    "statuses":["Poison","Blind","Disable","Immobile"],
+    "statuses":["Poison","Blind","Disable","Immobile","Dodging"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
         "Venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},

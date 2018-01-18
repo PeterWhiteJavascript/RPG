@@ -41,14 +41,14 @@ $(function(){
                         }
                     }
                 },
-                techniquesFuncs:["Change Stat","Apply Status Effect","Change Ground"],
+                techniquesFuncs:["Change Stat Active","Change Stat Passive","Apply Status Effect","Change Ground"],
                 targets:["Target","User"],
                 techniqueProps:function(func,props){
                     var cont = $("<div class='UIC-group-item-props'></div>");
                     func = func || "Target";
                     switch(func){
-                        case "Change Stat":
-                            props = props || ["Target","combatStats","physicalResistance","+",10,0,100];
+                        case "Change Stat Active":
+                            props = props || ["Target","combatStats","physicalResistance","+","Number",null,null,10,0,100];
                             cont.append(uic.Select("Affects",uic.targets,props[0]));
                             
                             cont.append(uic.Select("Stat Type",uic.argumentTargetProps,props[1]));
@@ -56,10 +56,25 @@ $(function(){
                             uic.linkSelects($(cont).children("select")[1],$(cont).children("select")[2],uic.argumentTargetProps);
                             
                             cont.append(uic.Select("Operator",uic.operators,props[3]));
-                            cont.append(uic.Input("Amount",props[4],"number"));
-                            cont.append(uic.Input("Turns",props[5],"number",0));
-                            cont.append(uic.Input("Accuracy",props[6],"number",1,100));
+                            cont.append(uic.Select("Amount Type",uic.amountTypes,props[4]));
+                            cont.append(uic.Select("Amount Stat",uic.amountTypes[props[4]],props[5]));
+                            uic.linkSelects($(cont).children("select")[4],$(cont).children("select")[5],uic.amountTypes);
+                            cont.append(uic.Select("Amount Oper",uic.amountTypeOpers[props[4]],props[6]));
+                            uic.linkSelects($(cont).children("select")[4],$(cont).children("select")[6],uic.amountTypeOpers);
+                            cont.append(uic.Input("Amount",props[7],"number"));
+                            cont.append(uic.Input("Turns",props[8],"number",0));
+                            cont.append(uic.Input("Accuracy",props[9],"number",1,100));
                         
+                            break;
+                        case "Change Stat Passive":
+                            props = props || ["combatStats","physicalResistance","+",10];
+                        
+                            cont.append(uic.Select("Stat Type",uic.argumentTargetProps,props[0]));
+                            cont.append(uic.Select("Stat",uic.argumentTargetProps[props[0]],props[1]));
+                            uic.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],uic.argumentTargetProps);
+                            
+                            cont.append(uic.Select("Operator",uic.operators,props[2]));
+                            cont.append(uic.Input("Amount",props[3],"number"));
                             break;
                         case "Apply Status Effect":
                             props = props || ["Target","Poison",3,100];
@@ -82,6 +97,16 @@ $(function(){
                     this.selectInitialValue(cont);
                     return cont;
                 },
+                amountTypes:{
+                    "Number":[null],
+                    "User Base Stats":FileSaver.charGen.statNames,
+                    "Target Base Stats":FileSaver.charGen.statNames
+                },
+                amountTypeOpers:{
+                    "Number":[null],
+                    "User Base Stats":["+","-","*","/"],
+                    "Target Base Stats":["+","-","*","/"]
+                },
                 argumentTargetProps:{
                     combatStats:FileSaver.charGen.combatStats,
                     dmgResistance:FileSaver.techniqueData.data["techTypes2"],
@@ -99,16 +124,6 @@ $(function(){
                 return uic.createGroup([uic.getPremadeGroup("TechniqueArguments",data)]);
             };
             function saveCurrentTech(){
-                function getArgs(args){
-                    var argums = [];
-                    args.each(function(){
-                        argums.push([
-                           $(this).children("input:eq(0)").val(), 
-                           uic.processValue($(this).children("input:eq(1)").val())
-                        ]);
-                    });
-                    return argums;
-                }
                 var type = $(".sub-title-text.selected").closest(".tech-group").attr("class").split(" ")[1];
                 var tech = $(".sub-title-text.selected").text();
                 var cont = $(".technique-props");
@@ -142,7 +157,7 @@ $(function(){
                     FileSaver.techniqueData[type][FileSaver.techniqueData[type].indexOf(FileSaver.getTechnique(type,tech))] = data;
                 }
             };
-            function removeTech(pass){
+            function removeTech(){
                 var type = $(this).parent().parent().siblings(".title-text").text();
                 var tech = $(this).siblings(".sub-title-text").text();
                 if(confirm("Remove "+tech+"?")){
@@ -289,6 +304,8 @@ $(function(){
                     []
                 ];
                 FileSaver.techniqueData["Active"].push(data);
+                $("#active-techniques-cont").append(techName(data[0],"Active"));
+                
             });
             $("#add-passive-tech").click(function(){
                 var data = [
@@ -297,6 +314,7 @@ $(function(){
                     []
                 ];
                 FileSaver.techniqueData["Passive"].push(data);
+                $("#passive-techniques-cont").append(techName(data[0],"Passive"));
             });
 
 

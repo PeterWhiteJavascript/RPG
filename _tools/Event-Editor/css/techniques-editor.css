@@ -24,6 +24,10 @@ body{
     left:66.67%;
     border:1px solid black;
 }
+#char-classes-cont .UIC-group-item{
+    padding:0;
+    overflow:hidden;
+}
 .hud-buttons{
     width:100%;
     color:var(--button-text-color);

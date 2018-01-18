@@ -2,12 +2,12 @@
 <html>
     <head>
         <?php include 'config.php';?>
-        <title>Create Techniques</title>
+        <title>Create Gear Techniques</title>
         <link rel="stylesheet" type="text/css" href="css/new-style.css">
         <link rel="stylesheet" type="text/css" href="css/techniques-editor.css">
         <style>
             #right-cont{
-                position:fixed;
+                
             }
             .no-bg-title-text{
                 text-align:center;
@@ -53,6 +53,29 @@
                     }
                 });
                 uic.createTopMenu($("#editor-content"));
+                function getArgDesc(data){
+                    if(!data) return "None";
+                    var text = "";
+                    data.forEach(function(d){
+                        var func = d[0];
+                        var props = d[1];
+                        switch(func){
+                            case "Change Stat Active":
+                                text += "Affects "+props[0]+ " | " + props[2] +" "+ props[3] + " (x)";
+                                break;
+                            case "Change Stat Passive":
+                                text += props[1] +" "+ props[2] + " (x)";
+                                break;
+                            case "Apply Status Effect":
+                                text += "Affects "+props[0]+ " | Status "+props[1];
+                                break;
+                            case "Change Ground":
+                                text += props[1] +" "+ props[2] + " (x) TODO";
+                                break;
+                        }
+                    });
+                    return text;
+                };
                 function showTechnique(type,tech){
                     var data = FileSaver.techniqueData[type].find(function(d){return tech === d[0];});
                     $("#right-cont").children(".UIC-group-item").children(".tech-display").empty();
@@ -67,13 +90,13 @@
                             uic.Text("Default TP Cost",data[6]),
                             uic.Text("Animation",data[7]),
                             uic.Text("Sound",data[8]),
-                            uic.Text("Arguments",data[9].length ? data[9].map(function(d){return d[0]+" -> "+d[1];}).toString().replace(/,/g, '<br>') : "None")
+                            uic.Text("Arguments",getArgDesc(data[9]))
                         );
                     } else {
                         $("#right-cont").children(".UIC-group-item").children(".tech-display").append(
                             uic.Text("Name",data[0]),
                             uic.Text("Desc",data[1]),
-                            uic.Text("Arguments",data[2].length ? data[2].map(function(d){return d[0]+" -> "+d[1];}).toString().replace(/,/g, '<br>') : "None")
+                            uic.Text("Arguments",getArgDesc(data[2]))
                         );
                     }
                 };
@@ -90,10 +113,11 @@
                         showTechnique($(this).children("select:eq(0)").val(),$(this).children("select:eq(1)").val());
                     });
 
-                    function createArguments(args,num,cont,descs){
+                    function createArguments(args,num,cont,data){
                         if(!args.length) return;
+                        console.log(data,args)
                         for(var i=0;i<args[0].length;i++){
-                            cont.append("<span class='full-width'>"+descs[i]+"</span>");
+                            cont.append("<span class='full-width'>"+getArgDesc(data[data.length-1])+"</span>");
                             for(var j=0;j<num;j++){
                                 cont.append("<input class='sixth-width' value='"+args[j][i]+"'>");
                             }
@@ -107,18 +131,21 @@
                     }
                     var numOfLevels = name === "Base Technique" ? 6 : 2;
                     var data = FileSaver.getTechnique(techType,tech[0]);
-                    var argsDescs = data[data.length-1].map(function(d){return d[0];});
-                    createArguments(tech[1],numOfLevels,cont,argsDescs);
+                    createArguments(tech[1],numOfLevels,cont,data);
                     $(cont).children("select:eq(1)").on("change",function(){
                         $(this).nextAll().remove();
-                        var category = $(this).siblings(".sub-title-text").first().text();
+                        var category = $(this).siblings(".title-text").first().text();
                         var numOfLevels = category === "Base Technique" ? 6 : 2;
                         var type = $(this).siblings("select").first().val();
                         var tech = $(this).val();
                         var data = FileSaver.techniqueData[type].find(function(t){return t[0] === tech;});
-                        var argsDescs = data[data.length-1].map(function(d){return d[0];});
-                        var args = data[data.length-1].map(function(d){return d[1];});
-                        createArguments(Array(numOfLevels).fill(args),numOfLevels,$(this).parent(),argsDescs);
+                        var args = [];
+                        for(var i=0;i<data[data.length-1].length;i++){
+                            if(data[data.length-1][i][0]==="Change Stat Active" || data[data.length-1][i][0]==="Change Stat Passive"){
+                                args.push(data[data.length-1][i][1][7] || data[data.length-1][i][1][3]);
+                            }
+                        }
+                        createArguments(Array(numOfLevels).fill(args),numOfLevels,$(this).parent(),data);
                         if(type === "Active") createTPCost($(this).parent(),numOfLevels,Array(numOfLevels).fill([data[data.length-4]]));
                         showTechnique(type,tech);
                     });
@@ -135,29 +162,13 @@
                         var techName = cont.children("select:eq(1)").val();
                         var techData = FileSaver.getTechnique(techType,techName);
                         var inputs = cont.children("input");
-                        var numArgs = techData[techData.length-1].length;
+                        var numArgs = techData[techData.length-1].filter(function(data){return data[0] === "Change Stat Active" || data[0] === "Change Stat Passive"}).length;
                         var args = [];
-                        //format
-                        /*
-                         * [
-                         *      rank
-                         *      [
-                         *          numargs
-                         *      ],
-                        *       rank
-                         *      [
-                         *          numargs
-                         *      ],
-                         *      rank
-                         *      [
-                            *      numargs
-                         *      ]
-                         * ]
-                         */
-                        //-ranks because that is the same as the num of tpCost
+                        
                         for(var i=0;i<ranks;i++){
                             var group = [];
                             for(var j=0;j<numArgs;j++){
+                                
                                 group.push(uic.processValue(inputs.eq(i+(j*ranks)).val()));
                             }
                             args.push(group);
