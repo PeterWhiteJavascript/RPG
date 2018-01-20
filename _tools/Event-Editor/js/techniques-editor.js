@@ -121,7 +121,6 @@ $(function(){
                 argumentTargetProps:{
                     combatStats:FileSaver.charGen.combatStats,
                     baseStats:FileSaver.charGen.statNames,
-                    dmgResistance:FileSaver.techniqueData.data["techTypes2"],
                     statusResistance:FileSaver.charGen.statuses
                 },
                 argumentGroundProps:{
@@ -243,6 +242,7 @@ $(function(){
                         FileSaver.getTechnique("Passive",$(this).attr("orig-name"))[0] = uic.processValue($(this).val());
                     });
                     cont.append(techniqueArguments(data[2]));
+                    cont.children(".UIC-group").children(".UIC-group-cont").children(".UIC-group-hud").children(".UIC-title").trigger("click");
                     return cont;
                 }
             };

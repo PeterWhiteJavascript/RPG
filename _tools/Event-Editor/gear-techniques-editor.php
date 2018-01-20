@@ -55,22 +55,22 @@
                 uic.createTopMenu($("#editor-content"));
                 function getArgDesc(data){
                     if(!data) return "None";
-                    var text = "";
+                    var text = [];
                     data.forEach(function(d){
                         var func = d[0];
                         var props = d[1];
                         switch(func){
                             case "Change Stat Active":
-                                text += "Affects "+props[0]+ " | " + props[2] +" "+ props[3] + " (x)";
+                                text.push("Affects "+props[0]+ " | " + props[2] +" "+ props[3] + " (x)");
                                 break;
                             case "Change Stat Passive":
-                                text += props[1] +" "+ props[2] + " (x)";
+                                text.push(props[1] +" "+ props[2] + " (x)");
                                 break;
                             case "Apply Status Effect":
-                                text += "Affects "+props[0]+ " | Status "+props[1];
+                                text.push("Affects "+props[0]+ " | Status "+props[1]);
                                 break;
                             case "Change Ground":
-                                text += props[1] +" "+ props[2] + " (x) TODO";
+                                text.push(props[1] +" "+ props[2] + " (x) TODO");
                                 break;
                         }
                     });
@@ -87,16 +87,18 @@
                             uic.Text("Range",data[3][0]+", "+data[3][1]),
                             uic.Text("AOE",data[4][0]+", "+data[4][1]),
                             uic.Text("Resisted By",data[5].length ? data[5].toString().replace(/,/g, ', ') : "None"),
-                            uic.Text("Default TP Cost",data[6]),
-                            uic.Text("Animation",data[7]),
-                            uic.Text("Sound",data[8]),
-                            uic.Text("Arguments",getArgDesc(data[9]))
+                            uic.Text("Damage",data[6]),
+                            uic.Text("Accuracy",data[7]),
+                            uic.Text("Default TP Cost",data[8]),
+                            uic.Text("Animation",data[9]),
+                            uic.Text("Sound",data[10]),
+                            uic.Text("Arguments",getArgDesc(data[data.length-1]).join().replace(/,/g, ', '))
                         );
                     } else {
                         $("#right-cont").children(".UIC-group-item").children(".tech-display").append(
                             uic.Text("Name",data[0]),
                             uic.Text("Desc",data[1]),
-                            uic.Text("Arguments",getArgDesc(data[2]))
+                            uic.Text("Arguments",getArgDesc(data[data.length-1]).join().replace(/,/g, ', '))
                         );
                     }
                 };
@@ -115,9 +117,11 @@
 
                     function createArguments(args,num,cont,data){
                         if(!args.length) return;
-                        console.log(data,args)
                         for(var i=0;i<args[0].length;i++){
-                            cont.append("<span class='full-width'>"+getArgDesc(data[data.length-1])+"</span>");
+                            var desc = getArgDesc(data[data.length-1])[i]
+                            //If we changed the number of props in this technique, then there may be extra data from the previous version
+                            if(!desc) continue;
+                            cont.append("<span class='full-width'>"+desc+"</span>");
                             for(var j=0;j<num;j++){
                                 cont.append("<input class='sixth-width' value='"+args[j][i]+"'>");
                             }

@@ -88,8 +88,8 @@ var CharacterGenerator = {
         char.completedEvents =  [];
         char.combatStats = this.getCombatStats(char);
         
-        char = this.applyPassiveTechniques(char);
-        console.log(char)
+        //TEMP: print out alex for testing
+        char.name === "Alex" ? console.log(char) : false;
         return char;
     },
     emptyAwards:function(){
@@ -240,9 +240,92 @@ var CharacterGenerator = {
             active:[],
             passive:[]
         };
+        function processArgs(args){
+            var processedArgs = [];
+            for(var i=0;i<args.length;i++){
+                var func = args[i][0];
+                var props = args[i][1];
+                var arg = {
+                    func:func
+                };
+                switch(func){
+                    case "Change Stat Active":
+                        arg.affects = props[0];
+                        arg.statType = props[1];
+                        arg.stat = props[2];
+                        arg.oper = props[3];
+                        arg.value = {
+                            type:props[4],
+                            stat:props[5],
+                            oper:props[6],
+                            amount:props[7]
+                        };
+                        arg.turns = props[8];
+                        arg.accuracy = props[9];
+                        break;
+                    case "Change Stat Passive":
+                        arg.statType = props[0];
+                        arg.stat = props[1];
+                        arg.oper = props[2];
+                        arg.value = props[3];
+                        break;
+                    case "Apply Status Effect":
+                        arg.affects = props[0];
+                        arg.statusEffect = props[1];
+                        arg.turns = props[2];
+                        arg.accuracy = props[3];
+                        break;
+                    case "Change Ground":
+                        arg.target = props[0];
+                        arg.tile = props[1];
+                        arg.minTurns = props[2];
+                        arg.maxTurns = props[3];
+                        arg.accuracy = props[4];
+                        break;
+                    case "Move Character":
+                        arg.target = props[0];
+                        arg.direction = props[1];
+                        arg.numTiles = props[2];
+                        arg.options = props[3];
+                        break;
+                }
+                processedArgs.push(arg);
+            }
+            return processedArgs;
+        }
+        function processActive(data){
+            var tech = {
+                name:data[0],
+                desc:data[1],
+                type1:data[2][0],
+                type2:data[2][1],
+                range:data[3][0],
+                rangeType:data[3][1],
+                rangeProps:data[3][2],
+                aoe:data[4][0],
+                aoeType:data[4][1],
+                aoeProps:data[4][2],
+                resistedBy:data[5],
+                damage:data[6],
+                accuracy:data[7],
+                tpCost:data[8],
+                animation:data[9],
+                sound:data[10],
+                args:processArgs(data[11])
+            };
+            return tech;
+        }
+        function processPassive(data){
+            var tech = {
+                name:data[0],
+                desc:data[1],
+                args:processArgs(data[2])
+            };
+            return tech;
+        };
         for(var i=0;i<techs.length;i++){
-            if(techs[i].length<10) processed.passive.push(techs[i]);
-            else processed.active.push(techs[i]);
+            if(techs[i].length<10) processed.passive.push(processPassive(techs[i]));
+            else processed.active.push(processActive(techs[i]));
         }
         return processed;
     },
@@ -271,13 +354,41 @@ var CharacterGenerator = {
     },
     getEquipmentTechniques:function(equipment){
         function getTech(eq){
+            function getGearArgs(props,args){
+                for(var i=0;i<args.length;i++){
+                    var arg = args[i];
+                    switch(arg[0]){
+                        case "Change Stat Active":
+                            arg[1][7] = props[i];
+                            break;
+                        case "Change Stat Passive":
+                            arg[1][3] = props[i];
+                            break;
+                    }
+                }
+                return args;
+            };
             var data = CharacterGenerator.equipment.gear[eq.name];
             var rank = Math.ceil(CharacterGenerator.qualityKeys.indexOf(eq.quality));
-            var t = [CharacterGenerator.findTechnique(data.techniques.Base[0])];
-            data.techniques[eq.material].slice(0,rank).forEach(function(tech){
-                t.push(CharacterGenerator.findTechnique(tech[0]));
-            });
-            return t;
+            var processedTechs = [];
+            var baseTech = CharacterGenerator.findTechnique(data.techniques.Base[0]);
+            var baseArgs = data.techniques.Base[1];
+            baseTech[baseTech.length-1] = getGearArgs(baseArgs[rank],baseTech[baseTech.length-1]);
+            if(data.techniques.Base[2]) baseTech[8] = data.techniques.Base[2][rank];
+            processedTechs.push(baseTech);
+            var techs = data.techniques[eq.material].slice(0,Math.floor(rank/2)+1);
+            for(var i=0;i<techs.length;i++){
+                var tech = techs[i];
+                var found = CharacterGenerator.findTechnique(tech[0]);
+                var num = ~~(rank/2)*i;
+                //Only if the num is equal to rank will it be 0.
+                var rankIdx = num < rank || num > rank ? 1 : 0;
+                
+                found[found.length-1] = getGearArgs(tech[1][rankIdx],found[found.length-1]);
+                if(tech[2]) found[8] = tech[2][rankIdx];
+                processedTechs.push(found);
+            }
+            return processedTechs;
         }
         var techs = [];
         var primary = equipment[0];
@@ -292,16 +403,6 @@ var CharacterGenerator = {
             });
         }
         return uniq(techs);
-    },
-    applyPassiveTechniques:function(char){
-        var techs = char.techniques.passive;
-        for(var i=0;i<techs.length;i++){
-            this.applyPassiveTech(char,techs[i]);
-        }
-        return char;
-    },
-    applyPassiveTech:function(char,tech){
-        
     },
     getTechniques:function(techs,charClass,equipment){
         if(!techs) return;
@@ -533,18 +634,53 @@ var CharacterGenerator = {
         char.combatStats.atkSpeed = this.get_atkSpeed(char);
 
         char.combatStats.moveSpeed = this.get_moveSpeed(char);
+        
+        char.combatStats.statusResistance = {
+            Poisoned:this.getPassiveEffect(0,"statusResistance","Poisoned",char.techniques.passive),
+            Bleeding:this.getPassiveEffect(0,"statusResistance","Bleeding",char.techniques.passive),
+            Weakened:this.getPassiveEffect(0,"statusResistance","Weakened",char.techniques.passive),
+            Blinded:this.getPassiveEffect(0,"statusResistance","Blinded",char.techniques.passive),
+            Stunned:this.getPassiveEffect(0,"statusResistance","Stunned",char.techniques.passive),
+            Disabled:this.getPassiveEffect(0,"statusResistance","Disabled",char.techniques.passive),
+            Immobilized:this.getPassiveEffect(0,"statusResistance","Immobilized",char.techniques.passive),
+            "Seeking Mirage":this.getPassiveEffect(0,"statusResistance","Seeking Mirage",char.techniques.passive)
+        };
         return char.combatStats;
+    },
+    evaluateExpression:function(val1,operator,val2){
+        switch(operator){
+            case "+":
+                return val1 + val2;
+            case "-":
+                return val1 - val2;
+            case "/":
+                return val1 / val2;
+            case "*":
+                return val1 * val2;
+            case "=":
+                return val2;
+        }
+    },
+    getPassiveEffect:function(value,category,stat,techs){
+        for(var i=0;i<techs.length;i++){
+            var args = techs[i].args;
+            var matched = args.filter(function(arg){return arg.statType === category && arg.stat === stat;});
+            for(var j=0;j<matched.length;j++){
+                value = this.evaluateExpression(value,matched[j].oper,matched[j].value);
+            }
+        }
+        return value;
     },
     get_maxHp:function(p){
         var level = p.level, end = p.combatStats.endurance, charGroup = p.charGroup;
         var r = charGroup==="Fighter"?3:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
         var q = charGroup==="Fighter"?12:charGroup==="Rogue"?10:charGroup==="Mage"?3:0;
-        return Math.floor((end*q)+(level*r));
+        return this.getPassiveEffect(Math.floor((end*q)+(level*r)),"combatStats","maxHp",p.techniques.passive);
     },
     get_painTolerance:function(p){
         var level = p.level, end = p.combatStats.endurance, charGroup = p.charGroup;
         var z = charGroup==="Fighter"?5:charGroup==="Rogue"?4:charGroup==="Mage"?3:0;
-        return Math.floor(end*z+level);
+        return this.getPassiveEffect(Math.floor(end*z+level),"combatStats","painTolerance",p.techniques.passive);
     },
     get_defensiveAbility:function(p){
         var rfl = p.combatStats.reflexes, 
@@ -552,22 +688,22 @@ var CharacterGenerator = {
             level = p.level,
             block = this.getEquipmentProp("block",p.equipment[1]);
         var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
-        return rfl+encPenalty+level+block+dualWield;
+        return this.getPassiveEffect(rfl+encPenalty+level+block+dualWield,"combatStats","defensiveAbility",p.techniques.passive);
     },
     get_damageReduction:function(p){
-        return this.getEquipmentProp("damageReduction",p.equipment[2]);
+        return this.getPassiveEffect(this.getEquipmentProp("damageReduction",p.equipment[2]),"combatStats","damageReduction",p.techniques.passive);
     },
     get_physicalResistance:function(p){
         var str = p.combatStats.strength, end = p.combatStats.endurance;
-        return Math.min(25,str+end);
+        return this.getPassiveEffect(Math.min(25,str+end),"combatStats","physicalResistance",p.techniques.passive);
     },
     get_mentalResistance:function(p){
         var ini = p.combatStats.initiative, eff = p.combatStats.efficiency;
-        return Math.min(25,ini+eff);
+        return this.getPassiveEffect(Math.min(25,ini+eff),"combatStats","mentalResistance",p.techniques.passive);
     },
     get_magicalResistance:function(p){
         var enr = p.combatStats.energy, skl = p.combatStats.skill;
-        return Math.min(25,enr+skl);
+        return this.getPassiveEffect(Math.min(25,enr+skl),"combatStats","magicalResistance",p.techniques.passive);
     },
     get_atkAccuracy:function(p){
         //If there is a left hand equipped, we need an average of the two.
@@ -577,78 +713,78 @@ var CharacterGenerator = {
             encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
             level = p.level;
         //I multiplied by 2 to get some better accuracies.
-        return Math.min(99,Math.floor(wsk+wield+encPenalty+level)*2);
+        return this.getPassiveEffect(Math.min(99,Math.floor(wsk+wield+encPenalty+level)*2),"combatStats","atkAccuracy",p.techniques.passive);
     },
     get_critChance:function(p){
         var attackAccuracy = p.combatStats.atkAccuracy,charGroup = p.charGroup;
         var g = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
-        return Math.min(99,Math.floor(attackAccuracy/g));
+        return this.getPassiveEffect(Math.min(99,Math.floor(attackAccuracy/g)),"combatStats","critChance",p.techniques.passive);
     },
     get_counterChance:function(p){
         var defensiveAbility = p.combatStats.defensiveAbility,charGroup = p.charGroup;
         var g = charGroup==="Fighter"?10:charGroup==="Rogue"?7:charGroup==="Mage"?20:0;
-        return Math.min(75,Math.floor(defensiveAbility/g));
+        return this.getPassiveEffect(Math.min(75,Math.floor(defensiveAbility/g)),"combatStats","counterChance",p.techniques.passive);
     },
     get_atkSpeed:function(p){
         var dex = p.combatStats.dexterity, weaponSpeedRight = this.getEquipmentProp("speed",p.equipment[0]),weaponSpeedLeft = this.getEquipmentProp("speed",p.equipment[1]),encPenalty = p.combatStats.encumbrancePenalty,level = p.level, charGroup = p.charGroup;
         var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
         var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
         var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
-        return amount;
+        return this.getPassiveEffect(amount,"combatStats","atkSpeed",p.techniques.passive);
     },
     get_atkRange:function(p){
         var attackRangeRight = this.getEquipmentProp("range",p.equipment[0]), attackRangeLeft = this.getEquipmentProp("range",p.equipment[1]);
         var range = attackRangeRight>attackRangeLeft?attackRangeRight:attackRangeLeft;
         if(range>1&&p.talents.includes("Sniper")) range+=2;
-        return range || 1;
+        return this.getPassiveEffect(range || 1,"combatStats","atkRange",p.techniques.passive);
     },
     get_maxAtkDmg:function(p){
         var str = p.combatStats.strength, level = p.level, maxDamageRight = this.getEquipmentProp("maxdmg",p.equipment[0]), handed = this.getEquipmentProp("handed",p.equipment[0]),charGroup = p.charGroup;
         var t = handed===1?1:1.5;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-        return Math.floor((str*t)+(level*h)+maxDamageRight);
+        return this.getPassiveEffect(Math.floor((str*t)+(level*h)+maxDamageRight),"combatStats","maxAtkDmg",p.techniques.passive);
     },
     get_minAtkDmg:function(p){
         var str = p.combatStats.strength, level = p.level, minDamageRight = this.getEquipmentProp("mindmg",p.equipment[0]), handed = this.getEquipmentProp("handed",p.equipment[0]),charGroup = p.charGroup;
         var t = handed===1?1:1.5;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-        return Math.floor((str*t)+(level*h)+minDamageRight);
+        return this.getPassiveEffect(Math.floor((str*t)+(level*h)+minDamageRight),"combatStats","minAtkDmg",p.techniques.passive);
     },
     get_maxSecondaryDmg:function(p){
         var str = p.combatStats.strength, level = p.level, maxDamageLeft = this.getEquipmentProp("maxdmg",p.equipment[1]), charGroup = p.charGroup;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-        return Math.floor((str*0.5)+(level*h)+maxDamageLeft);
+        return this.getPassiveEffect(Math.floor((str*0.5)+(level*h)+maxDamageLeft),"combatStats","maxAtkDmg",p.techniques.passive);
     },
     get_minSecondaryDmg:function(p){
         var str = p.combatStats.strength, level = p.level, minDamageLeft = this.getEquipmentProp("mindmg",p.equipment[1]), charGroup = p.charGroup;
         var h = charGroup==="Fighter"?2:charGroup==="Rogue"?1:charGroup==="Mage"?0:0;
-        return Math.floor((str*0.5)+(level*h)+minDamageLeft);
+        return this.getPassiveEffect(Math.floor((str*0.5)+(level*h)+minDamageLeft),"combatStats","minAtkDmg",p.techniques.passive);
     },
 
     get_maxTp:function(p){
         var enr = p.combatStats.energy, level = p.level, charGroup = p.charGroup;
         var f = charGroup==="Fighter"?2:charGroup==="Rogue"?3:charGroup==="Mage"?5:0;
-        return Math.floor((enr*f)+level);
+        return this.getPassiveEffect(Math.floor((enr*f)+level),"combatStats","maxTp",p.techniques.passive);
     },
     get_moveSpeed:function(p){
         var encPenalty = p.talents.includes("Armoured March")?0:p.combatStats.encumbrancePenalty,
             charGroup = p.charGroup;
         var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
         var shoes = this.getEquipmentProp("move",p.equipment[3]);
-        return m + Math.floor(encPenalty/10) + shoes;
+        return this.getPassiveEffect(m + Math.floor(encPenalty/10) + shoes,"combatStats","moveSpeed",p.techniques.passive);
     },
     get_encumbranceThreshold:function(p){
         var str = p.combatStats.strength, charGroup = p.charGroup;
         var e = charGroup==="Fighter"?2:charGroup==="Rogue"?1.5:charGroup==="Mage"?1:0;
-        return Math.floor(str*e);
+        return this.getPassiveEffect(Math.floor(str*e),"combatStats","encumbranceThreshold",p.techniques.passive);
     },
     get_totalWeight:function(p){
         var rightHandWeight = this.getEquipmentProp("weight",p.equipment[0]), leftHandWeight = this.getEquipmentProp("weight",p.equipment[1]), armourWeight = this.getEquipmentProp("weight",p.equipment[2]), shoesWeight = this.getEquipmentProp("weight",p.equipment[3]), accessoryWeight = this.getEquipmentProp("weight",p.equipment[4]);
-        return rightHandWeight+leftHandWeight+armourWeight+shoesWeight+accessoryWeight;
+        return this.getPassiveEffect(rightHandWeight+leftHandWeight+armourWeight+shoesWeight+accessoryWeight,"combatStats","totalWeight",p.techniques.passive);
     },
     get_encumbrancePenalty:function(p){
         var totalWeight = p.combatStats.totalWeight, encThreshold = p.combatStats.encumbranceThreshold;
-        return Math.max(0,totalWeight-encThreshold);
+        return this.getPassiveEffect(Math.max(0,totalWeight-encThreshold),"combatStats","encumbrancePenaly",p.techniques.passive);
     },
 
     //Trims a base stat down once it reaches certain thresholds.
@@ -667,30 +803,30 @@ var CharacterGenerator = {
         return Math.floor(trimmedStat);
     },
     get_strength:function(p){
-        return this.trimBaseStat(p.baseStats.str);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.str),"baseStats","str",p.techniques.passive);
     },
     get_endurance:function(p){
-        return this.trimBaseStat(p.baseStats.end);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.end),"baseStats","end",p.techniques.passive);
     },
     get_dexterity:function(p){
-        return this.trimBaseStat(p.baseStats.dex);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.dex),"baseStats","dex",p.techniques.passive);
     },
     get_weaponSkill:function(p){
-        return this.trimBaseStat(p.baseStats.wsk);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.wsk),"baseStats","wsk",p.techniques.passive);
     },
     get_reflexes:function(p){
-        return this.trimBaseStat(p.baseStats.rfl);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.rfl),"baseStats","rfl",p.techniques.passive);
     },
     get_initiative:function(p){
-        return this.trimBaseStat(p.baseStats.ini);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.ini),"baseStats","ini",p.techniques.passive);
     },
     get_energy:function(p){
-        return this.trimBaseStat(p.baseStats.enr);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.enr),"baseStats","enr",p.techniques.passive);
     },
     get_skill:function(p){
-        return this.trimBaseStat(p.baseStats.skl);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.skl),"baseStats","skl",p.techniques.passive);
     },
     get_efficiency:function(p){
-        return this.trimBaseStat(p.baseStats.eff);
+        return this.getPassiveEffect(this.trimBaseStat(p.baseStats.eff),"baseStats","eff",p.techniques.passive);
     }
 };

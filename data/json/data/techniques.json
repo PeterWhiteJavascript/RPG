@@ -29,18 +29,12 @@
             "slashing",
             [
                 [
-                    "Change Stat Active",
+                    "Change Stat Passive",
                     [
-                        "Target",
                         "combatStats",
-                        "damageReduction",
-                        "-",
-                        "Number",
-                        "null",
-                        "null",
-                        20,
-                        0,
-                        100
+                        "physicalResistance",
+                        "=",
+                        10
                     ]
                 ]
             ]
@@ -251,6 +245,41 @@
                     ]
                 ]
             ]
+        ],
+        [
+            "Test",
+            "",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            0,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Apply Status Effect",
+                    [
+                        "Target",
+                        "Poisoned",
+                        3,
+                        100
+                    ]
+                ]
+            ]
         ]
     ],
     "Passive": [
@@ -292,7 +321,7 @@
                     "Change Stat Passive",
                     [
                         "statusResistance",
-                        "Blind",
+                        "Blinded",
                         "+",
                         100
                     ]
