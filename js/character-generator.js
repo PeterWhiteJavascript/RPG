@@ -311,7 +311,8 @@ var CharacterGenerator = {
                 tpCost:data[8],
                 animation:data[9],
                 sound:data[10],
-                args:processArgs(data[11])
+                args:processArgs(data[11]),
+                equipment:data[12]
             };
             return tech;
         }
@@ -319,7 +320,8 @@ var CharacterGenerator = {
             var tech = {
                 name:data[0],
                 desc:data[1],
-                args:processArgs(data[2])
+                args:processArgs(data[2]),
+                equipment:data[3]
             };
             return tech;
         };
@@ -371,7 +373,7 @@ var CharacterGenerator = {
             var data = CharacterGenerator.equipment.gear[eq.name];
             var rank = Math.ceil(CharacterGenerator.qualityKeys.indexOf(eq.quality));
             var processedTechs = [];
-            var baseTech = CharacterGenerator.findTechnique(data.techniques.Base[0]);
+            var baseTech = CharacterGenerator.findTechnique(data.techniques.Base[0]).slice(0);
             var baseArgs = data.techniques.Base[1];
             baseTech[baseTech.length-1] = getGearArgs(baseArgs[rank],baseTech[baseTech.length-1]);
             if(data.techniques.Base[2]) baseTech[8] = data.techniques.Base[2][rank];
@@ -379,7 +381,7 @@ var CharacterGenerator = {
             var techs = data.techniques[eq.material].slice(0,Math.floor(rank/2)+1);
             for(var i=0;i<techs.length;i++){
                 var tech = techs[i];
-                var found = CharacterGenerator.findTechnique(tech[0]);
+                var found = CharacterGenerator.findTechnique(tech[0]).slice(0);
                 var num = ~~(rank/2)*i;
                 //Only if the num is equal to rank will it be 0.
                 var rankIdx = num < rank || num > rank ? 1 : 0;
@@ -388,6 +390,9 @@ var CharacterGenerator = {
                 if(tech[2]) found[8] = tech[2][rankIdx];
                 processedTechs.push(found);
             }
+            processedTechs.forEach(function(t){
+                t.push(eq);
+            });
             return processedTechs;
         }
         var techs = [];
