@@ -223,8 +223,10 @@ Q.load(toLoad.join(","),function(){
     
     //Creates a character stats menu (used in locations and battles)
     Q.characterStatsMenu = new Q.CharacterStatsMenu();
-    //Shows the ranges and aoe
+    //Shows the ranges
     Q.rangeController = new Q.RangeController();
+    //Shows the aoe
+    Q.aoeController = new Q.AOEController();
     
     //Any variable functions (set and get)
     Q.variableProcessor = new Q.VariableProcessor();

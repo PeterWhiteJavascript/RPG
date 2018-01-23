@@ -20,7 +20,7 @@
             [
                 "Physical",
                 "Dodge",
-                "Block"
+                "RegAttack"
             ],
             20,
             100,
@@ -341,11 +341,13 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     1,
-                    "Normal",
+                    "HLine",
                     [
                         "ExcludeCenter"
                     ]
@@ -384,11 +386,13 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     1,
-                    "Normal",
+                    "HLine",
                     [
                         "ExcludeCenter"
                     ]
@@ -427,11 +431,13 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     1,
-                    "Normal",
+                    "HLine",
                     [
                         "ExcludeCenter"
                     ]
@@ -470,11 +476,13 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     1,
-                    "Normal",
+                    "HLine",
                     [
                         "ExcludeCenter"
                     ]
@@ -497,11 +505,13 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     1,
-                    "Normal",
+                    "HLine",
                     [
                         "ExcludeCenter"
                     ]
@@ -524,7 +534,9 @@
                 [
                     0,
                     "Normal",
-                    []
+                    [
+                        "TargetSelf"
+                    ]
                 ],
                 [
                     0,
@@ -2205,8 +2217,10 @@
         "rangeProps": [
             "TargetSelf",
             "AllyNoMiss",
+            "ExludeAllies",
             "CanTargetGround",
             "MustTargetGround",
+            "TargetNotRequired",
             "TargetFainted",
             "TargetDead",
             "EnemyFacingUser"
@@ -2228,8 +2242,7 @@
             "Magical",
             "Mental",
             "Dodge",
-            "Block",
-            "Counter"
+            "RegAttack"
         ],
         "animations": [
             "Slashing",

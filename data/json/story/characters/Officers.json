@@ -10,15 +10,11 @@
             "promotion": 1,
             "equipment": [
                 [
-                    "Short Sword",
-                    "Bronze",
-                    "Average"
+                    "Bow",
+                    "Wood",
+                    "Quality"
                 ],
-                [
-                    "Small Shield",
-                    "Hard Leather",
-                    "Average"
-                ],
+                false,
                 [
                     "Outfit",
                     "Wool",

@@ -131,18 +131,22 @@ Quintus.SceneFuncs=function(Q){
                 stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
                 stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
                 //The range tiles
-                var matrix = [];
-                for(var i=0; i<stage.mapWidth; i++) {
-                    matrix[i] = [];
-                    for(var j=0; j<stage.mapHeight; j++) {
-                        matrix[i][j] = 0;
+                var gridMatrix = function(){
+                    var matrix = [];
+                    for(var i=0; i<stage.mapWidth; i++) {
+                        matrix[i] = [];
+                        for(var j=0; j<stage.mapHeight; j++) {
+                            matrix[i][j] = 0;
+                        }
                     }
-                }
+                    return matrix;
+                };
+                
                 Q.RangeTileLayer = stage.insert(new Q.TileLayer({
                     tileW:Q.tileW,
                     tileH:Q.tileH,
                     sheet:"ui_tiles",
-                    tiles:matrix,
+                    tiles:new gridMatrix(),
                     w:32,
                     h:32,
                     type:Q.SPRITE_NONE,
@@ -150,6 +154,19 @@ Quintus.SceneFuncs=function(Q){
                     z:-3
                 }));
                 Q.RangeTileLayer.add("tween");
+                Q.AOETileLayer = stage.insert(new Q.TileLayer({
+                    tileW:Q.tileW,
+                    tileH:Q.tileH,
+                    sheet:"ui_tiles",
+                    tiles:new gridMatrix(),
+                    w:32,
+                    h:32,
+                    type:Q.SPRITE_NONE,
+                    opacity:0.7,
+                    z:-3
+                }));
+                Q.AOETileLayer.add("tween");
+                
                 
                 //Set the battlegrid's stage
                 Q.BattleGrid.stage = stage;

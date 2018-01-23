@@ -66,15 +66,15 @@ var CharacterGenerator = {
         
         char.personality = data.personality ? data.personality : this.getPersonality();
         
-        char.charClass = data.charClass==="Random" || !data.charClass ? this.generateCharClass(char.nationality) : data.charClass;
+        char.charClass = data.charClass === "Random" || !data.charClass ? this.generateCharClass(char.nationality) : data.charClass;
         char.classNum = this.getClassNum(char.charClass);
         char.charGroup = this.generateCharGroup(char.classNum);
 
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
-        //Generate techniques is used to generate defaults for the roster. All characters created in the editor should at least have "Default" set.
-        char.techniques = data.techniques ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment)) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment));
+        //If the character has a random charClass, generate default techniques.
+        char.techniques = data.techniques && data.charClass !== "Random" ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment)) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment));
         char.talents = this.getTalents(char.charClass,char.charGroup);
         char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
         char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
@@ -89,7 +89,8 @@ var CharacterGenerator = {
         char.combatStats = this.getCombatStats(char);
         
         //TEMP: print out alex for testing
-        char.name === "Alex" ? console.log(char) : false;
+        //char.name === "Alex" ? console.log(char) : false;
+        console.log(char)
         return char;
     },
     emptyAwards:function(){
@@ -242,6 +243,7 @@ var CharacterGenerator = {
         };
         function processArgs(args){
             var processedArgs = [];
+            args ? false : console.log(args)
             for(var i=0;i<args.length;i++){
                 var func = args[i][0];
                 var props = args[i][1];

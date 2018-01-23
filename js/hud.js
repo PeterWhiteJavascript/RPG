@@ -93,239 +93,6 @@ Quintus.HUD=function(Q){
             this.hide();
         }
     });
-    Q.component("AOEGuide",{
-        added:function(){
-            this.getAOERange(this.entity.p.loc,this.entity.p.skill.aoe);
-        },
-        moveStraightTiles:function(pointer){
-            var tiles = this.aoeTiles;
-            var arr = Q.getDirArray(pointer.p.user.p.dir);
-            //Loop backwards so the closer enemy is targeted
-            for(var i=tiles.length-1;i>=0;i--){
-                var tile = tiles[i];
-                var loc = tile.p.center;
-                tile.p.loc = [(i+1)*arr[0]+loc[0],(i+1)*arr[1]+loc[1]];
-                Q.BatCon.setXY(tile);
-                var objOn = Q.BattleGrid.getObject(tile.p.loc);
-                if(objOn){
-                    Q.pointer.trigger("onTarget",objOn);
-                }
-            }
-        },
-        moveHLineTiles:function(pointer){
-            var tiles = this.aoeTiles;
-            var arr = Q.getDirArray(Q.getRotatedDir(pointer.p.user.p.dir));
-            var radius = pointer.p.skill.aoe[0];
-            var len = tiles.length-1;
-            if(pointer.p.skill.aoe[2]==="excludeCenter") len++;
-            var idx = 0;
-            //Loop backwards so the closer enemy is targeted
-            for(var i=len-1;i>=0;i--){
-                if(pointer.p.skill.aoe[2]==="excludeCenter"&&i===radius-1) i--;
-                var tile = tiles[idx];
-                var loc = tile.p.center;
-                tile.p.loc = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
-                Q.BatCon.setXY(tile);
-                var objOn = Q.BattleGrid.getObject(tile.p.loc);
-                if(objOn){
-                    Q.pointer.trigger("onTarget",objOn);
-                }
-                idx++;
-            }
-        },
-        moveHLineForwardTiles:function(pointer){
-            var tiles = this.aoeTiles;
-            var arr = Q.getDirArray(Q.getRotatedDir(pointer.p.user.p.dir));
-            var radius = pointer.p.skill.aoe[0];
-            var len = tiles.length-1;
-            if(pointer.p.skill.aoe[2]==="excludeCenter") len++;
-            var idx = 0;
-            //Loop backwards so the closer enemy is targeted
-            for(var i=len-1;i>=0;i--){
-                if(pointer.p.skill.aoe[2]==="excludeCenter"&&i===radius-1) i--;
-                var tile = tiles[idx];
-                var loc = tile.p.center;
-                tile.p.loc = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
-                Q.BatCon.setXY(tile);
-                var objOn = Q.BattleGrid.getObject(tile.p.loc);
-                if(objOn){
-                    Q.pointer.trigger("onTarget",objOn);
-                }
-                idx++;
-            }
-        },
-        moveTTiles:function(pointer){
-            var dir = this.entity.p.user.p.dir;
-            //Gets the array multiplier for the direction
-            var arr = Q.getDirArray(dir);
-            var radius = pointer.p.skill.aoe[0];
-            var special = pointer.p.skill.aoe[2];
-            var locs = [];
-            var loc = this.aoeTiles[0].p.center;
-            //Start at 1 to not include the caster
-            for(var i=1;i<special;i++){
-                locs.push([i*arr[0]+loc[0],i*arr[1]+loc[1]]);
-            }
-            var arr = Q.getDirArray(Q.getRotatedDir(dir));
-            //The end line part
-            for(var i=-radius;i<radius+1;i++){
-                //Multiply by special to make the line move forward
-                locs.push([i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)]);
-            }
-            this.aoeTiles.forEach(function(tile,i){
-                tile.p.loc = locs[i];
-                Q.BatCon.setXY(tile);
-            });
-        },
-        movePhalanxTiles:function(pointer){
-            var locs = this.getCustomAOE(pointer.p.loc,pointer.p.skill,pointer.p.user.p.dir);
-            this.aoeTiles.forEach(function(tile,i){
-                tile.p.loc = locs[i];
-                Q.BatCon.setXY(tile);
-            });
-        },
-        moveTiles:function(pointer){
-            this.aoeTiles.forEach(function(tile){
-                tile.p.loc = [tile.p.relative[0]+pointer.p.loc[0],tile.p.relative[1]+pointer.p.loc[1]];
-                Q.BatCon.setXY(tile);
-            });
-        },
-        destroyGuide:function(){
-            var stage = this.entity.stage;
-            this.aoeTiles.forEach(function(tile){
-                stage.remove(tile);
-            });
-            this.entity.p.skill=false;
-            this.entity.del("AOEGuide");
-        },
-        getCustomAOE:function(loc,skill,dir){
-            switch(skill.name){
-                case "Phalanx":
-                    var upDown = Q.getDirArray(dir);
-                    var sideSide = Q.getDirArray(Q.getRotatedDir(dir));
-                    var diagBehind = Q.getBehindDirArray(dir);
-                    var locs = [];
-                    for(var i=-1;i<2;i++){
-                        if(i===0) i++;
-                        locs.push([i*upDown[0]+loc[0],i*upDown[1]+loc[1]]);
-                        locs.push([i*sideSide[0]+loc[0],i*sideSide[1]+loc[1]]);
-                        if(dir==="up"||dir==="down"){
-                            locs.push([i*diagBehind[0]+loc[0],Math.abs(i)*diagBehind[1]+loc[1]]);
-                        } else {
-                            locs.push([Math.abs(i)*diagBehind[0]+loc[0],i*diagBehind[1]+loc[1]]);
-                        }
-                    }
-                    return locs;
-                    break;
-            }
-        },
-        getAOERange:function(loc,aoe){
-            var radius = aoe[0];
-            var area = aoe[1];
-            var special = aoe[2];
-            var aoeTiles = this.aoeTiles = [];
-            if(radius==="custom"){ 
-                var locs = this.getCustomAOE(loc,this.entity.p.skill,this.entity.p.user.p.dir);
-                for(var i=0;i<locs.length;i++){
-                    aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:locs[i]})));
-                }
-            } else if(radius==="customRadius"){
-                switch(this.entity.p.skill.name){
-                    case "Unnerve":
-                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/20);
-                        break;
-                    case "War Cry":
-                        radius = 4+Math.floor(this.entity.p.user.p.combatStats.skill/10);
-                        break;
-                    case "Heal":
-                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/30);
-                        break;
-                    case "Cure":
-                        radius = Math.floor(this.entity.p.user.p.combatStats.skill/35);
-                        break;
-                    case "Frost Ray":
-                        var radius = Math.floor(this.entity.p.user.p.combatStats.skill/10);
-                        break;
-                }
-            }
-            var bounds = Q.BattleGrid.getBounds(loc,radius);
-            switch(area){
-                //Diamond shape
-                case "normal":
-                    for(var i=-radius;i<radius+1;i++){
-                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
-                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
-                        }
-                    }
-                    break;
-                    //Square shape
-                case "corners":
-                    for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
-                        for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
-                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
-                        }
-                    }
-                    break;
-                    //Line shape
-                case "straight":
-                    var dir = this.entity.p.user.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(dir);
-                    for(var i=1;i<radius+1;i++){
-                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
-                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    break;
-                //Horizontal line
-                case "hLine":
-                    var dir = this.entity.p.user.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
-                    for(var i=-radius;i<radius+1;i++){
-                        if(special==="excludeCenter"&&i===0) i++;
-                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
-                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    break;
-                case "hLineForward":
-                    var dir = this.entity.p.user.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
-                    for(var i=-radius;i<radius+1;i++){
-                        if(special==="excludeCenter"&&i===0) i++;
-                        var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
-                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    break;
-                case "noSelf":
-                    for(var i=-radius;i<radius+1;i++){
-                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
-                            if(i===0&&j===radius) j++;
-                            aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
-                        }
-                    }
-                    break;
-                case "T":
-                    var dir = this.entity.p.user.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(dir);
-                    //Start at 1 to not include the caster
-                    for(var i=1;i<special;i++){
-                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
-                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
-                    //The end line part
-                    for(var i=-radius;i<radius+1;i++){
-                        //Multiply by special to make the line move forward
-                        var spot = [i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)];
-                        aoeTiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    break;
-            }
-        }
-    });
-    
     //Enables controlling of menus
     //Includes up, down, confirm, and esc.
     Q.component("menuControls",{
@@ -426,7 +193,7 @@ Quintus.HUD=function(Q){
                 cx:0,cy:0,
                 fill:"#DDD",
                 opacity:0.5,
-                titles:["ACTIONS","ACTIONS","SKILLS","ITEMS"],
+                titles:["ACTIONS","ACTIONS","TECHNIQUES","ITEMS"],
                 options:[["Move","Attack","Technique","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[],
@@ -489,10 +256,10 @@ Quintus.HUD=function(Q){
             var funcs = [];
             var techniques = [];
             //Set possible techniques
-            for(var i=0;i<target.p.techniques.length;i++){
-                opts.push(target.p.techniques[i][0]);
+            for(var i=0;i<target.p.techniques.active.length;i++){
+                opts.push(target.p.techniques.active[i].name);
                 funcs.push("loadTechnique");
-                techniques.push(target.p.techniques[i]);
+                techniques.push(target.p.techniques.active[i]);
             }
             this.p.options[2]=opts;
             this.p.funcs[2]=funcs;
@@ -553,8 +320,7 @@ Quintus.HUD=function(Q){
                 if(menuNum===2){
                     name.p.x = 4;
                     name.p.align="left";
-                    console.log(options)
-                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.techniques[i][6],cx:0,align:"right",size:16}));
+                    cont.insert(new Q.UI.Text({x:cont.p.w-4,y:12,label:""+this.p.techniques[i].tpCost,cx:0,align:"right",size:16}));
                 }
                 this.p.conts.push(cont);
             }
@@ -573,25 +339,21 @@ Quintus.HUD=function(Q){
         //Shows the move grid and zoc
         loadMove:function(){
             Q.rangeController.setTiles(1,this.p.target.p.loc,this.p.target.p.combatStats.moveSpeed,this.p.target.p.walkMatrix);
-            Q.rangeController.pulse();
             this.changeToPointer("pointerMoveControls");
         },
         //Shows the attack grid
         loadAttack:function(){
             Q.rangeController.setTiles(2,this.p.target.p.loc,this.p.target.p.combatStats.atkRange,this.p.target.p.attackMatrix);
-            Q.rangeController.pulse();
             this.changeToPointer("pointerAttackControls");
         },
         //Show the range for lifting (4 squares around the user)
         loadLift:function(){
             Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
-            Q.rangeController.pulse();
             this.changeToPointer("pointerLiftControls");
         },
         //Shows the range for dropping
         loadDrop:function(){
             Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
-            Q.rangeController.pulse();
             this.changeToPointer("pointerDropControls");
         },
         //Loads the special skills menu
@@ -600,28 +362,27 @@ Quintus.HUD=function(Q){
         },
         //Show the attack grid for the skill
         loadTechnique:function(){
-            var skill = this.p.techniques[this.menuControls.selected];
-            console.log(this.p.techniques)
-            if(!skill) return this.loadItem();
-            var cost = Q.BatCon.attackFuncs.getTechniqueCost(skill[6],this.p.target.p.combatStats.efficiency);
+            var technique = this.p.techniques[this.menuControls.selected];
+            if(!technique) return this.loadItem();
+            var cost = Q.BatCon.attackFuncs.getTechniqueCost(technique.tpCost,this.p.target.p.combatStats.efficiency);
             if(this.p.target.p.combatStats.tp - cost < 0){
                 alert("Not Enough TP!");
                 return;
             }
-            this.changeToPointer("pointerAttackControls");
-            Q.pointer.p.skill = skill;
+            Q.pointer.p.technique = technique;
             Q.pointer.snapTo(this.p.target);
-            Q.pointer.add("AOEGuide");
+            this.changeToPointer("pointerAttackControls");
             
-            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
-            Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",skill:skill}));
-            
+            Q.rangeController.setTiles(2,this.p.target.p.loc,technique.range,this.p.target.p.attackMatrix);
+            Q.aoeController.setTiles(3,this.p.target.p.loc,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
         },
         noItems:function(){
             Q.audioController.playSound("cannot_do.mp3");
         },
         //When the user selects an item, ask to use it and show what it does
         loadItem:function(){
+            alert("TODO");
+            /*
             var item = this.p.items[this.menuControls.selected];
             //Load the range grid
             Q.RangeGridObj = this.p.target.stage.insert(new Q.RangeGrid({user:this.p.target,kind:"skill",item:item}));
@@ -634,7 +395,7 @@ Quintus.HUD=function(Q){
             Q.pointer.snapTo(this.p.target);
             //Create the AOEGuide which shows which squares will be affected by the skill
             Q.pointer.add("AOEGuide");
-            Q.pointer.add("pointerAttackControls");
+            Q.pointer.add("pointerAttackControls");*/
         },
         //Loads the items menu
         loadItemsMenu:function(){
@@ -899,6 +660,134 @@ Quintus.HUD=function(Q){
             this.p.y = Q.height/2-this.p.h/2;
         }
     });
+    Q.GameObject.extend("AOEController",{
+        pulse:function(){
+            Q.AOETileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.5} , 1, Q.Easing.Linear, {callback:function(){Q.aoeController.pulse();}});
+        },
+        setTiles:function(tile,loc,dir,aoe,type,props){
+            var radius = aoe;
+            var area = type;
+            var special = props || [];
+            var tiles = this.tiles = [];
+            var bounds = Q.BattleGrid.getBounds(loc,radius);
+            switch(area){
+                //Diamond shape
+                case "Normal":
+                    for(var i=-radius;i<radius+1;i++){
+                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                            var spot = [loc[0]+i,loc[1]+j-(radius-Math.abs(i))];
+                            Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                            tiles.push(spot);
+                        }
+                    }
+                    break;
+                    //Line shape
+                case "VLine":
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(dir);
+                    for(var i=1;i<radius+1;i++){
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                            tiles.push(spot);
+                    }
+                    break;
+                //Horizontal line
+                case "HLine":
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    for(var i=-radius;i<radius+1;i++){
+                        if(special.includes("ExcludeCenter")&&i===0) i++;
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                        tiles.push(spot);
+                    }
+                    break;
+                case "T":
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(dir);
+                    //Start at 1 to not include the caster
+                    for(var i=1;i<special;i++){
+                        var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
+                        Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                        tiles.push(spot);
+                    }
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    //The end line part
+                    for(var i=-radius;i<radius+1;i++){
+                        //Multiply by special to make the line move forward
+                        var spot = [i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)];
+                        Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                        tiles.push(spot);
+                    }
+                    break;
+                    //X shape
+                case "X":
+                
+                    break;
+                    //Square shape
+                case "Box":
+                    for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
+                        for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                            //tiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
+                        }
+                    }
+                    break;
+                case "Custom":
+                    
+                    break;
+                /*case "hLineForward":
+                    var dir = this.entity.p.user.p.dir;
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    for(var i=-radius;i<radius+1;i++){
+                        if(special==="excludeCenter"&&i===0) i++;
+                        var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
+                        tiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
+                    }
+                    break;*/
+                /*case "noSelf":
+                    for(var i=-radius;i<radius+1;i++){
+                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
+                            if(i===0&&j===radius) j++;
+                            tiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
+                        }
+                    }
+                    break;*/
+                
+            }
+            Q.AOETileLayer.p.opacity = 0.7;
+            this.pulse();
+        },
+        getCustomAOE:function(loc,technique,dir){
+            switch(technique.name){
+                case "Phalanx":
+                    var upDown = Q.getDirArray(dir);
+                    var sideSide = Q.getDirArray(Q.getRotatedDir(dir));
+                    var diagBehind = Q.getBehindDirArray(dir);
+                    var locs = [];
+                    for(var i=-1;i<2;i++){
+                        if(i===0) i++;
+                        locs.push([i*upDown[0]+loc[0],i*upDown[1]+loc[1]]);
+                        locs.push([i*sideSide[0]+loc[0],i*sideSide[1]+loc[1]]);
+                        if(dir==="up"||dir==="down"){
+                            locs.push([i*diagBehind[0]+loc[0],Math.abs(i)*diagBehind[1]+loc[1]]);
+                        } else {
+                            locs.push([Math.abs(i)*diagBehind[0]+loc[0],i*diagBehind[1]+loc[1]]);
+                        }
+                    }
+                    return locs;
+                    break;
+            }
+        },
+        resetGrid:function(){
+            console.log(this.tiles  )
+            this.tiles.forEach(function(tile){
+                Q.AOETileLayer.setTile(tile[0],tile[1],0);
+            });
+            this.tiles = [];
+        }
+    });
+    
     //Make it again. This time, it doesn't get destroyed. Include options for aoe
     Q.GameObject.extend("RangeController",{
         pulse:function(){
@@ -950,6 +839,8 @@ Quintus.HUD=function(Q){
             } else {
                 
             }
+            Q.RangeTileLayer.p.opacity = 0.7;
+            this.pulse();
         },
         resetGrid:function(){
             this.tiles.forEach(function(tile){
@@ -970,39 +861,39 @@ Quintus.HUD=function(Q){
             } else {this.cannotDo();}
         },
         
-        //TODO:REDO
-        validateSkill:function(user){
-            /*
-            var skill = Q.pointer.p.skill;
+        validateTechnique:function(technique,user){
+            if(technique.rangeProps.includes("MustTargetGround")){
+                if(Q.BattleGrid.getObject(Q.pointer.p.loc)) return;
+            }
             //Make sure there's a target
-            var targets = Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles);
-            if(skill.range[2]!=="dead"){
+            var targets = Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
+            if(!technique.rangeProps.includes("TargetDead")){
                 targets = Q.BattleGrid.removeDead(targets);
             }
-            if(skill.type==="Debilitate"){
+            if(technique.techType1 === "Debilitate"){
                 targets = Q.BattleGrid.removeDebilitateResisted(targets);
             }
+            
             //Remove any characters that are not affected.
-            if(skill.range[1]==="enemy") Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
-            //Remove characters that are not facing the user if the skill has enemyFacingThis
-            if(skill.range[2]==="enemyFacingThis") Q.BatCon.removeNotFacing(targets,user);
+            if(technique.rangeProps.includes("ExludeAllies")) Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
+            //Remove characters that are not facing the user if the technique has enemyFacingThis
+            if(technique.rangeProps.includes("EnemyFacingUser")) Q.BatCon.removeNotFacing(targets,user);
             //If the ability targets the ground, check if an object is there.
-            if(skill.range[2]==="ground"){
+            if(technique.rangeProps.includes("CanTargetGround") || technique.rangeProps.includes("MustTargetGround")){
                 var tileType = Q.BatCon.getTileType(Q.pointer.p.loc);
                 if(Q.BattleGrid.getObject(Q.pointer.p.loc)||tileType==="impassable"||tileType==="water"){
                     targets = [];
                 } else targets.push(true);
             }
-            if(skill.range[2]==="allGround"){
+            if(technique.rangeProps.includes("TargetNotRequired")){
                 targets = [true];
             }
-            if(skill.range[2]==="all"&&!targets.length) targets.push(true);
             //If there is at least one target
             if(targets.length){
-                Q.BatCon.previewDoSkill(user,Q.pointer.p.loc,skill);
+                Q.BatCon.previewDoTechnique(user,Q.pointer.p.loc,technique,targets);
                 this.resetGrid();
                 Q.pointer.pointerAttackControls.remove();
-            } else {this.cannotDo();}*/
+            } else {this.cannotDo();}
         },
         validateAttack:function(user){
             var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
@@ -1016,8 +907,8 @@ Quintus.HUD=function(Q){
         },
         checkConfirmAttack:function(){
             if(this.checkValidPointerLoc(2)){
-                if(Q.pointer.p.skill){
-                    this.validateSkill(this.target);
+                if(Q.pointer.p.technique){
+                    this.validateTechnique(Q.pointer.p.technique,this.target);
                 } else {
                     this.validateAttack(this.target);
                 }
@@ -1188,8 +1079,8 @@ Quintus.HUD=function(Q){
             if(Q.inputs['confirm']){
                 var attacker = this.p.attacker;
                 var targets = this.p.targets;
-                var skill = this.p.skill;
-                Q.BatCon.attackFuncs.doAttack(attacker,targets,skill);
+                var technique = this.p.technique;
+                Q.BatCon.attackFuncs.doAttack(attacker,targets,technique);
                 this.off("step",this,"checkInputs");
                 this.destroy();
                 Q.inputs['confirm']=false;
@@ -1198,7 +1089,7 @@ Quintus.HUD=function(Q){
                 Q.inputs['esc']=false;
                 Q.inputs['back']=false;
                 if(this.p.skill){
-                    if(this.p.skill.kind==="consumable"){
+                    if(this.p.technique.kind==="consumable"){
                         this.stage.ActionMenu.loadItem();
                     } else {
                         this.stage.ActionMenu.loadTechnique();

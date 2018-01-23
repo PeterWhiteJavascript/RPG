@@ -207,48 +207,83 @@ Quintus.GameObjects=function(Q){
             this.entity.on("pressedConfirm",Q.rangeController,"checkConfirmAttack");
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkConfirm");
-            //Set up an aoe guide
-            if(this.entity.p.skill){
-                var skill = this.entity.p.skill;
-                if(skill.aoe[1]==="straight"){
+            if(this.entity.p.technique){
+                var technique = this.entity.p.technique;
+                switch(technique.aoeType){
+                    case "Normal":
+                        if(technique.range === 0){
+                            this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                            this.entity.on("inputMoved",this,"moveTiles");
+                            this.entity.hide();
+                        } else {
+                            this.entity.on("checkInputs");
+                            this.entity.on("inputMoved",this,"moveTiles");
+                        }
+                        break;
+                    case "VLine":
+                    case "HLine":
+                        if(technique.range === 0){
+                            this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                            this.entity.on("inputMoved",this,"moveTiles");
+                            this.entity.hide();
+                        } else {
+                            this.entity.on("checkInputs");
+                            this.entity.on("inputMoved",this,"moveTiles");
+                        }
+                        break;
+                    case "T":
+                        this.entity.on("checkInputs",this.entity,"checkStraightInputs");
+                        this.entity.on("inputMoved",this,"moveTiles");
+                        this.entity.hide();
+                        break;
+                    case "X":
+                        
+                        break;
+                    case "Box":
+
+                        break;
+                    case "Custom":
+
+                        break;
+                }
+                console.log(technique)
+                /*if(technique.aoe[1]==="straight"){
                     this.entity.p.movingStraight = true;
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     //The pointer is hidden
                     this.entity.hide();
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveStraightTiles");
+                    this.entity.on("inputMoved",Q.aoeController,"moveStraightTiles");
                     //Force the first direction
                     var dir = this.entity.p.user.p.dir;
                     setTimeout(function(){
                         Q.inputs[dir]=true;
                     });
-                } else if(skill.name==="Phalanx"){ 
+                } else if(technique.name==="Phalanx"){ 
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"movePhalanxTiles");
+                    this.entity.on("inputMoved",Q.aoeController,"movePhalanxTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.aoe[1]==="hLine"){
+                } else if(technique.aoe[1]==="hLine"){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineTiles");
+                    this.entity.on("inputMoved",Q.aoeController,"moveHLineTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.aoe[1]==="hLineForward"){
+                } else if(technique.aoe[1]==="hLineForward"){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveHLineForwardTiles");
+                    this.entity.on("inputMoved",Q.aoeController,"moveHLineForwardTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.aoe[1]==="T"){
+                } else if(technique.aoe[1]==="T"){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",this.entity.AOEGuide,"moveTTiles");
+                    this.entity.on("inputMoved",Q.aoeController,"moveTTiles");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(skill.range[1]==="self"&&skill.range[0]===0){
+                } else if(technique.range[1]==="self"&&technique.range[0]===0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.hide();
                     Q.inputs[this.entity.p.user.p.dir]=true;
                 } else {
-                    this.entity.on("inputMoved",this,"moveTiles");
-                    this.entity.on("checkInputs");
-                }
+                }*/
             } else {
                 this.entity.on("checkInputs");
                 this.entity.on("inputMoved",this,"inputMoved");
@@ -262,36 +297,28 @@ Quintus.GameObjects=function(Q){
         },
         inputMoved:function(){},
         remove:function(){
-            this.entity.hide();
-            this.entity.off("pressedConfirm",Q.rangeController,"checkConfirmAttack");
-            this.entity.off("pressedBack",this,"pressedBack");
-            if(this.entity.p.skill){
-                if(this.entity.p.skill.aoe[1]==="straight"){
-                    this.entity.p.movingStraight = false;
-                    this.entity.off("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveStraightTiles");
-                } else if(this.entity.p.skill.aoe[1]==="hLine"){
-                    this.entity.off("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineTiles");
-                } else if(this.entity.p.skill.aoe[1]==="hLineForward"){
-                    this.entity.off("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.off("inputMoved",Q.pointer.AOEGuide,"moveHLineForwardTiles");
-                } else {
-                    this.entity.off("checkInputs");
-                    this.entity.off("inputMoved",this,"moveTiles");
-                }
+            Q.rangeController.resetGrid();
+            if(this.entity.p.technique){
+                Q.aoeController.resetGrid();
+                this.entity.off("checkInputs");
+                this.entity.off("inputMoved",this,"moveTiles");
+                
             } else {
                 this.entity.off("checkInputs");
                 this.entity.off("inputMoved",this,"inputMoved");
             }
-            if(Q.pointer.has("AOEGuide")) Q.pointer.AOEGuide.destroyGuide();
+            this.entity.p.technique = false;
+            this.entity.p.target = false;
+            this.entity.hide();
             this.entity.off("checkConfirm");
-            this.entity.p.skill = false;
+            this.entity.off("pressedConfirm",Q.rangeController,"checkConfirmAttack");
+            this.entity.off("pressedBack",this,"pressedBack");
             this.entity.del("pointerAttackControls");
-            this.entity.p.user = false;
         },
         moveTiles:function(){
-            Q.pointer.AOEGuide.moveTiles(this.entity);
+            var technique = this.entity.p.technique;
+            Q.aoeController.resetGrid();
+            Q.aoeController.setTiles(3,this.entity.p.loc,this.entity.p.user.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
         },
         showMenu:function(){
             Q.stage(2).ActionMenu.show();
@@ -299,7 +326,6 @@ Quintus.GameObjects=function(Q){
         },
         pressedBack:function(){
             this.entity.snapTo(Q.BatCon.turnOrder[0]);
-            Q.rangeController.resetGrid();
             this.remove();
             this.showMenu();
         }
@@ -546,7 +572,7 @@ Quintus.GameObjects=function(Q){
             var coords = Q.BatCon.getXY(loc);
             var dist = Q.BattleGrid.getTileDistance(loc,this.p.loc);
             //Set lower to go faster
-            var baseSpeed = 50;
+            var baseSpeed = Q.optionsController.cursorSpeed === "Fast" ? 25 : Q.optionsController.cursorSpeed === "Medium" ? 50 : Q.optionsController.cursorSpeed === "Slow" ? 75 : 100;
             var speed = (baseSpeed*dist)/1000;
             this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest",[(coords.x-Q.tileW/2)/Q.tileW,(coords.y-Q.tileH/2)/Q.tileH]);}});
             this.p.loc = [loc[0],loc[1]];
@@ -661,7 +687,8 @@ Quintus.GameObjects=function(Q){
         getObjectsAround:function(tiles){
             var objects = [];
             for(var i=0;i<tiles.length;i++){
-                var object = this.getObject(tiles[i].p.loc);
+                //var object = this.getObject(tiles[i].p.loc);
+                var object = this.getObject(tiles[i]);
                 if(object) objects.push(object);
             };
             return objects;
@@ -1285,18 +1312,8 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:[Q.BattleGrid.getObject(loc)]}));
         },
         //Previews a skill
-        previewDoSkill:function(user,loc,skill){
-            var targets = [];
-            if(skill.range[2]==="ground"||skill.range[2]==="allGround"){
-               
-            } else if((Q._isNumber(skill.aoe[0])&&skill.aoe[0]>0)||skill.aoe[0]==="custom"||skill.aoe[0]==="customRadius"){
-                targets = Q.BattleGrid.removeDead(Q.BattleGrid.getObjectsAround(Q.pointer.AOEGuide.aoeTiles));
-                //Don't allow for unnaffected targets
-                if(skill.range[1]==="Enemy") this.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
-            } else {
-                targets[0] = Q.BattleGrid.getObject(loc);
-            }
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,skill:skill}));
+        previewDoTechnique:function(user,loc,technique,targets){
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,technique:technique}));
         },
         showEndTurnDirection:function(obj,dirs){
             obj.add("directionControls");
@@ -1997,32 +2014,116 @@ Quintus.GameObjects=function(Q){
             }
             this.text.push(newText[0]);
         },
-        //Checks against the defender's resistance of a certain skill type.
-        checkResisted:function(attacker,defender,skill){
-            //If the skill always hits allies and the target is an ally, it hit.
-            if(skill.range[2]==="allyNoMiss"&&attacker.p.team===defender.p.team) return false;
-            var skillResist = skill.resist;
-            for(var i=0;i<skillResist.length;i++){
-                if(skillResist[i]==="physical"||skillResist[i]==="mental"||skillResist[i]==="magical"){
-                    var rand = Math.floor(Math.random()*100);
-                    var stat = defender.p.combatStats[skillResist[i]+"Resistance"];
-                    if(rand<stat) return true;
-                }
+        //Checks against the defender's resistance of a certain technique type.
+        checkResisted:function(attacker,defender,technique){
+            //If the technique always hits allies and the target is an ally, it hit.
+            if(attacker.p.team === defender.p.team && technique.rangeProps.contains("AllyNoMiss")) return false;
+            if(technique.resistedBy.includes("Physical")){
+                var rand = Math.floor(Math.random()*100);
+                var stat = defender.p.combatStats.physicalResistance;
+                if(rand<stat) return true;
+            }
+            if(technique.resistedBy.includes("Magical")){
+                var rand = Math.floor(Math.random()*100);
+                var stat = defender.p.combatStats.magicalResistance;
+                if(rand<stat) return true;
+            }
+            if(technique.resistedBy.includes("Mental")){
+                var rand = Math.floor(Math.random()*100);
+                var stat = defender.p.combatStats.mentalResistance;
+                if(rand<stat) return true;
             }
             return false;
         },
-        calcAttack:function(attacker,defender,skill,extraAttack){
+        regularAttack:function(attacker,defender,extraAttack){
+            var blow = this.getBlow({
+                attackNum:Math.ceil(Math.random()*100),
+                defendNum:Math.ceil(Math.random()*100),
+                attackerCritChance:attacker.p.combatStats.critChance+(extraAttack&&attacker.p.talents.includes("Critical Flurry"))?20:0,
+                attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
+                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
+                defenderCounterChance:defender.p.combatStats.counterChance,
+                defenderReflexes:defender.p.combatStats.reflexes,
+                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                defenderFainted:defender.p.fainted,
+                attacker:attacker,
+                defender:defender
+            });
+            return this.processResult({
+                attackingAgain:blow.attackingAgain,
+                result:blow.finalResult,
+                dir:blow.dir,
+                attackerFainted:attacker.p.fainted,
+                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
+                attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
+                attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
+                defenderHP:defender.p.combatStats.hp,
+                defenderDamageReduction:defender.p.combatStats.damageReduction,
+                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                defenderAtkRange:defender.p.combatStats.atkRange,
+                attacker:attacker,
+                defender:defender,
+                finalMultiplier:1
+            });
+        },
+        techniqueAttack:function(attacker,defender,technique){
+            var props = {
+                attackNum:Math.ceil(Math.random()*100),
+                defendNum:Math.ceil(Math.random()*100),
+                attackerCritChance:attacker.p.combatStats.critChance,
+                attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
+                defenderCounterChance:defender.p.combatStats.counterChance,
+                defenderReflexes:defender.p.combatStats.reflexes,
+                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
+                defenderFainted:defender.p.fainted,
+
+                attackerFainted:attacker.p.fainted,
+                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
+
+                attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
+                attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
+                attackerSecMaxAtkDmg:attacker.p.combatStats.maxSecondaryDmg,
+                attackerSecMinAtkDmg:attacker.p.combatStats.minSecondaryDmg,
+
+                defenderHP:defender.p.combatStats.hp,
+                defenderDamageReduction:defender.p.combatStats.damageReduction,
+                defenderAtkRange:defender.p.combatStats.atkRange,
+                attacker:attacker,
+                defender:defender,
+
+                finalMultiplier:1
+            };
+            switch(technique.techType1){
+                case "Damage":
+                    
+                    return this.processSkillResult(props);
+                    break;
+                case "Support":
+                    
+                    break;
+                case "Debilitate":
+                    
+                    break;
+            }
+        },
+        calcAttack:function(attacker,defender,technique,extraAttack){
             if(attacker.p.tempHp<=0||defender.p.tempHp<=0) return;
             //The time it takes between defensive animations
             //This sometimes is different depending on the skill
             var time;
             var damage;
             var sound;
-            if(skill){
-                if(this.checkResisted(attacker,defender,skill)){
+            if(technique){
+                if(this.checkResisted(attacker,defender,technique)){
                     this.text.push({func:"showResisted",obj:defender,props:[attacker]});
                     return;
                 }
+                var props = this.techniqueAttack(attacker,defender,technique);
+                time = props.time;
+                damage = props.damage;
+                sound = props.sound;
+                /*
+                
                 switch(skill.type){
                     case "Item":
                         var bag = Q.state.get("Bag");
@@ -2041,39 +2142,11 @@ Quintus.GameObjects=function(Q){
                         sound = props.sound;
                         time = props.time || time;
                         break;
-                }
+                }*/
             } 
             //Regular attack
             else {
-                var blow = this.getBlow({
-                    attackNum:Math.ceil(Math.random()*100),
-                    defendNum:Math.ceil(Math.random()*100),
-                    attackerCritChance:attacker.p.combatStats.critChance+(extraAttack&&attacker.p.talents.includes("Critical Flurry"))?20:0,
-                    attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
-                    attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
-                    defenderCounterChance:defender.p.combatStats.counterChance,
-                    defenderReflexes:defender.p.combatStats.reflexes,
-                    defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
-                    defenderFainted:defender.p.fainted,
-                    attacker:attacker,
-                    defender:defender
-                });
-                var props = this.processResult({
-                    attackingAgain:blow.attackingAgain,
-                    result:blow.finalResult,
-                    dir:blow.dir,
-                    attackerFainted:attacker.p.fainted,
-                    attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
-                    attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
-                    attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
-                    defenderHP:defender.p.combatStats.hp,
-                    defenderDamageReduction:defender.p.combatStats.damageReduction,
-                    defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
-                    defenderAtkRange:defender.p.combatStats.atkRange,
-                    attacker:attacker,
-                    defender:defender,
-                    finalMultiplier:1
-                });
+                var props = this.regularAttack(attacker,defender,extraAttack);
                 damage = props.damage;
                 sound = props.sound;
             }
@@ -2093,7 +2166,7 @@ Quintus.GameObjects=function(Q){
                 }
                 if(props.attackingAgain){
                     this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing",false]});
-                    this.calcAttack(attacker,defender,skill,true);
+                    this.calcAttack(attacker,defender,technique,true);
                 } else if(props.afterAttack){
                     props.afterAttack();
                 }
@@ -2105,7 +2178,7 @@ Quintus.GameObjects=function(Q){
             //Counter chance
             else if(damage===-1){
                 this.previousDamage = 0;
-                if(skill){
+                if(technique){
                     this.text.push({func:"showMiss",obj:defender,props:[attacker]});
                 } else {
                     this.text.push({func:"showCounter",obj:defender,props:[attacker]});
@@ -2152,35 +2225,32 @@ Quintus.GameObjects=function(Q){
         getTechniqueCost:function(cost,efficiency){
             return Math.max(1,cost - efficiency);
         },
-        doAttack:function(attacker,targets,skill){
-            console.log(attacker,targets,skill)
+        doAttack:function(attacker,targets,technique){
+            console.log(attacker,targets,technique)
             this.text = [];
             var anim = "Attack";
             var sound = "slashing";
             var dir;
             attacker.p.didAction = true;
             attacker.p.tempHp = attacker.p.combatStats.hp;
-            if(skill){
-                if(skill.type!=="Item"&&skill.cost) {
-                    attacker.p.combatStats.tp-=this.getTechniqueCost(skill.cost,attacker.p.combatStats.efficiency);
-                }
-                if(skill.anim) anim = skill.anim;
-                if(skill.sound) sound = skill.sound;
-                if(skill.dir==="Forward") dir=attacker.p.dir;
+            if(technique){
+                attacker.p.combatStats.tp-=this.getTechniqueCost(technique.tpCost,attacker.p.combatStats.efficiency);
+                if(technique.animation) anim = technique.animation;
+                if(technique.sound) sound = technique.sound;
             }
             this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound,dir]});
             //If we have targetted the ground.
             if(!targets.length){
-                this.useGroundSkill(Q.pointer.p.loc,attacker,skill);
+                this.useGroundSkill(Q.pointer.p.loc,attacker,technique);
             }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
                 targets[i].p.tempHp = targets[i].p.combatStats.hp;
-                this.calcAttack(attacker,targets[i],skill);
+                this.calcAttack(attacker,targets[i],technique);
                 this.previousDamage = 0;
             }
-            if(skill){
-                this.processAdditionalEffects(attacker,targets,skill);
+            if(technique){
+                this.processAdditionalEffects(attacker,targets,technique);
             }
             this.processText(this.text);
         },
