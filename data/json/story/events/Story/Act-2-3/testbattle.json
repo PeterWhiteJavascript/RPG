@@ -66,10 +66,10 @@
             "Lettuce",
             0,
             [
-                14,
-                8
+                15,
+                9
             ],
-            "down"
+            "left"
         ],
         [
             "Act-2-3.json",
@@ -77,10 +77,10 @@
             "Patty",
             0,
             [
-                15,
-                8
+                13,
+                10
             ],
-            "down"
+            "right"
         ],
         [
             "Act-2-3.json",
@@ -89,9 +89,9 @@
             0,
             [
                 15,
-                9
+                10
             ],
-            "down"
+            "left"
         ],
         [
             "Act-2-2.json",
@@ -99,10 +99,54 @@
             "Legion",
             0,
             [
-                14,
-                13
+                13,
+                9
             ],
-            "up"
+            "right"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            1,
+            [
+                14,
+                11
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            2,
+            [
+                15,
+                11
+            ],
+            "left"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            3,
+            [
+                13,
+                11
+            ],
+            "right"
+        ],
+        [
+            "Act-2-3.json",
+            "Food",
+            "Tomato",
+            4,
+            [
+                14,
+                10
+            ],
+            "down"
         ]
     ]
 }

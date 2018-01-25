@@ -59,8 +59,8 @@ var CharacterGenerator = {
             tempStatChanges:[]
         };
         char.team = data.team;
-        //Generate the level based on the Act
-        char.level = data.level || this.generateLevel(act);
+        
+        char.level = data.level || this.generateLevel(data.levelmin,data.levelmax,act);
         char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
         char.natNum = this.getNatNum(char.nationality);
         
@@ -241,9 +241,10 @@ var CharacterGenerator = {
             active:[],
             passive:[]
         };
+        
         function processArgs(args){
             var processedArgs = [];
-            args ? false : console.log(args)
+            args ? false : console.log(args);
             for(var i=0;i<args.length;i++){
                 var func = args[i][0];
                 var props = args[i][1];
@@ -356,6 +357,9 @@ var CharacterGenerator = {
     findTechnique:function(name){
         return this.allTechs.find(function(tech){return tech[0] === name;});
     },
+    cloneTech:function(tech){
+        return $.extend(true,[],tech);
+    },
     getEquipmentTechniques:function(equipment){
         function getTech(eq){
             function getGearArgs(props,args){
@@ -375,19 +379,20 @@ var CharacterGenerator = {
             var data = CharacterGenerator.equipment.gear[eq.name];
             var rank = Math.ceil(CharacterGenerator.qualityKeys.indexOf(eq.quality));
             var processedTechs = [];
-            var baseTech = CharacterGenerator.findTechnique(data.techniques.Base[0]).slice(0);
+            
+            var baseTech = CharacterGenerator.cloneTech(CharacterGenerator.findTechnique(data.techniques.Base[0]));
             var baseArgs = data.techniques.Base[1];
             baseTech[baseTech.length-1] = getGearArgs(baseArgs[rank],baseTech[baseTech.length-1]);
+            //If there is TP
             if(data.techniques.Base[2]) baseTech[8] = data.techniques.Base[2][rank];
             processedTechs.push(baseTech);
             var techs = data.techniques[eq.material].slice(0,Math.floor(rank/2)+1);
             for(var i=0;i<techs.length;i++){
                 var tech = techs[i];
-                var found = CharacterGenerator.findTechnique(tech[0]).slice(0);
+                var found = CharacterGenerator.cloneTech(CharacterGenerator.findTechnique(tech[0]));
                 var num = ~~(rank/2)*i;
                 //Only if the num is equal to rank will it be 0.
                 var rankIdx = num < rank || num > rank ? 1 : 0;
-                
                 found[found.length-1] = getGearArgs(tech[1][rankIdx],found[found.length-1]);
                 if(tech[2]) found[8] = tech[2][rankIdx];
                 processedTechs.push(found);
@@ -406,10 +411,11 @@ var CharacterGenerator = {
         function uniq(a) {
             var seen = {};
             return a.filter(function(item) {
-                return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+                return seen.hasOwnProperty(item[0]) ? false : (seen[item[0]] = true);
             });
         }
-        return uniq(techs);
+        var t = uniq(techs);
+        return t;
     },
     getTechniques:function(techs,charClass,equipment){
         if(!techs) return;
@@ -511,8 +517,12 @@ var CharacterGenerator = {
     generateValue:function(charClass,natNum){
         return this.values[this.getIdx(this.classes[charClass].value[natNum],this.rand())];
     },
-    generateLevel:function(act){
-        return this.scenes[act].startLevel+this.getIdx(this.scenes[act].spread,this.rand());  
+    generateLevel:function(levelmin,levelmax,act){
+        if(levelmin && levelmax){
+            return Math.floor(Math.random()*(levelmax - levelmin))+ levelmin;
+        } else {
+            return this.scenes[act].startLevel+this.getIdx(this.scenes[act].spread,this.rand());  
+        }
     },
     generateCharClass:function(nationality){
         return this.classKeys[this.getIdx(this.natClasses[nationality].classSpread,this.rand())];
@@ -701,16 +711,16 @@ var CharacterGenerator = {
         return this.getPassiveEffect(this.getEquipmentProp("damageReduction",p.equipment[2]),"combatStats","damageReduction",p.techniques.passive);
     },
     get_physicalResistance:function(p){
-        var str = p.combatStats.strength, end = p.combatStats.endurance;
-        return this.getPassiveEffect(Math.min(25,str+end),"combatStats","physicalResistance",p.techniques.passive);
+        var str = p.combatStats.strength/10, end = p.combatStats.endurance/10;
+        return this.getPassiveEffect(Math.min(50,Math.floor(str+end)),"combatStats","physicalResistance",p.techniques.passive);
     },
     get_mentalResistance:function(p){
-        var ini = p.combatStats.initiative, eff = p.combatStats.efficiency;
-        return this.getPassiveEffect(Math.min(25,ini+eff),"combatStats","mentalResistance",p.techniques.passive);
+        var ini = p.combatStats.initiative/10, eff = p.combatStats.efficiency/10;
+        return this.getPassiveEffect(Math.min(50,Math.floor(ini+eff)),"combatStats","mentalResistance",p.techniques.passive);
     },
     get_magicalResistance:function(p){
-        var enr = p.combatStats.energy, skl = p.combatStats.skill;
-        return this.getPassiveEffect(Math.min(25,enr+skl),"combatStats","magicalResistance",p.techniques.passive);
+        var enr = p.combatStats.energy/10, skl = p.combatStats.skill/10;
+        return this.getPassiveEffect(Math.min(50,Math.floor(enr+skl)),"combatStats","magicalResistance",p.techniques.passive);
     },
     get_atkAccuracy:function(p){
         //If there is a left hand equipped, we need an average of the two.

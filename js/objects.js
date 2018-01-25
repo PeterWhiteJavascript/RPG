@@ -149,7 +149,7 @@ Quintus.Objects=function(Q){
             },
             playMiss:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
-                this.play("missed"+dir);
+                this.play("missed"+this.p.dir);
                 var to = [this.p.x-16,this.p.y];
                 this.animate({x:to[0], y:to[1]}, .2, Q.Easing.Quadratic.Out)
                         .chain({x:this.p.x,y:this.p.y},.2,Q.Easing.Quadratic.Out);
@@ -223,6 +223,32 @@ Quintus.Objects=function(Q){
                     
                 });
             },
+            playSlashing:function(dir,callback){
+                this.playAttack(dir,callback);
+            },
+            playStabbing:function(dir,callback){
+                this.playAttack(dir,callback);
+                
+            },
+            playSmashing:function(dir,callback){
+                this.playAttack(dir,callback);
+                
+            },
+            playShooting:function(dir,callback){
+                this.playAttack(dir,callback);
+                
+            },
+            playCharging:function(dir,callback){
+                this.playAttack(dir,callback);
+                
+            },
+            playCasting:function(dir,callback){
+                this.playAttack(dir,callback);
+                
+            },
+            
+            
+            
             playFlamethrower:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.animate({angle:360}, .2, Q.Easing.Quadratic.Out)
@@ -522,6 +548,30 @@ Quintus.Objects=function(Q){
                 this["play"+animation](dir,callback);
                 Q.audioController.playSound(sound+".mp3");
             },
+            addStatChange:function(change){
+                this.p.statChanges.push(change);
+            },
+            revertChange:function(change){
+                this.p[change.statType][change.stat] += change.amount;
+            },
+            //Removes all stat changes that have 0 turns
+            //This is done at the start of a character's turn (turns goes down), and after a technique attack involving this character (turn does not go down, but any effects that apply to that attack will have 0 turns)
+            checkRemoveStatChange:function(){
+                var ch = this.p.statChanges;
+                for(var i  = ch.length-1 ; i>=0; i--){
+                    if(ch[i].turns === 0){
+                        this.revertChange(ch[i]);
+                        ch.splice(i,1);
+                    }
+                }
+            },
+            advanceStatChanges:function(){
+                var ch = this.p.statChanges;
+                for(var i  = ch.length-1 ; i>=0; i--){
+                    ch[i].turns --;
+                }
+                this.checkRemoveStatChange();
+            },
             
             advanceStatus:function(){
                 var status = this.p.status;
@@ -771,8 +821,8 @@ Quintus.Objects=function(Q){
                 },
                 //All enemies that hit this character
                 hitBy:[],
-                //The current exp
-                exp:0
+                //Stores any temporary stat changes (that go away after a certain number of turns)
+                statChanges:[]
             });
             this.p.sheet = this.p.charClass.toLowerCase();
             //Quintus components

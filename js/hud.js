@@ -373,8 +373,19 @@ Quintus.HUD=function(Q){
             Q.pointer.snapTo(this.p.target);
             this.changeToPointer("pointerAttackControls");
             
-            Q.rangeController.setTiles(2,this.p.target.p.loc,technique.range,this.p.target.p.attackMatrix);
-            Q.aoeController.setTiles(3,this.p.target.p.loc,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
+            var center = [this.p.target.p.loc[0],this.p.target.p.loc[1]];
+            if(!technique.rangeProps.includes("MaxRangeFixed")){
+                Q.rangeController.setTiles(2,this.p.target.p.loc,technique.range,this.p.target.p.attackMatrix);
+            } 
+            else if(technique.rangeProps.includes("TargetSelf")){
+                Q.rangeController.setSpecificTile(2,this.p.target.p.loc);
+            }
+            else {
+                var arr = Q.getDirArray(this.p.target.p.dir);
+                center[0] += arr[0]*technique.range;
+                center[1] += arr[1]*technique.range;
+            }
+            Q.aoeController.setTiles(3,center,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
         },
         noItems:function(){
             Q.audioController.playSound("cannot_do.mp3");
@@ -556,7 +567,6 @@ Quintus.HUD=function(Q){
         },
         inserted:function(){
             var target = this.p.target;
-            console.log(target.p.techniques)
             var skills = target.p.techniques;
             for(var i=0;i<skills.length;i++){
                 this.insert(new Q.UI.Text({label:skills[i].name,x:5,y:5+i*28,size:16,cx:0,cy:0,align:"left",family:"Consolas"}));
@@ -662,9 +672,10 @@ Quintus.HUD=function(Q){
     });
     Q.GameObject.extend("AOEController",{
         pulse:function(){
-            Q.AOETileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.5} , 1, Q.Easing.Linear, {callback:function(){Q.aoeController.pulse();}});
+            Q.AOETileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.aoeController.pulse();}});
         },
         setTiles:function(tile,loc,dir,aoe,type,props){
+            Q.AOETileLayer.stop();
             var radius = aoe;
             var area = type;
             var special = props || [];
@@ -728,6 +739,9 @@ Quintus.HUD=function(Q){
                 case "Box":
                     for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
                         for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                            var spot = [i,j];
+                            Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                            tiles.push(spot);
                             //tiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
                         }
                     }
@@ -755,7 +769,6 @@ Quintus.HUD=function(Q){
                     break;*/
                 
             }
-            Q.AOETileLayer.p.opacity = 0.7;
             this.pulse();
         },
         getCustomAOE:function(loc,technique,dir){
@@ -780,7 +793,6 @@ Quintus.HUD=function(Q){
             }
         },
         resetGrid:function(){
-            console.log(this.tiles  )
             this.tiles.forEach(function(tile){
                 Q.AOETileLayer.setTile(tile[0],tile[1],0);
             });
@@ -791,9 +803,11 @@ Quintus.HUD=function(Q){
     //Make it again. This time, it doesn't get destroyed. Include options for aoe
     Q.GameObject.extend("RangeController",{
         pulse:function(){
-            Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.5} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.pulse();}});
+            Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.pulse();}});
+            
         },
         setTiles:function(tile,loc,range,matrix,special){
+            Q.RangeTileLayer.stop();
             var bounds = Q.BattleGrid.getBounds(loc,range);
             var rangeTileLayer = Q.RangeTileLayer;
             var tiles = [];
@@ -839,17 +853,23 @@ Quintus.HUD=function(Q){
             } else {
                 
             }
-            Q.RangeTileLayer.p.opacity = 0.7;
+            this.pulse();
+        },
+        setSpecificTile:function(tile,loc){
+            this.tiles = this.tiles || [];
+            Q.RangeTileLayer.setTile(loc[0],loc[1],tile);
+            this.tiles.push({x:loc[0],y:loc[1]});
             this.pulse();
         },
         resetGrid:function(){
+            if(!this.tiles) return;
             this.tiles.forEach(function(tile){
                 Q.RangeTileLayer.setTile(tile.x,tile.y,0);
             });
             this.tiles = [];
         },
         checkConfirmMove:function(){
-            if(this.checkValidPointerLoc(1)){
+            if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,1)){
                 var user = this.target;
                 if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
                     //Make the character move to the spot
@@ -860,13 +880,28 @@ Quintus.HUD=function(Q){
                 } else {this.cannotDo();}
             } else {this.cannotDo();}
         },
+        getTechniqueInRange:function(technique){
+            var targets = [];
+            //If we're excluding center, then pointer loc will not have a target.
+            //If the max range is fixed, the range tiles will not be shown (the technique will always be in range)
+            if(technique.aoeProps.includes("ExcludeCenter") && technique.rangeProps.includes("MaxRangeFixed")){
+                targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
+            } else {
+                if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)){
+                    targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
+                }
+            }
+            return targets;
+        },
         
         validateTechnique:function(technique,user){
             if(technique.rangeProps.includes("MustTargetGround")){
                 if(Q.BattleGrid.getObject(Q.pointer.p.loc)) return;
             }
-            //Make sure there's a target
-            var targets = Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
+            //Make sure that we're in range and get the possible targets
+            var targets = this.getTechniqueInRange(technique);
+            if(!targets.length) return this.cannotDo();
+            
             if(!technique.rangeProps.includes("TargetDead")){
                 targets = Q.BattleGrid.removeDead(targets);
             }
@@ -879,17 +914,14 @@ Quintus.HUD=function(Q){
             //Remove characters that are not facing the user if the technique has enemyFacingThis
             if(technique.rangeProps.includes("EnemyFacingUser")) Q.BatCon.removeNotFacing(targets,user);
             //If the ability targets the ground, check if an object is there.
-            if(technique.rangeProps.includes("CanTargetGround") || technique.rangeProps.includes("MustTargetGround")){
+            if(technique.rangeProps.includes("MustTargetGround")){
                 var tileType = Q.BatCon.getTileType(Q.pointer.p.loc);
                 if(Q.BattleGrid.getObject(Q.pointer.p.loc)||tileType==="impassable"||tileType==="water"){
                     targets = [];
-                } else targets.push(true);
-            }
-            if(technique.rangeProps.includes("TargetNotRequired")){
-                targets = [true];
+                }
             }
             //If there is at least one target
-            if(targets.length){
+            if(targets.length || technique.rangeProps.includes("TargetNotRequired")){
                 Q.BatCon.previewDoTechnique(user,Q.pointer.p.loc,technique,targets);
                 this.resetGrid();
                 Q.pointer.pointerAttackControls.remove();
@@ -906,10 +938,10 @@ Quintus.HUD=function(Q){
             } else {this.cannotDo();}
         },
         checkConfirmAttack:function(){
-            if(this.checkValidPointerLoc(2)){
-                if(Q.pointer.p.technique){
-                    this.validateTechnique(Q.pointer.p.technique,this.target);
-                } else {
+            if(Q.pointer.p.technique){
+                this.validateTechnique(Q.pointer.p.technique,this.target);
+            } else {
+                if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)){
                     this.validateAttack(this.target);
                 }
             }
@@ -928,9 +960,8 @@ Quintus.HUD=function(Q){
             this.on("step",this,"refresh");
         },
         //Checks if we've selected a tile
-        checkValidPointerLoc:function(valid){
-            var loc = Q.pointer.p.loc;
-            if(Q.RangeTileLayer.getTile(loc[0],loc[1]) === valid) return true;
+        checkValidPointerLoc:function(tileLayer,loc,validTile){
+            return tileLayer.getTile(loc[0],loc[1]) === validTile;
         },
         //Any custom ranges
         process:{
@@ -1088,7 +1119,7 @@ Quintus.HUD=function(Q){
                 this.destroy();
                 Q.inputs['esc']=false;
                 Q.inputs['back']=false;
-                if(this.p.skill){
+                if(this.p.technique){
                     if(this.p.technique.kind==="consumable"){
                         this.stage.ActionMenu.loadItem();
                     } else {
@@ -1185,6 +1216,7 @@ Quintus.HUD=function(Q){
         },
         displayStatus:function(){
             this.p.sheet = "ui_"+this.p.status[this.p.statusNum];
+            console.log(this.p.status)
         },
         changeStatus:function(){
             var p = this.p;
@@ -1195,6 +1227,7 @@ Quintus.HUD=function(Q){
             this.displayStatus();
         },
         removeStatus:function(status){
+            
             for(var i=0;i<this.p.status.length;i++){
                 if(status===this.p.status[i]){
                     this.p.status.splice(i,1);

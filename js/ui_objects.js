@@ -1030,6 +1030,7 @@ Quintus.UIObjects=function(Q){
             textSpeed:"Fast",
             autoScroll:true,
             cursorSpeed:"Fast",
+            pointerSpeed:"Fast",
 
             brightness:100,
             damageIndicators:true,

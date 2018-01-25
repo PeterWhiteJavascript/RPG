@@ -209,81 +209,14 @@ Quintus.GameObjects=function(Q){
             this.entity.on("checkConfirm");
             if(this.entity.p.technique){
                 var technique = this.entity.p.technique;
-                switch(technique.aoeType){
-                    case "Normal":
-                        if(technique.range === 0){
-                            this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                            this.entity.on("inputMoved",this,"moveTiles");
-                            this.entity.hide();
-                        } else {
-                            this.entity.on("checkInputs");
-                            this.entity.on("inputMoved",this,"moveTiles");
-                        }
-                        break;
-                    case "VLine":
-                    case "HLine":
-                        if(technique.range === 0){
-                            this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                            this.entity.on("inputMoved",this,"moveTiles");
-                            this.entity.hide();
-                        } else {
-                            this.entity.on("checkInputs");
-                            this.entity.on("inputMoved",this,"moveTiles");
-                        }
-                        break;
-                    case "T":
-                        this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                        this.entity.on("inputMoved",this,"moveTiles");
-                        this.entity.hide();
-                        break;
-                    case "X":
-                        
-                        break;
-                    case "Box":
-
-                        break;
-                    case "Custom":
-
-                        break;
-                }
-                console.log(technique)
-                /*if(technique.aoe[1]==="straight"){
-                    this.entity.p.movingStraight = true;
+                if(technique.rangeProps.includes("MaxRangeFixed") || technique.range === 0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    //The pointer is hidden
+                    this.entity.on("inputMoved",this,"moveTiles");
                     this.entity.hide();
-                    this.entity.on("inputMoved",Q.aoeController,"moveStraightTiles");
-                    //Force the first direction
-                    var dir = this.entity.p.user.p.dir;
-                    setTimeout(function(){
-                        Q.inputs[dir]=true;
-                    });
-                } else if(technique.name==="Phalanx"){ 
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",Q.aoeController,"movePhalanxTiles");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(technique.aoe[1]==="hLine"){
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",Q.aoeController,"moveHLineTiles");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(technique.aoe[1]==="hLineForward"){
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",Q.aoeController,"moveHLineForwardTiles");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(technique.aoe[1]==="T"){
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.on("inputMoved",Q.aoeController,"moveTTiles");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
-                } else if(technique.range[1]==="self"&&technique.range[0]===0){
-                    this.entity.on("checkInputs",this.entity,"checkStraightInputs");
-                    this.entity.hide();
-                    Q.inputs[this.entity.p.user.p.dir]=true;
                 } else {
-                }*/
+                    this.entity.on("checkInputs");
+                    this.entity.on("inputMoved",this,"moveTiles");
+                }
             } else {
                 this.entity.on("checkInputs");
                 this.entity.on("inputMoved",this,"inputMoved");
@@ -318,7 +251,14 @@ Quintus.GameObjects=function(Q){
         moveTiles:function(){
             var technique = this.entity.p.technique;
             Q.aoeController.resetGrid();
-            Q.aoeController.setTiles(3,this.entity.p.loc,this.entity.p.user.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
+            
+            var center = [this.entity.p.loc[0],this.entity.p.loc[1]];
+            if(technique.rangeProps.includes("MaxRangeFixed")){
+                var arr = Q.getDirArray(this.entity.p.user.p.dir);
+                center[0] += arr[0]*technique.range;
+                center[1] += arr[1]*technique.range;
+            }
+            Q.aoeController.setTiles(3,center,this.entity.p.user.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
         },
         showMenu:function(){
             Q.stage(2).ActionMenu.show();
@@ -344,7 +284,7 @@ Quintus.GameObjects=function(Q){
                 
                 stepDistanceX:Q.tileW,
                 stepDistanceY:Q.tileH,
-                stepDelay:0.2,
+                stepDelay:Q.optionsController.options.pointerSpeed === "Fast" ? 0.1 : Q.optionsController.options.pointerSpeed === "Medium" ? 0.2 : Q.optionsController.options.pointerSpeed === "Slow" ? 0.3 : 0.2,
                 stepWait:0,
                 
                 flashObjs:[],
@@ -684,6 +624,7 @@ Quintus.GameObjects=function(Q){
             }
             return objects;
         },
+        //Not great wording, but this gets all objects that are on top of these tiles
         getObjectsAround:function(tiles){
             var objects = [];
             for(var i=0;i<tiles.length;i++){
@@ -835,14 +776,15 @@ Quintus.GameObjects=function(Q){
             }
         },
         showPlacementSquares:function(tiles){
-            var stage = this.entity.stage;
+            Q.rangeController.tiles = [];
             tiles.forEach(function(tile){
-                var sq = stage.insert(new Q.PlacementSquare({loc:tile}));
-                Q.BatCon.setXY(sq);
+                Q.RangeTileLayer.setTile(tile[0],tile[1],2);
+                Q.rangeController.tiles.push({x:tile[0],y:tile[1]});
             });
+            console.log(Q.RangeTileLayer)
         },
         removePlacementSquares:function(){
-            Q("PlacementSquare",0).invoke("destroy");
+            Q.rangeController.resetGrid();
         },
         genPlaceableAllies:function(){
             //All placeable allies (not wounded, must be preset, not already placed)
@@ -1126,6 +1068,11 @@ Quintus.GameObjects=function(Q){
         startTurn:function(){
             var obj = this.turnOrder[0];
             if(!obj) alert("Everything is dead.");
+            
+            //Advance the character's status effects. (poison, etc..)
+            obj.advanceStatus();
+            //Advance the character's stat changes (atkUp, etc..)
+            obj.advanceStatChanges();
             while(!this.valid(obj)){
                 this.turnOrder.shift();
                 if(!this.turnOrder[0]){
@@ -1168,8 +1115,6 @@ Quintus.GameObjects=function(Q){
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
             var lastTurn = this.turnOrder.shift();
-            //Advance the last character's status effects.
-            lastTurn.advanceStatus();
             lastTurn.checkRegeneratingAura();
             if(!this.turnOrder.length){
                 this.advanceRound();
@@ -1547,7 +1492,12 @@ Quintus.GameObjects=function(Q){
                     result = "Miss";
                 }
             };
-            return {atkResult:attackResult,defResult:defenseResult,finalResult:result,dir:dir,attackingAgain:props.attackNum<props.attackerAtkSpeed};
+            props.atkResult = attackResult;
+            props.defenseResult = defenseResult;
+            props.finalResult = result;
+            props.dir = dir;
+            props.attackingAgain = props.attackNum < props.attackerAtkSpeed;
+            return props;
         },
         //Forces the damage to be at least 1
         getDamage:function(dmg){
@@ -1578,7 +1528,7 @@ Quintus.GameObjects=function(Q){
             if(props.defender.p.talents.includes("Illusionary Defense")){
                 props.defenderDefensiveAbility+=Math.floor(props.attacker.p.combatStats.tp/10);
             }
-            switch(props.result){
+            switch(props.finalResult){
                 case "Critical":
                     damage = this.criticalBlow(props.attackerAtkSpeed,props.attackerMaxAtkDmg,props.defenderHP,props.attacker,props.defender,props.skill)*props.finalMultiplier;
                     if(props.attacker.p.talents.includes("Critical Mastery")) damage+=props.attacker.p.combatStats.skill+props.attacker.p.level;
@@ -1588,9 +1538,12 @@ Quintus.GameObjects=function(Q){
                     damage = this.solidBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDamageReduction)*props.finalMultiplier;
                     break;
                 case "Glancing":
-                case "Miss":
                     damage = this.glancingBlow(props.attackerMinAtkDmg,props.attackerMaxAtkDmg,props.defenderDefensiveAbility)*props.finalMultiplier;
                     sound = "glancing_blow.mp3";
+                    break;
+                case "Miss":
+                    damage = 0;
+                    sound = "cannot_do.mp3";
                     break;
                 case "Counter":
                     var dist = Q.BattleGrid.getTileDistance(props.attacker.p.loc,props.defender.p.loc);
@@ -2017,7 +1970,7 @@ Quintus.GameObjects=function(Q){
         //Checks against the defender's resistance of a certain technique type.
         checkResisted:function(attacker,defender,technique){
             //If the technique always hits allies and the target is an ally, it hit.
-            if(attacker.p.team === defender.p.team && technique.rangeProps.contains("AllyNoMiss")) return false;
+            if(attacker.p.team === defender.p.team && technique.rangeProps.includes("AllyNoMiss")) return false;
             if(technique.resistedBy.includes("Physical")){
                 var rand = Math.floor(Math.random()*100);
                 var stat = defender.p.combatStats.physicalResistance;
@@ -2035,25 +1988,12 @@ Quintus.GameObjects=function(Q){
             }
             return false;
         },
-        regularAttack:function(attacker,defender,extraAttack){
-            var blow = this.getBlow({
+        getAttackProps:function(attacker,defender,extraAttack){
+            return {
                 attackNum:Math.ceil(Math.random()*100),
                 defendNum:Math.ceil(Math.random()*100),
-                attackerCritChance:attacker.p.combatStats.critChance+(extraAttack&&attacker.p.talents.includes("Critical Flurry"))?20:0,
+                attackerCritChance:attacker.p.combatStats.critChance+((extraAttack&&attacker.p.talents.includes("Critical Flurry")) ? 20 : 0),
                 attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
-                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
-                defenderCounterChance:defender.p.combatStats.counterChance,
-                defenderReflexes:defender.p.combatStats.reflexes,
-                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
-                defenderFainted:defender.p.fainted,
-                attacker:attacker,
-                defender:defender
-            });
-            return this.processResult({
-                attackingAgain:blow.attackingAgain,
-                result:blow.finalResult,
-                dir:blow.dir,
-                attackerFainted:attacker.p.fainted,
                 attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
                 attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
                 attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
@@ -2061,43 +2001,96 @@ Quintus.GameObjects=function(Q){
                 defenderDamageReduction:defender.p.combatStats.damageReduction,
                 defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
                 defenderAtkRange:defender.p.combatStats.atkRange,
+                defenderCounterChance:defender.p.combatStats.counterChance,
+                defenderReflexes:defender.p.combatStats.reflexes,
+                attackerFainted:attacker.p.fainted,
+                defenderFainted:defender.p.fainted,
                 attacker:attacker,
                 defender:defender,
-                finalMultiplier:1
+                finalMultiplier:1,
+                time:100
+            };
+        },
+        regularAttack:function(attacker,defender,extraAttack){
+            return this.processResult(this.getBlow(this.getAttackProps(attacker,defender,extraAttack)));
+        },
+        
+        applyActiveStatArgs:function(attacker,defender,args){
+            function evaluateOperator(num1,oper,num2){
+                switch(oper){
+                    case "+":
+                        return num1 + num2;
+                    case "-":
+                        return num1 - num2;
+                    case "*":
+                        return num1 * num2;
+                    case "/":
+                        return num1 / num2;
+                }
+            };
+            function getAmount(value,user,target){
+                switch(value.type){
+                    case "Number":
+                        return value.amount;
+                    case "User Base Stats":
+                        return evaluateOperator(user.p.baseStats[value.stat],value.oper,value.amount);
+                    case "Target Base Stats":
+                        return evaluateOperator(target.p.baseStats[value.stat],value.oper,value.amount);
+                    case "User Combat Stats":
+                        return evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
+                    case "Target Combat Stats":
+                        return evaluateOperator(target.p.combatStats[value.stat],value.oper,value.amount);
+                        
+                }
+            }
+            args.forEach(function(arg){
+                if(arg.func === "Change Stat Active"){
+                    var rand = Math.floor(Math.random()*100);
+                    if(rand > arg.accuracy) return;
+                    var target = arg.affects === "User" ? attacker : defender;
+                    var newValue = Math.max(0,evaluateOperator(target.p[arg.statType][arg.stat],arg.oper,getAmount(arg.value,attacker,target)));
+                    var difference = target.p[arg.statType][arg.stat] - newValue;
+                    if(difference){
+                        target.p[arg.statType][arg.stat] = newValue;
+                        target.addStatChange({stat:arg.stat,statType:arg.statType,amount:difference,turns:arg.turns});
+                    }
+                }
             });
         },
         techniqueAttack:function(attacker,defender,technique){
-            var props = {
-                attackNum:Math.ceil(Math.random()*100),
-                defendNum:Math.ceil(Math.random()*100),
-                attackerCritChance:attacker.p.combatStats.critChance,
-                attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
-                defenderCounterChance:defender.p.combatStats.counterChance,
-                defenderReflexes:defender.p.combatStats.reflexes,
-                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
-                defenderFainted:defender.p.fainted,
-
-                attackerFainted:attacker.p.fainted,
-                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
-
-                attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
-                attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
-                attackerSecMaxAtkDmg:attacker.p.combatStats.maxSecondaryDmg,
-                attackerSecMinAtkDmg:attacker.p.combatStats.minSecondaryDmg,
-
-                defenderHP:defender.p.combatStats.hp,
-                defenderDamageReduction:defender.p.combatStats.damageReduction,
-                defenderAtkRange:defender.p.combatStats.atkRange,
-                attacker:attacker,
-                defender:defender,
-
-                finalMultiplier:1
-            };
-            switch(technique.techType1){
+            //Apply any stat boosts that happen
+            this.applyActiveStatArgs(attacker,defender,technique.args);
+            
+            var props = this.getAttackProps(attacker,defender);
+            
+            
+            props.attackerAtkAccuracy = technique.accuracy;
+            //Probably have some other calcs to determine damage
+            props.attackerMaxAtkDmg += technique.damage;
+            props.attackerMinAtkDmg += technique.damage;
+            
+            switch(technique.type1){
                 case "Damage":
-                    
-                    return this.processSkillResult(props);
-                    break;
+                    if(technique.resistedBy.includes("RegAttack")){
+                        var result = this.processResult(this.getBlow(props));
+                        result.attackingAgain = false;
+                        console.log(result)
+                        return result;
+                    } else if(technique.resistedBy.includes("Dodge")){
+                        //Dodge means no defense from armour
+                        props.defenderDefensiveAbility = 0;
+                        var result = this.processResult(this.getBlow(props));
+                        result.attackingAgain = false;
+                        return result;
+                    } else {
+                        //Check for accuracy
+                        if(Math.floor(Math.random()*100) < props.attackerAtkAccuracy){
+                            props.damage = this.getDamage(Math.floor(Math.random()*(props.attackerMaxAtkDmg-props.attackerMinAtkDmg)+props.attackerMinAtkDmg));
+                        } else {
+                            props.damage = 0;
+                        }
+                        return props;
+                    }
                 case "Support":
                     
                     break;
@@ -2122,27 +2115,6 @@ Quintus.GameObjects=function(Q){
                 time = props.time;
                 damage = props.damage;
                 sound = props.sound;
-                /*
-                
-                switch(skill.type){
-                    case "Item":
-                        var bag = Q.state.get("Bag");
-                        bag.decreaseItem(skill.kind,{gear:skill.name});
-                        this.useItem(attacker,defender,skill);
-                        return;
-                    case "Support":
-                        this.useSupportSkill(attacker,defender,skill);
-                        return;
-                    case "Debilitate":
-                        this.useDebilitateSkill(attacker,defender,skill);
-                        break;
-                    case "Damage":
-                        var props = this.useDamageSkill(attacker,defender,skill);
-                        damage = Math.max(0,props.damage);
-                        sound = props.sound;
-                        time = props.time || time;
-                        break;
-                }*/
             } 
             //Regular attack
             else {
@@ -2251,6 +2223,8 @@ Quintus.GameObjects=function(Q){
             }
             if(technique){
                 this.processAdditionalEffects(attacker,targets,technique);
+                attacker.checkRemoveStatChange();
+                targets.forEach(function(target){target.checkRemoveStatChange();});
             }
             this.processText(this.text);
         },

@@ -10,11 +10,15 @@
             "promotion": 1,
             "equipment": [
                 [
-                    "Bow",
-                    "Wood",
+                    "Short Sword",
+                    "Brass",
                     "Quality"
                 ],
-                false,
+                [
+                    "Shield",
+                    "Brass",
+                    "Magic"
+                ],
                 [
                     "Outfit",
                     "Wool",
