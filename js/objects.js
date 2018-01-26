@@ -216,11 +216,11 @@ Quintus.Objects=function(Q){
             playFainted:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("fainting"+this.p.dir);
+                    if(callback) callback();
                 this.on("doneFainting",function(){
                     this.off("doneDying");
-                    if(callback) callback();
+                    //if(callback) callback();
                     this.play("dead"+this.p.dir);
-                    
                 });
             },
             playSlashing:function(dir,callback){
@@ -329,7 +329,7 @@ Quintus.Objects=function(Q){
                 Q.audioController.playSound("cannot_do.mp3");
             },
             //Displays the damage dynamic number
-            showDamage:function(dmg,sound,callback){
+            showDamage:function(dmg,sound,technique,callback){
                 this.stage.insert(new Q.DynamicNumber({color:"red", loc:this.p.loc, text:"-"+dmg,z:this.p.z}));  
                 //Show the death animation at this point
                 if(this.p.combatStats.hp<=0){
@@ -342,31 +342,13 @@ Quintus.Objects=function(Q){
                     if(callback){
                         setTimeout(function(){
                             callback();
-                        },500);
+                        },Q.getDamageTime(technique));
                     }
                 }
             },
             showCounter:function(toCounter,callback){
                 this.playCounter(Q.compareLocsForDirection(this.p.loc,toCounter.p.loc,this.p.dir),callback);
                 Q.audioController.playSound("slashing.mp3");
-            },
-            showExpGain:function(exp,leveledUp,callback){
-                this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+exp,z:this.p.z}));
-                //If the character leveled up
-                if(leveledUp){
-                    this.stage.insert(new Q.DynamicNumber({color:"white", loc:this.p.loc, text:"Lv. up!",z:this.p.z}));
-                    this.playLevelUp(this.p.dir);
-                    time = 1000;
-                    Q.audioController.playSound("confirm.mp3");
-                } else {
-                    Q.audioController.playSound("coin.mp3");
-                }
-                if(callback){
-                    setTimeout(function(){
-                        callback();
-                    },500);
-                }
-                
             },
             showHealed:function(amount,callback){
                 this.stage.insert(new Q.DynamicNumber({color:"green", loc:this.p.loc, text:"+"+amount,z:this.p.z}));
@@ -380,13 +362,13 @@ Quintus.Objects=function(Q){
                     },500);
                 }
             },
-            showFainted:function(attacker,callback){
+            showFainted:function(attacker,technique,callback){
                 var t = this;
                 this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,"debuff",attacker,null,callback);});
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
-            takeDamage:function(dmg,attacker,callback){
+            takeDamage:function(dmg,attacker,technique,callback){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.combatStats.hp-=dmg;

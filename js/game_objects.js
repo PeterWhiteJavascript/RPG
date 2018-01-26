@@ -217,6 +217,13 @@ Quintus.GameObjects=function(Q){
                     this.entity.on("checkInputs");
                     this.entity.on("inputMoved",this,"moveTiles");
                 }
+                
+                //If we can rotate the aoe
+                if(technique.aoeProps.includes("Rotatable")){
+                    this.entity.on("pressedCtrl",this,"rotateTiles");
+                    this.rotatedDir = this.entity.p.user.p.dir;
+                    this.rotatedLoc = this.entity.p.user.p.loc;
+                }
             } else {
                 this.entity.on("checkInputs");
                 this.entity.on("inputMoved",this,"inputMoved");
@@ -235,7 +242,11 @@ Quintus.GameObjects=function(Q){
                 Q.aoeController.resetGrid();
                 this.entity.off("checkInputs");
                 this.entity.off("inputMoved",this,"moveTiles");
-                
+                if(this.entity.p.technique.aoeProps.includes("Rotatable")){
+                    this.entity.off("pressedCtrl",this,"rotateTiles");
+                    this.rotatedDir = false;
+                    this.rotatedLoc = false;
+                }
             } else {
                 this.entity.off("checkInputs");
                 this.entity.off("inputMoved",this,"inputMoved");
@@ -248,17 +259,48 @@ Quintus.GameObjects=function(Q){
             this.entity.off("pressedBack",this,"pressedBack");
             this.entity.del("pointerAttackControls");
         },
-        moveTiles:function(){
-            var technique = this.entity.p.technique;
+        adjustTiles:function(dir,center,technique){
             Q.aoeController.resetGrid();
-            
-            var center = [this.entity.p.loc[0],this.entity.p.loc[1]];
             if(technique.rangeProps.includes("MaxRangeFixed")){
-                var arr = Q.getDirArray(this.entity.p.user.p.dir);
+                var arr = Q.getDirArray(dir);
                 center[0] += arr[0]*technique.range;
                 center[1] += arr[1]*technique.range;
             }
-            Q.aoeController.setTiles(3,center,this.entity.p.user.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
+            Q.aoeController.setTiles(3,center,dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps);
+        },
+        moveTiles:function(){
+            var center = [this.entity.p.loc[0],this.entity.p.loc[1]];
+            this.adjustTiles(this.entity.p.user.p.dir,center,this.entity.p.technique);
+            if(this.entity.p.technique.aoeProps.includes("Rotatable")){
+                this.rotatedDir = this.entity.p.user.p.dir;
+                this.rotatedLoc = this.entity.p.user.p.loc;
+            }
+        },
+        rotateTiles:function(){
+            Q.audioController.playSound("cannot_do.mp3");
+            var technique = this.entity.p.technique;
+            //Usually the aoe is the radius
+            var half = technique.aoe-1;
+            //But for VLine, it is the tile length
+            if(technique.aoeType === "VLine"){
+                half = half/2;
+                if(half % 1 !== 0){
+                    alert("This technique need to be adjusted to have an odd number of aoe to be rotatable!");
+                    return;
+                }
+            }
+            var center = [Q.pointer.p.loc[0],Q.pointer.p.loc[1]];
+            var newTiles = [];
+            Q.aoeController.tiles.forEach(function(tile){
+                var difX = center[0] - tile[0];
+                var difY = center[1] - tile[1];
+                newTiles.push([center[0] + difY * -1,center[1]  + difX * -1]);
+            });
+            Q.aoeController.resetGrid();
+            for(var i=0;i<newTiles.length;i++){
+                Q.AOETileLayer.setTile(newTiles[i][0],newTiles[i][1],3);
+            }
+            Q.aoeController.tiles = newTiles;
         },
         showMenu:function(){
             Q.stage(2).ActionMenu.show();
@@ -417,6 +459,9 @@ Quintus.GameObjects=function(Q){
             } else if(Q.inputs['shift']){
                 this.trigger("pressedShift",this);
                 Q.inputs['shift'] = false;
+            } else if(Q.inputs['ctrl']){
+                this.trigger("pressedCtrl",this);
+                Q.inputs['ctrl'] = false;
             }
         },
         //Do the logic for the directional inputs that were pressed
@@ -510,9 +555,13 @@ Quintus.GameObjects=function(Q){
         tweenTo:function(obj){
             var loc = obj.p.loc;
             var coords = Q.BatCon.getXY(loc);
+            
+            this.trigger("atDest",[(coords.x-Q.tileW/2)/Q.tileW,(coords.y-Q.tileH/2)/Q.tileH]);//TEMP
+            Q.pointer.snapTo(Q.BatCon.turnOrder[0]);//TEMP - the animation looks nicer.
+            return;//TEMP
             var dist = Q.BattleGrid.getTileDistance(loc,this.p.loc);
             //Set lower to go faster
-            var baseSpeed = Q.optionsController.cursorSpeed === "Fast" ? 25 : Q.optionsController.cursorSpeed === "Medium" ? 50 : Q.optionsController.cursorSpeed === "Slow" ? 75 : 100;
+            var baseSpeed = Q.optionsController.options.cursorSpeed === "Fast" ? 25 : Q.optionsController.options.cursorSpeed === "Medium" ? 50 : Q.optionsController.options.cursorSpeed === "Slow" ? 75 : 100;
             var speed = (baseSpeed*dist)/1000;
             this.animate({x:coords.x,y:coords.y},speed,Q.Easing.Quadratic.Out,{callback:function(){this.trigger("atDest",[(coords.x-Q.tileW/2)/Q.tileW,(coords.y-Q.tileH/2)/Q.tileH]);}});
             this.p.loc = [loc[0],loc[1]];
@@ -781,7 +830,6 @@ Quintus.GameObjects=function(Q){
                 Q.RangeTileLayer.setTile(tile[0],tile[1],2);
                 Q.rangeController.tiles.push({x:tile[0],y:tile[1]});
             });
-            console.log(Q.RangeTileLayer)
         },
         removePlacementSquares:function(){
             Q.rangeController.resetGrid();
@@ -813,7 +861,14 @@ Quintus.GameObjects=function(Q){
             //Set all allies to the direction they should be facing for this battle
             this.setAlliesDir(data.defaultDir);
             this.genPlaceableAllies();
-            Q.pointer.add("pointerPlaceAllies");
+            Q.pointer.add("pointerPlaceAllies"); 
+            
+            //Anything after is temp to auto place first ally.
+            this.checkPlacement(Q.pointer);
+            Q.stage(1).lists['CharacterSelectionMenu'][0].pressConfirm();
+            Q.stage(0).lists['Character'][0].trigger("pressedConfirm");
+            Q.inputs["confirm"] = true;
+            
         },
         //Confirms when a character is placed after their direction is set
         confirmPlacement:function(char){
@@ -825,6 +880,7 @@ Quintus.GameObjects=function(Q){
                     ally.placedOnMap = true;
                     ally.loc = char.p.loc;
                     i = allies.length;
+                    Q.RangeTileLayer.setTile(ally.loc[0],ally.loc[1],0);
                 }
             }
             this.genPlaceableAllies();
@@ -2124,8 +2180,8 @@ Quintus.GameObjects=function(Q){
             }
             //After the damage has been calculated, come up with the text to show the user
             if(damage>0){
-                this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker]});
-                this.text.push({func:"showDamage",obj:defender,props:[damage,sound]});
+                this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker,technique]});
+                this.text.push({func:"showDamage",obj:defender,props:[damage,sound,technique]});
                 if(props.result==="Critical"&&attacker.p.talents.includes("Bloodlust")){
                     this.text.push(this.entity.skillFuncs.healTp(Math.floor(damage/2),attacker)[0]);
                 }
@@ -2134,11 +2190,13 @@ Quintus.GameObjects=function(Q){
                     props.attackingAgain = false;
                 } else if(damage>defender.p.combatStats.painTolerance){
                     defender.p.fainted = true;
-                    this.text.push({func:"showFainted",obj:defender,props:[attacker]});
+                    this.text.push({func:"showFainted",obj:defender,props:[attacker,technique]});
                 }
                 if(props.attackingAgain){
+                    //TODO: come up with better sound/anim for attacking again
                     this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing",false]});
-                    this.calcAttack(attacker,defender,technique,true);
+                    //Can't attack again with technique anyways, so don't even pass it
+                    this.calcAttack(attacker,defender,false,true);
                 } else if(props.afterAttack){
                     props.afterAttack();
                 }

@@ -8,14 +8,16 @@
                 "Physical"
             ],
             [
-                1,
+                5,
                 "Normal",
                 []
             ],
             [
-                0,
-                "Normal",
-                []
+                3,
+                "VLine",
+                [
+                    "Rotatable"
+                ]
             ],
             [
                 "Physical",
@@ -179,9 +181,11 @@
                 []
             ],
             [
-                0,
-                "Normal",
-                []
+                2,
+                "HLine",
+                [
+                    "Rotatable"
+                ]
             ],
             [
                 "Physical",
@@ -282,6 +286,31 @@
             10,
             "Smashing",
             "fireball",
+            []
+        ],
+        [
+            "New Technique",
+            "",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            0,
+            100,
+            10,
+            "Charging",
+            "slashing",
             []
         ]
     ],
@@ -2264,7 +2293,8 @@
             "Custom"
         ],
         "aoeProps": [
-            "ExcludeCenter"
+            "ExcludeCenter",
+            "Rotatable"
         ],
         "resistProps": [
             "Physical",

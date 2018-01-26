@@ -991,6 +991,7 @@ Quintus.UIObjects=function(Q){
                 ["Text Speed","select","textSpeed",["Slow","Normal","Fast"]],
                 ["Auto Scroll","checkbox","autoScroll"],
                 ["Cursor Speed","select","cursorSpeed",["Slow","Normal","Fast"]],
+                ["Pointer Speed","select","pointerSpeed",["Slow","Normal","Fast"]],
                 ["Brightness","range","brightness"],
                 ["Damage Indicators","checkbox","damageIndicators"],
                 ["Faction Highlighting","checkbox","factionHighlighting"],

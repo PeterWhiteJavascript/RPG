@@ -1,4 +1,12 @@
 Quintus.QFunctions=function(Q){
+    Q.getDamageTime = function(tech){
+        if(!tech) return 200;
+        switch(tech.anim){
+            default:
+                return 100;  
+               
+        }
+    };
     Q.getCharClassNum = function(c){
         return Q.state.get("charGeneration").classNames.indexOf(c);
     };

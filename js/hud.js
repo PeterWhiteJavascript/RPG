@@ -380,12 +380,13 @@ Quintus.HUD=function(Q){
             else if(technique.rangeProps.includes("TargetSelf")){
                 Q.rangeController.setSpecificTile(2,this.p.target.p.loc);
             }
+            //If we're doing max range and not targeting self, move technique forward (max range fixed is mainly used for techs like fire breath, which would come out of the user)
             else {
                 var arr = Q.getDirArray(this.p.target.p.dir);
                 center[0] += arr[0]*technique.range;
                 center[1] += arr[1]*technique.range;
             }
-            Q.aoeController.setTiles(3,center,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps);
+            Q.aoeController.setTiles(3,center,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps);
         },
         noItems:function(){
             Q.audioController.playSound("cannot_do.mp3");
@@ -674,11 +675,12 @@ Quintus.HUD=function(Q){
         pulse:function(){
             Q.AOETileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.aoeController.pulse();}});
         },
-        setTiles:function(tile,loc,dir,aoe,type,props){
+        setTiles:function(tile,loc,dir,aoe,type,aoeProps,rangeProps){
             Q.AOETileLayer.stop();
-            var radius = aoe;
+            var radius = aoe;//Actually not always the radius. For VLine, it is the length of the line
             var area = type;
-            var special = props || [];
+            aoeProps = aoeProps || [];
+            rangeProps = rangeProps || [];
             var tiles = this.tiles = [];
             var bounds = Q.BattleGrid.getBounds(loc,radius);
             switch(area){
@@ -696,10 +698,11 @@ Quintus.HUD=function(Q){
                 case "VLine":
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(dir);
-                    for(var i=1;i<radius+1;i++){
+                    radius = (radius-1)/2;
+                    for(var i=-radius;i<radius+1;i++){
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
-                            tiles.push(spot);
+                        tiles.push(spot);
                     }
                     break;
                 //Horizontal line
@@ -707,7 +710,7 @@ Quintus.HUD=function(Q){
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(Q.getRotatedDir(dir));
                     for(var i=-radius;i<radius+1;i++){
-                        if(special.includes("ExcludeCenter")&&i===0) i++;
+                        if(aoeProps.includes("ExcludeCenter")&&i===0) i++;
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
@@ -717,7 +720,7 @@ Quintus.HUD=function(Q){
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(dir);
                     //Start at 1 to not include the caster
-                    for(var i=1;i<special;i++){
+                    for(var i=1;i<aoeProps;i++){
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
@@ -726,14 +729,14 @@ Quintus.HUD=function(Q){
                     //The end line part
                     for(var i=-radius;i<radius+1;i++){
                         //Multiply by special to make the line move forward
-                        var spot = [i*arr[0]+loc[0]+(arr[1]*special),i*arr[1]+loc[1]-(arr[0]*special)];
+                        var spot = [i*arr[0]+loc[0]+(arr[1]*aoeProps),i*arr[1]+loc[1]-(arr[0]*aoeProps)];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
                     }
                     break;
                     //X shape
                 case "X":
-                
+                    
                     break;
                     //Square shape
                 case "Box":
@@ -884,7 +887,7 @@ Quintus.HUD=function(Q){
             var targets = [];
             //If we're excluding center, then pointer loc will not have a target.
             //If the max range is fixed, the range tiles will not be shown (the technique will always be in range)
-            if(technique.aoeProps.includes("ExcludeCenter") && technique.rangeProps.includes("MaxRangeFixed")){
+            if(/*technique.aoeProps.includes("ExcludeCenter") &&*/ technique.rangeProps.includes("MaxRangeFixed")){
                 targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
             } else {
                 if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)){
