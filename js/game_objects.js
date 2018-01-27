@@ -262,22 +262,29 @@ Quintus.GameObjects=function(Q){
         adjustTiles:function(dir,center,technique){
             Q.aoeController.resetGrid();
             if(technique.rangeProps.includes("MaxRangeFixed")){
-                var arr = Q.getDirArray(dir);
-                center[0] += arr[0]*technique.range;
-                center[1] += arr[1]*technique.range;
+                if(technique.aoeType === "T" || technique.aoeType === "Cone"){
+                    var arr = Q.getDirArray(dir);
+                    center[0] += arr[0];
+                    center[1] += arr[1];
+                } else {
+                    var arr = Q.getDirArray(dir);
+                    center[0] += arr[0]*technique.range;
+                    center[1] += arr[1]*technique.range;
+                }
             }
-            Q.aoeController.setTiles(3,center,dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps);
+            Q.aoeController.setTiles(3,center,dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps,technique.range);
         },
         moveTiles:function(){
             var center = [this.entity.p.loc[0],this.entity.p.loc[1]];
-            this.adjustTiles(this.entity.p.user.p.dir,center,this.entity.p.technique);
+            var dir = this.entity.p.user.p.dir;
             if(this.entity.p.technique.aoeProps.includes("Rotatable")){
-                this.rotatedDir = this.entity.p.user.p.dir;
-                this.rotatedLoc = this.entity.p.user.p.loc;
+                dir = this.rotatedDir;
             }
+            this.adjustTiles(dir,center,this.entity.p.technique);
         },
         rotateTiles:function(){
-            Q.audioController.playSound("cannot_do.mp3");
+            Q.audioController.playSound("rotate_tech.mp3");
+            this.rotatedDir = Q.getRotatedDir(this.rotatedDir);
             var technique = this.entity.p.technique;
             //Usually the aoe is the radius
             var half = technique.aoe-1;

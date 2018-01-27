@@ -124,14 +124,14 @@ $(function(){
                     statusResistance:FileSaver.charGen.statuses
                 },
                 argumentGroundProps:{
-                    changeTile:["Icy","Burning","Stable"],
-                    addObjectOnTop:["Caltrops","Mirage"]
+                    changeTile:FileSaver.techniqueData.data.changeTile,
+                    addObjectOnTop:FileSaver.techniqueData.data.addObjectOnTop
                 },
                 operators:["+","-","*","/","="],
                 moveCharacterProps:{
-                    Target:["User","Target","Both"],
-                    Dir:["Forward","Backward","Left","Right"],
-                    Options:["Pierce","Jump Over"]
+                    Target:FileSaver.techniqueData.data.moveCharacterTarget,
+                    Dir:FileSaver.techniqueData.data.moveCharacterDir,
+                    Options:FileSaver.techniqueData.data.moveCharacterOptions
                 }
             });
             uic.createTopMenu($("#editor-content"));

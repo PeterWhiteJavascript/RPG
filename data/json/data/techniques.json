@@ -8,15 +8,17 @@
                 "Physical"
             ],
             [
-                5,
+                4,
                 "Normal",
-                []
+                [
+                    "TargetSelf"
+                ]
             ],
             [
-                3,
-                "VLine",
+                1,
+                "Normal",
                 [
-                    "Rotatable"
+                    "ExcludeCenter"
                 ]
             ],
             [
@@ -176,15 +178,17 @@
                 "Physical"
             ],
             [
-                1,
+                2,
                 "Normal",
-                []
+                [
+                    "MaxRangeFixed"
+                ]
             ],
             [
-                2,
-                "HLine",
+                1,
+                "X",
                 [
-                    "Rotatable"
+                    "ExcludeCenter"
                 ]
             ],
             [
@@ -225,8 +229,7 @@
                 0,
                 "Normal",
                 [
-                    "TargetSelf",
-                    "MaxRangeFixed"
+                    "TargetSelf"
                 ]
             ],
             [
@@ -1614,7 +1617,7 @@
                 ],
                 [
                     0,
-                    "RangedWeapon",
+                    "Weapon",
                     []
                 ],
                 [
@@ -1636,14 +1639,14 @@
                     [
                         "Change Stat Active",
                         [
-                            "User",
+                            "Target",
                             "combatStats",
-                            "atkRange",
+                            "physicalResistance",
                             "+",
-                            "User Base Stats",
-                            "skl",
-                            "\/",
-                            10,
+                            "Number",
+                            "null",
+                            "null",
+                            0,
                             0,
                             100
                         ]
@@ -1659,7 +1662,7 @@
                 ],
                 [
                     0,
-                    "RangedWeapon",
+                    null,
                     []
                 ],
                 [
@@ -1700,7 +1703,7 @@
                 ],
                 [
                     0,
-                    "RangedWeapon",
+                    null,
                     []
                 ],
                 [
@@ -1725,7 +1728,7 @@
                 ],
                 [
                     0,
-                    "RangedWeapon",
+                    null,
                     []
                 ],
                 [
@@ -1750,7 +1753,7 @@
                 ],
                 [
                     0,
-                    "RangedWeapon",
+                    null,
                     []
                 ],
                 [
@@ -2267,18 +2270,16 @@
         "rangeTypes": [
             "Normal",
             "Weapon",
-            "MeleeWeapon",
-            "RangedWeapon",
             "Custom"
         ],
         "rangeProps": [
             "TargetSelf",
+            "Straight",
             "MaxRangeFixed",
             "AllyNoMiss",
             "ExludeAllies",
             "CanTargetGround",
             "MustTargetGround",
-            "TargetNotRequired",
             "TargetFainted",
             "TargetDead",
             "EnemyFacingUser"
@@ -2288,6 +2289,7 @@
             "VLine",
             "HLine",
             "T",
+            "Cone",
             "X",
             "Box",
             "Custom"
@@ -2317,6 +2319,32 @@
             "fireball",
             "whirlwind",
             "frosty"
+        ],
+        "changeTile": [
+            "Icy",
+            "Burning",
+            "Stable"
+        ],
+        "addObjectOnTop": [
+            "Caltrops",
+            "Mirage"
+        ],
+        "moveCharacterTarget": [
+            "User",
+            "Target",
+            "Both"
+        ],
+        "moveCharacterDir": [
+            "Forward",
+            "Backward",
+            "Left",
+            "Right"
+        ],
+        "moveCharacterOptions": [
+            "Pierce",
+            "JumpOver",
+            "Teleport",
+            "TeleportToTarget"
         ]
     }
 }

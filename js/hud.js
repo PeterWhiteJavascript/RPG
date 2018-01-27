@@ -338,22 +338,23 @@ Quintus.HUD=function(Q){
         },
         //Shows the move grid and zoc
         loadMove:function(){
-            Q.rangeController.setTiles(1,this.p.target.p.loc,this.p.target.p.combatStats.moveSpeed,this.p.target.p.walkMatrix);
+            Q.rangeController.setTiles(1,this.p.target.p.loc,this.p.target.p.combatStats.moveSpeed,[],this.p.target.p.walkMatrix);
             this.changeToPointer("pointerMoveControls");
         },
         //Shows the attack grid
         loadAttack:function(){
-            Q.rangeController.setTiles(2,this.p.target.p.loc,this.p.target.p.combatStats.atkRange,this.p.target.p.attackMatrix);
+            //For spears, maybe make the range type straight?? TODO add to array
+            Q.rangeController.setTiles(2,this.p.target.p.loc,this.p.target.p.combatStats.atkRange,[],this.p.target.p.attackMatrix);
             this.changeToPointer("pointerAttackControls");
         },
         //Show the range for lifting (4 squares around the user)
         loadLift:function(){
-            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
+            Q.rangeController.setTiles(2,this.p.target.p.loc,1,[],this.p.target.p.attackMatrix);
             this.changeToPointer("pointerLiftControls");
         },
         //Shows the range for dropping
         loadDrop:function(){
-            Q.rangeController.setTiles(2,this.p.target.p.loc,1,this.p.target.p.attackMatrix);
+            Q.rangeController.setTiles(2,this.p.target.p.loc,1,[],this.p.target.p.attackMatrix);
             this.changeToPointer("pointerDropControls");
         },
         //Loads the special skills menu
@@ -374,19 +375,28 @@ Quintus.HUD=function(Q){
             this.changeToPointer("pointerAttackControls");
             
             var center = [this.p.target.p.loc[0],this.p.target.p.loc[1]];
+            //TODO: if range is weapon range/custom
+            var range = technique.range;
             if(!technique.rangeProps.includes("MaxRangeFixed")){
-                Q.rangeController.setTiles(2,this.p.target.p.loc,technique.range,this.p.target.p.attackMatrix);
+                Q.rangeController.setTiles(2,this.p.target.p.loc,range,technique.rangeProps,this.p.target.p.attackMatrix);
+                if(technique.rangeProps.includes("TargetSelf")){
+                    Q.rangeController.setSpecificTile(2,this.p.target.p.loc);
+                }
             } 
-            else if(technique.rangeProps.includes("TargetSelf")){
-                Q.rangeController.setSpecificTile(2,this.p.target.p.loc);
-            }
-            //If we're doing max range and not targeting self, move technique forward (max range fixed is mainly used for techs like fire breath, which would come out of the user)
+            //If we're doing max range, move technique forward (max range fixed is mainly used for techs like fire breath, which would come out of the user)
             else {
-                var arr = Q.getDirArray(this.p.target.p.dir);
-                center[0] += arr[0]*technique.range;
-                center[1] += arr[1]*technique.range;
+                //'T' shape is always at range 1. The range property is used for how long the parallel line is (aoe is used for the perpendicular)
+                if(technique.aoeType === "T" || technique.aoeType === "Cone"){
+                    var arr = Q.getDirArray(this.p.target.p.dir);
+                    center[0] += arr[0];
+                    center[1] += arr[1];
+                } else {
+                    var arr = Q.getDirArray(this.p.target.p.dir);
+                    center[0] += arr[0]*range;
+                    center[1] += arr[1]*range;
+                }
             }
-            Q.aoeController.setTiles(3,center,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps);
+            Q.aoeController.setTiles(3,center,this.p.target.p.dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps,range);
         },
         noItems:function(){
             Q.audioController.playSound("cannot_do.mp3");
@@ -675,7 +685,7 @@ Quintus.HUD=function(Q){
         pulse:function(){
             Q.AOETileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.aoeController.pulse();}});
         },
-        setTiles:function(tile,loc,dir,aoe,type,aoeProps,rangeProps){
+        setTiles:function(tile,loc,dir,aoe,type,aoeProps,rangeProps,range){
             Q.AOETileLayer.stop();
             var radius = aoe;//Actually not always the radius. For VLine, it is the length of the line
             var area = type;
@@ -698,8 +708,8 @@ Quintus.HUD=function(Q){
                 case "VLine":
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(dir);
-                    radius = (radius-1)/2;
-                    for(var i=-radius;i<radius+1;i++){
+                    for(var i=0;i<radius;i++){
+                        if(aoeProps.includes("ExcludeCenter")&&i===(radius-1)/2) i++;
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
@@ -719,8 +729,7 @@ Quintus.HUD=function(Q){
                 case "T":
                     //Gets the array multiplier for the direction
                     var arr = Q.getDirArray(dir);
-                    //Start at 1 to not include the caster
-                    for(var i=1;i<aoeProps;i++){
+                    for(var i=0;i<range;i++){
                         var spot = [i*arr[0]+loc[0],i*arr[1]+loc[1]];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
@@ -728,48 +737,64 @@ Quintus.HUD=function(Q){
                     var arr = Q.getDirArray(Q.getRotatedDir(dir));
                     //The end line part
                     for(var i=-radius;i<radius+1;i++){
-                        //Multiply by special to make the line move forward
-                        var spot = [i*arr[0]+loc[0]+(arr[1]*aoeProps),i*arr[1]+loc[1]-(arr[0]*aoeProps)];
+                        //Multiply by range to make the line move forward
+                        var spot = [i*arr[0]+loc[0]+(arr[1]*range),i*arr[1]+loc[1]-(arr[0]*range)];
                         Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                         tiles.push(spot);
                     }
                     break;
+                case "Cone":
+                    //Gets the array multiplier for the direction
+                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
+                    var arr2 = Q.getDirArray(dir);
+                    for(var i=0;i<range+1;i++){
+                        for(var j=-radius*i;j<radius*i+1;j++){
+                            var spot = [j*arr[0]+loc[0] + i*arr2[0],j*arr[1]+loc[1] + i*arr2[1]];
+                            Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                            tiles.push(spot);
+                        }
+                    }
+                    break;
                     //X shape
                 case "X":
+                    var arr = Q.getDirArray(dir);
+                    var spot = loc;
+                    if(!aoeProps.includes("ExcludeCenter")){
+                        Q.AOETileLayer.setTile(spot[0],spot[1],tile);
+                        tiles.push(spot);
+                    }
+                    for(var j=1;j<radius+1;j++){
+                        //Put a tile in all 4 corners
+                        var tleft = [spot[0]-j,spot[1]-j];
+                        Q.AOETileLayer.setTile(tleft[0],tleft[1],tile);
+                        var tright = [spot[0]+j,spot[1]-j];
+                        Q.AOETileLayer.setTile(tright[0],tright[1],tile);
+                        var bright = [spot[0]+j,spot[1]+j];
+                        Q.AOETileLayer.setTile(bright[0],bright[1],tile);
+                        var bleft = [spot[0]-j,spot[1]+j];
+                        Q.AOETileLayer.setTile(bleft[0],bleft[1],tile);
+                        tiles.push(tleft,tright,bright,bleft);
+                    }
+                    
                     
                     break;
                     //Square shape
                 case "Box":
+                    var excludeCenter = aoeProps.includes("ExcludeCenter");
                     for(var i=bounds.tileStartX;i<bounds.tileStartX+bounds.cols;i++){
                         for(var j=bounds.tileStartY;j<bounds.tileStartY+bounds.rows;j++){
+                            if(excludeCenter){
+                                if(i === loc[0] && j === loc[1]) continue;
+                            }
                             var spot = [i,j];
                             Q.AOETileLayer.setTile(spot[0],spot[1],tile);
                             tiles.push(spot);
-                            //tiles.push(this.entity.stage.insert(new Q.AOETile({loc:[i,j],relative:[loc[0]-i,loc[1]-j]})));
                         }
                     }
                     break;
                 case "Custom":
                     
                     break;
-                /*case "hLineForward":
-                    var dir = this.entity.p.user.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(Q.getRotatedDir(dir));
-                    for(var i=-radius;i<radius+1;i++){
-                        if(special==="excludeCenter"&&i===0) i++;
-                        var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
-                        tiles.push(this.entity.stage.insert(new Q.AOETile({loc:spot,center:loc})));
-                    }
-                    break;*/
-                /*case "noSelf":
-                    for(var i=-radius;i<radius+1;i++){
-                        for(var j=0;j<((radius*2+1)-Math.abs(i*2));j++){
-                            if(i===0&&j===radius) j++;
-                            tiles.push(this.entity.stage.insert(new Q.AOETile({loc:[loc[0]+i,loc[1]+j-(radius-Math.abs(i))],relative:[i,j-(radius-Math.abs(i))]})));
-                        }
-                    }
-                    break;*/
                 
             }
             this.pulse();
@@ -809,7 +834,7 @@ Quintus.HUD=function(Q){
             Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.pulse();}});
             
         },
-        setTiles:function(tile,loc,range,matrix,special){
+        setTiles:function(tile,loc,range,rangeProps,matrix){
             Q.RangeTileLayer.stop();
             var bounds = Q.BattleGrid.getBounds(loc,range);
             var rangeTileLayer = Q.RangeTileLayer;
@@ -822,14 +847,17 @@ Quintus.HUD=function(Q){
                     }
                 }
             }
-            if(special){
-                tiles = this.process[special](tiles,loc);
-            }
             this.tiles = [];
-            //If there is at least one place to move
+            //If there is at least one tile
             if(tiles.length){
                 //Loop through the possible tiles
-                for(var i=0;i<tiles.length;i++){
+                var straight = rangeProps.includes("Straight");
+                for(var i=tiles.length-1;i>=0;i--){
+                    if(straight){
+                        if(tiles[i].x!==loc[0]&&tiles[i].y!==loc[1]){
+                            continue;
+                        }
+                    }
                     //Get the path and then slice it if it goes across caltrops
                     var path = Q.getPath(loc,[tiles[i].x,tiles[i].y],matrix,range+1000);
                     var pathCost = 0;
@@ -924,7 +952,7 @@ Quintus.HUD=function(Q){
                 }
             }
             //If there is at least one target
-            if(targets.length || technique.rangeProps.includes("TargetNotRequired")){
+            if(targets.length || technique.rangeProps.includes("CanTargetGround")){
                 Q.BatCon.previewDoTechnique(user,Q.pointer.p.loc,technique,targets);
                 this.resetGrid();
                 Q.pointer.pointerAttackControls.remove();
@@ -965,18 +993,6 @@ Quintus.HUD=function(Q){
         //Checks if we've selected a tile
         checkValidPointerLoc:function(tileLayer,loc,validTile){
             return tileLayer.getTile(loc[0],loc[1]) === validTile;
-        },
-        //Any custom ranges
-        process:{
-            straight:function(tiles,center){
-                for(var i=0;i<tiles.length;i++){
-                    if(tiles[i].x!==center[0]&&tiles[i].y!==center[1]){
-                        tiles.splice(i,1);
-                        i--;
-                    }
-                }
-                return tiles;
-            }
         },
         getPossibleTargets:function(tiles){
             var targets = [];

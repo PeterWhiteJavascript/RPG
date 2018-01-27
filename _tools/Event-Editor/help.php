@@ -48,7 +48,9 @@
                 <div id="help-cont">
                     <p>Click to download files.</p>
                     <div class="menu-divider"></div>
-                    <a href="docs/Story Scene Modules.rtf" download>Story Scene Modules</a>
+                    <div><a href="docs/Story Scene Modules.rtf" download>Story Scene Modules</a></div>
+                    <br>
+                    <div><a href="docs/Techniques.rtf" download>Techniques</a></div>
                 </div>
                 <div id="footer">Go Back</div>
             </div>
