@@ -223,6 +223,8 @@ Q.load(toLoad.join(","),function(){
     
     //Creates a character stats menu (used in locations and battles)
     Q.characterStatsMenu = new Q.CharacterStatsMenu();
+    //Controls changes in tiles (icy, burning,etc);
+    Q.modifiedTilesController = new Q.ModifiedTilesController();
     //Shows the ranges
     Q.rangeController = new Q.RangeController();
     //Shows the aoe

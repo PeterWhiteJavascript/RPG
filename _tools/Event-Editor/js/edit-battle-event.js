@@ -569,7 +569,7 @@ $(function(){
         $(".bar-button").first().attr("id","canvas-coordinates");
         DC = {
             newCharacter:function(char){
-                return $("<div class='character-cont'><span class='character selectable "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text char-remove'>x</span></div>");
+                return $("<div class='character-cont'><span class='character selectable "+char.handle+"' uniqueId='"+char.uniqueId+"' dir='"+char.dir+"' locX='"+char.loc[0]+"' locY='"+char.loc[1]+"' file='"+char.file+"' group='"+char.group+"' handle='"+char.handle+"'>"+char.handle+" ("+char.uniqueId+")"+"</span><span class='remove-choice group-text char-remove'>x</span></div>");
             },
             
             updateCharSelects:function(){
@@ -643,7 +643,7 @@ $(function(){
                     chars.push([
                         char.attr("file"),
                         char.attr("group"),
-                        char.attr("class").split(" ")[2],
+                        char.attr("handle"),
                         uic.processValue(char.attr("uniqueId")),
                         [uic.processValue(char.attr("locX")),uic.processValue(char.attr("locY"))],
                         char.attr("dir")

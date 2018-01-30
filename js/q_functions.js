@@ -20,7 +20,7 @@ Quintus.QFunctions=function(Q){
         });
     };
     Q.setAward = function(obj,prop,amount){
-        if(!obj["awards"]) return;
+        if(!obj || !obj["awards"]) return;
         obj["awards"][prop] += amount;
     };
     

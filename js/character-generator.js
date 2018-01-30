@@ -242,7 +242,7 @@ var CharacterGenerator = {
             passive:[]
         };
         
-        function processArgs(args){
+        function processArgs(args,tech){
             var processedArgs = [];
             args ? false : console.log(args);
             for(var i=0;i<args.length;i++){
@@ -290,11 +290,12 @@ var CharacterGenerator = {
                         arg.direction = props[1];
                         arg.numTiles = props[2];
                         arg.options = props[3];
+                        tech.hasMovement = true;
                         break;
                 }
                 processedArgs.push(arg);
             }
-            return processedArgs;
+            tech.args = processedArgs;
         }
         function processActive(data){
             var tech = {
@@ -314,18 +315,18 @@ var CharacterGenerator = {
                 tpCost:data[8],
                 animation:data[9],
                 sound:data[10],
-                args:processArgs(data[11]),
                 equipment:data[12]
             };
+            processArgs(data[11],tech);
             return tech;
         }
         function processPassive(data){
             var tech = {
                 name:data[0],
                 desc:data[1],
-                args:processArgs(data[2]),
                 equipment:data[3]
             };
+            processArgs(data[2],tech);
             return tech;
         };
         for(var i=0;i<techs.length;i++){

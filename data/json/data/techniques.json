@@ -8,24 +8,16 @@
                 "Physical"
             ],
             [
-                4,
-                "Normal",
-                [
-                    "TargetSelf"
-                ]
-            ],
-            [
                 1,
                 "Normal",
-                [
-                    "ExcludeCenter"
-                ]
+                []
             ],
             [
-                "Physical",
-                "Dodge",
-                "RegAttack"
+                0,
+                "Normal",
+                []
             ],
+            [],
             20,
             100,
             10,
@@ -33,18 +25,12 @@
             "slashing",
             [
                 [
-                    "Change Stat Active",
+                    "Move Character",
                     [
                         "Target",
-                        "combatStats",
-                        "damageReduction",
-                        "-",
-                        "Number",
-                        "null",
-                        "null",
-                        10,
-                        0,
-                        100
+                        "Forward",
+                        5,
+                        "Push"
                     ]
                 ]
             ]
@@ -178,15 +164,16 @@
                 "Physical"
             ],
             [
-                2,
+                6,
                 "Normal",
                 [
-                    "MaxRangeFixed"
+                    "MaxRangeFixed",
+                    "CanTargetGround"
                 ]
             ],
             [
                 1,
-                "X",
+                "Normal",
                 [
                     "ExcludeCenter"
                 ]
@@ -195,24 +182,19 @@
                 "Physical",
                 "Dodge"
             ],
-            50,
+            20,
             90,
             15,
             "Smashing",
-            "slashing",
+            "charging",
             [
                 [
-                    "Change Stat Active",
+                    "Change Ground",
                     [
-                        "User",
-                        "combatStats",
-                        "atkDmg",
-                        "+",
-                        "Number",
-                        "null",
-                        "null",
-                        50,
-                        0,
+                        "changeTile",
+                        "Burning",
+                        3,
+                        4,
                         100
                     ]
                 ]
@@ -242,7 +224,7 @@
             100,
             10,
             "Charging",
-            "slashing",
+            "charging",
             [
                 [
                     "Change Stat Active",
@@ -2316,6 +2298,7 @@
         "sounds": [
             "none",
             "slashing",
+            "charging",
             "fireball",
             "whirlwind",
             "frosty"
@@ -2336,15 +2319,13 @@
         ],
         "moveCharacterDir": [
             "Forward",
-            "Backward",
-            "Left",
-            "Right"
+            "Backward"
         ],
         "moveCharacterOptions": [
+            "Push",
             "Pierce",
             "JumpOver",
-            "Teleport",
-            "TeleportToTarget"
+            "Teleport"
         ]
     }
 }

@@ -216,7 +216,7 @@ Quintus.Objects=function(Q){
             playFainted:function(dir,callback){
                 this.p.dir = this.checkPlayDir(dir);
                 this.play("fainting"+this.p.dir);
-                    if(callback) callback();
+                if(callback) callback();
                 this.on("doneFainting",function(){
                     this.off("doneDying");
                     //if(callback) callback();
@@ -271,50 +271,39 @@ Quintus.Objects=function(Q){
     //Any functions that are run because of skills are here as well
     Q.component("combatant",{
         extend:{
-            pulled:function(tileTo,targetTileTo,user,callback){
+            movedByTechnique:function(tileTo,how,callback){
                 var posTo = Q.BatCon.getXY(tileTo);
                 this.hideStatusDisplay();
-                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
-                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
-                    this.p.loc = tileTo;
-                    Q.BatCon.setXY(this);
-                    this.revealStatusDisplay();
-                }});
-                var posTo = Q.BatCon.getXY(targetTileTo);
-                user.hideStatusDisplay();
-                user.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
-                    Q.BattleGrid.moveObject(user.p.loc,targetTileTo,user);
-                    user.p.loc = targetTileTo;
-                    Q.BatCon.setXY(user);
-                    user.revealStatusDisplay();
-                    if(callback) callback();
-                }});
-                Q.audioController.playSound("shooting.mp3");
-            },
-            pushed:function(tileTo,callback){
-                var posTo = Q.BatCon.getXY(tileTo);
-                this.hideStatusDisplay();
-                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
-                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
-                    this.p.loc = tileTo;
-                    Q.BatCon.setXY(this);
-                    this.revealStatusDisplay();
-                    if(callback) callback();
-                }});
-                Q.audioController.playSound("shooting.mp3");
-            },
-            chargedThrough:function(tileTo,target,callback){
-                var posTo = Q.BatCon.getXY(tileTo);
-                this.hideStatusDisplay();
-                this.animate({x:posTo.x, y:posTo.y}, .4, Q.Easing.Quadratic.Out, { callback: function() {
-                    Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
-                    this.p.loc = tileTo;
-                    Q.BatCon.setXY(this);
-                    this.revealStatusDisplay();
-                    if(callback) callback();
-                }});
-                target.playMiss(target.p.dir);
-                Q.audioController.playSound("shooting.mp3");
+                Q.BattleGrid.moveObject(this.p.loc,tileTo,this);
+                this.p.loc = tileTo;
+                console.log("Reset to:")
+                console.log(tileTo)
+                
+                var sound = "shooting.mp3";
+                switch(how){
+                    case "pushed":
+                        this.animate({x:posTo.x, y:posTo.y}, 0.4, Q.Easing.Quadratic.Out, { callback: function() {
+                            this.revealStatusDisplay();
+                            Q.BatCon.setXY(this);   
+                            if(callback) callback();
+                        }});
+                        
+                        break;
+                    case "teleported":
+                        sound = "fireball.mp3";
+                        this.animate({opacity:0},0.5,Q.Easing.Quadratic.Out,{callback:function(){
+                            Q.BatCon.setXY(this);
+                            this.revealStatusDisplay();
+                                
+                        }}).chain({opacity:1}, 0.5, Q.Easing.Quadratic.In, { callback: function() {
+                            if(callback) callback();
+                        }});
+                        break;
+                }
+                //No callback means we're doing several pushes at once, so only the final one with the callback should make a sound
+                if(callback){
+                    Q.audioController.playSound(sound);
+                }
             },
             //Displays the miss dynamic number
             showMiss:function(attacker,callback){
@@ -364,7 +353,7 @@ Quintus.Objects=function(Q){
             },
             showFainted:function(attacker,technique,callback){
                 var t = this;
-                this.playFainted(this.p.dir,function(){t.addStatus("fainted",5,"debuff",attacker,null,callback);});
+                this.playFainted(this.p.dir,function(){t.addStatus("Fainted",5,"Debuff",attacker,callback);});
             },
             //This object takes damage and checks if it is defeated. Also displays dynamic number
             //Also can add some feedback to the attackfuncs text
@@ -411,8 +400,8 @@ Quintus.Objects=function(Q){
                     //Remove all status effects
                     this.removeAllStatus();
                     this.removeAllGaveStatus();
-                    this.removeStatus("fainted");
-                    this.addStatus("bleedingOut",5,"debuff",this);
+                    this.removeStatus("Fainted");
+                    this.addStatus("Bleeding Out",5,"Debuff",this);
                     if(this.p.mirage) this.p.mirage.dispellMirage();
                     this.p.fainted = false;
                     /*if(!this.p.died){
@@ -483,32 +472,21 @@ Quintus.Objects=function(Q){
                         
                 }
             },
-            addStatus:function(name,turns,type,user,props,callback){
+            addStatus:function(name,turns,type,user,callback){
+                //getStatusType(); TODO return the type (bad/good)
+                type = "bad";
                 this.addToHitBy(user);
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
                 this.p.status[name] = {name:name,turns:turns,type:type,user:user};
-                if(props){
-                    this.p.status[name].props = props;
-                    this.p.combatStats[props.name] += props.amount;
-                    this.generateRelevantStats(props.name);
-                }
                 Q.audioController.playSound("inflict_status.mp3");
                 if(callback) callback();
             },
-            refreshStatus:function(name,turns,user,props,callback){
+            refreshStatus:function(name,turns,user,callback){
                 if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
-                if(props){
-                    if(this.p.status[name].props.amount<props.amount){
-                        this.p.combatStats[props.name] -= this.p.status[name].props.amount;
-                        this.p.combatStats[props.name] += props.amount;
-                        this.p.status[name].amount = props.amount;
-                        this.generateRelevantStats(props.name);
-                    }
-                } else {
-                    this.p.status[name].turns = turns;
-                }
+                this.p.status[name].turns = turns;
+                
                 Q.audioController.playSound("coin.mp3");
                 if(callback) callback();
             },
@@ -575,15 +553,10 @@ Quintus.Objects=function(Q){
                 if(!this.p.status[name]) return;
                 this.p.status[name].user.removeGaveStatus(this);
                 this.removeGaveStatus(this.p.status[name]);
-                //this.p.combatStats[props.name] += props.amount;
-                if(this.p.status[name].props&&this.p.combatStats[this.p.status[name].props.name]){
-                    this.p.combatStats[this.p.status[name].props.name]-= this.p.status[name].props.amount;
-                }
                 delete this.p.status[name];
                 this.p.statusDisplay.removeStatus(name);
-                this.generateRelevantStats(name);
                 
-                if(name==="fainted"){
+                if(name==="Fainted"){
                     this.p.fainted = false;
                     this.playStand(this.p.dir);
                 }
@@ -826,7 +799,7 @@ Quintus.Objects=function(Q){
             //This will be put in a 'process status at start of turn' function
             if(this.hasStatus("Poisoned")){
                 var text = [];
-                var damage = this.p.buffs.poisonDamage;
+                var damage = Math.floor(this.p.combatStats.maxHp/8);
                 this.showDamage(damage);
                 var dead = this.takeDamage(damage);
                 if(dead){
@@ -866,7 +839,7 @@ Quintus.Objects=function(Q){
                     if(atkRoll>defRoll){
                         this.p.didAction = true;
                         this.moveTowardsMirage(inRange);
-                        this.addStatus("drawnToMirage",100,"debuff",inRange);
+                        this.addStatus("drawnToMirage",100,"Debuff",inRange);
                         return false;
                     }
                 }

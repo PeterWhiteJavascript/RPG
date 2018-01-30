@@ -6,28 +6,8 @@
     "defaultDir": "up",
     "placementSquares": [
         [
-            14,
-            14
-        ],
-        [
-            15,
-            14
-        ],
-        [
-            15,
-            15
-        ],
-        [
-            14,
-            15
-        ],
-        [
-            14,
-            16
-        ],
-        [
-            15,
-            16
+            13,
+            18
         ]
     ],
     "maxAllies": 6,
@@ -51,102 +31,14 @@
     "characters": [
         [
             "Act-2-3.json",
-            "Food",
-            "Tomato",
-            0,
-            [
-                14,
-                11
-            ],
-            "down"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Lettuce",
-            0,
-            [
-                15,
-                11
-            ],
-            "left"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Patty",
+            "Test",
+            "Tanky Boi",
             0,
             [
                 13,
-                11
+                17
             ],
-            "right"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Bun",
-            0,
-            [
-                15,
-                12
-            ],
-            "left"
-        ],
-        [
-            "Act-2-2.json",
-            "Dummies",
-            "Legion",
-            0,
-            [
-                14,
-                10
-            ],
-            "right"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Tomato",
-            1,
-            [
-                14,
-                13
-            ],
-            "down"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Tomato",
-            2,
-            [
-                15,
-                13
-            ],
-            "left"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Tomato",
-            3,
-            [
-                13,
-                13
-            ],
-            "right"
-        ],
-        [
-            "Act-2-3.json",
-            "Food",
-            "Tomato",
-            4,
-            [
-                14,
-                12
-            ],
-            "down"
+            "up"
         ]
     ]
 }

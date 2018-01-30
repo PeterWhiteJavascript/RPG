@@ -142,6 +142,18 @@ Quintus.SceneFuncs=function(Q){
                     return matrix;
                 };
                 
+                Q.ModifiedGroundTileLayer = stage.insert(new Q.TileLayer({
+                    tileW:Q.tileW,
+                    tileH:Q.tileH,
+                    sheet:"ui_tiles",
+                    tiles:new gridMatrix(),
+                    w:32,
+                    h:32,
+                    type:Q.SPRITE_NONE,
+                    opacity:0.7,
+                    z:-3
+                }));
+                
                 Q.RangeTileLayer = stage.insert(new Q.TileLayer({
                     tileW:Q.tileW,
                     tileH:Q.tileH,
@@ -166,6 +178,8 @@ Quintus.SceneFuncs=function(Q){
                     z:-3
                 }));
                 Q.AOETileLayer.add("tween");
+                Q.ModifiedGroundTileLayer.add("tween");
+                
                 
                 
                 //Set the battlegrid's stage

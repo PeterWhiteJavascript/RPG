@@ -94,11 +94,11 @@ $(function(){
                             cont.append(uic.Input("Accuracy",props[4],"number",1,100));
                             break;
                         case "Move Character":
-                            props = props || ["Both","Forward",1,[]];
+                            props = props || ["Both","Forward",1,"Pierce"];
                             cont.append(uic.Select("Target",uic.moveCharacterProps.Target,props[0]));
                             cont.append(uic.Select("Direction",uic.moveCharacterProps.Dir,props[1]));
                             cont.append(uic.Input("Num Tiles",props[2],"number",1));
-                            cont.append(uic.Container("Options",props[3],"checkbox",uic.moveCharacterProps.Options));
+                            cont.append(uic.Select("Move Type",uic.moveCharacterProps.Options,props[3]));
                             break;
                     }
                     this.selectInitialValue(cont);

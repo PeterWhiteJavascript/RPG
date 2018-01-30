@@ -120,7 +120,7 @@ Quintus.GameObjects=function(Q){
             var user = Q.BatCon.turnOrder[0];
             var loc = this.entity.p.loc;
             var objAt = user.p.lifting;
-            if(!Q.BattleGrid.getObject(loc)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),objAt)!=="impassable"){
+            if(!Q.BattleGrid.getObject(loc)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),objAt.p.canMoveOn)!=="impassable"){
                 if(Q.BattleGrid.getTileDistance(user.p.loc,loc)>1) return Q.audioController.playSound("cannot_do.mp3");
                 Q.BatCon.dropObject(user,objAt,loc);
                 user.p.didAction = true;
@@ -261,17 +261,6 @@ Quintus.GameObjects=function(Q){
         },
         adjustTiles:function(dir,center,technique){
             Q.aoeController.resetGrid();
-            if(technique.rangeProps.includes("MaxRangeFixed")){
-                if(technique.aoeType === "T" || technique.aoeType === "Cone"){
-                    var arr = Q.getDirArray(dir);
-                    center[0] += arr[0];
-                    center[1] += arr[1];
-                } else {
-                    var arr = Q.getDirArray(dir);
-                    center[0] += arr[0]*technique.range;
-                    center[1] += arr[1]*technique.range;
-                }
-            }
             Q.aoeController.setTiles(3,center,dir,technique.aoe,technique.aoeType,technique.aoeProps,technique.rangeProps,technique.range);
         },
         moveTiles:function(){
@@ -292,7 +281,7 @@ Quintus.GameObjects=function(Q){
             if(technique.aoeType === "VLine"){
                 half = half/2;
                 if(half % 1 !== 0){
-                    alert("This technique need to be adjusted to have an odd number of aoe to be rotatable!");
+                    alert("This technique needs to be adjusted to have an odd number of aoe to be rotatable!");
                     return;
                 }
             }
@@ -648,7 +637,6 @@ Quintus.GameObjects=function(Q){
         },
         //Move an object in the grid
         moveObject:function(from,to,obj){
-            if(obj.p.zoc) this.moveZOC(to,obj);
             this.removeObject(from);
             this.setObject(to,obj);
             //Update the effect of the tile that this object is on
@@ -724,11 +712,6 @@ Quintus.GameObjects=function(Q){
                 return itm.p.combatStats.hp>0;
             });
         },
-        removeDebilitateResisted:function(arr){
-            return arr.filter(function(itm){
-                return !itm.p.talents.includes("Self Empowerment");
-            });
-        },
         //Gets the bounds of the level
         getBounds:function(loc,num){
             var maxTileRow = this.grid.length;
@@ -765,22 +748,6 @@ Quintus.GameObjects=function(Q){
         //Gets the tile distance between two locations
         getTileDistance:function(loc1,loc2){
             return Math.abs(loc1[0]-loc2[0])+Math.abs(loc1[1]-loc2[1]);
-        },
-        
-        checkIcyStatus:function(){
-            if(this.icyStatus){
-                //Check if any of the icy is expired
-                for(var i=this.icyStatus.length-1;i>=0;i--){
-                    var st = this.icyStatus[i];
-                    st.turns--;
-                    if(!st.turns){
-                        for(var j=0;j<st.locs.length;j++){
-                            this.icy.setTile(st.locs[j][0],st.locs[j][1],0);
-                        }
-                    }
-                    this.icyStatus.splice(i,0);
-                }
-            }
         }
     });
     //All code for controlling placement of allies at the start of a battle.
@@ -982,11 +949,11 @@ Quintus.GameObjects=function(Q){
                         var hpRatio = char.p.combatStats.hp / char.p.combatStats.maxHp;
                         switch(props[1]){
                             case "deadOrFainted":
-                                if(hpRatio<=0 || char.hasStatus("fainted")) return true;
+                                if(hpRatio<=0 || char.hasStatus("Fainted")) return true;
                             case "dead":
                                 if(hpRatio<=0) return true;
                             case "fainted":
-                                if(char.hasStatus("fainted")) return true;
+                                if(char.hasStatus("Fainted")) return true;
                             case "fullHealth":
                                 if(char.hpRatio===100) return true;
                             case "takenDamage":
@@ -1028,7 +995,7 @@ Quintus.GameObjects=function(Q){
             //Any characters that have their hp reduced to 0 or under get removed all at once (they get destroyed when they're killed, but only removed here after)
             this.markedForRemoval = [];
             this.round = 0;
-            this.add("battlePlacement, battleTriggers, attackFuncs, skillFuncs");
+            this.add("battlePlacement, battleTriggers, attackFuncs, techniqueFuncs");
         },
         
         //Run once at the start of battle
@@ -1094,9 +1061,9 @@ Quintus.GameObjects=function(Q){
             }
         },
         valid:function(obj){
-            if(!obj.hasStatus("dead")&&!obj.hasStatus("bleedingOut")&&!obj.hasStatus("fainted")&&!obj.p.lifted){
+            if(!obj.hasStatus("Dead")&&!obj.hasStatus("Bleeding Out")&&!obj.hasStatus("Fainted")&&!obj.p.lifted){
                 return true;
-            } else if(obj.hasStatus("fainted")){ 
+            } else if(obj.hasStatus("Fainted")){ 
                 obj.advanceStatus();
                 if(!obj.p.status.fainted){
                     obj.playStand();
@@ -1124,7 +1091,7 @@ Quintus.GameObjects=function(Q){
         advanceRound:function(){
             this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
             this.round ++;
-            Q.BattleGrid.checkIcyStatus();
+            Q.modifiedTilesController.reduceTurn();
             this.battleTriggers.processTrigger("rounds",this.round);
         },
         //Starts the character that is first in turn order
@@ -1273,15 +1240,18 @@ Quintus.GameObjects=function(Q){
             })[0];
             return target;
         },
-        validateTileTo:function(tileType,obj){
+        validateTileTo:function(tileType,canMoveOn){
             var required = Q.state.get("tileTypes")[tileType].required;
             if(required){
-                if(obj.p.canMoveOn[required]){
+                if(canMoveOn[required]){
                     return tileType;
                 }
                 return "impassable";
             }
             return tileType;
+        },
+        locsMatch:function(loc1,loc2){
+            return loc1[0] === loc2[0] && loc1[1] === loc2[1];
         },
         getTileType:function(loc){
             //Prioritize the collision objects
@@ -1320,8 +1290,8 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:[Q.BattleGrid.getObject(loc)]}));
         },
         //Previews a skill
-        previewDoTechnique:function(user,loc,technique,targets){
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,technique:technique}));
+        previewDoTechnique:function(user,loc,technique,targets,tiles){
+            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,technique:technique,areaAffected:tiles}));
         },
         showEndTurnDirection:function(obj,dirs){
             obj.add("directionControls");
@@ -1669,385 +1639,22 @@ Quintus.GameObjects=function(Q){
         miss:function(){
             return 0;
         },
-        useSupportSkill:function(user,target,skill){
-            var newText;
-            switch(skill.name){
-                case "Forced March":
-                    newText = this.entity.skillFuncs["addStatus"]("movePlus",2,"buff",target,user,{name:"moveSpeed",amount:Math.ceil(user.p.combatStats.skill/10)});
-                    break;
-                case "Fortify":
-                    newText = this.entity.skillFuncs["addStatus"]("defensePlus",2,"buff",target,user,{name:"defensiveAbility",amount:user.p.combatStats.skill});
-                    break;
-                case "Embolden":
-                    newText = this.entity.skillFuncs["addStatus"]("skillPlus",2,"buff",target,user,{name:"skill",amount:user.p.combatStats.skill});
-                    break;
-                case "Fervour":
-                    newText = this.entity.skillFuncs["addStatus"]("strengthPlus",2,"buff",target,user,{name:"strength",amount:user.p.combatStats.skill});
-                    break;
-                case "Direct":
-                    newText = this.entity.skillFuncs["addStatus"]("efficiencyPlus",2,"buff",target,user,{name:"efficiency",amount:Math.floor(user.p.combatStats.skill/2)});
-                    break;
-                case "Phalanx":
-                    newText = this.entity.skillFuncs["addStatus"]("damageReductionPlus",2,"buff",target,user,{name:"damageReduction",amount:Math.floor(user.p.combatStats.skill/2)});
-                    newText = newText.concat(this.entity.skillFuncs["addStatus"]("physicalResistancePlus",2,"buff",target,user,{name:"physicalResistance",amount:100}));
-                    break;
-                case "Quicken":
-                    newText = this.entity.skillFuncs["addStatus"]("initiativePlus",2,"buff",target,user,{name:"initiative",amount:user.p.combatStats.skill});
-                    break;
-                case "Forewarn":
-                    newText = this.entity.skillFuncs["addStatus"]("counterChancePlus",2,"buff",target,user,{name:"counterChance",amount:user.p.combatStats.skill});
-                    break;
-                case "Sharpen":
-                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyPlus",2,"buff",target,user,{name:"atkAccuracy",amount:user.p.combatStats.skill});
-                    break;
-                case "Vitalize":
-                    newText = this.entity.skillFuncs["addStatus"]("critChancePlus",2,"buff",target,user,{name:"critChance",amount:Math.floor(user.p.combatStats.skill/2)});
-                    break;
-                case "Vivify":
-                    newText = this.entity.skillFuncs["addStatus"]("atkSpeedPlus",2,"buff",target,user,{name:"atkSpeed",amount:user.p.combatStats.skill});
-                    break;
-                case "Heal":
-                    newText = this.entity.skillFuncs["healHp"](Math.floor(Math.random()*user.p.combatStats.skill)+user.p.combatStats.skill,target,user);
-                    break;
-                case "Cure":
-                    newText = this.entity.skillFuncs["removeDebuff"]("all",target,user);
-                    break;
-                case "Revive":
-                    newText = this.entity.skillFuncs["removeDebuff"]("fainted",target,user);
-                    break;
-                case "Energize":
-                    newText = this.entity.skillFuncs["healTp"](user.p.combatStats.skill+25,target,user);
-                    break;
-                case "Resurrect":
-                    newText = this.entity.skillFuncs["removeDebuff"]("bleedingOut",target,user);
-                    newText = newText.concat(this.entity.skillFuncs["healHp"](Math.floor(Math.random()*user.p.combatStats.skill)+user.p.combatStats.skill,target,user));
-                    break;
-            }
-            for(var i=0;i<newText.length;i++){
-                this.text.push(newText[i]);
-            }
-        },
-        useDebilitateSkill:function(attacker,defender,skill){
-            var newText = [];
-            switch(skill.name){
-                case "Unnerve":
-                    newText = this.entity.skillFuncs["addStatus"]("painToleranceDown",100,"debuff",defender,attacker,{name:"painTolerance",amount:-(attacker.p.combatStats.skill*2)});
-                    attacker.p.gaveStatus.push({char:defender,status:"painToleranceDown"});
-                    break;
-                case "Stun":
-                    newText = this.entity.skillFuncs["addStatus"]("stunned",100,"debuff",defender,attacker);
-                    attacker.p.gaveStatus.push({char:defender,skill:"stunned"});
-                    break;
-                case "Blind":
-                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyDown",100,"debuff",defender,attacker,{name:"atkAccuracy",amount:-Math.floor(defender.p.combatStats.atkAccuracy/2)});
-                    newText = newText.concat(this.entity.skillFuncs["addStatus"]("defensiveAbilityDown",100,"debuff",defender,attacker,{name:"defensiveAbility",amount:-Math.floor(defender.p.combatStats.defensiveAbility/2)}));
-                    attacker.p.gaveStatus.push({char:defender,skill:"atkAccuracyDown"});
-                    attacker.p.gaveStatus.push({char:defender,skill:"defensiveAbilityDown"});
-                    break;
-                case "Temporary Insanity":
-                    newText = this.entity.skillFuncs["addStatus"]("insane",100,"debuff",defender,attacker);
-                    attacker.p.gaveStatus.push({char:defender,skill:"insane"});
-                    break;
-                case "Antithesis":
-                    newText = this.entity.skillFuncs["addStatus"]("TPDrain",100,"debuff",defender,attacker);
-                    attacker.p.gaveStatus.push({char:defender,skill:"TPDrain"});
-                    break;
-                case "Push":
-                    newText = this.entity.skillFuncs.push(1,defender,attacker);
-                    break;
-                case "Staredown":
-                    newText = this.entity.skillFuncs["addStatus"]("atkAccuracyDown",3,"debuff",defender,attacker,{name:"atkAccuracy",amount:-attacker.p.combatStats.skill});
-                    break;
-                case "Charge Through":
-                    newText = this.entity.skillFuncs.chargeThrough(defender,attacker);
-                    attacker.p.canSetDir = [];
-                    break;
-                case "Headbutt":
-                    newText = this.entity.skillFuncs["addStatus"]("initiativeDown",1,"debuff",defender,attacker,{name:"initiative",amount:-(attacker.p.combatStats.skill*2)});
-                    break;
-                case "Pull":
-                    newText = this.entity.skillFuncs.pull(defender,attacker);
-                    break;
-                case "War Cry":
-                    newText = this.entity.skillFuncs["addStatus"]("moveDown",2,"debuff",defender,attacker,{name:"moveSpeed",amount:-defender.p.combatStats.moveSpeed+1});
-                    break;
-            }
-            this.text = this.text.concat(newText);
-            this.text.push({func:"waitTime",obj:this,props:[400]});
-        },
-        useDamageSkill:function(attacker,defender,skill){
-            var damage;
-            var sound;
-            var result;
-            var props;
-            var time;
-            var atkProps = {
-                attackNum:Math.ceil(Math.random()*100),
-                defendNum:Math.ceil(Math.random()*100),
-                attackerCritChance:attacker.p.combatStats.critChance,
-                attackerAtkAccuracy:attacker.p.combatStats.atkAccuracy,
-                defenderCounterChance:defender.p.combatStats.counterChance,
-                defenderReflexes:defender.p.combatStats.reflexes,
-                defenderDefensiveAbility:defender.p.combatStats.defensiveAbility,
-                defenderFainted:defender.p.fainted,
-                
-                attackerFainted:attacker.p.fainted,
-                attackerAtkSpeed:attacker.p.combatStats.atkSpeed,
-                
-                attackerMaxAtkDmg:attacker.p.combatStats.maxAtkDmg,
-                attackerMinAtkDmg:attacker.p.combatStats.minAtkDmg,
-                attackerSecMaxAtkDmg:attacker.p.combatStats.maxSecondaryDmg,
-                attackerSecMinAtkDmg:attacker.p.combatStats.minSecondaryDmg,
-                
-                defenderHP:defender.p.combatStats.hp,
-                defenderDamageReduction:defender.p.combatStats.damageReduction,
-                defenderAtkRange:defender.p.combatStats.atkRange,
-                attacker:attacker,
-                defender:defender,
-                
-                finalMultiplier:1
-            };
-            switch(skill.name){
-                case "Long Shot":
-                    
-                    break;
-                case "Armour Piercing Shot":
-                    atkProps.defenderDamageReduction = Math.max(0,atkProps.defenderDamageReduction - attacker.p.combatStats.skill);
-                    break;
-                case "Rapid Shot":
-                    atkProps.attackerAtkSpeed+=attacker.p.combatStats.skill;
-                    break;
-                case "Critical Shot":
-                    atkProps.critChance+=attacker.p.combatStats.skill;
-                    break;
-                case "Painful Shot":
-                    atkProps.defenderPainTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
-                    break;
-                case "Sniper Shot":
-                    var wsk = attacker.p.combatStats.skill,
-                        wield = ((Q.charGen.getEquipmentProp("wield",attacker.p.equipment.righthand)+Q.charGen.getEquipmentProp("wield",attacker.p.equipment.lefthand))/2), 
-                        encPenalty = attacker.p.combatStats.encumbrancePenalty,
-                        level = attacker.p.level;
-                    atkProps.attackerAtkAccuracy = wsk+wield+encPenalty+level;
-                    break;
-                case "Critical Strike":
-                    atkProps.critChance+=attacker.p.combatStats.skill;
-                    break;
-                case "Rapid Strike":
-                    atkProps.attackerAtkSpeed+=attacker.p.combatStats.skill;
-                    break;
-                case "Surprising Strike":
-                    atkProps.defendNum = 100;
-                    break;
-                case "Armour Piercing Strike":
-                    atkProps.defenderDamageReduction = Math.max(0,atkProps.defenderDamageReduction - attacker.p.combatStats.skill);
-                    break;
-                case "Painful Strike":
-                    atkProps.defenderPainTolerance = Math.max(0,defender.p.combatStats.painTolerance - attacker.p.combatStats.skill);
-                    break;
-                case "Whirlwind Strike":
-                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    break;
-                case "Bleeding Strike":
-                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps).finalResult;
-                    props = this.processResult(atkProps);
-                    if(props.damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("painToleranceDown",100,"debuff",defender,attacker,{name:"painTolerance",amount:-Math.floor(props.damage/2)}));
-                    }
-                    break;
-                case "Weakening Strike":
-                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps).finalResult;
-                    props = this.processResult(atkProps);
-                    if(props.damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("strengthDown",2,"debuff",defender,attacker,{name:"strength",amount:-Math.floor(props.damage/10)}));
-                    }
-                    break;
-                case "Nerve Strike":
-                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps).finalResult;
-                    props = this.processResult(atkProps);
-                    if(props.damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("physicalResistanceDown",100,"debuff",defender,attacker,{name:"physicalResistance",amount:-Math.floor(props.damage/10)}));
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("mentalResistanceDown",100,"debuff",defender,attacker,{name:"mentalResistance",amount:-Math.floor(props.damage/10)}));
-                    }
-                    break;
-                case "Acid Bomb":
-                    props = {
-                        damage:Math.ceil(Math.random()*30)+10+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
-                    if(props.damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("damageReductionDown",100,"debuff",defender,attacker,{name:"damageReduction",amount:-attacker.p.combatStats.skill}));
-                    }
-                    break;
-                case "Poison Strike":
-                    atkProps.attackerMinAtkDmg = Math.floor(attacker.p.combatStats.minAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxAtkDmg = Math.floor(attacker.p.combatStats.maxAtkDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMinSecondaryDmg = Math.floor(attacker.p.combatStats.minSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.attackerMaxSecondaryDmg = Math.floor(attacker.p.combatStats.maxSecondaryDmg/2+attacker.p.combatStats.skill);
-                    atkProps.result = this.getBlow(atkProps).finalResult;
-                    result = this.processResult(atkProps);
-                    if(result.damage>0){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("poisoned",2,"debuff",defender,attacker));
-                        defender.p.buffs.poisonDamage = Math.floor(result.damage/4);
-                    }
-                    break;
-                case "Coordinated Attack":
-                    //Attack like normal
-                    atkProps.result = this.getBlow(atkProps).finalResult;
-                    props = this.processResult(atkProps);
-                    //If we get a second attack, all allies within the zone attack as well. (For now, always do it)
-                    if(!this.attackedAgain){
-                        var dir = attacker.p.dir;
-                        var radius = 1;
-                        //Gets the array multiplier for the direction
-                        var arr = Q.getDirArray(Q.getRotatedDir(dir));
-                        var loc = attacker.p.loc;
-                        for(var i=-radius;i<radius+1;i++){
-                            if(i===0) i++;
-                            var spot = [i*arr[0]+loc[0]+arr[1],i*arr[1]+loc[1]-arr[0]];
-                            var target = Q.BattleGrid.getObject(spot);
-                            if(target&&!target.p.fainted&&target.p.combatStats.hp&&target.p.team===attacker.p.team){
-                                target.p.tempHp = target.p.combatStats.hp;
-                                if(defender.p.tempHp-props.damage>0){
-                                    var t = this;
-                                    props.afterAttack = function(){
-                                        t.text.push({func:"doAttackAnim",obj:target,props:[defender,"Attack","slashing",false]});
-                                        t.calcAttack(target,defender);
-                                    }
-                                    
-                                }
-                            }
-                        }
-                    }
-                    this.attackedAgain = true;
-                    break;
-                case "Stone":
-                    props = {
-                        damage:Math.ceil(Math.random()*10)+10+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
-                    break;
-                case "Flamethrower":
-                    var tileDist = Q.BattleGrid.getTileDistance(attacker.p.loc,defender.p.loc);
-                    if(tileDist===1){
-                        this.closeTileOccupied = true;
-                    }
-                    atkProps.attackerMinAtkDmg = 50+attacker.p.combatStats.skill;
-                    atkProps.attackerMaxAtkDmg = 80+attacker.p.combatStats.skill;
-                    atkProps.result = "Solid";
-                    if(this.closeTileOccupied){
-                        //This is the close tile
-                        if(tileDist===1){
-                            atkProps.defenderDamageReduction = 0;
-                        } else {
-                            atkProps.finalMultiplier = 0.5;
-                        }
-                        sound = "fireball.mp3";
-                    }
-                    time = 50;
-                    break;
-                case "Fireball":
-                    if(defender.p.loc[0]===Q.pointer.p.loc[0]&&defender.p.loc[1]===Q.pointer.p.loc[1]){
-                        atkProps.defenderDamageReduction = 0;
-                    }
-                    atkProps.attackerMinAtkDmg = 50+attacker.p.combatStats.skill;
-                    atkProps.attackerMaxAtkDmg = 80+attacker.p.combatStats.skill;
-                    atkProps.result = "Solid";
-                    sound = "fireball.mp3";
-                    break;
-                case "Frost Ray":
-                    var blow = this.getBlow(atkProps);
-                    if(blow.defResult.fail){
-                        this.text = this.text.concat(this.entity.skillFuncs["addStatus"]("frozen",2,"debuff",defender,attacker));
-                    }
-                    props = {
-                        damage:Math.ceil(Math.random()*40)+10+attacker.p.combatStats.skill,
-                        sound:""
-                    };
-                    break;
-                case "Choke":
-                    atkProps.defenderDamageReduction = 0;
-                    props = {
-                        damage:Math.ceil(Math.random()*100)+100+attacker.p.combatStats.skill,
-                        sound:"hit1.mp3"
-                    };
-                    break;
-            }
-            if(!result&&!atkProps.result){
-                atkProps.result = this.getBlow(atkProps).finalResult;
-            }
-            if(!props){
-                props = this.processResult(atkProps);
-            }
-            props.sound = sound || props.sound;
-            props.time = time || props.time;
-            return props;
-        },
-        useGroundSkill:function(targetLoc,user,skill){
-            switch(skill.name){
-                case "Hypnotic Mirage":
-                    this.text.push({func:"createMirage",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-                case "Stability Field":
-                    this.text.push({func:"createStabilityField",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-                case "Caltrops":
-                    this.text.push({func:"createCaltrops",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-                case "Lightning Storm":
-                    //Hit 3 locations
-                    this.text.push({func:"spawnLightning",obj:this.entity.skillFuncs,props:[targetLoc,user]});
-                    break;
-            }
-        },
-        useItem:function(user,target,item){
-            var newText;
-            switch(item.name){
-                case "Potion":
-                    newText = this.entity.skillFuncs["healHp"](20,target,user);
-                    break;
-                case "Gummy":
-                    newText = this.entity.skillFuncs["healHp"](10,target,user);
-                    break;
-                case "Hard Candy":
-                    newText = this.entity.skillFuncs["healHp"](11,target,user);
-                    break;
-            }
-            this.text.push(newText[0]);
+        accuracyCheck:function(randMax,check){
+            return Math.floor(Math.random()*randMax) <= check;
         },
         //Checks against the defender's resistance of a certain technique type.
         checkResisted:function(attacker,defender,technique){
             //If the technique always hits allies and the target is an ally, it hit.
             if(attacker.p.team === defender.p.team && technique.rangeProps.includes("AllyNoMiss")) return false;
             if(technique.resistedBy.includes("Physical")){
-                var rand = Math.floor(Math.random()*100);
-                var stat = defender.p.combatStats.physicalResistance;
-                if(rand<stat) return true;
+                return this.accuracyCheck(100,defender.p.combatStats.physicalResistance);
             }
             if(technique.resistedBy.includes("Magical")){
-                var rand = Math.floor(Math.random()*100);
-                var stat = defender.p.combatStats.magicalResistance;
-                if(rand<stat) return true;
+                return this.accuracyCheck(100,defender.p.combatStats.magicalResistance);
             }
             if(technique.resistedBy.includes("Mental")){
-                var rand = Math.floor(Math.random()*100);
-                var stat = defender.p.combatStats.mentalResistance;
-                if(rand<stat) return true;
+                var res = defender.p.talents.include("Self Empowerment") ? 100 : defender.p.combatStats.mentalResistance;
+                return this.accuracyCheck(100,res);
             }
             return false;
         },
@@ -2106,10 +1713,10 @@ Quintus.GameObjects=function(Q){
                         
                 }
             }
-            args.forEach(function(arg){
+            for(var i=0;i<args.length;i++){
+                var arg = args[i];
                 if(arg.func === "Change Stat Active"){
-                    var rand = Math.floor(Math.random()*100);
-                    if(rand > arg.accuracy) return;
+                    if(!this.accuracyCheck(100,arg.accuracy)) return;
                     var target = arg.affects === "User" ? attacker : defender;
                     var newValue = Math.max(0,evaluateOperator(target.p[arg.statType][arg.stat],arg.oper,getAmount(arg.value,attacker,target)));
                     var difference = target.p[arg.statType][arg.stat] - newValue;
@@ -2118,26 +1725,35 @@ Quintus.GameObjects=function(Q){
                         target.addStatChange({stat:arg.stat,statType:arg.statType,amount:difference,turns:arg.turns});
                     }
                 }
-            });
+            }
         },
         techniqueAttack:function(attacker,defender,technique){
             //Apply any stat boosts that happen
             this.applyActiveStatArgs(attacker,defender,technique.args);
             
             var props = this.getAttackProps(attacker,defender);
-            
-            
             props.attackerAtkAccuracy = technique.accuracy;
-            //Probably have some other calcs to determine damage
-            props.attackerMaxAtkDmg += technique.damage;
-            props.attackerMinAtkDmg += technique.damage;
-            
             switch(technique.type1){
                 case "Damage":
+                    //Get the stat for damage
+                    switch(technique.type2){
+                        case "Physical":
+                            props.attackerMaxAtkDmg += technique.damage;
+                            props.attackerMinAtkDmg += technique.damage;
+                            break;
+                        case "Magical":
+                            props.attackerMaxAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/8);
+                            props.attackerMinAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/10);
+                            break;
+                        case "Mental":
+                            props.attackerMaxAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/8);
+                            props.attackerMinAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/10);
+                            break;
+                    }
+                    
                     if(technique.resistedBy.includes("RegAttack")){
                         var result = this.processResult(this.getBlow(props));
                         result.attackingAgain = false;
-                        console.log(result)
                         return result;
                     } else if(technique.resistedBy.includes("Dodge")){
                         //Dodge means no defense from armour
@@ -2147,7 +1763,7 @@ Quintus.GameObjects=function(Q){
                         return result;
                     } else {
                         //Check for accuracy
-                        if(Math.floor(Math.random()*100) < props.attackerAtkAccuracy){
+                        if(this.accuracyCheck(100,props.attackerAtkAccuracy)){
                             props.damage = this.getDamage(Math.floor(Math.random()*(props.attackerMaxAtkDmg-props.attackerMinAtkDmg)+props.attackerMinAtkDmg));
                         } else {
                             props.damage = 0;
@@ -2155,11 +1771,11 @@ Quintus.GameObjects=function(Q){
                         return props;
                     }
                 case "Support":
-                    
-                    break;
+                    props.time = 100;
+                    return props;
                 case "Debilitate":
-                    
-                    break;
+                    props.time = 100;
+                    return props;
             }
         },
         calcAttack:function(attacker,defender,technique,extraAttack){
@@ -2178,6 +1794,7 @@ Quintus.GameObjects=function(Q){
                 time = props.time;
                 damage = props.damage;
                 sound = props.sound;
+                this.checkMovement(attacker,defender,technique); 
             } 
             //Regular attack
             else {
@@ -2190,7 +1807,7 @@ Quintus.GameObjects=function(Q){
                 this.text.push({func:"takeDamage",obj:defender,props:[damage,attacker,technique]});
                 this.text.push({func:"showDamage",obj:defender,props:[damage,sound,technique]});
                 if(props.result==="Critical"&&attacker.p.talents.includes("Bloodlust")){
-                    this.text.push(this.entity.skillFuncs.healTp(Math.floor(damage/2),attacker)[0]);
+                    this.text.push(this.entity.techniqueFuncs.healTp(Math.floor(damage/2),attacker)[0]);
                 }
                 defender.p.tempHp = defender.p.tempHp-damage;
                 if(defender.p.tempHp<=0){
@@ -2204,8 +1821,6 @@ Quintus.GameObjects=function(Q){
                     this.text.push({func:"doAttackAnim",obj:attacker,props:[defender,"Attack","slashing",false]});
                     //Can't attack again with technique anyways, so don't even pass it
                     this.calcAttack(attacker,defender,false,true);
-                } else if(props.afterAttack){
-                    props.afterAttack();
                 }
             } 
             //Miss
@@ -2222,48 +1837,79 @@ Quintus.GameObjects=function(Q){
                     this.calcAttack(defender,attacker);
                 }
             }
+            if(technique){
+                this.checkStatusEffects(attacker,defender,technique);
+            }
         },
-        //After the attack has happened, do this
-        processAdditionalEffects:function(attacker,target,skill){
-            switch(skill.name){
-                //Make all spaces touched icy.
-                case "Frost Ray":
-                    if(!Q.BattleGrid.icy){
-                        var tiles = Q.BattleGrid.emptyGrid();
-                        Q.BattleGrid.icy = Q.stage(0).insert(new Q.TileLayer({
-                            tileW:Q.tileW,
-                            tileH:Q.tileH,
-                            sheet:"ground",
-                            tiles:tiles,
-                            type:Q.SPRITE_NONE
-                        }));
-                        Q.BattleGrid.icyStatus = [];
+        checkMovement(attacker,defender,technique,tiles){
+            for(var i=0;i<technique.args.length;i++){
+                var arg = technique.args[i];
+                if(arg.func === "Move Character"){
+                    if(!this.accuracyCheck(100,arg.accuracy || 100)) continue;
+                    switch(arg.target){
+                        case "Both":
+                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,defender,arg,true]});
+                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,attacker,arg,false]});
+                            break;
+                        case "User":
+                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,tiles ? tiles : attacker,arg,false]});
+                            break;
+                        case "Target":
+                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,defender,arg,false]});
+                            break;
                     }
-                    var radius = Math.floor(attacker.p.combatStats.skill/10);
-                    var dir = attacker.p.dir;
-                    //Gets the array multiplier for the direction
-                    var arr = Q.getDirArray(dir);
-                    var locs = [];
-                    for(var i=1;i<radius+1;i++){
-                        locs.push([i*arr[0]+attacker.p.loc[0],i*arr[1]+attacker.p.loc[1]]);
+                }
+            }
+        },
+        checkStatusEffects:function(attacker,defender,technique){
+            for(var i=0;i<technique.args.length;i++){
+                var arg = technique.args[i];
+                if(arg.func === "Apply Status Effect"){
+                    if(!this.accuracyCheck(100,arg.accuracy || 100)) continue;
+                    if(arg.affects === "Target"){
+                        this.text.push({func:"addStatus",obj:defender,props:[arg.statusEffect,arg.turns,false,attacker]});
+                    } else {
+                        this.text.push({func:"addStatus",obj:attacker,props:[arg.statusEffect,arg.turns,false,attacker]});
                     }
-                    Q.BattleGrid.icyStatus.push({locs:locs,turns:2});
-                    //Wait for as long as the animation plays
-                    this.text.splice(1,0,{func:"makeIcy",obj:this.entity.skillFuncs,props:[locs]});
-                    break;
-                case "Flamethrower":
-                    this.closeTileOccupied = false;
-                    break
-                case "Coordinated Attack":
-                    this.attackedAgain = false;
-                    break;
+                }
+            }
+        },
+        //Do args that are not Change Stat Active/Passive
+        checkChangeGround:function(technique,tiles){
+            for(var i=0;i<technique.args.length;i++){
+                var arg = technique.args[i];
+                if(arg.func === "Change Ground"){
+                    if(arg.target === "changeTile"){
+                        var changeData = {
+                            "Icy":{frame:5,invalid:["impassable"]},
+                            "Burning":{frame:4,invalid:["impassable"]},
+                            "Stable":{frame:6,invalid:["impassable"]}
+                        };
+                        var changeTiles = [];
+                        for(var j=0;j<tiles.length;j++){
+                            var tile = tiles[j];
+                            if(!changeData[arg.tile].invalid.includes(Q.BatCon.getTileType(tile))){
+                                if(this.accuracyCheck(100,arg.accuracy)){
+                                    var turns = Math.floor(Math.random()*(arg.maxTurns-arg.minTurns))+arg.minTurns;
+                                    changeTiles.push({x:tile[0],y:tile[1],frame:changeData[arg.tile].frame,turns:turns});
+                                }
+                            }
+                        }
+                        this.text.push({func:"setTiles",obj:Q['modifiedTilesController'],props:[changeTiles]});
+                    } else if(arg.target === "addObjectOnTop"){
+                        var objData = {
+                            "Mirage":{sheet:"mirage"},
+                            "Caltrops":{sheet:"caltrops"}
+                        };
+                        //TODO
+                    }
+                }
             }
         },
         getTechniqueCost:function(cost,efficiency){
             return Math.max(1,cost - efficiency);
         },
-        doAttack:function(attacker,targets,technique){
-            console.log(attacker,targets,technique)
+        doAttack:function(attacker,targets,technique,tiles){
             this.text = [];
             var anim = "Attack";
             var sound = "slashing";
@@ -2276,10 +1922,6 @@ Quintus.GameObjects=function(Q){
                 if(technique.sound) sound = technique.sound;
             }
             this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound,dir]});
-            //If we have targetted the ground.
-            if(!targets.length){
-                this.useGroundSkill(Q.pointer.p.loc,attacker,technique);
-            }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
                 targets[i].p.tempHp = targets[i].p.combatStats.hp;
@@ -2287,7 +1929,13 @@ Quintus.GameObjects=function(Q){
                 this.previousDamage = 0;
             }
             if(technique){
-                this.processAdditionalEffects(attacker,targets,technique);
+                //If we're targeting the ground, check if we're moving the user
+                if(!targets.length){
+                    this.checkMovement(attacker,false,technique,tiles[0]);
+                }
+                //Change Ground
+                this.checkChangeGround(technique,tiles);
+                //Check to see if we should remove any status at 0 turns (the only ones at 0 at this point should have been applied just for this attack)
                 attacker.checkRemoveStatChange();
                 targets.forEach(function(target){target.checkRemoveStatChange();});
             }
@@ -2354,7 +2002,140 @@ Quintus.GameObjects=function(Q){
             },time);
         }
     });
-    Q.component("skillFuncs",{
+    Q.component("techniqueFuncs",{
+        moveCharacter:function(user,target,arg,instantCallback,callback){
+            switch(arg.direction){
+                case "Forward":
+                    this.moveForward(user,target,arg.numTiles,arg.options,instantCallback ? false : callback);
+                    break;
+                case "Backward":
+                    this.moveBackward(user,target,arg.numTiles,arg.options,instantCallback ? false : callback);
+                    break;
+            }
+            instantCallback ? callback() : false;
+        },
+        validateMovedTo:function(user,target,numTiles,moveType){
+            var tiles = [];
+            var type;
+            //Jump over tiles that can be gone over with an ability (water, but not walls)
+            var jumping = moveType === "JumpOver";
+            //Pierce through the target/s (ally or enemy)
+            var piercing = moveType === "Pierce";
+            //Go until reaching an object or impassable tile
+            var pushing = moveType === "Push";
+            console.log(pushing)
+            //Teleport to the destination with no regard for what is in between
+            var teleport = moveType === "Teleport";
+            var dir;
+            var targetIsArray = Array.isArray(target);
+            if(user === target){
+                dir = user.p.dir;
+            } else if(!targetIsArray){
+                dir = Q.compareLocsForDirection(user.p.loc,target.p.loc);
+            } else {
+                dir = user.p.dir;
+            }
+            //Make a path of locs to move the character
+            var path = [];
+            var arr = Q.getDirArray(dir);
+            var targetIsArray = Array.isArray(target);
+            var jumpingPrivilege = {"waterWalk":true}
+            function tileClear(loc,next,final){
+                var emptyNextTile = next ? (Q.BatCon.validateTileTo(Q.BatCon.getTileType(next), target.p.canMoveOn) !== "impassable" && Q.BattleGrid.getObject(next)) : false;
+                
+                var canMoveOn = jumping && !final && emptyNextTile ? jumpingPrivilege : !targetIsArray ? target.p.canMoveOn : false;
+                
+                var objOn =  final ? Q.BattleGrid.getObject(loc) : (!jumping && !piercing && !pushing);
+                var tileType = Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),canMoveOn);
+                if(!objOn && tileType!=="impassable") return loc;
+            };
+            if(!teleport){
+                var tLoc = targetIsArray ? target : target.p.loc;
+                if(targetIsArray) target = user;
+                //Check each tile leading to the destination. Only push until the target bumps itno something it can't go through
+                for(var i=1;i<numTiles+1;i++){
+                    var loc = [tLoc[0]+arr[0]*i,tLoc[1]+arr[1]*i];
+                    if(tileClear(loc, [loc[0]+arr[0]*(i+1),loc[1]+arr[1]*(i+1)] ,i === numTiles)){ 
+                        path.push(loc);
+                    } else {
+                        if(!jumping){
+                            break;
+                        } else if(Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),jumpingPrivilege) === "impassable"){
+                            break;
+                        }
+                    }
+                }
+                if(path.length){
+                    var completePath = [];
+                    //Check the tiles in reverse now to make sure that there is no target on the final tile.
+                    for(var i=path.length-1;i>=0;i--){
+                        var next = i>0 ? path[i-1] : false;
+                        if(tileClear(path[i],next,i === path.length-1)){
+                            completePath.push(path[i]);
+                        };
+                    }
+                    if(completePath.length){
+                        tiles = completePath[0];
+                        type = "pushed";
+                    }
+                }
+            } 
+            //For teleport
+            else {
+                var dest;
+                if(targetIsArray){
+                    dest = target;
+                } else {
+                    var tLoc = target.p.loc;
+                    dest = [tLoc[0]+arr[0]*numTiles,tLoc[1]+arr[1]*numTiles];
+                }
+                if(tileClear(dest,false,true)){
+                    tiles = dest;
+                    type = "teleported";
+                }
+            }
+            return {tiles:tiles,type:type};
+        },
+        moveForward:function(user,target,numTiles,options,callback){
+            var data = this.validateMovedTo(user,target,numTiles,options);
+            if(data.tiles.length){
+                if(Array.isArray(target)){
+                    user.movedByTechnique(data.tiles,data.type,callback);
+                } else {
+                    target.movedByTechnique(data.tiles,data.type,callback);
+                }
+                //if(data.type === "walk") user.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",user.p.team,user.p.canMoveOn,user));
+            } else {
+                if(callback) callback();
+            }
+            
+            /*
+            //While icy and no obj on it, go further.
+            var getIcyRange = function(tileTo,arr){
+                if(Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]]&&Q.getWalkableOn(tileTo[0]+arr[0],tileTo[1]+arr[1],target.p.canMoveOn)<=1000){
+                    return getIcyRange([tileTo[0]+arr[0],tileTo[1]+arr[1]],arr);
+                } else {
+                    return tileTo;
+                }
+            };
+            var text = [];
+            var tileTo = [];
+            //Pushing in the y direction
+            var dir = Q.compareLocsForDirection(user.p.loc,target.p.loc);
+            var arr = Q.getDirArray(dir);
+            tileTo = [target.p.loc[0]+(arr[0]*tiles),target.p.loc[1]+(arr[1]*tiles)];
+            tileTo = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]] ? getIcyRange(tileTo,arr) : tileTo;
+            //Make sure there's no object or impassable tile where the target will be pushed to.
+            //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target)!=="impassable"){
+                text.push({func:"pushed",obj:target,props:[tileTo]});
+            };
+            return text;*/
+        },
+        moveBackward:function(user,target,numTiles,options){
+            
+        },
+        
         pull:function(target,user){
             var tiles = 1;
             var text = [];
@@ -2382,7 +2163,7 @@ Quintus.GameObjects=function(Q){
                     userTileTo = [user.p.loc[0]-tiles,user.p.loc[1]];
                 }
             }
-            if(!Q.BattleGrid.getObject(userTileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(userTileTo),user)!=="impassable"){
+            if(!Q.BattleGrid.getObject(userTileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(userTileTo),user.p.canMoveOn)!=="impassable"){
                 text.push({func:"pulled",obj:target,props:[targetTileTo,userTileTo,user]});
             };
             return text;
@@ -2406,7 +2187,7 @@ Quintus.GameObjects=function(Q){
             tileTo = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]] ? getIcyRange(tileTo,arr) : tileTo;
             //Make sure there's no object or impassable tile where the target will be pushed to.
             //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
-            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target)!=="impassable"){
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target.p.canMoveOn)!=="impassable"){
                 text.push({func:"pushed",obj:target,props:[tileTo]});
             };
             return text;
@@ -2437,7 +2218,7 @@ Quintus.GameObjects=function(Q){
                     tileTo = [target.p.loc[0]+tiles,target.p.loc[1]];
                 }
             }
-            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),user)!=="impassable"){
+            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),user.p.canMoveOn)!=="impassable"){
                 text.push({func:"chargedThrough",obj:user,props:[tileTo,target]});
             };
             return text;
@@ -2484,11 +2265,6 @@ Quintus.GameObjects=function(Q){
             //Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
             //callback();
         },
-        createMirage:function(loc,user,callback){
-            if(user.p.mirage) user.p.mirage.dispellMirage();
-            user.p.mirage = user.stage.insert(new Q.Mirage({loc:loc,user:user}));
-            callback();
-        },
         createStabilityField:function(loc,user,callback){
             if(user.p.stabilityField) user.p.stabilityField.destroy();
             var tiles = Q.BattleGrid.emptyGrid();
@@ -2527,32 +2303,6 @@ Quintus.GameObjects=function(Q){
             flash(field);
             callback();
             field.add("stability");
-        },
-        createCaltrops:function(loc,user,callback){
-            if(!Q.BattleGrid.caltrops){
-                var tiles = Q.BattleGrid.emptyGrid();
-                Q.BattleGrid.caltrops = user.stage.insert(new Q.TileLayer({
-                    tileW:Q.tileW,
-                    tileH:Q.tileH,
-                    sheet:"ground",
-                    tiles:tiles,
-                    type:Q.SPRITE_NONE
-                }));
-            }
-            var tiles = Q.BattleGrid.caltrops.p.tiles;
-            var radius = Q.state.get("allSkills")["Caltrops"].aoe[0];
-            for(var i=0;i<radius*2+1;i++){
-                for(var j=0;j<radius*2+1;j++){
-                    var tileType = Q.BatCon.getTileType([j-radius+loc[0],i-radius+loc[1]]);
-                    if(tileType!=="impassable"&&tileType!=="water"){
-                        tiles[i-radius+loc[1]][j-radius+loc[0]] = 0;
-                        if(Math.abs(radius-i)+Math.abs(radius-j)<=radius){
-                            Q.BattleGrid.caltrops.setTile(j-radius+loc[0],i-radius+loc[1],4);
-                        }
-                    }
-                }
-            }
-            callback();
         },
         makeIcy:function(locs,callback){
             var dirAngles = {

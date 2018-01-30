@@ -28,7 +28,8 @@
             ],
             "nationality": "Venorian",
             "charClass": "Vanguard",
-            "promotion": 1
+            "promotion": 1,
+            "lean": false
         },
         "Lettuce": {
             "handle": "Lettuce",
@@ -119,6 +120,46 @@
             "nationality": "Venorian",
             "charClass": "Berserker",
             "promotion": 1
+        }
+    },
+    "Test": {
+        "Tanky Boi": {
+            "handle": "Tanky Boi",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": {
+                "str": 14,
+                "end": 100000,
+                "dex": 10,
+                "wsk": 13,
+                "rfl": 13,
+                "ini": 12,
+                "enr": 11,
+                "skl": 13,
+                "eff": 11
+            },
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Vanguard",
+            "lean": false
         }
     }
 }
