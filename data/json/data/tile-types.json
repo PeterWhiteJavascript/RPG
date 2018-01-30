@@ -31,7 +31,7 @@
     },
     "water":{
         "name":"Water",
-        "move":2,
+        "move":4,
         "buff":"Armour +20%",
         "required":"waterWalk",
         "effect":{"stat":"armour","amount":1.2}
@@ -53,5 +53,35 @@
         "move":2,
         "buff":"Parry -20%",
         "effect":{"stat":"parry","amount":-0.8}
+    },
+    "Icy":{
+        "name":"Ice",
+        "move":2,
+        "buff":"Slide on",
+        "effect":{"stat":"","amount":0}
+    },
+    "Burning":{
+        "name":"Burning",
+        "move":2,
+        "buff":"Take damage",
+        "effect":{"stat":"hp","amount":-0.2}
+    },
+    "Stable":{
+        "name":"Stable",
+        "move":1,
+        "buff":"No Bleeding Out",
+        "effect":{"stat":"","amount":0}
+    },
+    "Caltrops":{
+        "name":"Caltrops",
+        "move":2,
+        "buff":"Take damage",
+        "effect":{"stat":"hp","amount":-0.2}
+    },
+    "Mirage":{
+        "name":"Mirage",
+        "move":1000000,
+        "buff":"TODO: Remove",
+        "effect":{"stat":"","amount":0}
     }
 }

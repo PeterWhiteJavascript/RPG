@@ -153,6 +153,13 @@ Quintus.SceneFuncs=function(Q){
                     opacity:0.7,
                     z:-3
                 }));
+                Q.ModifiedGroundTileLayer.tileCollisionObjects = {
+                    "5":{p:{type:"Icy"}},
+                    "4":{p:{type:"Burning"}},
+                    "6":{p:{type:"Stable"}},
+                    "7":{p:{type:"Caltrops"}},
+                    "8":{p:{type:"Mirage"}}
+                };
                 
                 Q.RangeTileLayer = stage.insert(new Q.TileLayer({
                     tileW:Q.tileW,

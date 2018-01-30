@@ -1254,10 +1254,19 @@ Quintus.GameObjects=function(Q){
             return loc1[0] === loc2[0] && loc1[1] === loc2[1];
         },
         getTileType:function(loc){
+            //Could probably use this built in function...
+            //tileLayer.getCollisionObject(loc[0],loc[1])
+            
             //Prioritize the collision objects
             var tileLayer = this.stage.lists.TileLayer[1];
             if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
                 var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type; 
+                return type || "impassable";
+            }
+            //Next, check the modified tiles
+            var tileLayer = Q.ModifiedGroundTileLayer;
+            if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
+                var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
                 return type || "impassable";
             }
             
@@ -1901,10 +1910,17 @@ Quintus.GameObjects=function(Q){
                 var arg = technique.args[i];
                 if(arg.func === "Change Ground"){
                     if(arg.target === "changeTile"){
+                        //TO DO: Change the mirage data to have a sheet and other properties for animation.
+                        //It should also not simply change the tile, but have its own Character object that gets added to the turn order and attracts characters on its turn.
+                        //The code should already be mostly written (objects.js line 1000-ish)
+                        //I definitely need to rework it a lot, however.
+                        //This changeData could also be taken from the tileCollisionObjects of the modified tile layer
                         var changeData = {
                             "Icy":{frame:5,invalid:["impassable"]},
                             "Burning":{frame:4,invalid:["impassable"]},
-                            "Stable":{frame:6,invalid:["impassable"]}
+                            "Stable":{frame:6,invalid:["impassable"]},
+                            "Caltrops":{frame:7,invalid:["impassable"]},
+                            "Mirage":{frame:8,invalid:["impassable"]}
                         };
                         var changeTiles = [];
                         for(var j=0;j<tiles.length;j++){
@@ -1917,12 +1933,6 @@ Quintus.GameObjects=function(Q){
                             }
                         }
                         this.text.push({func:"setTiles",obj:Q['modifiedTilesController'],props:[changeTiles]});
-                    } else if(arg.target === "addObjectOnTop"){
-                        var objData = {
-                            "Mirage":{sheet:"mirage"},
-                            "Caltrops":{sheet:"caltrops"}
-                        };
-                        //TODO
                     }
                 }
             }

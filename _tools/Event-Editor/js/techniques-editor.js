@@ -124,8 +124,7 @@ $(function(){
                     statusResistance:FileSaver.charGen.statuses
                 },
                 argumentGroundProps:{
-                    changeTile:FileSaver.techniqueData.data.changeTile,
-                    addObjectOnTop:FileSaver.techniqueData.data.addObjectOnTop
+                    changeTile:FileSaver.techniqueData.data.changeTile
                 },
                 operators:["+","-","*","/","="],
                 moveCharacterProps:{

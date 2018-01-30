@@ -796,6 +796,29 @@ Quintus.Objects=function(Q){
             this.updateTileEffect(this.p.loc);
         },
         startTurn:function(){
+            var canMoveOn = Object.assign({}, this.p.canMoveOn);
+            //if we're not on a valid tile to start, do some stuff (ice melted an now in water);
+            var tileOn = Q.BatCon.getTileType(this.p.loc);
+            if(Q.getWalkableOn(Q.state.get("tileTypes")[tileOn],this.p.canMoveOn)>1000){
+                switch(tileOn){
+                    case "water":
+                        canMoveOn.waterWalk = true;
+                        var text = [];
+                        var damage = Math.floor(this.p.combatStats.maxHp/8);
+                        this.showDamage(damage);
+                        var dead = this.takeDamage(damage);
+                        if(dead){
+                            text.push.apply(text,dead);
+                            text.push({func:"waitTime",obj:Q.BatCon.attackFuncs,props:[1000]});
+                            text.push({func:"endTurn",obj:Q.BatCon,props:[]});
+
+                            Q.BatCon.attackFuncs.processText(text);
+                            return;
+                        }
+                        
+                        break;
+                }
+            }
             //This will be put in a 'process status at start of turn' function
             if(this.hasStatus("Poisoned")){
                 var text = [];
@@ -855,7 +878,7 @@ Quintus.Objects=function(Q){
             }
             this.p.cannotRecallMove = Q.optionsController.cannotRecallMove;
             //Get the grid for walking from this position
-            this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,this.p.canMoveOn,this));
+            this.p.walkMatrix = new Q.Graph(Q.getMatrix("walk",this.p.team,canMoveOn,this));
             //Get the grid for attacking from this position
             this.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
             //Set to true when the character moves

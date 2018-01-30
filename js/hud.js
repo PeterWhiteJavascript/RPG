@@ -668,14 +668,25 @@ Quintus.HUD=function(Q){
             this.p.y = Q.height/2-this.p.h/2;
         }
     });
+    /*
+    "Icy":{frame:5,invalid:["impassable"]},
+    "Burning":{frame:4,invalid:["impassable"]},
+    "Stable":{frame:6,invalid:["impassable"]},
+    "Caltrops":{frame:7,invalid:["impassable"]},
+    "Mirage":{frame:8,invalid:["impassable"]}
+     */
     Q.GameObject.extend("ModifiedTilesController",{
         tiles:[],
+        //TODO: make sure mirage does not get removed
         setTiles:function(tiles,callback){
             for(var i=0;i<tiles.length;i++){
                 Q.ModifiedGroundTileLayer.setTile(tiles[i].x,tiles[i].y,tiles[i].frame);
                 this.tiles.push(tiles[i]);
             }
             if(callback) callback();
+        },
+        getTile:function(x,y){
+            return Q.ModifiedGroundTileLayer.getTile(x,y);
         },
         reduceTurn:function(){
             for(var j=this.tiles.length-1;j>=0;j--){
@@ -918,33 +929,22 @@ Quintus.HUD=function(Q){
                 } else {this.cannotDo();}
             } else {this.cannotDo();}
         },
-        getTechniqueInRange:function(technique){
-            var targets = [];
-            //If we're excluding center, then pointer loc will not have a target.
-            //If the max range is fixed, the range tiles will not be shown (the technique will always be in range)
-            if(/*technique.aoeProps.includes("ExcludeCenter") &&*/ technique.rangeProps.includes("MaxRangeFixed")){
-                targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
-            } else {
-                if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)){
-                    targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
-                }
-            }
-            return targets;
-        },
         validateTechnique:function(technique,loc,user){
+            var maxRangeFixed = technique.rangeProps.includes("MaxRangeFixed");
+            //If the technique is not even on a range tile, it's not valid (unless it's MaxRangeFixed)
+            if(!maxRangeFixed && !this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)) return this.cannotDo();
             var mustTargetGround = technique.rangeProps.includes("MustTargetGround");
-            var objOnTargetLoc = Q.BattleGrid.getObject(loc)
+            var objOnTargetLoc = Q.BattleGrid.getObject(loc);
             if(mustTargetGround && objOnTargetLoc) return this.cannotDo();
             
             var canTargetGround = technique.rangeProps.includes("CanTargetGround");
-            var targets = this.getTechniqueInRange(technique);
+            var targets =  Q.BattleGrid.getObjectsAround(Q.aoeController.tiles);
             if(!targets.length && (!canTargetGround && !mustTargetGround)) return this.cannotDo();
             
             var targetDead = technique.rangeProps.includes("TargetDead");
             if(!targetDead){
                 targets = Q.BattleGrid.removeDead(targets);
             }
-            
             var excludeAllies = technique.rangeProps.includes("ExludeAllies");
             //Remove any characters that are not affected.
             if(excludeAllies) Q.BatCon.removeTeamObjects(targets,Q.BatCon.getOtherTeam(user.p.team));
@@ -979,7 +979,6 @@ Quintus.HUD=function(Q){
                                     }
                                     break;
                                 case "User":
-                                    console.log(targets[0],loc)
                                     thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, user, arg.numTiles, arg.movementType);
                                     break;
                                 case "Target":

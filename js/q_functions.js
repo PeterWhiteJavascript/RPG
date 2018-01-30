@@ -97,14 +97,11 @@ Quintus.QFunctions=function(Q){
                 return "right";
         }
     };
-    Q.getWalkableOn = function(i,j,required){
-        var tileTypes = Q.state.get("tileTypes");
-        var tile = tileTypes[Q.BatCon.getTileType([i,j])];
+    Q.getWalkableOn = function(tile,required){
         var move = tile.move;
-        var icy = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[j][i] ?1:0;
         //If there is something required for standing on this tile and the character does not have it
         if(tile.required&&(!required||!required[tile.required])) move = 1000000;
-        return move?(move+icy):1000000;
+        return move || 1000000;
     };
     Q.getMatrix = function(type,team,required,obj){
         var cM=[];
@@ -116,9 +113,10 @@ Quintus.QFunctions=function(Q){
         function getZOC(){
             return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
         }*/
-        function getCaltrops(){
-            return Q.BattleGrid.caltrops?Q.BattleGrid.caltrops.getTile(i_walk,j_walk):false;
+        function getModifiedTiles(){
+            return Q.modifiedTilesController.getTile(i_walk,j_walk);
         }
+        var tileTypes = Q.state.get("tileTypes");
         var windWalking = obj?obj.p.talents.includes("Wind Walking"):false;
         for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
             var costRow = [];
@@ -126,15 +124,15 @@ Quintus.QFunctions=function(Q){
                 var cost = 1;
                 var objOn = false;
                 //var zocOn = false;
-                var caltropsOn = false;
+                var modified = false;
                 //If we're walking, enemies are impassable
                 if(type==="walk"){
-                    cost = Q.getWalkableOn(i_walk,j_walk,required);
+                    cost = Q.getWalkableOn(tileTypes[Q.BatCon.getTileType([i_walk,j_walk])],required);
                     //Don't check for other objects and ZOC in the story
                     if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
                         //zocOn = getZOC();
-                        caltropsOn = getCaltrops();
+                        modified = getModifiedTiles();
                     }
                     
                     //Allow walking over allies and dead people as long as there's no zoc tile
@@ -143,14 +141,17 @@ Quintus.QFunctions=function(Q){
                 //If there's still no enemy on the square, get the tileCost
                 if(objOn){
                     costRow.push(1000000);
-                }/* else if(zocOn){
-                    costRow.push(1000);
-                }*/ 
-                else if(caltropsOn){
-                    costRow.push(1000);
-                } else {
+                } else if(!modified){
                     if(windWalking) cost = 1;
                     costRow.push(cost);
+                }
+                //Only allow movement onto the first caltrops or burning tile
+                else if(modified === 7 || modified === 4){
+                    costRow.push(1000);
+                } 
+                //If modified is sort of a regular tile.
+                else {
+                    costRow.push(cost)
                 }
             }
             cM.push(costRow);

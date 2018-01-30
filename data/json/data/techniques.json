@@ -8,31 +8,32 @@
                 "Physical"
             ],
             [
-                1,
+                5,
                 "Normal",
                 [
-                    "MaxRangeFixed"
+                    "Straight"
                 ]
             ],
             [
-                3,
-                "VLine",
+                2,
+                "Normal",
                 []
             ],
             [],
-            0,
+            10,
             100,
             10,
             "Stabbing",
             "slashing",
             [
                 [
-                    "Move Character",
+                    "Change Ground",
                     [
-                        "Target",
-                        "Backward",
+                        "changeTile",
+                        "Icy",
                         3,
-                        "Push"
+                        4,
+                        100
                     ]
                 ]
             ]
@@ -1157,18 +1158,7 @@
                 100,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Change Ground",
-                        [
-                            "addObjectOnTop",
-                            "Caltrops",
-                            3,
-                            3,
-                            100
-                        ]
-                    ]
-                ]
+                []
             ],
             [
                 "Weakening Strike",
@@ -2308,9 +2298,7 @@
         "changeTile": [
             "Icy",
             "Burning",
-            "Stable"
-        ],
-        "addObjectOnTop": [
+            "Stable",
             "Caltrops",
             "Mirage"
         ],
