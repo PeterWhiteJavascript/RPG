@@ -289,7 +289,7 @@ var CharacterGenerator = {
                         arg.target = props[0];
                         arg.direction = props[1];
                         arg.numTiles = props[2];
-                        arg.options = props[3];
+                        arg.movementType = props[3];
                         tech.hasMovement = true;
                         break;
                 }

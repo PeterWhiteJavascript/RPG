@@ -1794,7 +1794,6 @@ Quintus.GameObjects=function(Q){
                 time = props.time;
                 damage = props.damage;
                 sound = props.sound;
-                this.checkMovement(attacker,defender,technique); 
             } 
             //Regular attack
             else {
@@ -1841,21 +1840,43 @@ Quintus.GameObjects=function(Q){
                 this.checkStatusEffects(attacker,defender,technique);
             }
         },
-        checkMovement(attacker,defender,technique,tiles){
+        checkMovement(attacker,targets,technique,tiles){
             for(var i=0;i<technique.args.length;i++){
                 var arg = technique.args[i];
                 if(arg.func === "Move Character"){
                     if(!this.accuracyCheck(100,arg.accuracy || 100)) continue;
+                    //TODO: condense all of of these redundant for loops.
                     switch(arg.target){
-                        case "Both":
-                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,defender,arg,true]});
-                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,attacker,arg,false]});
+                        case "All":
+                            if(arg.direction === "Forward") { 
+                                for(var j=targets.length-1;j>=0;j--){
+                                    var target = targets[j];
+                                    this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,target,arg,true]});
+                                }
+                                this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,attacker,arg,false]});
+                            } else {
+                                this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,attacker,arg,true]});
+                                for(var j=0;j<targets.length;j++){
+                                    var target = targets[j];
+                                    this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,target,arg,j !== targets.length]});
+                                }
+                            }
                             break;
                         case "User":
-                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,tiles ? tiles : attacker,arg,false]});
+                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,!targets ? tiles : attacker,arg,false]});
                             break;
                         case "Target":
-                            this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,defender,arg,false]});
+                            if(arg.direction === "Forward") { 
+                                for(var j=targets.length-1;j>=0;j--){
+                                    var target = targets[j];
+                                    this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,target,arg,j !== 0]});
+                                }
+                            } else {
+                                for(var j=0;j<targets.length;j++){
+                                    var target = targets[j];
+                                    this.text.push({func:"moveCharacter",obj:Q.BatCon.techniqueFuncs,props:[attacker,target,arg,j !== targets.length]});
+                                }
+                            }
                             break;
                     }
                 }
@@ -1922,6 +1943,9 @@ Quintus.GameObjects=function(Q){
                 if(technique.sound) sound = technique.sound;
             }
             this.text.push({func:"doAttackAnim",obj:attacker,props:[targets[0],anim,sound,dir]});
+            if(technique){
+                this.checkMovement(attacker,targets.length ? targets : false,technique,tiles[0]);
+            }
             //Compute the attack
             for(var i=0;i<targets.length;i++){
                 targets[i].p.tempHp = targets[i].p.combatStats.hp;
@@ -1929,10 +1953,6 @@ Quintus.GameObjects=function(Q){
                 this.previousDamage = 0;
             }
             if(technique){
-                //If we're targeting the ground, check if we're moving the user
-                if(!targets.length){
-                    this.checkMovement(attacker,false,technique,tiles[0]);
-                }
                 //Change Ground
                 this.checkChangeGround(technique,tiles);
                 //Check to see if we should remove any status at 0 turns (the only ones at 0 at this point should have been applied just for this attack)
@@ -2006,10 +2026,10 @@ Quintus.GameObjects=function(Q){
         moveCharacter:function(user,target,arg,instantCallback,callback){
             switch(arg.direction){
                 case "Forward":
-                    this.moveForward(user,target,arg.numTiles,arg.options,instantCallback ? false : callback);
+                    this.moveCharacterTo(user,target,arg.numTiles,arg.movementType,instantCallback ? false : callback);
                     break;
                 case "Backward":
-                    this.moveBackward(user,target,arg.numTiles,arg.options,instantCallback ? false : callback);
+                    this.moveCharacterTo(user,target,-arg.numTiles,arg.movementType,instantCallback ? false : callback);
                     break;
             }
             instantCallback ? callback() : false;
@@ -2023,7 +2043,6 @@ Quintus.GameObjects=function(Q){
             var piercing = moveType === "Pierce";
             //Go until reaching an object or impassable tile
             var pushing = moveType === "Push";
-            console.log(pushing)
             //Teleport to the destination with no regard for what is in between
             var teleport = moveType === "Teleport";
             var dir;
@@ -2037,21 +2056,28 @@ Quintus.GameObjects=function(Q){
             }
             //Make a path of locs to move the character
             var path = [];
+            if(numTiles < 0){
+                dir = Q.getOppositeDir(dir);
+                numTiles = -numTiles;
+            }
             var arr = Q.getDirArray(dir);
             var targetIsArray = Array.isArray(target);
-            var jumpingPrivilege = {"waterWalk":true}
+            var jumpingPrivilege = {"waterWalk":true};
             function tileClear(loc,next,final){
                 var emptyNextTile = next ? (Q.BatCon.validateTileTo(Q.BatCon.getTileType(next), target.p.canMoveOn) !== "impassable" && Q.BattleGrid.getObject(next)) : false;
                 
                 var canMoveOn = jumping && !final && emptyNextTile ? jumpingPrivilege : !targetIsArray ? target.p.canMoveOn : false;
                 
-                var objOn =  final ? Q.BattleGrid.getObject(loc) : (!jumping && !piercing && !pushing);
+                var objOn =  final || pushing ? Q.BattleGrid.getObject(loc) : (!jumping && !piercing);
                 var tileType = Q.BatCon.validateTileTo(Q.BatCon.getTileType(loc),canMoveOn);
                 if(!objOn && tileType!=="impassable") return loc;
             };
             if(!teleport){
-                var tLoc = targetIsArray ? target : target.p.loc;
-                if(targetIsArray) target = user;
+                var tLoc = targetIsArray ? user.p.loc : target.p.loc;
+                if(targetIsArray){
+                    numTiles = Q.BattleGrid.getTileDistance(user.p.loc,target);
+                    target = user;
+                }
                 //Check each tile leading to the destination. Only push until the target bumps itno something it can't go through
                 for(var i=1;i<numTiles+1;i++){
                     var loc = [tLoc[0]+arr[0]*i,tLoc[1]+arr[1]*i];
@@ -2083,9 +2109,12 @@ Quintus.GameObjects=function(Q){
             //For teleport
             else {
                 var dest;
+                //Teleport to the location selected
                 if(targetIsArray){
                     dest = target;
-                } else {
+                } 
+                //Teleport past the target character
+                else {
                     var tLoc = target.p.loc;
                     dest = [tLoc[0]+arr[0]*numTiles,tLoc[1]+arr[1]*numTiles];
                 }
@@ -2096,8 +2125,8 @@ Quintus.GameObjects=function(Q){
             }
             return {tiles:tiles,type:type};
         },
-        moveForward:function(user,target,numTiles,options,callback){
-            var data = this.validateMovedTo(user,target,numTiles,options);
+        moveCharacterTo:function(user,target,numTiles,movementType,callback){
+            var data = this.validateMovedTo(user,target,numTiles,movementType);
             if(data.tiles.length){
                 if(Array.isArray(target)){
                     user.movedByTechnique(data.tiles,data.type,callback);
@@ -2108,32 +2137,6 @@ Quintus.GameObjects=function(Q){
             } else {
                 if(callback) callback();
             }
-            
-            /*
-            //While icy and no obj on it, go further.
-            var getIcyRange = function(tileTo,arr){
-                if(Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]]&&Q.getWalkableOn(tileTo[0]+arr[0],tileTo[1]+arr[1],target.p.canMoveOn)<=1000){
-                    return getIcyRange([tileTo[0]+arr[0],tileTo[1]+arr[1]],arr);
-                } else {
-                    return tileTo;
-                }
-            };
-            var text = [];
-            var tileTo = [];
-            //Pushing in the y direction
-            var dir = Q.compareLocsForDirection(user.p.loc,target.p.loc);
-            var arr = Q.getDirArray(dir);
-            tileTo = [target.p.loc[0]+(arr[0]*tiles),target.p.loc[1]+(arr[1]*tiles)];
-            tileTo = Q.BattleGrid.icy && Q.BattleGrid.icy.p.tiles[tileTo[1]][tileTo[0]] ? getIcyRange(tileTo,arr) : tileTo;
-            //Make sure there's no object or impassable tile where the target will be pushed to.
-            //TO DO: Only push as far as the object can go without crashing into something (for 2+ tile push)
-            if(!Q.BattleGrid.getObject(tileTo)&&Q.BatCon.validateTileTo(Q.BatCon.getTileType(tileTo),target)!=="impassable"){
-                text.push({func:"pushed",obj:target,props:[tileTo]});
-            };
-            return text;*/
-        },
-        moveBackward:function(user,target,numTiles,options){
-            
         },
         
         pull:function(target,user){

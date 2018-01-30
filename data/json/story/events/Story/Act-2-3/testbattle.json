@@ -6,8 +6,8 @@
     "defaultDir": "up",
     "placementSquares": [
         [
-            13,
-            18
+            11,
+            16
         ]
     ],
     "maxAllies": 6,
@@ -35,10 +35,32 @@
             "Tanky Boi",
             0,
             [
-                13,
-                17
+                11,
+                15
             ],
             "up"
+        ],
+        [
+            "Act-2-3.json",
+            "Test",
+            "Tanky Boi",
+            1,
+            [
+                11,
+                14
+            ],
+            "down"
+        ],
+        [
+            "Act-2-3.json",
+            "Test",
+            "Tanky Boi",
+            2,
+            [
+                11,
+                13
+            ],
+            "down"
         ]
     ]
 }

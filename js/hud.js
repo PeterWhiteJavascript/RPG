@@ -933,7 +933,8 @@ Quintus.HUD=function(Q){
         },
         validateTechnique:function(technique,loc,user){
             var mustTargetGround = technique.rangeProps.includes("MustTargetGround");
-            if(mustTargetGround && Q.BattleGrid.getObject(loc)) return this.cannotDo();
+            var objOnTargetLoc = Q.BattleGrid.getObject(loc)
+            if(mustTargetGround && objOnTargetLoc) return this.cannotDo();
             
             var canTargetGround = technique.rangeProps.includes("CanTargetGround");
             var targets = this.getTechniqueInRange(technique);
@@ -960,17 +961,33 @@ Quintus.HUD=function(Q){
                 for(var i=0;i<technique.args.length;i++){
                     var arg = technique.args[i];
                     if(arg.func === "Move Character"){
-                        var thisValid = {tiles:[]};
-                        if(technique.damage){
-                            thisValid.tiles.push(true);
+                        var thisValid;
+                        //Always do the technique if there is damage, even if no targets move.
+                        if(technique.type1 === "Damage"){
+                            thisValid = {tiles:[true]};
                         } else {
-                            if((mustTargetGround || canTargetGround) && !targets.length ){
-                                thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, loc, arg.numTiles, arg.options);
-                            } else if(!mustTargetGround && targets.length){
-                                thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, targets[0], arg.numTiles, arg.options);
+                            switch(arg.target){
+                                case "All":
+                                    if(targets.length){
+                                        for(var j=0;j<targets.length;j++){
+                                            thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, targets[i], arg.numTiles, arg.movementType);
+                                            if(thisValid && thisValid.tiles.length) break;
+                                        }
+                                    }
+                                    if(!thisValid || !thisValid.tiles.length){
+                                        thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, user, arg.numTiles, arg.movementType);
+                                    }
+                                    break;
+                                case "User":
+                                    console.log(targets[0],loc)
+                                    thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, user, arg.numTiles, arg.movementType);
+                                    break;
+                                case "Target":
+                                    thisValid = Q.BatCon.techniqueFuncs.validateMovedTo(user, targets[0], arg.numTiles, arg.movementType);
+                                    break;
                             }
                         }
-                        if(!thisValid.tiles.length) validMovement = false;
+                        if(!thisValid || !thisValid.tiles.length) validMovement = false;
                     }
                 }
                 

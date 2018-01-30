@@ -600,20 +600,9 @@ $(function(){
             },
             genUniqueId:function(handle){
                 var id = 0;
-                var sameHandle = $("."+handle);
-                if(sameHandle.length){
-                    //Match the unique ids
-                    do {
-                        var found = false;
-                        //Check if the ids match
-                        for(var i=0;i<sameHandle.length;i++){
-                            if($(sameHandle[i]).attr("uniqueId")==id){
-                                id++;
-                                found=true;
-                            }
-                        }
-                    } while(found);
-                }
+                $(".character").each(function(){
+                    if($(this).attr("handle") === handle) id++;
+                });
                 return id;
             },
     

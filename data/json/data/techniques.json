@@ -10,15 +10,17 @@
             [
                 1,
                 "Normal",
-                []
+                [
+                    "MaxRangeFixed"
+                ]
             ],
             [
-                0,
-                "Normal",
+                3,
+                "VLine",
                 []
             ],
             [],
-            20,
+            0,
             100,
             10,
             "Stabbing",
@@ -28,8 +30,8 @@
                     "Move Character",
                     [
                         "Target",
-                        "Forward",
-                        5,
+                        "Backward",
+                        3,
                         "Push"
                     ]
                 ]
@@ -770,7 +772,7 @@
                     [
                         "Move Character",
                         [
-                            "Both",
+                            "All",
                             "Backward",
                             1,
                             []
@@ -2315,7 +2317,7 @@
         "moveCharacterTarget": [
             "User",
             "Target",
-            "Both"
+            "All"
         ],
         "moveCharacterDir": [
             "Forward",
