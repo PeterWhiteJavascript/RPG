@@ -27,12 +27,11 @@
             "slashing",
             [
                 [
-                    "Change Ground",
+                    "Apply Status Effect",
                     [
-                        "changeTile",
-                        "Icy",
+                        "Target",
+                        "Immobilized",
                         3,
-                        4,
                         100
                     ]
                 ]

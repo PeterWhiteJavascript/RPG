@@ -23,6 +23,22 @@
         "w":32,
         "h":32
     },
+    "ui_Seeking Mirage":{
+        "tilew":32,
+        "tileh":32,
+        "sx":0,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_Dodging":{
+        "tilew":32,
+        "tileh":32,
+        "sx":32,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
     "ui_Poisoned":{
         "tilew":32,
         "tileh":32,
@@ -53,6 +69,55 @@
         "tileh":32,
         "sx":32,
         "sy":64,
+        "w":32,
+        "h":32
+    },
+    "ui_Weakened":{
+        "tilew":32,
+        "tileh":32,
+        "sx":128,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_Bleeding":{
+        "tilew":32,
+        "tileh":32,
+        "sx":160,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    
+    "ui_Blinded":{
+        "tilew":32,
+        "tileh":32,
+        "sx":192,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_Stunned":{
+        "tilew":32,
+        "tileh":32,
+        "sx":224,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_Disabled":{
+        "tilew":32,
+        "tileh":32,
+        "sx":256,
+        "sy":32,
+        "w":32,
+        "h":32
+    },
+    "ui_Immobilized":{
+        "tilew":32,
+        "tileh":32,
+        "sx":288,
+        "sy":32,
         "w":32,
         "h":32
     }
