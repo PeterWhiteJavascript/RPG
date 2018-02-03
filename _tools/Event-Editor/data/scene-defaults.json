@@ -1,0 +1,73 @@
+{
+    "Act-1-1": {
+        "Story": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "startPage": "Start"
+        },
+        "Location": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "defaultActions": [
+                {
+                    "text": "Recruit",
+                    "func": "createRecruitMenu"
+                },
+                {
+                    "text": "Buy",
+                    "func": "displayBuyItemsList"
+                }
+            ]
+        },
+        "Battle Scene": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx"
+        },
+        "Battle": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx",
+            "maxAllies": "4",
+            "defaultDirection": "up"
+        }
+    },
+    "Act-1-2": {
+        "Story": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "startPage": "Start"
+        },
+        "Location": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "defaultActions": []
+        },
+        "Battle Scene": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx"
+        },
+        "Battle": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx"
+        }
+    },
+    "Act-1-3": {
+        "Story": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "startPage": "Start"
+        },
+        "Location": {
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "defaultActions": []
+        },
+        "Battle Scene": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx"
+        },
+        "Battle": {
+            "music": "demo.mp3",
+            "map": "Test\/Act-1-1-Left-Path.tmx"
+        }
+    }
+}

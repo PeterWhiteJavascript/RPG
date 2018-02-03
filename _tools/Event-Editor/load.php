@@ -8,11 +8,12 @@
     <body>
         <div id="wrapper">
             <div id="main-content">
-            <div id="scene-title"><div>Load a Scene</div></div>
+                <div id="scene-title"><div>Load a Scene</div></div>
                 <div id="scenes-cont"></div>
                 <div id="menu-cont">
                     <div id="story" class="menu-button">Open Story</div>
                     <div id="vars" class="menu-button">Edit Vars</div>
+                    <div id="defaults" class="menu-button">Scene Defaults</div>
                     <div id="back" class="menu-button">Back</div>
                 </div>
             </div>

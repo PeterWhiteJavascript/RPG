@@ -5,62 +5,219 @@
             "events": [
                 {
                     "events": [
-                        "Battle-Scene",
-                        "Location"
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Story-01"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Start",
-                    "left": "442px",
-                    "top": "123px"
+                    "name": "Story-00",
+                    "type": "Story",
+                    "left": "0px",
+                    "top": "368px"
                 },
                 {
                     "events": [
-                        "Battle"
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
+                        ]
                     ],
                     "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene",
-                    "left": "566px",
-                    "top": "239px"
+                    "globalVars": [
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            "1000"
+                        ]
+                    ],
+                    "name": "Story-01",
+                    "type": "Story",
+                    "left": "4px",
+                    "top": "328px"
                 },
                 {
                     "events": [
-                        "Battle-Scene"
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-04"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-05"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Location",
-                    "left": "582px",
-                    "top": "365px"
+                    "name": "Story-03",
+                    "type": "Story",
+                    "left": "0px",
+                    "top": "247px"
                 },
                 {
                     "events": [
-                        "After-battle"
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Story-03"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Battle",
-                    "left": "718px",
-                    "top": "236px"
+                    "name": "Location-02",
+                    "type": "Story",
+                    "left": "0px",
+                    "top": "285px"
                 },
                 {
                     "events": [
-                        "Fin"
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-07"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "After-battle",
-                    "left": "768px",
-                    "top": "294px"
+                    "name": "Battle-Scene-04",
+                    "type": "Battle Scene",
+                    "left": "58px",
+                    "top": "216px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-06"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-05",
+                    "type": "Battle Scene",
+                    "left": "58px",
+                    "top": "171px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-08"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-08-Defeat"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-07",
+                    "type": "Battle",
+                    "left": "324px",
+                    "top": "212px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-09"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Battle-Scene-09-Defeat"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-06",
+                    "type": "Battle",
+                    "left": "214px",
+                    "top": "172px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Story-10"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-09",
+                    "type": "Battle Scene",
+                    "left": "194px",
+                    "top": "111px"
                 },
                 {
                     "events": [],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Fin",
-                    "left": "798px",
-                    "top": "370px"
+                    "name": "Battle-Scene-08",
+                    "type": "Battle Scene",
+                    "left": "315px",
+                    "top": "168px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Story-00"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Story-10",
+                    "type": "Story",
+                    "left": "444px",
+                    "top": "123px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-09-Defeat",
+                    "type": "Story",
+                    "left": "116px",
+                    "top": "252px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Battle-Scene-08-Defeat",
+                    "type": "Battle Scene",
+                    "left": "281px",
+                    "top": "284px"
                 }
             ],
             "vrs": {
@@ -371,7 +528,7 @@
                     ],
                     "globalVars": [],
                     "name": "Arrive-in-village",
-                    "type": "location",
+                    "type": "Location",
                     "left": "92px",
                     "top": "327px"
                 },
@@ -391,7 +548,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-story",
-                    "type": "story",
+                    "type": "Story",
                     "left": "4px",
                     "top": "215px"
                 },
@@ -400,7 +557,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-2-story",
-                    "type": "story",
+                    "type": "Story",
                     "left": "37px",
                     "top": "449px"
                 },
@@ -409,7 +566,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-3-story",
-                    "type": "story",
+                    "type": "Story",
                     "left": "301px",
                     "top": "324px"
                 },
@@ -424,7 +581,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-battle-scene",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "0px",
                     "top": "134px"
                 },
@@ -433,7 +590,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-2-battle-scene",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "7px",
                     "top": "544px"
                 },
@@ -442,7 +599,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-after-battle",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "295px",
                     "top": "202px"
                 },
@@ -451,7 +608,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-after-battle-story",
-                    "type": "story",
+                    "type": "Story",
                     "left": "241px",
                     "top": "262px"
                 },
@@ -473,7 +630,7 @@
                     ],
                     "globalVars": [],
                     "name": "train",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "8px",
                     "top": "327px"
                 },
@@ -493,7 +650,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "quest-1-battle",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "128px",
                     "top": "175px"
                 }
@@ -517,13 +674,13 @@
                         [
                             "Story",
                             "Act-2-3",
-                            "battleScene-2"
+                            "Battle Scene-2"
                         ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Base-Camp",
-                    "type": "location",
+                    "type": "Location",
                     "left": "578px",
                     "top": "326px"
                 },
@@ -538,7 +695,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Kitchen-pre",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "497px",
                     "top": "377px"
                 },
@@ -562,7 +719,7 @@
                         "money"
                     ],
                     "name": "Kitchen-b",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "369px",
                     "top": "473px"
                 },
@@ -577,7 +734,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Kitchen-post",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "339px",
                     "top": "312px"
                 },
@@ -593,7 +750,7 @@
                         ]
                     ],
                     "name": "Starting",
-                    "type": "story",
+                    "type": "Story",
                     "left": "378.962px",
                     "top": "135.993px"
                 },
@@ -607,8 +764,8 @@
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "battleScene-2",
-                    "type": "battleScene",
+                    "name": "Battle Scene-2",
+                    "type": "Battle Scene",
                     "left": "793px",
                     "top": "320px"
                 },
@@ -617,7 +774,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "battle-2",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "995px",
                     "top": "325px"
                 },
@@ -632,7 +789,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "the-epic-battle",
-                    "type": "story",
+                    "type": "Story",
                     "left": "798px",
                     "top": "231px"
                 },
@@ -652,7 +809,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "epic-battle-fight",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "539px",
                     "top": "229px"
                 },
@@ -667,7 +824,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Location-Test",
-                    "type": "location",
+                    "type": "Location",
                     "left": "477px",
                     "top": "84px"
                 },
@@ -687,7 +844,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "testbattle",
-                    "type": "battle",
+                    "type": "Battle",
                     "left": "161px",
                     "top": "85px"
                 }
@@ -704,13 +861,13 @@
                         [
                             "Story",
                             "Act-2-4",
-                            "battle"
+                            "Battle"
                         ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Start",
-                    "type": "battleScene",
+                    "type": "Battle Scene",
                     "left": "457px",
                     "top": "318px"
                 },
@@ -719,18 +876,18 @@
                         [
                             "Story",
                             "Act-2-4",
-                            "battle"
+                            "Battle"
                         ],
                         [
                             "Story",
                             "Act-2-4",
-                            "battle"
+                            "Battle"
                         ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "battle",
-                    "type": "battle",
+                    "name": "Battle",
+                    "type": "Battle",
                     "left": "545px",
                     "top": "323px"
                 }
@@ -745,7 +902,7 @@
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Selecting-two-out-of-three-options",
-                    "type": "story",
+                    "type": "Story",
                     "left": "467px",
                     "top": "472px"
                 }

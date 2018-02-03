@@ -20,6 +20,9 @@ $(function(){
     $("#vars").on("click",function(){
         $.redirect('edit-vars.php', {scene:$(".selected").text()});
     });
+    $("#defaults").on("click",function(){
+        $.redirect('edit-scene-defaults.php', {scene:$(".selected").text()});
+    });
     $("#back").on("click",function(){
         $.redirect("index.php");
     });

@@ -33,6 +33,7 @@ Quintus.SceneFuncs=function(Q){
     };
     Q.scene("story",function(stage){
         var data = stage.options.data;
+        console.log(data)
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
         });
@@ -83,6 +84,7 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         var map = "maps/"+data.map;
         Q.loadTMX(map, function() {
+            $("#background-image").attr("src","images/bg/battle-bg.png");
             Q.audioController.playMusic(data.music,function(){
                 Q.stageScene("fader",11);
                 //Display the tmx tile map

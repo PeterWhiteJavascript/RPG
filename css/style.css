@@ -47,6 +47,7 @@ body{
 /* Loading End*/
 
 #HUD-container{
+    top:0;
     width:100%;
     height:5%;
     background-color:#555;
@@ -224,7 +225,27 @@ body{
 }
 
 /* Locations End */
+/* Battle Scene Start */
+#dialogue-cont{
+    position:absolute;
+    width:100%;
+    height:300px;
+    bottom:300px;
+}
+#dialogue-cont div{
+    display:inline-block;
+}
+#left-asset{
+    
+}
+#right-asset{
+    
+}
+#dialogue-text{
+    
+}
 
+/* Battle Scene End */
 
 #back-button{
     position:absolute;

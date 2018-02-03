@@ -337,7 +337,7 @@ var start = function(){
                 this.addAction($("#actions-cont"),p.name);
             }
             //Create a page if there is not one
-            if(!pages.length) $("#add-action").click();
+            if(!pages.length) createNewAction(FileSaver.event);
             this.selectAction(pages[0].name);
         },
         //Adds a var to the list
@@ -431,16 +431,21 @@ var start = function(){
     $("#add-var").click(function(){
         DC.addVar();
     });
-    $("#add-action").click(function(){
+    function createNewAction(start){
         var name = "Action "+uniqueActions;
+        var music = start ? start.music : $("#music-select").children(".music-select").val();
+        var bg = start ? start.bg : $("#bg-select").children(".bg-select").val();
         DC.addAction($("#actions-cont"),name);
         FileSaver.event.pages.push({
             name:name,
-            music: $("#music-select").children(".music-select").val(),
-            bg:$("#bg-select").children(".bg-select").val(),
+            music: music,
+            bg:bg,
             options:[],
             onload:[]
         });
+    }
+    $("#add-action").click(function(){
+        createNewAction();
     });
     //End editor-content buttons
     

@@ -2,12 +2,18 @@
 
 $type = isset($_POST['type']) ? $_POST['type'] : false;
 $scene = isset($_POST['scene']) ? $_POST['scene'] : false;
-$name = isset($_POST['event']) ? $_POST['event'] : $_POST['filename'];
-
+$name = isset($_POST['event']) ? $_POST['event'] : false;
+if(!$name){
+    $name = isset($_POST['filename']) ? $_POST['filename'] : false;
+}
 if($type && $scene && $name){
     $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
-} else {
+} else if($name) {
     $event = json_decode(file_get_contents('../../data/json/story/characters/'.$name), true);
+} 
+//There is no event, just get the data
+else {
+    $event = false;
 }
 
 
@@ -56,6 +62,8 @@ while($file = readdir($dh)) {
 }
 $globalName = "global-vars.json";
 $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story/global-vars.json'));
+
+$sceneDefaults = json_decode(file_get_contents('data/scene-defaults.json'), true);
 ?>
 <?php include 'quintus-lib.php'; ?>
 <script>
@@ -74,8 +82,10 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
         imageAssets: <?php echo json_encode($images); ?>,
         spritesImgs: <?php echo json_encode($sprites_imgs); ?>,
         animsImgs: <?php echo json_encode($anims_imgs); ?>,
-        bgFiles:<?php echo json_encode($bgs); ?>
+        bgFiles:<?php echo json_encode($bgs); ?>,
+        sceneDefaults:<?php echo json_encode($sceneDefaults); ?>
     };
+    console.log(GDATA.eventPointer);
     //Makes sure empty object is not converted to array (not sure what is really happening here).
     if(GDATA.event.vrs && Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
     var formatScenes = function(){
@@ -113,5 +123,4 @@ $dataFiles -> $globalName = json_decode(file_get_contents('../../data/json/story
     };
     GDATA.events = formatEvents();
     GDATA.scenes = formatScenes();
-    console.log(GDATA)
 </script>

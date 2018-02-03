@@ -611,7 +611,7 @@ Quintus.Objects=function(Q){
             },
             validToCarry:function(){
                 if(!this.p.lifting&&!this.p.lifted){
-                    if(this.hasStatus("bleedingOut")||this.hasStatus("dead")){
+                    if(this.hasStatus("Bleeding Out")||this.hasStatus("Dead")){
                         return true;
                     }
                 }
@@ -843,8 +843,8 @@ Quintus.Objects=function(Q){
                 return;
             }
             //If the character is drawn to the mirage, refresh the status if the mirage still exists and move towards it.
-            if(this.hasStatus("drawnToMirage")){
-                this.refreshStatus("drawnToMirage",100,this.p.status.drawnToMirage.user);
+            if(this.hasStatus("Seeking Mirage")){
+                this.refreshStatus("Seeking Mirage",100,this.p.status.drawnToMirage.user);
                 this.moveTowardsMirage(this.p.status.drawnToMirage.user);
                 return false;
             }
@@ -862,7 +862,7 @@ Quintus.Objects=function(Q){
                     if(atkRoll>defRoll){
                         this.p.didAction = true;
                         this.moveTowardsMirage(inRange);
-                        this.addStatus("drawnToMirage",100,"Debuff",inRange);
+                        this.addStatus("Seeking Mirage",100,"Debuff",inRange);
                         return false;
                     }
                 }

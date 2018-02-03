@@ -22,7 +22,7 @@
 }
 .UIC-hud div{
     display:inline-block;
-    font-size:1.2vw;
+    font-size:1.1vw;
     background-color:var(--button-background-color);
     color:var(--button-text-color);
 }
@@ -444,6 +444,9 @@ textarea{
 }
 .eighty-width{
     width:80%;
+}
+.ninety-width{
+    width:90%;
 }
 .full-width{
     width:100% !important;

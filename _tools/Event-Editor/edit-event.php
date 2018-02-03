@@ -15,15 +15,19 @@
             //Send user to correct editor for this event.
             switch(kind){
                 case "story":
+                case "Story":
                     $.redirect("edit-story-event.php",{scene:scene,event:data.name,type:type});
                     break;
                 case "battleScene":
+                case "Battle Scene":
                     $.redirect("edit-battleScene-script.php",{scene:scene,event:data.name,type:type});
                     break;
                 case "battle":
+                case "Battle":
                     $.redirect("edit-battle-event.php",{scene:scene,event:data.name,type:type});
                     break;
                 case "location":
+                case "Location":
                     $.redirect("edit-location-event.php",{scene:scene,event:data.name,type:type});
                     break;
             }

@@ -1,0 +1,65 @@
+{
+    "name": "Battle-Scene-09",
+    "kind": "battleScene",
+    "map": "Test\/Act-1-1-Right-Path.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "empty.png",
+                    "empty.png",
+                    "You have won... We will let you through.",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                14,
+                21
+            ],
+            "up"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Elementalist",
+            0,
+            [
+                13,
+                18
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Elementalist",
+            1,
+            [
+                15,
+                18
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Story-10"
+    ],
+    "viewLoc": [
+        14,
+        21
+    ]
+}

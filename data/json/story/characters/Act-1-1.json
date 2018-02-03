@@ -1,0 +1,68 @@
+{
+    "Left": {
+        "Legionnaire": {
+            "handle": "Legionnaire",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "lean": false
+        }
+    },
+    "Right": {
+        "Elementalist": {
+            "handle": "Elementalist",
+            "name": "",
+            "levelmin": 3,
+            "levelmax": 3,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Stone",
+                "Flamethrower",
+                "Fireball",
+                "Frost Ray",
+                "Choke",
+                "Lightning Storm"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Elementalist",
+            "lean": false
+        }
+    }
+}

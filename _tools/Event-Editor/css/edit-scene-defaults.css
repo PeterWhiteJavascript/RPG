@@ -1,0 +1,25 @@
+#scene-title{
+    border-radius:0;
+}
+.menu-box{
+    width:500px;
+    left:calc(50% - 250px);
+    height:calc(100% - 120px);
+}
+.UIC-button{
+    text-align:center;
+}
+#editor-main-content{
+    margin-top:60px;
+}
+.action{
+    border-bottom:1px dashed black;
+}
+.remove-choice{
+    cursor:pointer;
+    width:10%;
+    text-align:center;
+}
+.remove-choice:hover{
+    background-color:var(--button-hover-color);
+}

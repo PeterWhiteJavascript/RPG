@@ -437,7 +437,7 @@ var start = function(){
                 this.addPage($("#pages-cont"),p.name);
             }
             //Create a page if there is not one
-            if(!pages.length) $("#add-page").click();
+            if(!pages.length) createNewPage(FileSaver.event);
             this.selectPage(pages[0].name);
         },
         //Adds a var to the list
@@ -601,11 +601,14 @@ var start = function(){
     $("#add-var").click(function(){
         DC.addVar();
     });
-    $("#add-page").click(function(){
+    function createNewPage(start){
+        var name = start ? start.startPage : "Page "+uniquePages;
+        var music = start ? start.music :$("#music-select").children(".music-select").val();
+        var bg = start ? start.bg : $("#bg-select").children(".bg-select").val();
         var newPage = {
-            name: "Page "+uniquePages,
-            music: $("#music-select").children(".music-select").val(),
-            bg:$("#bg-select").children(".bg-select").val(),
+            name: name,
+            music: music,
+            bg:bg,
             text: "",
             choices: [],
             onload: [],
@@ -613,6 +616,9 @@ var start = function(){
         };
         FileSaver.event.pages.push(newPage);
         DC.addPage($("#pages-cont"),newPage.name);
+    }
+    $("#add-page").click(function(){
+        createNewPage();
     });
 
     $("#add-new-onload-group").click(function(){

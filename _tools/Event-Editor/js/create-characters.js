@@ -1,4 +1,5 @@
 $(function(){
+    if(Array.isArray(GDATA.event)) GDATA.event = {};
     CharacterGenerator.init(GDATA.dataFiles["character-generation.json"],GDATA.dataFiles['equipment.json'],GDATA.dataFiles['default-equipment.json'],GDATA.dataFiles['techniques.json'],GDATA.dataFiles['talents.json'],GDATA.dataFiles['awards.json']);
     var uic = new UIC({
         dataP:{
@@ -588,7 +589,6 @@ $(function(){
                     var lean = [processLeanVal($("#lean-props").children("input:eq(4)").val()),processLeanVal($("#lean-props").children("input:eq(5)").val()),processLeanVal($("#lean-props").children("input:eq(6)").val()),processLeanVal($("#lean-props").children("input:eq(7)").val())];
                     var terDif = lean.reduce(function(acc,cur){return acc + cur;}) - 100;
                     var vals = getVals(terDif,lean);
-                    console.log(vals);
                     $("#lean-props").children("input:eq(4)").val(vals[0]);
                     $("#lean-props").children("input:eq(5)").val(vals[1]);
                     $("#lean-props").children("input:eq(6)").val(vals[2]);

@@ -1,0 +1,56 @@
+{
+    "name": "Story-01",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "demo.mp3",
+            "bg": "Inveraray_Castle_-_south-west_facade.jpg",
+            "text": "Would you like 1000 gold, or 3000 gold?",
+            "choices": [
+                [
+                    "1000 PLS",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Global",
+                                "money",
+                                "+=",
+                                1000
+                            ]
+                        ],
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Location-02"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "3000 POLSSS",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Location-02"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {}
+}

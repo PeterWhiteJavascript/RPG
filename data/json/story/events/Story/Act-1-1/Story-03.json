@@ -1,0 +1,47 @@
+{
+    "name": "Story-03",
+    "kind": "story",
+    "pages": [
+        {
+            "name": "Page 1",
+            "music": "dragon_quest_4_in_brass_05_-_homeland_-_wagon_wheel's_march-tx.mp3",
+            "bg": "forest.jpg",
+            "text": "You go to the forest and there are two paths.\n\nWhich will you go down?",
+            "choices": [
+                [
+                    "Left Path",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Battle-Scene-04"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Right Path",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Battle-Scene-05"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {}
+}

@@ -1029,10 +1029,10 @@ Quintus.GameObjects=function(Q){
                 //TEMP for now set hp to 1 after battle if dead.
                 char.combatStats.hp = ally.p.combatStats.hp || 1;
                 char.combatStats.tp = ally.p.combatStats.tp;
-                if(ally.hasStatus("dead")){
+                if(ally.hasStatus("Dead")){
                     char.wounded = 5;
-                } else if(ally.hasStatus("bleedingOut")){
-                    char.wounded = 5-ally.hasStatus("bleedingOut").turns+1;
+                } else if(ally.hasStatus("Bleeding Out")){
+                    char.wounded = 5-ally.hasStatus("Bleeding Out").turns+1;
                 }
             });
             Q.partyManager.allies.forEach(function(char){
@@ -1082,7 +1082,7 @@ Quintus.GameObjects=function(Q){
                     if(!obj.p.status.bleedingOut){
                         obj.p.angle = 90;
                         //obj.removeStatus("bleedingOut");
-                        obj.addStatus("dead",999,"debuff",obj);
+                        obj.addStatus("Dead",999,"debuff",obj);
                     }
                 }
             }
@@ -1265,9 +1265,11 @@ Quintus.GameObjects=function(Q){
             }
             //Next, check the modified tiles
             var tileLayer = Q.ModifiedGroundTileLayer;
-            if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
-                var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
-                return type || "impassable";
+            if(tileLayer){
+                if(tileLayer.p.tiles[loc[1]]&&tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]]){
+                    var type = tileLayer.tileCollisionObjects[tileLayer.p.tiles[loc[1]][loc[0]]].p.type;
+                    return type || "impassable";
+                }
             }
             
             //If there's nothing on top, check the ground

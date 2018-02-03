@@ -106,7 +106,7 @@ if(isset($_GET['err'])){
                             data:{filename:$("#new-file-name").val()},
                             dataType:'json'
                         })
-                        .done(function(data){$.redirect('create-characters.php', {filename:$("#new-file-name").val()});})
+                        .done(function(data){$.redirect('create-characters.php', {filename:$("#new-file-name").val()+".json"});})
                         .fail(function(data){alert("This file already exists!");});
                         
                     } else {

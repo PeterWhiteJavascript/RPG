@@ -1398,6 +1398,7 @@ Quintus.UIObjects=function(Q){
             } 
             //If it's a function
             else {
+                console.log(data)
                 //Do the function
                 if(this[data[0]](this,data[1])){return;};
                 //Go to the next script entry
@@ -1483,7 +1484,7 @@ Quintus.UIObjects=function(Q){
         },
         //Battle Scene Below
         changeMusic:function(obj,props){
-            Q.playMusic(props[0],function(){obj.forceCycle();});
+            Q.audioController.playMusic(props[0],function(){obj.forceCycle();});
             return true;
         },
         checkAddCharacter:function(name){
@@ -1578,6 +1579,10 @@ Quintus.UIObjects=function(Q){
         changeMoveSpeed:function(obj,props){
             var obj = this.getChar(props[0]);
             obj.p.stepDelay = props[1]/1000;
+        },
+        playSound:function(obj,props){
+            Q.audioController.playSound(props[0]);
+            
         },
         //Moves a character along a path
         moveAlong:function(obj,props){

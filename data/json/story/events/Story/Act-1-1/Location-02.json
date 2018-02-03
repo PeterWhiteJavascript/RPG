@@ -1,0 +1,49 @@
+{
+    "name": "Location-02",
+    "kind": "location",
+    "pages": [
+        {
+            "name": "Action 1",
+            "music": "homeland.mp3",
+            "bg": "city.jpg",
+            "options": [
+                [
+                    "Recruit",
+                    false,
+                    [
+                        [
+                            "createRecruitMenu",
+                            []
+                        ]
+                    ]
+                ],
+                [
+                    "Buy",
+                    false,
+                    [
+                        [
+                            "displayBuyItemsList",
+                            []
+                        ]
+                    ]
+                ],
+                [
+                    "Go do the Quest",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Story-03"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": []
+        }
+    ],
+    "vrs": {}
+}

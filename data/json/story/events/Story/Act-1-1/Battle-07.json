@@ -1,0 +1,89 @@
+{
+    "name": "Battle-07",
+    "kind": "battle",
+    "map": "Test\/Act-1-1-Left-Path.tmx",
+    "music": "demo.mp3",
+    "defaultDir": "up",
+    "placementSquares": [
+        [
+            14,
+            22
+        ],
+        [
+            15,
+            22
+        ],
+        [
+            14,
+            21
+        ],
+        [
+            15,
+            21
+        ]
+    ],
+    "maxAllies": 6,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Battle-Scene-08"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Battle-Scene-08-Defeat"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            0,
+            [
+                13,
+                22
+            ],
+            "right"
+        ],
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            1,
+            [
+                16,
+                22
+            ],
+            "left"
+        ],
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            2,
+            [
+                14,
+                20
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            3,
+            [
+                15,
+                20
+            ],
+            "down"
+        ]
+    ]
+}

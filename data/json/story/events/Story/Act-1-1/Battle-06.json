@@ -1,0 +1,63 @@
+{
+    "name": "Battle-06",
+    "kind": "battle",
+    "map": "Test\/Act-1-1-Right-Path.tmx",
+    "music": "demo.mp3",
+    "defaultDir": "up",
+    "placementSquares": [
+        [
+            14,
+            20
+        ],
+        [
+            13,
+            20
+        ],
+        [
+            15,
+            20
+        ]
+    ],
+    "maxAllies": 3,
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Battle-Scene-09"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Battle-Scene-09-Defeat"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "Right",
+            "Elementalist",
+            0,
+            [
+                13,
+                18
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Elementalist",
+            1,
+            [
+                15,
+                18
+            ],
+            "down"
+        ]
+    ]
+}

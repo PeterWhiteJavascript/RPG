@@ -503,7 +503,7 @@ $(function(){
                     props = props || [chars[0],uic.dataP.directions[0],true,[]];
                     cont.append(this.Select("Char",chars,props[0],"char"));
                     cont.append(this.Select("Dir",uic.dataP.directions,props[1]));
-                    cont.append(this.Checkbox("On Arrival",props[2]));
+                    cont.append(this.Checkbox("Cyc On Arrival",props[2]));
                     var moveLocs = props[3];
                     var moveCont = $(this.Container("Move Path",moveLocs));
                     cont.append(moveCont);
@@ -672,7 +672,7 @@ $(function(){
                 return {
                     file:{
                         name:FileSaver.event.name,
-                        kind:"battleScene",
+                        kind:"Battle Scene",
                         map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
                         music:$("#prop-music .music-select").val(),
                         script:uic.getSaveScript($("#script-groups")),

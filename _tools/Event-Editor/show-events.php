@@ -5,6 +5,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
 <!DOCTYPE html>
 <html>
     <head>
+        <?php include 'GameDataLoader.php'; ?>
         <?php include 'config.php';?>
         <title>Load an Event</title>
         <link rel="stylesheet" href="css/show-events.css">
@@ -15,7 +16,6 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
         <script>
             var scenes = <?php echo json_encode($scenes); ?>;
             var globalVars = <?php echo json_encode($globalVars); ?>;
-            var scene = '<?php echo $_POST["scene"]; ?>';
         </script>
         <div id="wrapper">
             <div class="full-screen-hider"></div>

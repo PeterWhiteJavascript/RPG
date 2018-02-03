@@ -1,16 +1,16 @@
 {
-    "name": "After-battle",
+    "name": "Battle-Scene-08-Defeat",
     "kind": "battleScene",
-    "map": "Venoria\/Venoria-Castle-Training-Area.tmx",
-    "music": "dragon_quest_4_in_brass_09_-_sea_breeze-tx.mp3",
+    "map": "Test\/Act-1-1-Left-Path.tmx",
+    "music": "demo.mp3",
     "script": [
         [
             [
                 "text",
                 [
-                    "heya",
                     "empty.png",
                     "empty.png",
+                    "Hah, dead.",
                     false,
                     0,
                     false
@@ -22,6 +22,10 @@
     "finished": [
         "Story",
         "Act-1-1",
-        "Fin"
+        "Location-02"
+    ],
+    "viewLoc": [
+        14,
+        21
     ]
 }
