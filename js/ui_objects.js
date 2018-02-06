@@ -4,7 +4,14 @@ Quintus.UIObjects=function(Q){
         allies:[],
         roster:[],
         init:function(){
-            
+            //Generate the HUD that has money and the current week on it.
+            $("body").append("<div id='HUD-container'><div><span>Money: </span><span id='hud-money'></span></div><div><span>Week: </span><span id='hud-week'></span></div></div>");
+            Q.state.on("change.saveData.money",function(){
+                $("#HUD-container").children("div:eq(0)").children("span").text("Money: "+Q.state.get("saveData.money"));
+            });
+            Q.state.on("change.saveData.week",function(){
+                $("#HUD-container").children("div:eq(1)").children("span").text("Week: "+Q.state.get("saveData.week"));
+            });
         },
         adjustTempStatChange:function(char,props){
             char.tempStatChanges.push(props);
@@ -1078,7 +1085,7 @@ Quintus.UIObjects=function(Q){
             return false;
         },
         cycleWeek:function(){
-            Q.state.get("saveData").week++;
+            Q.state.inc("saveData.week",1);
             //All characters that are wounded get reduced by 1
             var allies = Q.state.get("allies");
             for(var i=0;i<allies.length;i++){

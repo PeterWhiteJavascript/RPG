@@ -1,6 +1,6 @@
 {
     "name": "Battle-Scene-08",
-    "kind": "battleScene",
+    "kind": "Battle Scene",
     "map": "Venoria\/Venoria-Castle-Outside.tmx",
     "music": "demo.mp3",
     "script": [],

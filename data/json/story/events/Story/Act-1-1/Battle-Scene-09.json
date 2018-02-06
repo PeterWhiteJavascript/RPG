@@ -1,6 +1,6 @@
 {
     "name": "Battle-Scene-09",
-    "kind": "battleScene",
+    "kind": "Battle Scene",
     "map": "Test\/Act-1-1-Right-Path.tmx",
     "music": "demo.mp3",
     "script": [

@@ -1,12 +1,6 @@
 var changed = false;
 var globalVars;
 var scene = GDATA.eventPointer.scene;
-var convertValue = function(value){console.log(value)
-    if(value.toLowerCase()==="false") return false;
-    if(value.toLowerCase()==="true") return true;
-    if(Number.isInteger(parseInt(value))) return parseInt(value);
-    return value;
-};
 $(function(){
     $("#scene-title").append("<div>"+scene+"</div>");
     var eventsInScene;
@@ -113,10 +107,9 @@ $(function(){
         return "<div id='"+text+"' type='"+type+"' class='event-button'>"+text+"</div>";
     };
     file = scenes;
-    $("#events-flowchart-cont").prepend("<div id='flowchart'></div>")
-
     sceneData = file["Story"].find(function(itm){return itm.name===scene;});
     eventsInScene = sceneData.events;
+    $("#events-flowchart-cont").prepend("<div id='flowchart'></div>")
     if(eventsInScene.length){
         showFlowchart();
     } else {
@@ -128,49 +121,48 @@ $(function(){
         $(".full-screen-hider").hide();
         $(".full-screen-hider").off();
     }
-    //Load a box in the center that allows the user to input type and name. On confirm, create the file.
-    $("#new-event").click(function(){
-        if(!$(".event-group").length){
-            $("#new-group").trigger("click");
-            $(".event-group").last().trigger("click");
-        }
-        $(".full-screen-hider").show();
-        
-        var cont = $('<div id="new-event-cont" class="UIC-group-item-props"><span id="new-event-confirm" class="UIC-button ninety-width">Create Event</span><div class="remove-choice"><span>x</span></div></div>');
+    function loadEventEditing(data){
+        var buttonText = data ? "Copy Event" : "Create Event";
+        var cont = $('<div id="new-event-cont" class="UIC-group-item-props"><span id="new-event-confirm" class="UIC-button ninety-width">'+buttonText+'</span><div class="remove-choice"><span>x</span></div></div>');
         cont.append(uic.Input("Name","","text"));
-        cont.append($(uic.Select("Type",["Story","Location","Battle Scene","Battle"],"Story")));
-        
+        var type = data ? data.kind : "Story";
+        cont.append($(uic.Select("Type",["Story","Location","Battle Scene","Battle"],type)));
+        uic.selectInitialValue(cont);
         $(cont).children("select:eq(0)").on("change",function(){
             $(this).nextAll().remove();
             var type = $(this).val();
             var parent = $(this).parent();
             switch(type){
                 case "Story":
-                    parent.append(uic.Select("Music",GDATA.musicFileNames,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].music));
-                    parent.append(uic.Select("BG",GDATA.bgFiles,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].bg));
-                    parent.append(uic.Input("S Page",GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].startPage,"text"));
+                    var props = data ? [data.music,data.bg,data.startPage] : [GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].music,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].bg,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].startPage];
+                    parent.append(uic.Select("Music",GDATA.musicFileNames,props[0]));
+                    parent.append(uic.Select("BG",GDATA.bgFiles,props[1]));
+                    parent.append(uic.Input("S Page",props[2],"text"));
                     break;
                 case "Location":
-                    parent.append(uic.Select("Music",GDATA.musicFileNames,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Location"].music));
-                    parent.append(uic.Select("BG",GDATA.bgFiles,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Location"].bg));
+                    var props = data ? [data.music,data.bg,data.startPage] : [GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].music,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].bg];
+                    parent.append(uic.Select("Music",props[0]));
+                    parent.append(uic.Select("BG",props[1]));
                     
                     break;
                 case "Battle Scene":
-                    var map = GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].map.split("/");
-                    parent.append(uic.Select("Music",GDATA.musicFileNames,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].music));
+                    var props = data ? [data.map,data.music] : [GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].map,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].music];
+                    var map = props[0].split("/");
+                    parent.append(uic.Select("Music",GDATA.musicFileNames,props[1]));
                     parent.append(uic.Select("Area",GDATA.mapFileNames,map[0]));
                     parent.append(uic.Select("Map",GDATA.mapFileNames[map[0]],map[1]));
                     uic.linkSelects(parent.children("select:eq(2)"),parent.children("select:eq(3)"),GDATA.mapFileNames);
                     
                     break;
                 case "Battle":
-                    var map = GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].map.split("/");
-                    parent.append(uic.Select("Music",GDATA.musicFileNames,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].music));
+                    var props = data ? [data.map,data.music,data.defaultDir,data.maxAllies] : [GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].map,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle Scene"].music,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].defaultDirection,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].maxAllies];
+                    var map = props[0].split("/");
+                    parent.append(uic.Select("Music",GDATA.musicFileNames,props[1]));
                     parent.append(uic.Select("Area",GDATA.mapFileNames,map[0]));
                     parent.append(uic.Select("Map",GDATA.mapFileNames[map[0]],map[1]));
                     uic.linkSelects(parent.children("select:eq(2)"),parent.children("select:eq(3)"),GDATA.mapFileNames);
-                    parent.append(uic.Select("Dir",["up","right","down","left"],GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].defaultDirection));
-                    parent.append(uic.Input("M Allies",GDATA.sceneDefaults[GDATA.eventPointer.scene]["Battle"].maxAllies,"number"));
+                    parent.append(uic.Select("Dir",["up","right","down","left"],props[2]));
+                    parent.append(uic.Input("M Allies",props[3],"number"));
                     
                     break;
             }
@@ -179,78 +171,106 @@ $(function(){
             $(this).val(type);
         });
         $(cont).children("select:eq(0)").trigger("change");
+        if(data){
+            cont.children("select:eq(0)").attr("disabled",true);
+        }
         $("#main-content").append(cont);
-        $("#new-event-confirm").click(function(){
-            var cont = $("#new-event-cont");
-            var newName = cont.children("input:eq(0)").val().replace(/\s+/g, '-');
-            if(/^[a-zA-Z0-9- ]*$/.test(newName) == false) {
-                alert("Please only use letters and numbers (spaces will be converted to '-').");
-                return;
-            }
-            var newType = cont.children("select:eq(0)").val();
-            if(!newName){
-                alert("Please set a name");
-                return;
-            } else {
-                $("#flowchart").append(newEventButton(newName,newType));
-                $(".event-button").last().addClass("absolute-event-button");
-                $(".event-button").last().draggable({
-                    containment:$("#events-flowchart-cont"),
-                    drag:function(){
-                        $("."+$(this).attr("id")).each(function(){
-                            adjustConnection($(this));
-                        });
-                        changed = true;
-                    }
+    }
+    function saveEvent(data){
+        var cont = $("#new-event-cont");
+        var newName = cont.children("input:eq(0)").val().replace(/\s+/g, '-');
+        if(data && newName === data.name){
+            alert("Please choose a different name.");
+            return;
+        }
+        if(/^[a-zA-Z0-9- ]*$/.test(newName) == false) {
+            alert("Please only use letters and numbers (spaces will be converted to '-').");
+            return;
+        }
+        if(eventsInScene.filter(function(event){return event.name === newName;}).length){
+            alert("This scene already contains an event with this name. Please rename it.");
+            return;
+        }
+        if(!newName){
+            alert("Please set a name");
+            return;
+        }
+        
+        var newType = cont.children("select:eq(0)").val();
+        $("#flowchart").append(newEventButton(newName,newType));
+        $(".event-button").last().addClass("absolute-event-button");
+        $(".event-button").last().draggable({
+            containment:$("#events-flowchart-cont"),
+            drag:function(){
+                $("."+$(this).attr("id")).each(function(){
+                    adjustConnection($(this));
                 });
-                $(".event-button").last().trigger("click");
+                changed = true;
             }
-            //Create the event in story
-            var newEvent = {
-                events:[],
-                sceneVars:[],
-                globalVars:[],
-                name:newName,
-                type:newType,
-                left:"100px",
-                top:"100px"
-            };
-            eventsInScene.push(newEvent);
-            sceneData.events.push(newEvent);
-            //Create the event file
-            finishNewEvent();
-            var newFile = {};
-            newFile.name = newName;
-            newFile.kind = newType;
-            switch(newType){
-                case "Story":
+        });
+         //Create the event in story
+        var newEvent = {
+            events:[],
+            sceneVars:[],
+            globalVars:[],
+            name:newName,
+            type:newType,
+            left:"100px",
+            top:"100px"
+        };
+        //Copy over the references
+        if(data){
+            var copying = $(".selected.event-button").text();
+            var refData = eventsInScene.find(function(elm){return elm.name===copying;});
+            newEvent.events = refData.events;
+            newEvent.sceneVars = refData.sceneVars;
+            newEvent.globalVars = refData.globalVars;
+        }
+        eventsInScene.push(newEvent);
+        sceneData.events.push(newEvent);
+        finishNewEvent();
+        $(".event-button").last().trigger("click");
+        
+        
+        var newFile = data ? data : {};
+        newFile.name = newName;
+        newFile.kind = newType;
+        switch(newType){
+            case "Story":
+                if(!data){
                     newFile.pages = [];
                     newFile.vrs = {};
-                    newFile.music = cont.children("select:eq(1)").val();
-                    newFile.bg = cont.children("select:eq(2)").val();
-                    newFile.startPage = cont.children("input:eq(1)").val();
-                    break;
-                case "Location":
+                }
+                newFile.music = cont.children("select:eq(1)").val();
+                newFile.bg = cont.children("select:eq(2)").val();
+                newFile.startPage = cont.children("input:eq(1)").val();
+                break;
+            case "Location":
+                if(!data){
                     newFile.pages = [];
                     newFile.vrs = {};
-                    newFile.music = cont.children("select:eq(1)").val();
-                    newFile.bg = cont.children("select:eq(2)").val();
-                    break;
-                case "Battle Scene":
-                    newFile.music = cont.children("select:eq(1)").val();
-                    newFile.map = cont.children("select:eq(2)").val()+"/"+cont.children("select:eq(3)").val();
+                }
+                newFile.music = cont.children("select:eq(1)").val();
+                newFile.bg = cont.children("select:eq(2)").val();
+                break;
+            case "Battle Scene":
+                newFile.music = cont.children("select:eq(1)").val();
+                newFile.map = cont.children("select:eq(2)").val()+"/"+cont.children("select:eq(3)").val();
+                if(!data){
                     newFile.script = [];
                     newFile.characters = [];
                     newFile.finished = ["Story",scene,newName];
                     newFile.vrs = {};
                     newFile.viewLoc = [0,0];
-                    break;
-                case "Battle":
-                    newFile.music = cont.children("select:eq(1)").val();
-                    newFile.map = cont.children("select:eq(2)").val()+"/"+cont.children("select:eq(3)").val();
+                }
+                break;
+            case "Battle":
+                newFile.music = cont.children("select:eq(1)").val();
+                newFile.map = cont.children("select:eq(2)").val()+"/"+cont.children("select:eq(3)").val();
+                newFile.maxAllies = cont.children("input:eq(0)").val();
+                newFile.defaultDirection = cont.children("select:eq(3)").val();
+                if(!data){
                     newFile.placementSquares = [];
-                    newFile.maxAllies = cont.children("input:eq(0)").val();
-                    newFile.defaultDirection = cont.children("select:eq(3)").val();
                     newFile.events = [];
                     newFile.characters = [];
                     newFile.victory = {
@@ -262,23 +282,34 @@ $(function(){
                         events:[]
                     };
                     newFile.vrs = {};
-                    break;
-            }
-            $.ajax({
-                type:'POST',
-                url:'create-event.php',
-                data:{scene:scene,type:"Story",data:JSON.stringify(newFile)},
-                dataType:'json'
-            })
-            .done(function(data){console.log(data);changed=false;})
-            .fail(function(data){console.log(data)});
-            setTimeout(function(){
-                saveEvents();
-            });
-            
-            
+                }
+                break;
+        }
+        $.ajax({
+            type:'POST',
+            url:'create-event.php',
+            data:{scene:scene,type:"Story",data:JSON.stringify(newFile)},
+            dataType:'json'
+        })
+        .done(function(data){console.log(data);changed=false;})
+        .fail(function(data){console.log(data)});
+        setTimeout(function(){
+            saveEvents();
         });
-        cont.children(".remove-choice").click(function(){finishNewEvent();});
+    }
+    //Load a box in the center that allows the user to input type and name. On confirm, create the file.
+    $("#new-event").click(function(){
+        if(!$(".event-group").length){
+            $("#new-group").trigger("click");
+            $(".event-group").last().trigger("click");
+        }
+        $(".full-screen-hider").show();
+        loadEventEditing();
+        
+        $("#new-event-confirm").click(function(){
+            saveEvent();
+        });
+        $("#new-event-cont").children(".remove-choice").click(function(){finishNewEvent();});
         $(".full-screen-hider").click(function(){finishNewEvent();});
     });
     $("#new-group").click(function(){
@@ -291,6 +322,21 @@ $(function(){
     $("#edit-event").click(function(){
         confirmFlowchartPosition();
         $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
+    });
+    $("#copy-event").click(function(){
+        $(".full-screen-hider").show();
+        var event = $(".selected.event-button");
+        var eventName = $(event).text();
+        //Get the event's data
+        var path = "../../data/json/story/events/Story/"+scene+"/"+eventName+".json";
+        $.getJSON(path,function(data){
+            loadEventEditing(data);
+            $("#new-event-confirm").click(function(){
+                saveEvent(data);
+            });
+            $("#new-event-cont").children(".remove-choice").click(function(){finishNewEvent();});
+            $(".full-screen-hider").click(function(){finishNewEvent();});
+        });
     });
     $("#edit-vars").click(function(){
         confirmFlowchartPosition();

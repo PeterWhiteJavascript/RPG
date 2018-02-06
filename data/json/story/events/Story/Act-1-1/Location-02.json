@@ -1,6 +1,6 @@
 {
     "name": "Location-02",
-    "kind": "location",
+    "kind": "Location",
     "pages": [
         {
             "name": "Action 1",

@@ -1,6 +1,6 @@
 {
     "name": "Battle-07",
-    "kind": "battle",
+    "kind": "Battle",
     "map": "Test\/Act-1-1-Left-Path.tmx",
     "music": "demo.mp3",
     "defaultDir": "up",

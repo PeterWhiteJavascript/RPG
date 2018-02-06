@@ -1,5 +1,6 @@
 Quintus.SceneFuncs=function(Q){
     Q.startScene = function(type,scene,event,char){
+        $("#HUD-container").hide();
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
             var data = Q.assets["json/story/events/"+type+"/"+scene+"/"+event+".json"];
@@ -32,13 +33,14 @@ Quintus.SceneFuncs=function(Q){
         });
     };
     Q.scene("story",function(stage){
+        $("#HUD-container").show();
         var data = stage.options.data;
-        console.log(data)
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
         });
     });
     Q.scene("location",function(stage){
+        $("#HUD-container").show();
         var data = stage.options.data;
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.locationController.startEvent(data);

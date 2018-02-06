@@ -85,7 +85,7 @@ $sceneDefaults = json_decode(file_get_contents('data/scene-defaults.json'), true
         bgFiles:<?php echo json_encode($bgs); ?>,
         sceneDefaults:<?php echo json_encode($sceneDefaults); ?>
     };
-    console.log(GDATA.eventPointer);
+    console.log(GDATA);
     //Makes sure empty object is not converted to array (not sure what is really happening here).
     if(GDATA.event.vrs && Array.isArray(GDATA.event.vrs)) GDATA.event.vrs = {};
     var formatScenes = function(){

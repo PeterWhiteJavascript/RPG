@@ -28,6 +28,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
                 <div id="menu-cont">
                     <div id="new-event" class="menu-button">New Event</div>
                     <div id="edit-event" class="menu-button">Edit Event</div>
+                    <div id="copy-event" class="menu-button">Copy Event</div>
                     <div id="test-event" class="menu-button">Test Event</div>
                     <div id="delete-event" class="menu-button">Delete Event</div>
                     <div class="menu-divider"></div>

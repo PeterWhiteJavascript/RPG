@@ -247,7 +247,7 @@ Q.load(toLoad.join(","),function(){
     //Controls adding and removing party members and much more
     Q.partyManager = new Q.PartyManager();
     
-    $("body").append("<div id='HUD-container'><div><span>Money: </span><span id='hud-money'></span></div><div><span>Week: </span><span id='hud-week'></span></div></div>");
+    
     /* TESTING EVENT */
     //testing = {type:"Story",scene:"Act-1-1",name:"Start"};
     if(testing){
