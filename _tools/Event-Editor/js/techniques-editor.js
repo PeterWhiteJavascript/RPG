@@ -136,7 +136,7 @@ $(function(){
             uic.createTopMenu($("#editor-content"));
 
             function techniqueArguments(data){
-                return uic.createGroup([uic.getPremadeGroup("TechniqueArguments",data)]);
+                return uic.createGroup([uic.getPremadeGroup("TechniqueArguments",data)],false,true);
             };
             function saveCurrentTech(){
                 var type = $(".sub-title-text.selected").closest(".tech-group").attr("class").split(" ")[1];

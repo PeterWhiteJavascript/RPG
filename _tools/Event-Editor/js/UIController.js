@@ -416,13 +416,12 @@ function UIC(p){
                 break
         }
     };
-    this.createGroup = function(categories,baseProps){
+    this.createGroup = function(categories,baseProps,excludeX){
         var group = $(
         '<div class="UIC-group">\n\
             <div class="UIC-hud">\n\
                 <div class="minimize-choice"><span>-</span></div>\n\
                 <div class="UIC-hud-buttons"></div>\n\
-                <div class="remove-choice-deep"><span>x</span></div>\n\
             </div>\n\
         </div>');
         if(baseProps){
@@ -430,7 +429,12 @@ function UIC(p){
             uic.selectInitialValue($(group).children(".UIC-base-props"));
         }
         $(group).children(".UIC-hud").children(".minimize-choice").click(uic.minimizeScript);
-        $(group).children(".UIC-hud").children(".remove-choice-deep").on("click",uic.removeDeepItem);
+        if(!excludeX){
+            group.children(".UIC-hud").append('<div class="remove-choice-deep"><span>x</span></div>');
+            group.children(".UIC-hud").children(".remove-choice-deep").on("click",uic.removeDeepItem);
+        } else {
+            group.children(".UIC-hud").children(".UIC-hud-buttons").addClass("ninety-width");
+        }
         for(var i=0;i<categories.length;i++){
             var buttonText = categories[i][0];
             var buttonFunc = categories[i][1];

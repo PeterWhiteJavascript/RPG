@@ -836,7 +836,7 @@
                 ],
                 [
                     1,
-                    "MeleeWeapon",
+                    null,
                     []
                 ],
                 [
@@ -993,7 +993,7 @@
                 ],
                 [
                     1,
-                    "MeleeWeapon",
+                    null,
                     []
                 ],
                 [
@@ -1157,7 +1157,18 @@
                 100,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Ground",
+                        [
+                            "changeTile",
+                            "Caltrops",
+                            3,
+                            4,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Weakening Strike",
@@ -1431,12 +1442,28 @@
                     ]
                 ],
                 [],
-                25,
+                0,
                 100,
                 25,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "baseStats",
+                            "ini",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Forewarn",
@@ -1460,12 +1487,28 @@
                     ]
                 ],
                 [],
-                40,
+                0,
                 100,
                 40,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "counterChance",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Sharpen",
@@ -1489,12 +1532,28 @@
                     ]
                 ],
                 [],
-                30,
+                0,
                 100,
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "atkAccuracy",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Vitalize",
@@ -1518,12 +1577,28 @@
                     ]
                 ],
                 [],
-                40,
+                0,
                 100,
                 40,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "critChance",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            2,
+                            2,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Vivify",
@@ -1552,7 +1627,23 @@
                 35,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "atkSpeed",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Coordinated Attack",
@@ -1563,7 +1654,7 @@
                 ],
                 [
                     0,
-                    "MeleeWeapon",
+                    null,
                     []
                 ],
                 [
@@ -1965,7 +2056,7 @@
                 ],
                 [
                     0,
-                    null,
+                    "Normal",
                     []
                 ],
                 [
@@ -2019,7 +2110,7 @@
                     []
                 ],
                 [
-                    0,
+                    2,
                     "VLine",
                     []
                 ],

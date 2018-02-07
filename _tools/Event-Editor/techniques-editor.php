@@ -20,12 +20,6 @@
                     <p class="title-text minimizer">Passive</p>
                     <div id="passive-techniques-cont" class="minimizable"></div>
                 </div>
-                <div class="tech-group CharClass">
-                    <p class="title-text minimizer">Char Classes</p>
-                    <div id="char-classes-cont">
-
-                    </div>
-                </div>
                 
             </div>
             <div id="mid-cont">
@@ -33,6 +27,12 @@
             </div>
             <div id="right-cont">
                 
+                <div class="tech-group CharClass">
+                    <p class="title-text minimizer">Char Classes</p>
+                    <div id="char-classes-cont">
+
+                    </div>
+                </div>
             </div>
         </div>
     </body>

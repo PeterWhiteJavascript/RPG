@@ -5,8 +5,18 @@
                 [
                     false,
                     [
+                        "Awards",
+                        "Enemies Defeated",
+                        "==",
+                        ""
+                    ],
+                    [
                         "Character Class",
-                        "Legionnaire"
+                        "Archer"
+                    ],
+                    [
+                        "Act",
+                        "Act-1-1"
                     ]
                 ]
             ],
