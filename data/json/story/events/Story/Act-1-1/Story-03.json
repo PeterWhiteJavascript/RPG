@@ -37,6 +37,21 @@
                         ]
                     ],
                     []
+                ],
+                [
+                    "Back to location",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Location-02"
+                            ]
+                        ]
+                    ],
+                    []
                 ]
             ],
             "onload": [],

@@ -6,12 +6,6 @@ Quintus.UIObjects=function(Q){
         init:function(){
             //Generate the HUD that has money and the current week on it.
             $("body").append("<div id='HUD-container'><div><span>Money: </span><span id='hud-money'></span></div><div><span>Week: </span><span id='hud-week'></span></div></div>");
-            Q.state.on("change.saveData.money",function(){
-                $("#HUD-container").children("div:eq(0)").children("span").text("Money: "+Q.state.get("saveData.money"));
-            });
-            Q.state.on("change.saveData.week",function(){
-                $("#HUD-container").children("div:eq(1)").children("span").text("Week: "+Q.state.get("saveData.week"));
-            });
         },
         adjustTempStatChange:function(char,props){
             char.tempStatChanges.push(props);
@@ -174,8 +168,8 @@ Quintus.UIObjects=function(Q){
             Event:{}
         },
         changeMoney:function(amount){
-            this.vars.Global.money += amount;
-            $("#hud-money").text(this.vars.Global.money);
+            Q.state.get("saveData").money += amount;
+            $("#hud-money").text(Q.state.get("saveData").money);
         },
         evaluateStringOperator:function(vr,op,vl,min,max){
             var value;
@@ -191,6 +185,7 @@ Quintus.UIObjects=function(Q){
         setVar:function(scope,vr,op,vl,scene,event){
             switch(scope){
                 case "Global":
+                    if(vr === "money") this.changeMoney(vl);
                     this.vars[scope][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][vr],op,vl);
                     break;
                 case "Scene":
@@ -401,6 +396,7 @@ Quintus.UIObjects=function(Q){
                 switch(effects[i][0]){
                     case "setVar":
                         Q.variableProcessor.setVar(props[0],props[1],props[2],props[3],Q.state.get("currentEvent").scene,Q.state.get("currentEvent").event);
+                        
                         break;
                     case "changePage":
                         obj.changePage(props[0]);
@@ -592,7 +588,6 @@ Quintus.UIObjects=function(Q){
     Q.GameObject.extend("StoryController",{
         //When a story event starts, set data and show the container.
         startEvent:function(data){
-            $("#main-container").append("<div id='HUD-container'></div>");
             //Elements used for displaying text
             $("#main-container").append('<div id="text-content"></div>');
             $("#text-content").append('<div id="text-content-story"></div>');
@@ -773,12 +768,16 @@ Quintus.UIObjects=function(Q){
             this.add("locationsMenus");
             this.setUpCont();
             this.data = data;
-            this.startPage = data.pages[0].name;
+            var pages = this.pages = [];
+            for(var i=0;i<data.pages.length;i++){
+                pages.push(data.pages[0]);
+            }
+            this.startPage = pages[0].name;
             //Set up the menu options that are always available, regardless of which location the player is at.
-            data.pages.unshift({
+            pages.unshift({
                 name:"_entourage",
-                music:data.pages[0].music,
-                bg:data.pages[0].bg,
+                music:pages[0].music,
+                bg:pages[0].bg,
                 options:[
                     [
                         "Equip",
@@ -835,10 +834,10 @@ Quintus.UIObjects=function(Q){
                 ],
                 onload:[]
             });
-            data.pages.unshift({
+            pages.unshift({
                 name:"_base",
-                music:data.pages[1].music,
-                bg:data.pages[1].bg,
+                music:pages[1].music,
+                bg:pages[1].bg,
                 options:[
                     [
                         "View Entourage",
@@ -867,7 +866,7 @@ Quintus.UIObjects=function(Q){
                             [
                                 "changePage",
                                 [
-                                    data.pages[1].name
+                                    pages[1].name
                                 ]
                             ]
                         ]
@@ -885,7 +884,7 @@ Quintus.UIObjects=function(Q){
                 ],
                 onload:[]
             });
-            this.displayPage(data.pages[0].name);
+            this.displayPage(pages[0].name);
         },
         setUpCont:function(){
             $("#main-container").append('<div id="options-cont-location" class="big-box"><div class="options-list inner-box"></div></div>');
@@ -897,7 +896,7 @@ Quintus.UIObjects=function(Q){
             return $("<div class='option'><span>"+text+"</span></div>");
         },
         getPageData:function(name){
-            return this.data.pages.filter(function(page){return page.name === name; })[0];
+            return this.pages.filter(function(page){return page.name === name; })[0];
         },
         addBaseOptions:function(){
             $("#options-cont-location").children(".options-list").append(this.newOption("Entourage"));
@@ -912,7 +911,7 @@ Quintus.UIObjects=function(Q){
                 $("#options-cont-location").children(".options-list").append($(this.newOption("Back")).click(function(){
                     $("#main-container").empty();
                     Q.locationController.setUpCont();
-                    Q.locationController.changePage(Q.locationController.data.pages[0].name);
+                    Q.locationController.changePage(Q.locationController.pages[0].name);
                 }));
             }
         },
@@ -1012,7 +1011,7 @@ Quintus.UIObjects=function(Q){
             function goBack(){
                 $("#main-container").empty();
                 Q.locationController.setUpCont();
-                Q.locationController.displayPage(Q.locationController.data.pages[0].name);
+                Q.locationController.displayPage(Q.locationController.pages[0].name);
             };
             $("#options-cont").children(".options-cont-confirm-cont").children("div").first().click(function(){
                 $("#options-cont").children(".option-itm").each(function(idx){
@@ -1086,6 +1085,7 @@ Quintus.UIObjects=function(Q){
         },
         cycleWeek:function(){
             Q.state.inc("saveData.week",1);
+            $("#hud-week").text(Q.state.get("saveData").week);
             //All characters that are wounded get reduced by 1
             var allies = Q.state.get("allies");
             for(var i=0;i<allies.length;i++){
@@ -1098,7 +1098,6 @@ Quintus.UIObjects=function(Q){
             console.log(event)*/
             
             var event = this.checkWeek(Q.state.get("saveData").week);
-            console.log(event)
             if(event){
                 Q.locationController.fullDestroy();
                 var curEvent = Q.state.get("currentEvent");

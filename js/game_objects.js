@@ -994,8 +994,9 @@ Quintus.GameObjects=function(Q){
         init:function(){
             //Any characters that have their hp reduced to 0 or under get removed all at once (they get destroyed when they're killed, but only removed here after)
             this.markedForRemoval = [];
-            this.round = 0;
+            this.round = 1;
             this.add("battlePlacement, battleTriggers, attackFuncs, techniqueFuncs");
+            this.allyExpContributions = [];
         },
         
         //Run once at the start of battle
@@ -1003,6 +1004,19 @@ Quintus.GameObjects=function(Q){
             this.allies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="Ally"; 
             });
+            for(var i=0;i<this.allies.length;i++){
+                var ally = this.allies[i];
+                this.allyExpContributions.push({
+                    name:ally.p.name,
+                    damageDealt:0,
+                    damageTaken:0,
+                    damageHealed:0,
+                    statusCured:0,
+                    statusApplied:0,
+                    enemiesDefeated:0,
+                    alliesRevived:0
+                });
+            }
             this.enemies = this.stage.lists[".interactable"].filter(function(char){
                 return char.p.team==="Enemy"; 
             });
@@ -1010,16 +1024,108 @@ Quintus.GameObjects=function(Q){
             //Do start battle animation, and then start turn (TODO)
             this.startTurn();
         },
+        getFinalContributions:function(data){
+            return {
+                topDamageDealt:data.sort(function(a,b){return b.damageDealt - a.damageDealt;}),
+                topDamageTaken:data.sort(function(a,b){return b.damageTaken - a.damageTaken;}),
+                topHealed:data.sort(function(a,b){return b.damageHealed - a.damageHealed;}),
+                mvp:data.sort(function(a,b){return (b.enemiesDefeated+b.alliesRevived) - (a.enemiesDefeated+a.alliesRevived);}),
+                statusCommander:data.sort(function(a,b){return (b.statusCured+b.statusApplied) - (a.statusCured+a.statusApplied);})
+            };
+        },
         finishBattle:function(props){
-            //Save some of the properties for allies
+            //Figure out exp distribution
+            var leaderboard = this.getFinalContributions(this.allyExpContributions);
+            
+            //Show Leaderboard
+            console.log(this.allyExpContributions)
+            console.log(leaderboard)
+            //Idea : layer boards and cycle /hide them
+            var cont = $("<div id='leaderboard'><div class='leaderboard-page'><div class='leaderboard-title'>Combat Summary</div><div class='leaderboard-cont'></div></div><div class='leaderboard-page'><div class='leaderboard-title'>EXP Distribution</div><div class='leaderboard-cont'></div></div><div id='leaderboard-next-button'>Done</div></div>");
+            var combat = $(cont).children(".leaderboard-page:eq(0)").children(".leaderboard-cont");
+            combat.append("<div class='leaderboard-cont-itm'><div>Top Damager</div><div>"+leaderboard.topDamageDealt[0].name+"</div><div>"+leaderboard.topDamageDealt[0].damageDealt+"</div></div>");
+            combat.append("<div class='leaderboard-cont-itm'><div>Best Defender</div><div>"+leaderboard.topDamageTaken[0].name+"</div><div>"+leaderboard.topDamageTaken[0].damageTaken+"</div></div>");
+            combat.append("<div class='leaderboard-cont-itm'><div>Most Healed</div><div>"+leaderboard.topHealed[0].name+"</div><div>"+leaderboard.topHealed[0].damageHealed+"</div></div>");
+            combat.append("<div class='leaderboard-cont-itm'><div>Status Commander</div><div>"+leaderboard.statusCommander[0].name+"</div><div>"+(leaderboard.statusCommander[0].statusApplied+leaderboard.statusCommander[0].statusCured)+"</div></div>");
+            combat.append("<div class='leaderboard-cont-itm'><div>MVP</div><div>"+leaderboard.mvp[0].name+"</div><div>"+(leaderboard.mvp[0].enemiesDefeated+leaderboard.mvp[0].alliesRevived)+"</div></div>");
+            
+            var exp = $(cont).children(".leaderboard-page:eq(1)").children(".leaderboard-cont");
+            var defeatedEnemies = this.enemies.filter(function(enemy){return enemy.p.combatStats.hp <= 0;});
+            var potentialExp = defeatedEnemies.length * 100;
+            var enemiesDefeatedRatio = defeatedEnemies.length / this.enemies.length;
+            //All enemies defeated
+            if(enemiesDefeatedRatio === 1){
+                var numTurns = this.round;
+                var bonuses = Q.state.get("currentEvent").data.turnBonus;
+                var bonus = bonuses.filter(function(num){return numTurns <= num;});
+                bonus = bonuses.indexOf(bonus[bonus.length-1]);
+                var base = 0.25;
+                var bonusMultiplier = base * bonus;
+                potentialExp *= bonusMultiplier;
+            }
+            var averageLevelOfEnemies = Math.floor(defeatedEnemies.reduce(function(a,b){ return a + b.p.level; }, 0) / defeatedEnemies.length);
+            var averageLevelOfAllies = Math.floor(this.allies.reduce(function(a,b){return a + b.p.level;}, 0) / this.allies.length);
+            var completeContributions = {
+                damage:this.allyExpContributions.reduce(function(a,b){return a + b.damageDealt;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageTaken;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageHealed;},0),
+                status:this.allyExpContributions.reduce(function(a,b){return a + b.statusCured;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.statusApplied;},0),
+                life:this.allyExpContributions.reduce(function(a,b){return a + b.enemiesDefeated;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.alliesRevived;},0)
+            };
+            console.log(completeContributions)
+            var portionWeight = {
+                damage:0.6,
+                status: 0.2,
+                life:0.2
+            };
+            if(completeContributions.damage === 0){
+                portionWeight.status += portionWeight.damage/2;
+                portionWeight.life += portionWeight.damage/2;
+            }
+            if(completeContributions.status === 0){
+                portionWeight.damage += portionWeight.status;
+            }
+            if(completeContributions.life === 0){
+                portionWeight.damage += portionWeight.life;
+            }
+            var portion = potentialExp / this.allies.length;
+            for(var i=0;i<this.allyExpContributions.length;i++){
+                var allyCont = this.allyExpContributions[i];
+                var ally = this.allies.find(function(a){return a.p.name === allyCont.name;});
+                
+                var damageRatio = (allyCont.damageDealt + allyCont.damageTaken + allyCont.damageHealed) / completeContributions.damage;
+                var statusRatio = (allyCont.statusCured + allyCont.statusApplied) / completeContributions.status;
+                var lifeRatio = (allyCont.enemiesDefeated + allyCont.alliesRevived) / completeContributions.life;
+                
+                var damagePortion = ((potentialExp * portionWeight.damage) * (damageRatio || 0)) / this.allyExpContributions.length;
+                var statusPortion = ((potentialExp * portionWeight.status) * (statusRatio || 0)) / this.allyExpContributions.length;
+                var lifePortion = ((potentialExp * portionWeight.life) * (lifeRatio || 0)) / this.allyExpContributions.length;
+                var level = ally.p.level;
+                var base = 0.25;
+                var enemyLevelMultiplier = Math.max(0, 1 + ((averageLevelOfEnemies - level) * base));
+                var expGain = Math.floor(((damagePortion + statusPortion + lifePortion) * enemyLevelMultiplier) + portion * enemyLevelMultiplier);
+                ally.p.expGain = expGain;
+            }
+            
+            $(document.body).append(cont);
+            
+            //Save hp and tp from battle
             this.allies.forEach(function(ally){
                 //Find the associated saved ally
                 var char = Q.partyManager.allies.filter(function(c){
                     return c.name===ally.p.name&&c.uniqueId===ally.p.uniqueId;
                 })[0];
                 if(!char) return;
-                char.exp = ally.p.exp;
-                char.level = ally.p.level;
+                char.exp += ally.p.expGain;
+                var charCont = $("<div class='leaderboard-cont-itm'><div>"+ally.p.name+"</div><div>EXP+ "+ally.p.expGain+"</div></div>");
+                exp.append(charCont);
+                
+                if(CharacterGenerator.checkLevelUp(char.exp)){
+                    var props = CharacterGenerator.levelWithExp(char.exp,char.baseStats,char.primaryStat,char.primaryCoordinate,char.lean);
+                    charCont.append("<div>Lv. Up! "+char.level+"->"+(char.level+props.levels)+"</div>");
+                    char.baseStats = props.stats;
+                    char.exp = props.newExp;
+                    char.level += props.levels;
+                    CharacterGenerator.getCombatStats(char);
+                }
                 //TEMP - IF ALEX, SET HP TO FULL AND NOT WOUNDED
                 if(char.name==="Alex"){
                     char.combatStats.hp = char.combatStats.maxHp;
@@ -1038,10 +1144,17 @@ Quintus.GameObjects=function(Q){
             Q.partyManager.allies.forEach(function(char){
                 char.placedOnMap = false;
             });
-            //TODO: checks
-            var events = props.events;
-            //Start the next scene
-            Q.startScene(props.next[0],props.next[1],props.next[2]);
+            $("#leaderboard-next-button").click(function(){
+                $("#leaderboard").remove();
+                //TODO: checks
+                var events = props.events;
+                //Start the next scene
+                Q.startScene(props.next[0],props.next[1],props.next[2]);
+                //Reset contributions
+                //TODO: save awards
+                Q.BatCon.allyExpContributions = [];
+            });
+ 
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
@@ -1087,7 +1200,9 @@ Quintus.GameObjects=function(Q){
                 }
             }
         },
-        
+        applyExpContribution:function(obj,type,amount){
+            if(obj && obj.p.team === "Ally") this.allyExpContributions.find(function(ally){return ally.name === obj.p.name;})[type] += amount;
+        },
         advanceRound:function(){
             this.turnOrder = this.generateTurnOrder(this.stage.lists[".interactable"]);
             this.round ++;
@@ -1753,12 +1868,13 @@ Quintus.GameObjects=function(Q){
                             props.attackerMinAtkDmg += technique.damage;
                             break;
                         case "Magical":
-                            props.attackerMaxAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/8);
-                            props.attackerMinAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/10);
+                            console.log(attacker)
+                            props.attackerMaxAtkDmg = technique.damage + attacker.p.level*(attacker.p.combatStats.skill/8);
+                            props.attackerMinAtkDmg = technique.damage + attacker.p.level*(attacker.p.combatStats.skill/10);
                             break;
                         case "Mental":
-                            props.attackerMaxAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/8);
-                            props.attackerMinAtkDmg = technique.damage + attacker.combatStats.level*(attacker.combatStats.skill/10);
+                            props.attackerMaxAtkDmg = technique.damage + attacker.p.level*(attacker.p.combatStats.skill/8);
+                            props.attackerMinAtkDmg = technique.damage + attacker.p.level*(attacker.p.combatStats.skill/10);
                             break;
                     }
                     
@@ -1902,6 +2018,13 @@ Quintus.GameObjects=function(Q){
                         this.text.push({func:"addStatus",obj:defender,props:[arg.statusEffect,arg.turns,false,attacker]});
                     } else {
                         this.text.push({func:"addStatus",obj:attacker,props:[arg.statusEffect,arg.turns,false,attacker]});
+                    }
+                } else if(arg.func === "Remove Status Effect"){
+                    if(!this.accuracyCheck(100,arg.accuracy || 100)) continue;
+                    if(arg.affects === "Target"){
+                        this.text.push({func:"removeStatus",obj:defender,props:[arg.statusEffect,arg.turns,false,attacker]});
+                    } else {
+                        this.text.push({func:"removeStatus",obj:attacker,props:[arg.statusEffect,arg.turns,false,attacker]});
                     }
                 }
             }
@@ -2253,13 +2376,14 @@ Quintus.GameObjects=function(Q){
             }
             return text;
         },
-        removeDebuff:function(name,target,user,callback){
-            if(name==="all"){
-                return {func:"removeAllBadStatus",obj:target,props:[]};
-            } else {
-                return {func:"removeStatus",obj:target,props:[name]};
+        removeStatus:function(status,target,user,props){
+            var text = [];
+            if(status === "All"){
+                text.push({func:"removeAllBadStatus",obj:target,props:[user]});
+            } else if(target.hasStatus(status)){
+                text.push({func:"removeStatus",obj:target,props:[status,user]});
             }
-            //callback();
+            return text;
         },
         healTp:function(amount,target,user,callback){
             if(target.p.combatStats.tp+amount>target.p.combatStats.maxTp) amount=target.p.combatStats.maxTp-target.p.combatStats.tp;

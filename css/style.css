@@ -246,7 +246,45 @@ body{
 }
 
 /* Battle Scene End */
+/* Battle Start */
+#leaderboard{
+    position:absolute;
+    width:400px;
+    height:250px;
+    left:calc(50% - 200px);
+    top:calc(25% - 125px);
+}
+#leaderboard-next-button{
+    width:100%;
+    font-size:30px;
+    text-align:center;
+    background-color:crimson;
+    cursor:pointer;
+}
+.leaderboard-title{
+    text-align:center;
+    font-size:30px;
+    font-family:"Consolas";
+    background: linear-gradient(to bottom right, gold, red);
+}
+.leaderboard-cont{
+    background-color:grey;
+}
+.leaderboard-cont-itm{
+    display:flex;
+    text-align:center;
+}
+.leaderboard-cont-itm div:nth-child(1){
+    flex-basis:50%;
+}
+.leaderboard-cont-itm div:nth-child(2){
+    flex-basis:25%;
+}
+.leaderboard-cont-itm div:nth-child(3){
+    flex-basis:25%;
+}
 
+/* Battle End */
 #back-button{
     position:absolute;
     bottom:10px;

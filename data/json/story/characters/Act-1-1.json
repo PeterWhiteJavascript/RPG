@@ -63,6 +63,37 @@
             "nationality": "Venorian",
             "charClass": "Elementalist",
             "lean": false
+        },
+        "Lesser Elementalist": {
+            "handle": "Lesser Elementalist",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Stone",
+                "Flamethrower",
+                "Fireball",
+                "Frost Ray",
+                "Choke",
+                "Lightning Storm"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Elementalist",
+            "lean": false
         }
     }
 }

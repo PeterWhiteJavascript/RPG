@@ -550,6 +550,15 @@ var CharacterGenerator = {
         else charName+=this.nameParts[natNum][gender][Math.floor(Math.random()*this.nameParts[natNum][gender].length)];
         return charName.charAt(0).toUpperCase() + charName.slice(1);
     },
+    checkLevelUp:function(exp){
+        if(exp >= 100) return true;
+    },
+    levelWithExp:function(exp,stats,primary,primaryCoordinate,lean){
+        var levels = Math.floor(exp / 100);
+        var newStats = this.levelUp(stats,primary,primaryCoordinate,lean);
+        var newExp = exp - levels * 100;
+        return {stats:newStats, levels:levels, newExp:newExp};
+    },
     levelUp:function(stats,primary,primaryCoordinate,lean){
         function inBounds(num){
             return num>2 ? 0 : num<0 ? 2 : num;

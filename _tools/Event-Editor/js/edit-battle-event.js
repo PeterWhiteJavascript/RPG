@@ -342,6 +342,10 @@ $(function(){
 
             $("#prop-music .music-select").val(event.music).trigger("change");
             $("#prop-maxAllies input").val(event.maxAllies);
+            $("#prop-turnBonus input:eq(0)").val(event.turnBonus[0]);
+            $("#prop-turnBonus input:eq(1)").val(event.turnBonus[1]);
+            $("#prop-turnBonus input:eq(2)").val(event.turnBonus[2]);
+            $("#prop-turnBonus input:eq(3)").val(event.turnBonus[3]);
             function setUpEndBattle(which){
                 $("#prop-"+which+" .scene-type").val(event[which] ? event[which].next[0] : GDATA.eventPointer.type).trigger("change");
                 $("#prop-"+which+" .scene-name").val(event[which] ? event[which].next[1] : GDATA.eventPointer.scene).trigger("change");
@@ -672,12 +676,13 @@ $(function(){
                 return {
                     file:{
                         name:FileSaver.event.name,
-                        kind:"battle",
+                        kind:"Battle",
                         map:$("#map-select-group").val()+"/"+$("#map-select-place").val(),
                         music:$("#prop-music .music-select").val(),
                         defaultDir:$("#dir-select").val(),
                         placementSquares:FileSaver.getPlacementSquares(),
                         maxAllies:uic.processValue($("#prop-maxAllies input").val()),
+                        turnBonus:[uic.processValue($("#prop-turnBonus input:eq(0)").val()),uic.processValue($("#prop-turnBonus input:eq(1)").val()),uic.processValue($("#prop-turnBonus input:eq(2)").val()),uic.processValue($("#prop-turnBonus input:eq(3)").val())],
                         victory:{
                             events:uic.getSaveGroups($("#prop-victory").children(".cond-groups")),
                             next:[$("#prop-victory .scene-type").val(),$("#prop-victory .scene-name").val(),$("#prop-victory .event-name").val()]

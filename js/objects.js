@@ -361,8 +361,8 @@ Quintus.Objects=function(Q){
                 if(dmg<=0){alert("Damage is less than or equal to 0");};
                 //Make the character take damage
                 this.p.combatStats.hp-=dmg;
-                Q.setAward(attacker,"damageDealt",dmg);
-                Q.setAward(this,"damageTaken",dmg);
+                Q.BatCon.applyExpContribution(attacker,"damageDealt",dmg);
+                Q.BatCon.applyExpContribution(this,"damageTaken",dmg);
                 //Only add the attacker if there is one (no attacker for hurt by poison, etc...)
                 if(attacker){
                     this.addToHitBy(attacker);
@@ -388,15 +388,12 @@ Quintus.Objects=function(Q){
                             Q.BatCon.dropObject(this,this.p.lifting,locs[dropLoc]);
                         });
                     }
-                    //Q.BattleGrid.removeZOC(this);
                     //Uncomment this if the object will be removed from the grid when dead
                     //Q.BattleGrid.removeObject(this.p.loc);
                     //Q.BatCon.markForRemoval(this);
                     //Set the hp to 0
                     this.p.combatStats.hp = 0;
-                    //Give the character that got the last hit an 'enemiesDefeated' award
-                    Q.setAward(attacker,"enemiesDefeated",1);
-                    Q.setAward(this,"timesDied",1);
+                    Q.BatCon.applyExpContribution(attacker,"enemiesDefeated",1);
                     //Remove all status effects
                     this.removeAllStatus();
                     this.removeAllGaveStatus();
@@ -404,19 +401,6 @@ Quintus.Objects=function(Q){
                     this.addStatus("Bleeding Out",5,"Debuff",this);
                     if(this.p.mirage) this.p.mirage.dispellMirage();
                     this.p.fainted = false;
-                    /*if(!this.p.died){
-                        //Set died to true so that if the character comes back to life, it will not give exp
-                        this.p.died = true;
-                        //Only give exp if possible (if an ally killed this character, no exp is given)
-                        if(this.p.hitBy.length){
-                            //Figure out how much exp should be awarded
-                            var expText = Q.BatCon.giveExp(this,this.p.hitBy);
-                            for(var i=0;i<expText.length;i++){
-                                Q.BatCon.attackFuncs.text.push(expText[i]);
-                            }
-                            
-                        }
-                    }*/
                 } else {
                     if(this.p.talents.includes("Second Wind")&&this.p.tempHp<=Math.floor(this.p.combatStats.maxHp/10)){
                         Q.BatCon.removeFromTurnOrder(this);
@@ -476,6 +460,8 @@ Quintus.Objects=function(Q){
                 //getStatusType(); TODO return the type (bad/good)
                 type = "bad";
                 this.addToHitBy(user);
+                
+                Q.BatCon.applyExpContribution(user,"statusApplied",1);
                 if(!this.p.statusDisplay){this.p.statusDisplay = this.stage.insert(new Q.StatusIcon({status:[name],char:this}));}
                 else {this.p.statusDisplay.p.status.push(name);}
                 this.p.status[name] = {name:name,turns:turns,type:type,user:user};
@@ -485,6 +471,7 @@ Quintus.Objects=function(Q){
             refreshStatus:function(name,turns,user,callback){
                 if(this.p.combatStats.hp<=0) return;
                 this.addToHitBy(user);
+                Q.BatCon.applyExpContribution(user,"statusApplied",1);
                 this.p.status[name].turns = turns;
                 
                 Q.audioController.playSound("coin.mp3");
@@ -549,7 +536,8 @@ Quintus.Objects=function(Q){
             hasStatus:function(name){
                 return this.p.status[name];
             },
-            removeStatus:function(name){
+            removeStatus:function(name,user){
+                Q.BatCon.applyExpContribution(user,"statusRemoved",1);
                 if(!this.p.status[name]) return;
                 this.p.status[name].user.removeGaveStatus(this);
                 this.removeGaveStatus(this.p.status[name]);
@@ -572,7 +560,8 @@ Quintus.Objects=function(Q){
                 }
                 this.p.gaveStatus = [];
             },
-            removeAllBadStatus:function(){
+            removeAllBadStatus:function(user){
+                Q.BatCon.applyExpContribution(user,"statusRemoved",1);
                 var status = this.p.status;
                 var statusDisplay = this.p.statusDisplay;
                 var keys = Object.keys(status);
@@ -584,7 +573,8 @@ Quintus.Objects=function(Q){
                     }
                 });
             },
-            removeAllStatus:function(){
+            removeAllStatus:function(user){
+                Q.BatCon.applyExpContribution(user,"statusRemoved",1);
                 var status = this.p.status;
                 var statusDisplay = this.p.statusDisplay;
                 var keys = Object.keys(status);

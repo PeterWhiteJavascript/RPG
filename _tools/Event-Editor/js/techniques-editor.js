@@ -41,7 +41,7 @@ $(function(){
                         }
                     }
                 },
-                techniquesFuncs:["Change Stat Active","Change Stat Passive","Apply Status Effect","Change Ground","Move Character"],
+                techniquesFuncs:["Change Stat Active","Change Stat Passive","Apply Status Effect","Remove Status Effect","Change Ground","Move Character"],
                 targets:["Target","User"],
                 techniqueProps:function(func,props){
                     var cont = $("<div class='UIC-group-item-props'></div>");
@@ -82,6 +82,12 @@ $(function(){
                             cont.append(uic.Select("Status Effect",FileSaver.charGen.statuses,props[1]));
                             cont.append(uic.Input("Turns",props[2],"number",0));
                             cont.append(uic.Input("Accuracy",props[3],"number",1,100));
+                            break;
+                        case "Remove Status Effect":
+                            props = props || ["Target","Poisoned",100];
+                            cont.append(uic.Select("Affects",uic.targets,props[0]));
+                            cont.append(uic.Select("Status Effect",FileSaver.charGen.statuses.concat("All"),props[1]));
+                            cont.append(uic.Input("Accuracy",props[2],"number",1,100));
                             break;
                         case "Change Ground":
                             props = props || ["changeTile","Icy",3,4,100];

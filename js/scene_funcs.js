@@ -14,16 +14,16 @@ Quintus.SceneFuncs=function(Q){
                 $("#back-button").click(function(){
                     var path = "_tools/Event-Editor/";
                     switch(data.kind){
-                        case "story":
+                        case "Story":
                             path += "edit-story-event.php";
                             break;
-                        case "location":
+                        case "Location":
                             path += "edit-location-event.php";
                             break;
-                        case "battleScene":
+                        case "Battle Scene":
                             path += "edit-battleScene-script.php";
                             break;
-                        case "battle":
+                        case "Battle":
                             path += "edit-battle-event.php";
                             break;
                     }
@@ -32,14 +32,14 @@ Quintus.SceneFuncs=function(Q){
             }
         });
     };
-    Q.scene("story",function(stage){
+    Q.scene("Story",function(stage){
         $("#HUD-container").show();
         var data = stage.options.data;
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
         });
     });
-    Q.scene("location",function(stage){
+    Q.scene("Location",function(stage){
         $("#HUD-container").show();
         var data = stage.options.data;
         Q.audioController.playMusic(data.pages[0].music,function(){
@@ -80,7 +80,7 @@ Quintus.SceneFuncs=function(Q){
              stage.insert(new Q.StoryCharacter(newChar));
         });
     };
-    Q.scene("battleScene",function(stage){
+    Q.scene("Battle Scene",function(stage){
         Q.inputs['confirm'] = false;
         //Get the data to play out this scene
         var data = stage.options.data;
@@ -119,7 +119,7 @@ Quintus.SceneFuncs=function(Q){
     },{
         sort:true
     });
-    Q.scene("battle",function(stage){
+    Q.scene("Battle",function(stage){
         $("#loading-screen").show();
         //The data that is used for this battle
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);

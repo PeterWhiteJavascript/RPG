@@ -23,12 +23,18 @@
         ]
     ],
     "maxAllies": 6,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
     "victory": {
         "events": [],
         "next": [
             "Story",
             "Act-1-1",
-            "Battle-Scene-08"
+            "Story-00"
         ]
     },
     "defeat": {
@@ -36,7 +42,7 @@
         "next": [
             "Story",
             "Act-1-1",
-            "Battle-Scene-08-Defeat"
+            "Story-00"
         ]
     },
     "events": [],

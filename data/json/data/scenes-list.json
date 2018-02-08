@@ -56,6 +56,11 @@
                             "Story",
                             "Act-1-1",
                             "Battle-Scene-05"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
                         ]
                     ],
                     "sceneVars": [],
@@ -63,7 +68,7 @@
                     "name": "Story-03",
                     "type": "Story",
                     "left": "0px",
-                    "top": "247px"
+                    "top": "223px"
                 },
                 {
                     "events": [
@@ -92,8 +97,8 @@
                     "globalVars": [],
                     "name": "Battle-Scene-04",
                     "type": "Battle Scene",
-                    "left": "58px",
-                    "top": "216px"
+                    "left": "55px",
+                    "top": "191px"
                 },
                 {
                     "events": [
@@ -107,20 +112,20 @@
                     "globalVars": [],
                     "name": "Battle-Scene-05",
                     "type": "Battle Scene",
-                    "left": "58px",
-                    "top": "171px"
+                    "left": "56px",
+                    "top": "135px"
                 },
                 {
                     "events": [
                         [
                             "Story",
                             "Act-1-1",
-                            "Battle-Scene-08"
+                            "Story-00"
                         ],
                         [
                             "Story",
                             "Act-1-1",
-                            "Battle-Scene-08-Defeat"
+                            "Story-00"
                         ]
                     ],
                     "sceneVars": [],
@@ -135,12 +140,12 @@
                         [
                             "Story",
                             "Act-1-1",
-                            "Battle-Scene-09"
+                            "Story-00"
                         ],
                         [
                             "Story",
                             "Act-1-1",
-                            "Battle-Scene-09-Defeat"
+                            "Story-00"
                         ]
                     ],
                     "sceneVars": [],
@@ -166,13 +171,19 @@
                     "top": "111px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Location-02"
+                        ]
+                    ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Battle-Scene-08",
                     "type": "Battle Scene",
-                    "left": "315px",
-                    "top": "168px"
+                    "left": "298px",
+                    "top": "253px"
                 },
                 {
                     "events": [
@@ -186,8 +197,8 @@
                     "globalVars": [],
                     "name": "Story-10",
                     "type": "Story",
-                    "left": "444px",
-                    "top": "123px"
+                    "left": "583px",
+                    "top": "119px"
                 },
                 {
                     "events": [
@@ -216,8 +227,8 @@
                     "globalVars": [],
                     "name": "Battle-Scene-08-Defeat",
                     "type": "Battle Scene",
-                    "left": "281px",
-                    "top": "284px"
+                    "left": "415px",
+                    "top": "210px"
                 }
             ],
             "vrs": {

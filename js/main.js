@@ -102,6 +102,8 @@ Q.newGame=function(options){
     
     Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
+    $("#hud-money").text(Q.state.get("saveData").money);
+    $("#hud-week").text(Q.state.get("saveData").week);
 };
 //Start the game from the save data
 Q.startGame=function(save){
@@ -129,8 +131,6 @@ Q.startGame=function(save){
     Q.partyManager.relations = Q.state.get("saveData").relations;
     
     Q.timeController.week = Q.state.get("saveData").week;
-    $("#hud-money").text(Q.state.get("saveData").money);
-    $("#hud-week").text(Q.state.get("saveData").week);
     
     //This will be passed in from the save file.
     var freeSpaces = 0;//10;
@@ -139,6 +139,9 @@ Q.startGame=function(save){
     };
     //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
+    
+    $("#hud-money").text(Q.state.get("saveData").money);
+    $("#hud-week").text(Q.state.get("saveData").week);
 };
 
 function convertTechs(data){

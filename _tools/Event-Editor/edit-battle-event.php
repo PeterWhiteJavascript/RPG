@@ -52,6 +52,13 @@
                         <span class="item-desc half-width">Default Direction</span>
                         <select id="dir-select" class="half-width"></select>
                     </div>
+                    <div id="prop-turnBonus" class="initial-props-item">
+                        <span class="item-desc full-width">Turn Bonuses</span>
+                        <input type="number" class="quarter-width" min="1" value="16">
+                        <input type="number" class="quarter-width" min="1" value="12">
+                        <input type="number" class="quarter-width" min="1" value="8">
+                        <input type="number" class="quarter-width" min="1" value="4">
+                    </div>
                     
                     <div id="prop-placementSquares" class="initial-props-item">
                         <span id="placement-squares-button" class="item-desc full-width">Placement Squares</span>

@@ -19,12 +19,18 @@
         ]
     ],
     "maxAllies": 3,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
     "victory": {
         "events": [],
         "next": [
             "Story",
             "Act-1-1",
-            "Battle-Scene-09"
+            "Story-00"
         ]
     },
     "defeat": {
@@ -32,7 +38,7 @@
         "next": [
             "Story",
             "Act-1-1",
-            "Battle-Scene-09-Defeat"
+            "Story-00"
         ]
     },
     "events": [],
@@ -43,19 +49,30 @@
             "Elementalist",
             0,
             [
-                13,
-                18
+                14,
+                19
             ],
             "down"
         ],
         [
             "Act-1-1.json",
             "Right",
-            "Elementalist",
+            "Lesser Elementalist",
+            0,
+            [
+                13,
+                19
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Lesser Elementalist",
             1,
             [
                 15,
-                18
+                19
             ],
             "down"
         ]
