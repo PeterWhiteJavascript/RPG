@@ -1,0 +1,50 @@
+{
+    "name": "Demo-3-Start",
+    "kind": "Battle Scene",
+    "map": "Test\/Act-1-1-Left-Path.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "down",
+                    true,
+                    [
+                        [
+                            16,
+                            20
+                        ],
+                        [
+                            16,
+                            18
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                14,
+                20
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-2",
+        "Demo-3-Battle"
+    ],
+    "viewLoc": [
+        0,
+        0
+    ]
+}

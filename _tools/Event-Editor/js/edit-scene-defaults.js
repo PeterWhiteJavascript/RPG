@@ -72,7 +72,7 @@ $(function(){
     $("#location-props").children("select:eq(1)").val(data["Location"].bg);
     function addAction(props){
         props = props || {text:"Page 0",func:"createGatherInfoMenu"};
-        $("#location-actions").append("<div class='action'><span class='quarter-width'>Title</span><input class='sixty-five-width' value='"+props.text+"' type='text'><span class='remove-choice'>x</span><span class='quarter-width'>Action</span><select class='three-quarter-width'>"+uic.getOptions(["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList","createGatherInfoMenu","createHuntMenu"])+"</select></div>")
+        $("#location-actions").append("<div class='action'><span class='quarter-width'>Title</span><input class='sixty-five-width' value='"+props.text+"' type='text'><span class='remove-choice'>x</span><span class='quarter-width'>Action</span><select class='three-quarter-width'>"+uic.getOptions(["changeEvent","changePage","createRecruitMenu","displayBuyItemsList","displaySellItemsList","createGatherInfoMenu","createHuntMenu"])+"</select></div>");
         $(".action").last().children("select").val(props.func);
         $(".remove-choice").last().click(function(){
             $(this).parent().remove();

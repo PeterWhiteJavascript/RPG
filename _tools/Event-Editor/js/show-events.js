@@ -141,8 +141,8 @@ $(function(){
                     break;
                 case "Location":
                     var props = data ? [data.music,data.bg,data.startPage] : [GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].music,GDATA.sceneDefaults[GDATA.eventPointer.scene]["Story"].bg];
-                    parent.append(uic.Select("Music",props[0]));
-                    parent.append(uic.Select("BG",props[1]));
+                    parent.append(uic.Select("Music",GDATA.musicFileNames,props[0]));
+                    parent.append(uic.Select("BG",GDATA.bgFiles,props[1]));
                     
                     break;
                 case "Battle Scene":
@@ -321,13 +321,15 @@ $(function(){
         });
     });
     $("#edit-event").click(function(){
+        if(!$(".selected.event-button").attr("id")) return alert("There is no event to edit!");
         confirmFlowchartPosition();
         $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
     });
     $("#copy-event").click(function(){
-        $(".full-screen-hider").show();
         var event = $(".selected.event-button");
         var eventName = $(event).text();
+        if(!eventName) return alert("There is no event to copy!");
+        $(".full-screen-hider").show();
         //Get the event's data
         var path = "../../data/json/story/events/Story/"+scene+"/"+eventName+".json";
         $.getJSON(path,function(data){
@@ -346,6 +348,7 @@ $(function(){
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
         var eventName = $(event).text();
+        if(!eventName) return alert("There is no event to delete!");
         if(confirm("Are you sure you want to delete "+eventName+"?")){
             var cons = $("."+eventName);
             cons.each(function(){
@@ -397,6 +400,7 @@ $(function(){
         alert("Saved!");
     });
     $("#test-event").click(function(){
+        if(!$(".selected.event-button").text()) return alert("There is no event to test!");
         $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
     });
 

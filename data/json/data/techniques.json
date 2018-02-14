@@ -8,14 +8,12 @@
                 "Physical"
             ],
             [
-                5,
+                1,
                 "Normal",
-                [
-                    "Straight"
-                ]
+                []
             ],
             [
-                2,
+                0,
                 "Normal",
                 []
             ],
@@ -27,11 +25,17 @@
             "slashing",
             [
                 [
-                    "Apply Status Effect",
+                    "Change Stat Active",
                     [
                         "Target",
-                        "Immobilized",
-                        3,
+                        "combatStats",
+                        "damageReduction",
+                        "-",
+                        "Number",
+                        "null",
+                        "null",
+                        20,
+                        0,
                         100
                     ]
                 ]
@@ -166,37 +170,37 @@
                 "Physical"
             ],
             [
-                6,
-                "Normal",
-                [
-                    "MaxRangeFixed",
-                    "CanTargetGround"
-                ]
-            ],
-            [
                 1,
                 "Normal",
-                [
-                    "ExcludeCenter"
-                ]
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
             ],
             [
                 "Physical",
                 "Dodge"
             ],
-            20,
+            50,
             90,
             15,
             "Smashing",
             "charging",
             [
                 [
-                    "Change Ground",
+                    "Change Stat Active",
                     [
-                        "changeTile",
-                        "Burning",
-                        3,
-                        4,
+                        "Target",
+                        "combatStats",
+                        "atkDmg",
+                        "+",
+                        "Number",
+                        "null",
+                        "null",
+                        20,
+                        0,
                         100
                     ]
                 ]
@@ -1699,23 +1703,7 @@
                 20,
                 "Slashing",
                 "slashing",
-                [
-                    [
-                        "Change Stat Active",
-                        [
-                            "Target",
-                            "combatStats",
-                            "physicalResistance",
-                            "+",
-                            "Number",
-                            "null",
-                            "null",
-                            0,
-                            0,
-                            100
-                        ]
-                    ]
-                ]
+                []
             ],
             [
                 "Armour Piercing Shot",
@@ -1726,7 +1714,7 @@
                 ],
                 [
                     0,
-                    null,
+                    "Weapon",
                     []
                 ],
                 [
@@ -1767,7 +1755,7 @@
                 ],
                 [
                     0,
-                    null,
+                    "Weapon",
                     []
                 ],
                 [
@@ -1781,7 +1769,23 @@
                 25,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "atkSpeed",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Critical Shot",
@@ -1792,7 +1796,7 @@
                 ],
                 [
                     0,
-                    null,
+                    "Weapon",
                     []
                 ],
                 [
@@ -1806,7 +1810,23 @@
                 25,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "combatStats",
+                            "critChance",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Painful Shot",
@@ -1817,7 +1837,7 @@
                 ],
                 [
                     0,
-                    null,
+                    "Weapon",
                     []
                 ],
                 [
@@ -1831,7 +1851,23 @@
                 30,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "painTolerance",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Sniper Shot",
@@ -1856,7 +1892,23 @@
                 60,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "User",
+                            "baseStats",
+                            "wsk",
+                            "=",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ]
         ],
         "Illusionist": [
@@ -1885,8 +1937,19 @@
                 "slashing",
                 [
                     [
-                        null,
-                        []
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "painTolerance",
+                            "-",
+                            "User Base Stats",
+                            "skl",
+                            "\/",
+                            2,
+                            1,
+                            100
+                        ]
                     ]
                 ]
             ],
@@ -2065,7 +2128,7 @@
                     []
                 ],
                 [],
-                100,
+                50,
                 100,
                 100,
                 "Slashing",
@@ -2090,7 +2153,7 @@
                     []
                 ],
                 [],
-                100,
+                50,
                 100,
                 100,
                 "Slashing",
@@ -2115,12 +2178,23 @@
                     []
                 ],
                 [],
-                100,
+                30,
                 100,
                 100,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Ground",
+                        [
+                            "changeTile",
+                            "Icy",
+                            3,
+                            4,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Choke",
@@ -2140,7 +2214,7 @@
                     []
                 ],
                 [],
-                100,
+                150,
                 100,
                 100,
                 "Slashing",
@@ -2197,9 +2271,20 @@
                 0,
                 100,
                 10,
-                "Slashing",
-                "slashing",
-                []
+                "Casting",
+                "charging",
+                [
+                    [
+                        "Change Ground",
+                        [
+                            "changeTile",
+                            "Stable",
+                            3,
+                            4,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Heal",
@@ -2214,17 +2299,33 @@
                     []
                 ],
                 [
-                    0,
+                    1,
                     "Normal",
                     []
                 ],
                 [],
-                75,
+                0,
                 100,
                 75,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "physicalResistance",
+                            "+",
+                            "Number",
+                            "null",
+                            "null",
+                            0,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Cure",
@@ -2244,12 +2345,21 @@
                     []
                 ],
                 [],
-                50,
+                0,
                 100,
                 50,
-                "Slashing",
-                "slashing",
-                []
+                "Casting",
+                "charging",
+                [
+                    [
+                        "Remove Status Effect",
+                        [
+                            "Target",
+                            "Bad",
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Revitalize",
@@ -2271,12 +2381,21 @@
                     []
                 ],
                 [],
-                50,
+                0,
                 100,
                 50,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Remove Status Effect",
+                        [
+                            "Target",
+                            "Fainted",
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Energize",
@@ -2296,12 +2415,28 @@
                     []
                 ],
                 [],
-                75,
+                0,
                 100,
                 75,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "tp",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "+",
+                            25,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ],
             [
                 "Resurrect",
@@ -2323,12 +2458,36 @@
                     []
                 ],
                 [],
-                100,
+                0,
                 100,
                 100,
                 "Slashing",
                 "slashing",
-                []
+                [
+                    [
+                        "Remove Status Effect",
+                        [
+                            "Target",
+                            "Bleeding",
+                            100
+                        ]
+                    ],
+                    [
+                        "Change Stat Active",
+                        [
+                            "Target",
+                            "combatStats",
+                            "hp",
+                            "+",
+                            "User Base Stats",
+                            "skl",
+                            "*",
+                            2,
+                            0,
+                            100
+                        ]
+                    ]
+                ]
             ]
         ]
     },

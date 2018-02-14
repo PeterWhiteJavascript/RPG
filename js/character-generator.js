@@ -34,6 +34,7 @@ var CharacterGenerator = {
         this.nameParts = data.nameParts;
         this.genders = data.genders;
         this.statTexts = data.statTexts;
+        this.trimmedBaseStats = data.trimmedBaseStats;
         this.statNames = data.statNames;
         this.primaryStats = data.primaryStats;
         this.primaryCoordinates = data.primaryCoords;
@@ -58,7 +59,7 @@ var CharacterGenerator = {
         var char = {
             tempStatChanges:[]
         };
-        char.team = data.team;
+        char.team = data.team || "Ally";
         
         char.level = data.level || this.generateLevel(data.levelmin,data.levelmax,act);
         char.nationality = data.nationality==="Random" || !data.nationality ? this.generateNationality(act) : data.nationality;
@@ -135,7 +136,8 @@ var CharacterGenerator = {
                 else if(level>=20) qualityChance = 2;
                 else if(level>=10) qualityChance = 1;
                 else if(level>=1) qualityChance = 0;
-                return this.qualityKeys[this.getIdx(qualities[qualityChance],this.rand())];
+                var num = Math.min(this.qualityKeys.length-1,this.getIdx(qualities[qualityChance],this.rand()));
+                return this.qualityKeys[num];
             case "Random Low":
                 qualityChance = Math.floor(Math.random()*2);
                 return this.qualityKeys[qualityChance];
@@ -220,6 +222,12 @@ var CharacterGenerator = {
             t.push(talents.CharClass[charClass][2].name);
         }
         return t;
+    },
+    getAllGearCost:function(gear){
+        function getCost(a,b){
+            return a + (b && b !== "None" ? b.cost : 0);
+        }
+        return gear.reduce(getCost,0);
     },
     getEquipment:function(val,classNum,natNum,level){
         var rh = typeof val[0]==="string" ? false : this.convertEquipment(this.equipGear(val[0][0],val[0][1],classNum,natNum,0),this.equipQuality(val[0][2],level));
@@ -827,7 +835,8 @@ var CharacterGenerator = {
             trimmedStat += threshold * mult;
             mult *= 0.8;
         }
-        return Math.floor(trimmedStat);
+        //Don't go over 100
+        return Math.min(100,Math.floor(trimmedStat));
     },
     get_strength:function(p){
         return this.getPassiveEffect(this.trimBaseStat(p.baseStats.str),"baseStats","str",p.techniques.passive);

@@ -657,13 +657,54 @@ Quintus.UIObjects=function(Q){
                     <div class='char-stats-cont-skills inner-box'></div>"
             );
         },
+        setUpBaseStatsPolygon:function(baseStats){
+            var trimmedStatNames = CharacterGenerator.trimmedBaseStats;
+            var statNames = CharacterGenerator.statNames;
+            var parent = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats");
+            
+            var bg = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-background");
+            bg.width(parent.width()/2);
+            bg.height(bg.width());
+            var fg = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-foreground");
+            fg.width(parent.width()/2);
+            fg.height(fg.width());
+            var numPoints = statNames.length;
+            //50 as in 50%
+            var radius = 50;
+            var xCenter = radius;
+            var yCenter = radius;
+            var bgPointsString = "";
+            var fgPointsString = "";
+            for(var i=0;i<numPoints;i++){
+                var statRatio = baseStats[trimmedStatNames[i]]/100;
+                var bgX = xCenter + radius * Math.sin(i * 2 * Math.PI / numPoints);
+                var bgY = yCenter - radius * Math.cos(i * 2 * Math.PI / numPoints);
+                var fgX = xCenter + radius * Math.sin(i * 2 * Math.PI / numPoints) * statRatio;
+                var fgY = yCenter - radius * Math.cos(i * 2 * Math.PI / numPoints) * statRatio;
+                var txX = xCenter + radius * Math.sin(i * 2 * Math.PI / numPoints) * 2;
+                var txY = yCenter - radius * Math.cos(i * 2 * Math.PI / numPoints) * 2;
+                if(i === numPoints - 1){
+                    bgPointsString += bgX+"% "+bgY+"%";
+                    fgPointsString += fgX+"% "+fgY+"%";
+                } else {
+                    bgPointsString += bgX+"% "+bgY+"%, ";
+                    fgPointsString += fgX+"% "+fgY+"%, ";
+                }
+                var stat = $("<div class='char-cont-polygon-stat'><div>"+statNames[i]+" "+baseStats[trimmedStatNames[i]]+"</div></div>");
+                stat.css({"margin-left":txX + 15, "margin-top":txY + 25});
+                $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").append(stat);
+                
+            }
+            bg.css('clip-path', "polygon("+bgPointsString+")");
+            fg.css('clip-path', "polygon("+fgPointsString+")");
+        },
         //Show a character's data
         showCharacterData:function(character){
             //Remove the previous character's data
             $("#character-stats-display-cont").contents().empty();
             $("#character-stats-display-cont").children(".char-stats-cont-main").append(this.mainCharData(character));
             $("#character-stats-display-cont").children(".char-stats-cont-derived").append(this.derivedCharData(character));
-            $("#character-stats-display-cont").children(".char-stats-cont-skills").append(this.skillsCharData(character));
+            this.setUpBaseStatsPolygon(character.combatStats);
             
         },
         //Adds a character for comparing
@@ -680,14 +721,40 @@ Quintus.UIObjects=function(Q){
         },
         
         mainCharData:function(data){
-            console.log(data)
+            function validateEquipment(eq){
+                if(!eq || eq === "None") return "<div class='char-prop-medium'><span>-</span></div>";
+                return "<div class='char-prop-medium'><span>"+eq.quality+" "+eq.material+" "+eq.name+"</span></div>";
+            }
+            var imgsrc = "images/sprites/"+data.charClass.toLowerCase()+".png";
+            var cont = "<div class='char-cont-name'>\n\
+                            <div class='char-prop-large'><span>"+data.name+"</span></div>\n\
+                            <div class='char-prop-large'><span>Lv. "+data.level+"</span></div>\n\
+                            <div class='char-prop-large'><span>"+data.nationality+" "+data.charClass+"</span></div>\n\
+                        </div>\n\
+                        <div class='char-cont-sprite'>\n\
+                            <img src='"+imgsrc+"'>\n\
+                        </div>\n\
+                        <div class='char-cont-equipment'>\n\
+                            "+validateEquipment(data.equipment[0])+"\n\
+                            "+validateEquipment(data.equipment[1])+"\n\
+                            "+validateEquipment(data.equipment[2])+"\n\
+                            "+validateEquipment(data.equipment[3])+"\n\
+                            "+validateEquipment(data.equipment[4])+"\n\
+                        </div>";
+            return cont;
         },
         derivedCharData:function(data){
-            
-        },
-        skillsCharData:function(data){
-            
-            
+            //I'll probably need to use Javascript to change the height/width of the polygons.
+            //el.style.clipPath = "inset(60px 60px 60px 60px)"
+            var baseStats = "<div class='char-cont-base-stats'>\n\
+                                <div class='char-cont-polygon-spacer'></div>\n\
+                                <div class='char-cont-polygon-cont'>\n\
+                                    <div class='base-stats-polygon-background'></div>\n\
+                                    <div class='base-stats-polygon-foreground'></div>\n\
+                                </div>\n\
+                                <div class='char-cont-polygon-spacer'></div>\n\
+                            </div>";
+            return baseStats;
         }
     });
     
@@ -710,20 +777,23 @@ Quintus.UIObjects=function(Q){
                 for(var i=0;i<roster.length;i++){
                     $("#roster-characters-options").append(this.newOption(roster[i].name));
                     $("#roster-characters-options").children(".option").last().click(function(){
+                        var char = roster[$(this).index()];
                         $(".selected-option").removeClass("selected-option");
                         $(this).addClass("selected-option");
-                        var money = 100; //TODO: come up with costs for each character based on equipment/stats
-                        optionsList.children(".option").first().children("span").text("Recruit "+$(this).text()+" for "+money+" money?");
-                        optionsList.children(".option").first().children("span").attr("cost",money);
-                        Q.characterStatsMenu.showCharacterData(roster[$(this).index()]);
+                        var baseCost = 100;
+                        var levelMultiplier = 20;
+                        var cost = baseCost + (char.level * levelMultiplier) + CharacterGenerator.getAllGearCost(char.equipment);
+                        optionsList.children(".option").first().children("span").text("Recruit "+$(this).text()+" for "+cost+" money?");
+                        optionsList.children(".option").first().children("span").attr("cost",cost);
+                        Q.characterStatsMenu.showCharacterData(char);
                     });
                 }
                 optionsList.append(this.newOption("Recruit"));
                 optionsList.children(".option").first().click(function(){
                     var idx = $(".selected-option").index();
                     var cost = parseInt($(this).children("span").attr("cost"));
-                    var currentMoney = Q.variableProcessor.vars.Global.money;
-                    if(currentMoney<cost){
+                    var currentMoney = Q.state.get("saveData").money;
+                    if(currentMoney < cost){
                         alert("Not enough money!");
                     } else {
                         Q.variableProcessor.changeMoney(-cost);
@@ -731,7 +801,7 @@ Quintus.UIObjects=function(Q){
                         Q.partyManager.removeFromRoster(idx);
                         $(".selected-option").remove();
                         if($("#roster-characters-options").children(".option").length){
-                            var num = idx>0 ? idx-1 : idx;
+                            var num = idx > 0 ? idx - 1 : idx;
                             $("#roster-characters-options").children(".option:eq("+(num)+")").trigger("click");
                         } else {
                             rosterEmpty();

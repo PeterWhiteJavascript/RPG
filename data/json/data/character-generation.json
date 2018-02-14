@@ -8,6 +8,7 @@
     "secondPromotion":["Warlord","Destroyer","Hero","Eradicator","Marauder","Deadshot","Sorcerer","Wild Mage","Saint"],
     "genders":["Male","Female"],
     "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
+    "trimmedBaseStats":["strength","endurance","dexterity","weaponSkill","reflexes","initiative","energy","skill","efficiency"],
     "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
     "primaryStats":["end","str","wsk","dex","rfl","ini","eff","skl","enr"],
     "primaryCoords":[[2,0],[1,0],[0,0],[1,1],[2,1],[0,1],[2,1],[2,0],[2,2]],
@@ -18,9 +19,9 @@
         ["skl","eff","enr"]
     ],
     "derivedStats":["Max Hit Points","Max Technique Points","Pain Tolerance","Damage Reduction","Physical Resistance","Mental Resistance","Magical Resistance","Attack Range","Min Attack Damage","Max Attack Damage","Attack Damage","Encumbrance Threshold","Total Weight","Encumbrance Penalty","Defensive Ability","Attack Accuracy","Critical Chance","Counter Chance","Attack Speed","Move Speed"],
-    "combatStats":["maxHp","maxTp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","minAtkDmg","maxAtkDmg","atkDmg","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"],
+    "combatStats":["maxHp","hp","maxTp","tp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","minAtkDmg","maxAtkDmg","atkDmg","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"],
     "personalityNames":["Sensitive","Impassive","Unmotivated","Curious","Clingy","Nonpartisan","Charismatic","Awkward","Violent","Pacifistic","Hedonistic","Ascetic","Extraverted","Shy"],
-    "statuses":["Poisoned","Bleeding","Weakened","Blinded","Stunned","Disabled","Immobilized","Seeking Mirage","Dodging"],
+    "statuses":["Poisoned","Bleeding","Fainted","Weakened","Blinded","Stunned","Disabled","Immobilized","Seeking Mirage","Dodging"],
     "teams":["Ally","Enemy","Neutral"],
     "natClasses":{
         "Venorian":{"classSpread":[55, 1, 7, 2, 50, 10, 3, 2, 3]},

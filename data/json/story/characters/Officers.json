@@ -3,8 +3,8 @@
         "Alex": {
             "handle": "Alex",
             "name": "Alex",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 5,
+            "levelmax": 5,
             "gender": "Female",
             "team": "Ally",
             "promotion": 1,

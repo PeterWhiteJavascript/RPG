@@ -193,6 +193,7 @@ body{
     background-color:#999;
 }
 
+/* Roster Section Start */
 #roster-characters-options{
     top:15%;
     left:5%;
@@ -208,21 +209,83 @@ body{
     left:25%;
     top:15%;
     display: flex;
+    text-align:center;
 }
 .char-stats-cont-main{
-    width:35%;
+    width:50%;
     height:100%;
     border-right:none;
 }
 .char-stats-cont-derived{
-    width:30%;
+    width:50%;
     height:100%;
 }
-.char-stats-cont-skills{
-    width:35%;
-    height:100%;
-    border-left:none;
+
+.char-cont-name{
+    background-color:grey;
+    height:30%;
+    padding:10px;
 }
+.char-cont-sprite{
+    background-color:grey;
+    
+    height:40%;
+}
+.char-cont-equipment{
+    background-color:grey;
+    height:30%;
+}
+.char-cont-base-stats{
+    background-color:grey;
+    height:100%;
+    width:100%;
+}
+
+
+.char-prop-large{
+    color:white;
+    font-size:18px;
+}
+.char-prop-medium{
+    color:white;
+    font-size:14px;
+}
+.char-prop-third{
+    color:white;
+    font-size:14px;
+}
+.base-stat-row{
+    width:100%;
+    height:33.33%;
+}
+.char-cont-polygon-cont{
+    margin:0 auto;
+    width:50%;
+    height:50%;
+}
+.char-cont-polygon-spacer{
+    height:25%;
+    width:100%;
+}
+.char-cont-polygon-stat{
+    color:white;
+    position:absolute;
+    z-index:100;
+    text-align:center;
+}
+.char-cont-polygon-stat div{
+    margin:0 auto;
+}
+.base-stats-polygon-background{
+    position:absolute;
+    background: linear-gradient(to top right, blue, teal);
+}
+.base-stats-polygon-foreground{
+    position:absolute;
+    background: linear-gradient(to bottom right, gold, red);
+}
+
+/* Roster Section End */
 
 /* Locations End */
 /* Battle Scene Start */

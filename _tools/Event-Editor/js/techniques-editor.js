@@ -86,7 +86,7 @@ $(function(){
                         case "Remove Status Effect":
                             props = props || ["Target","Poisoned",100];
                             cont.append(uic.Select("Affects",uic.targets,props[0]));
-                            cont.append(uic.Select("Status Effect",FileSaver.charGen.statuses.concat("All"),props[1]));
+                            cont.append(uic.Select("Status Effect",FileSaver.charGen.statuses.concat("All","Bad","Good"),props[1]));
                             cont.append(uic.Input("Accuracy",props[2],"number",1,100));
                             break;
                         case "Change Ground":

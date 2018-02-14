@@ -860,7 +860,7 @@ Quintus.GameObjects=function(Q){
             this.genPlaceableAllies();
             //If all allies are placed, start the battle. Also goes if we reach the max allies limit.
             var numPlaced = allies.filter(function(c){return c.placedOnMap;}).length;
-            if(!this.placeableAllies.length||numPlaced===this.entity.stage.options.data.maxAllies){
+            if(!this.placeableAllies.length || numPlaced === this.entity.stage.options.data.maxAllies || numPlaced === this.entity.stage.options.data.placementSquares.length){
                 this.removePlacementSquares();
                 this.entity.startBattle();
             } else {
@@ -1055,16 +1055,16 @@ Quintus.GameObjects=function(Q){
             var enemiesDefeatedRatio = defeatedEnemies.length / this.enemies.length;
             //All enemies defeated
             if(enemiesDefeatedRatio === 1){
+                var base = 0.25;
                 var numTurns = this.round;
                 var bonuses = Q.state.get("currentEvent").data.turnBonus;
                 var bonus = bonuses.filter(function(num){return numTurns <= num;});
-                bonus = bonuses.indexOf(bonus[bonus.length-1]);
-                var base = 0.25;
+                bonus = 1 + Math.max(0,bonuses.indexOf(bonus[bonus.length-1]));
                 var bonusMultiplier = base * bonus;
                 potentialExp *= bonusMultiplier;
             }
-            var averageLevelOfEnemies = Math.floor(defeatedEnemies.reduce(function(a,b){ return a + b.p.level; }, 0) / defeatedEnemies.length);
-            var averageLevelOfAllies = Math.floor(this.allies.reduce(function(a,b){return a + b.p.level;}, 0) / this.allies.length);
+            var averageLevelOfEnemies = Math.ceil(defeatedEnemies.reduce(function(a,b){console.log(b.p.level); return a + b.p.level; }, 0) / defeatedEnemies.length);
+            var averageLevelOfAllies = Math.ceil(this.allies.reduce(function(a,b){return a + b.p.level;}, 0) / this.allies.length);
             var completeContributions = {
                 damage:this.allyExpContributions.reduce(function(a,b){return a + b.damageDealt;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageTaken;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageHealed;},0),
                 status:this.allyExpContributions.reduce(function(a,b){return a + b.statusCured;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.statusApplied;},0),
@@ -1099,8 +1099,8 @@ Quintus.GameObjects=function(Q){
                 var statusPortion = ((potentialExp * portionWeight.status) * (statusRatio || 0)) / this.allyExpContributions.length;
                 var lifePortion = ((potentialExp * portionWeight.life) * (lifeRatio || 0)) / this.allyExpContributions.length;
                 var level = ally.p.level;
-                var base = 0.25;
-                var enemyLevelMultiplier = Math.max(0, 1 + ((averageLevelOfEnemies - level) * base));
+                var base = 0.2;
+                var enemyLevelMultiplier = Math.max(base, 1 + ((averageLevelOfEnemies - level) * base));
                 var expGain = Math.floor(((damagePortion + statusPortion + lifePortion) * enemyLevelMultiplier) + portion * enemyLevelMultiplier);
                 ally.p.expGain = expGain;
             }
@@ -1328,7 +1328,7 @@ Quintus.GameObjects=function(Q){
             });
         },
         addToTeam:function(obj){
-            var team = obj.p.team==="Ally"?this.allies:this.enemies;
+            var team = obj.p.team==="Ally" ? this.allies : this.enemies;
             team.push(obj);
         },
         removeFromTeam:function(obj){
@@ -1829,13 +1829,13 @@ Quintus.GameObjects=function(Q){
                     case "Number":
                         return value.amount;
                     case "User Base Stats":
-                        return evaluateOperator(user.p.baseStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(user.p.baseStats[value.stat],value.oper,value.amount);
                     case "Target Base Stats":
-                        return evaluateOperator(target.p.baseStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(target.p.baseStats[value.stat],value.oper,value.amount);
                     case "User Combat Stats":
-                        return evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
                     case "Target Combat Stats":
-                        return evaluateOperator(target.p.combatStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(target.p.combatStats[value.stat],value.oper,value.amount);
                         
                 }
             }
@@ -2399,7 +2399,7 @@ Quintus.GameObjects=function(Q){
         },
         
         changeCombatStat:function(amount,stat,target,user,callback){
-            target.p.combatStats[stat]+=amount;
+            target.p.combatStats[stat] += amount;
             return {func:"showStatUp",obj:target,props:[amount,stat]};
             //Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
             //callback();

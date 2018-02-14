@@ -33,12 +33,12 @@
     "Act-1-2": {
         "Story": {
             "music": "demo.mp3",
-            "bg": "Pumpkins.jpg",
+            "bg": "fantasy_castle_by_jbrown67-d7mu200.jpg",
             "startPage": "Start"
         },
         "Location": {
             "music": "demo.mp3",
-            "bg": "Pumpkins.jpg",
+            "bg": "city.jpg",
             "defaultActions": []
         },
         "Battle Scene": {
@@ -47,7 +47,9 @@
         },
         "Battle": {
             "music": "demo.mp3",
-            "map": "Test\/Act-1-1-Left-Path.tmx"
+            "map": "Test\/Act-1-1-Left-Path.tmx",
+            "maxAllies": "6",
+            "defaultDirection": "up"
         }
     },
     "Act-1-3": {

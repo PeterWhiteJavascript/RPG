@@ -1,0 +1,111 @@
+{
+    "name": "Demo-1-Battle",
+    "kind": "Battle",
+    "map": "Test\/Act-1-1-Left-Path.tmx",
+    "music": "dragon_quest_4_in_brass_12_-_march_dragonquest_iv-tx.mp3",
+    "defaultDir": "up",
+    "placementSquares": [
+        [
+            13,
+            23
+        ],
+        [
+            13,
+            22
+        ],
+        [
+            14,
+            22
+        ],
+        [
+            14,
+            23
+        ],
+        [
+            15,
+            22
+        ],
+        [
+            15,
+            23
+        ],
+        [
+            16,
+            22
+        ],
+        [
+            16,
+            23
+        ]
+    ],
+    "maxAllies": 6,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-2",
+            "Demo-1-Battle"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-2",
+            "Demo-1-Battle"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            0,
+            [
+                14,
+                20
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            1,
+            [
+                15,
+                20
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Elementalist",
+            0,
+            [
+                14,
+                19
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Right",
+            "Lesser Elementalist",
+            0,
+            [
+                15,
+                19
+            ],
+            "down"
+        ]
+    ]
+}

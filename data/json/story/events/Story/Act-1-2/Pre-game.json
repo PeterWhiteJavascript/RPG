@@ -1,0 +1,74 @@
+{
+    "name": "Pre-game",
+    "kind": "Story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "fantasy_castle_by_jbrown67-d7mu200.jpg",
+            "text": "You are about to play a demo. Which path will you select?",
+            "choices": [
+                [
+                    "Demo 1",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Global",
+                                "money",
+                                "+=",
+                                5000
+                            ]
+                        ],
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-2",
+                                "Demo-1-Start"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Demo 2",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-2",
+                                "Demo-2-Start"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Demo 3",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-2",
+                                "Demo-3-Start"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {},
+    "music": "demo.mp3",
+    "bg": "fantasy_castle_by_jbrown67-d7mu200.jpg",
+    "startPage": "Start"
+}

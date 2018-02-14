@@ -1,0 +1,65 @@
+{
+    "name": "Demo-3-Battle",
+    "kind": "Battle",
+    "map": "Test\/Act-1-1-Left-Path.tmx",
+    "music": "demo.mp3",
+    "defaultDir": "down",
+    "placementSquares": [
+        [
+            14,
+            18
+        ],
+        [
+            15,
+            18
+        ]
+    ],
+    "maxAllies": 2,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
+    "victory": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-2",
+            "Demo-3-Battle"
+        ]
+    },
+    "defeat": {
+        "events": [],
+        "next": [
+            "Story",
+            "Act-1-2",
+            "Demo-3-Battle"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            0,
+            [
+                14,
+                19
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "Left",
+            "Legionnaire",
+            1,
+            [
+                15,
+                19
+            ],
+            "down"
+        ]
+    ]
+}

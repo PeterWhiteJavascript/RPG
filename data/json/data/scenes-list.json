@@ -240,25 +240,120 @@
             "events": [
                 {
                     "events": [
-                        "fff"
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-1-Start"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-2-Start"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-3-Start"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            "5000"
+                        ]
+                    ],
+                    "name": "Pre-game",
+                    "type": "Story",
+                    "left": "252px",
+                    "top": "269px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-1-Battle"
+                        ]
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "TEST",
-                    "left": "328px",
-                    "top": "291px"
+                    "name": "Demo-1-Start",
+                    "type": "Location",
+                    "left": "370px",
+                    "top": "403px"
                 },
                 {
                     "events": [],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "fff",
-                    "left": "666px",
-                    "top": "198px"
+                    "name": "Demo-2-Start",
+                    "type": "Location",
+                    "left": "369px",
+                    "top": "133px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-3-Battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Demo-3-Start",
+                    "type": "Battle Scene",
+                    "left": "365px",
+                    "top": "271px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-3-Battle"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-3-Battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Demo-3-Battle",
+                    "type": "Battle",
+                    "left": "504px",
+                    "top": "271px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-1-Battle"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-2",
+                            "Demo-1-Battle"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Demo-1-Battle",
+                    "type": "Battle",
+                    "left": "491px",
+                    "top": "403px"
                 }
             ],
             "vrs": {
-                "pl": 23434
+                "didDemo1": false,
+                "didDemo2": false,
+                "didDemo3": false
             }
         },
         {

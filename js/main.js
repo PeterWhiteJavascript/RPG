@@ -88,9 +88,9 @@ Q.newGame=function(options){
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
-    var freeSpaces = 0;//10;
+    var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
-        var char = Q.charGen.generateCharacter({});
+        var char = Q.charGen.generateCharacter({level:1});
         Q.partyManager.roster.push(char);
     };
     Q.state.set(
@@ -99,7 +99,6 @@ Q.newGame=function(options){
             return sc.name===Q.state.get("saveData").startSceneName;
         })[0].vrs
     );
-    
     Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
         
     $("#hud-money").text(Q.state.get("saveData").money);
@@ -133,7 +132,7 @@ Q.startGame=function(save){
     Q.timeController.week = Q.state.get("saveData").week;
     
     //This will be passed in from the save file.
-    var freeSpaces = 0;//10;
+    var freeSpaces = 10;
     for(var i=0;i<freeSpaces;i++){
         Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
     };
