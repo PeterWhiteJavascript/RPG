@@ -139,16 +139,69 @@ var uic = new UIC({
                 props = props || [pageNames[0],""];
                 cont.append(this.Select("Page",pageNames,props[0],"page"));
                 break;
+            case "displaySellItemsList":
             case "createRecruitMenu":
             case "createGatherInfoMenu":
             case "createHuntMenu":
                 //No extra props
                 break;
             case "displayBuyItemsList":
-                //TODO
-                break;
-            case "displaySellItemsList":
-                //TODO
+                props = props || [[]];
+                var items = this.Container("Items",props[0],false,false,true);
+                //When an item is changed, save the item
+                function saveItem(idx){
+                    var data = JSON.parse(items.attr("data"));
+                    var group = $(items).children(".UIC-cont-props").children(".UIC-group-item:eq("+idx+")");
+                    data[idx][0] = group.children("select:eq(0)").val(); 
+                    data[idx][1] = group.children("select:eq(1)").val();
+                    data[idx][2] = group.children("select:eq(2)").val();
+                    data[idx][3] = group.children("select:eq(3)").val();
+                    items.attr("data",JSON.stringify(data));
+                }
+                function removeItem(idx){
+                    var data = JSON.parse(items.attr("data"));
+                    data.splice(idx,1);
+                    items.attr("data",JSON.stringify(data));
+                }
+                function addShopItem(p){
+                    p = Array.isArray(p) ? p : ["Weapons","Short Sword","Brass","Shoddy"];
+                    var item = $("<div class='UIC-group-item'></div>");
+                    item.append("<select class='quarter-width'>"+uic.getOptions(dataP.equipmentTypes)+"</select>");
+                    item.children("select:eq(0)").val(p[0]);
+                    item.append("<select class='quarter-width'>"+uic.getOptions(GDATA.dataFiles["equipment.json"][p[0]])+"</select>");
+                    item.children("select:eq(1)").val(p[1]);
+                    item.append("<select class='quarter-width'>"+uic.getOptions(GDATA.dataFiles["equipment.json"][p[0]][p[1]].materials)+"</select>");
+                    item.children("select:eq(2)").val(p[2]);
+                    item.append("<select class='fifteen-width'>"+uic.getOptions(GDATA.dataFiles["equipment.json"].Quality)+"</select>");
+                    item.children("select:eq(3)").val(p[3]);
+                    item.append("<div class='tenth-width remove-choice'><span>x</span></div>");
+                    uic.linkSelects(item.children("select:eq(0)"),item.children("select:eq(1)"),GDATA.dataFiles["equipment.json"]);
+                    uic.linkSelects(item.children("select:eq(1)"),item.children("select:eq(2)"),GDATA.dataFiles["equipment.json"],item.children("select:eq(0)"),"materials");
+                    items.children(".UIC-cont-props").append(item);
+                    $(item).children(".remove-choice").click(function(){
+                        removeItem($(this).parent().index());
+                        $(this).parent().remove();
+                    });
+                    //This is pretty inefficient but w/e
+                    item.children("select").change(function(){
+                        saveItem($(this).parent().index());
+                    });
+                    
+                };
+                var button = $("<span class='full-width UIC-button'>Add Item</div>");
+                button.on("click",function(){
+                    addShopItem();
+                    var last = items.children(".UIC-cont-props").children(".UIC-group-item").last();
+                    var data = JSON.parse(items.attr("data"));
+                    data.push([last.children("select:eq(0)").val(),last.children("select:eq(1)").val(),last.children("select:eq(2)").val(),last.children("select:eq(3)").val()])
+                    items.attr("data",JSON.stringify(data));
+                });
+                cont.append(button);
+                cont.append(items);
+                
+                for(var i=0;i<props[0].length;i++){
+                    addShopItem(props[0][i]);
+                }
                 break;
         }
         this.selectInitialValue(cont);

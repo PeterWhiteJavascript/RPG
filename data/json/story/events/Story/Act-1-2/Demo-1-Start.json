@@ -18,7 +18,7 @@
                     ]
                 ],
                 [
-                    "Go to Battle!",
+                    "Do the Battle!",
                     false,
                     [
                         [
@@ -27,6 +27,37 @@
                                 "Story",
                                 "Act-1-2",
                                 "Demo-1-Battle"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Shop",
+                    false,
+                    [
+                        [
+                            "displayBuyItemsList",
+                            [
+                                [
+                                    [
+                                        "Accessories",
+                                        "Ruby Ring",
+                                        null,
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Shoddy"
+                                    ]
+                                ]
                             ]
                         ]
                     ]

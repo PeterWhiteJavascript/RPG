@@ -166,6 +166,7 @@
 .remove-choice{
     cursor:pointer;
     width:10%;
+    display:inline-block;
 }
 .remove-choice:hover{
     background-color:var(--content-button-hover-color);

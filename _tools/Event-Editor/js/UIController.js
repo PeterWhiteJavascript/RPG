@@ -2,16 +2,20 @@ function UIC(p){
     var uic = this;
     Object.assign(uic,p);
     //When sel1 changes, change the value of sel2 based on the value of sel1. If we need other select's value, that's included in deep array.
-    this.linkSelects = function(sel1,sel2,obj,deepArray){
+    this.linkSelects = function(sel1,sel2,obj,deepArray,propName){
         $(sel1).on("change",function(){
             $(sel2).empty();
             if(deepArray){
                 var props = [];
                 $(deepArray).each(function(){props.push($(this).val());});
                 props.push($(sel1).val());
-                $(sel2).append(uic.getOptions(uic.getDeepValue(obj,props.join("&"))));
+                var val = uic.getDeepValue(obj,props.join("&"));
+                if(propName) val = val[propName];
+                $(sel2).append(uic.getOptions(val));
             } else {
-                $(sel2).append(uic.getOptions(obj[$(sel1).val()]));
+                var val = obj[$(sel1).val()];
+                if(propName) val = val[propName];
+                $(sel2).append(uic.getOptions(val));
             }
             $(sel2).trigger("change");
         });
@@ -104,7 +108,8 @@ function UIC(p){
     };
     this.Container = function(text,data,fillWith,fillData,minimizer){
         data = data || [];
-        var cont = $("<div class='UIC-prop full-width UIC-container' data="+JSON.stringify(data)+"><span class='full-width sub-title-text'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
+        var cont = $("<div class='UIC-prop full-width UIC-container' data='"+JSON.stringify(data)+"'><span class='full-width sub-title-text'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
+        console.log(cont)
         if(minimizer){
             $(cont).children(".sub-title-text").on("click",function(){
                 if($(this).siblings(".UIC-cont-props").is(":visible")){
@@ -651,6 +656,7 @@ function UIC(p){
             var props = [];
             $(this).children(".UIC-group-item-props").children(".UIC-prop").each(function(){
                 if($(this).is("div")){
+                    
                     props.push(JSON.parse($(this).attr("data")));
                 }
                 else if($(this).attr("type")==="checkbox"){
