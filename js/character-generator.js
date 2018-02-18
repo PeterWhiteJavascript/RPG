@@ -181,6 +181,12 @@ var CharacterGenerator = {
                 return [material,gearName];
         }
     },
+    getGearCost:function(gear){
+        var base = gear.cost;
+        var quality = this.equipment.Quality[gear.quality] || 0;
+        var material = this.equipment.Materials[gear.material] || 0;
+        return base * quality[1] * material[2] || base;
+    },
     //Changes the equipment from an array to an object containing all of the stats from equipment.json
     //eq is an array [gearMaterial,gearName]
     convertEquipment:function(eq,quality){//console.log(eq,quality)
@@ -190,7 +196,7 @@ var CharacterGenerator = {
         var gear = {
             material:eq[0],
             quality:quality,
-            name:eq[1]
+            gear:eq[1]
         };
         keys.forEach(function(key){
             if(key==="materials") return;
@@ -199,7 +205,7 @@ var CharacterGenerator = {
         var materialData = this.equipment.Materials[gear.material] || 0;
         var qualityData = this.equipment.Quality[gear.quality] || 0;
         gear.weight = Math.ceil(gear.weight+materialData[0]) || gear.weight;
-        gear.cost = Math.ceil(gear.cost*qualityData[1]*materialData[2]) || gear.cost;
+        gear.cost = this.getGearCost(gear);
         if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
         if(gear.wield) gear.wield = Math.ceil(gear.wield*qualityData[0]);
         if(gear.mindmg) gear.mindmg = Math.ceil(gear.mindmg*materialData[1]);

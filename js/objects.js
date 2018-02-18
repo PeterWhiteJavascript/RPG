@@ -64,6 +64,7 @@ Quintus.Objects=function(Q){
             }
         },
         addItem:function(type,props){
+            if(!props.gear) props.gear = props.name;    
             //Check if the item is contained in the bag already
             var item = this.getItem(type,props);
             //If the item wasn't found, add it

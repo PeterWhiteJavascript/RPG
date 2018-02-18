@@ -194,13 +194,13 @@ body{
 }
 
 /* Roster Section Start */
-#roster-characters-options{
+#status-characters-options{
     top:15%;
     left:5%;
     width:20%;
     height:40%;
 }
-#roster-characters-options:empty {
+#status-characters-options:empty {
    display: none;
 }
 #character-stats-display-cont{
@@ -216,9 +216,26 @@ body{
     height:100%;
     border-right:none;
 }
-.char-stats-cont-derived{
+.char-stats-cont-second{
     width:50%;
     height:100%;
+}
+#equipable-gear-cont{
+    width:400px;
+    height:300px;
+    left:50%;
+    top:30%;
+    position:absolute;
+    background-color:#444;
+    z-index:2;
+    color:white;
+}
+.equip-gear-item{
+    user-select:none;
+}
+.equip-gear-item:hover{
+    background-color:#333;
+    cursor:pointer;
 }
 
 .char-cont-name{
@@ -240,8 +257,6 @@ body{
     height:100%;
     width:100%;
 }
-
-
 .char-prop-large{
     color:white;
     font-size:18px;
@@ -253,6 +268,13 @@ body{
 .char-prop-third{
     color:white;
     font-size:14px;
+}
+.char-prop-selectable{
+    cursor:pointer;
+    user-select:none;
+}
+.char-prop-selectable:hover{
+    background-color:#666;
 }
 .base-stat-row{
     width:100%;
@@ -270,7 +292,7 @@ body{
 .char-cont-polygon-stat{
     color:white;
     position:absolute;
-    z-index:100;
+    z-index:1;
     text-align:center;
 }
 .char-cont-polygon-stat div{
@@ -286,6 +308,41 @@ body{
 }
 
 /* Roster Section End */
+/* Buy Items Start */
+#buy-items-cont{
+    width:50%;
+    height:50%;
+    top:15%;
+    left:25%;
+}
+.buy-items-title{
+    color:white;
+    text-align:center;
+    font-size:30px;
+    width:100%;
+    height:10%;
+}
+#buy-items-list{
+    width:100%;
+    height:90%;
+    background-color:#666;
+}
+#buy-items-list *{
+    text-align:center;
+}
+.buy-items-item{
+    cursor:pointer;
+}
+#buy-items-list tbody tr:hover{
+    background-color:#888;
+}
+.buy-items-item div{
+    display:inline-block;
+}
+.buy-items-item-selected{
+    background-color:#888;
+}
+/* Buy Items End */
 
 /* Locations End */
 /* Battle Scene Start */

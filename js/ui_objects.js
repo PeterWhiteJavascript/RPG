@@ -653,19 +653,19 @@ Quintus.UIObjects=function(Q){
             $("#main-container").append("<div id='character-stats-display-cont' class='big-box'></div>");
             $("#character-stats-display-cont").append(
                     "<div class='char-stats-cont-main inner-box'></div>\n\
-                    <div class='char-stats-cont-derived inner-box'></div>\n\
-                    <div class='char-stats-cont-skills inner-box'></div>"
+                    <div class='char-stats-cont-second inner-box'></div>"
             );
+            $("#main-container").append("<div id='status-characters-options' class='big-box'></div>");
         },
         setUpBaseStatsPolygon:function(baseStats){
             var trimmedStatNames = CharacterGenerator.trimmedBaseStats;
             var statNames = CharacterGenerator.statNames;
-            var parent = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats");
+            var parent = $("#character-stats-display-cont").children(".char-stats-cont-second").children(".char-cont-base-stats");
             
-            var bg = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-background");
+            var bg = $("#character-stats-display-cont").children(".char-stats-cont-second").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-background");
             bg.width(parent.width()/2);
             bg.height(bg.width());
-            var fg = $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-foreground");
+            var fg = $("#character-stats-display-cont").children(".char-stats-cont-second").children(".char-cont-base-stats").children(".char-cont-polygon-cont").children(".base-stats-polygon-foreground");
             fg.width(parent.width()/2);
             fg.height(fg.width());
             var numPoints = statNames.length;
@@ -692,7 +692,7 @@ Quintus.UIObjects=function(Q){
                 }
                 var stat = $("<div class='char-cont-polygon-stat'><div>"+statNames[i]+" "+baseStats[trimmedStatNames[i]]+"</div></div>");
                 stat.css({"margin-left":txX + 15, "margin-top":txY + 25});
-                $("#character-stats-display-cont").children(".char-stats-cont-derived").children(".char-cont-base-stats").children(".char-cont-polygon-cont").append(stat);
+                $("#character-stats-display-cont").children(".char-stats-cont-second").children(".char-cont-base-stats").children(".char-cont-polygon-cont").append(stat);
                 
             }
             bg.css('clip-path', "polygon("+bgPointsString+")");
@@ -703,9 +703,8 @@ Quintus.UIObjects=function(Q){
             //Remove the previous character's data
             $("#character-stats-display-cont").contents().empty();
             $("#character-stats-display-cont").children(".char-stats-cont-main").append(this.mainCharData(character));
-            $("#character-stats-display-cont").children(".char-stats-cont-derived").append(this.derivedCharData(character));
+            $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.derivedCharData(character));
             this.setUpBaseStatsPolygon(character.combatStats);
-            
         },
         //Adds a character for comparing
         addCharacterData:function(){
@@ -744,8 +743,6 @@ Quintus.UIObjects=function(Q){
             return cont;
         },
         derivedCharData:function(data){
-            //I'll probably need to use Javascript to change the height/width of the polygons.
-            //el.style.clipPath = "inset(60px 60px 60px 60px)"
             var baseStats = "<div class='char-cont-base-stats'>\n\
                                 <div class='char-cont-polygon-spacer'></div>\n\
                                 <div class='char-cont-polygon-cont'>\n\
@@ -755,6 +752,68 @@ Quintus.UIObjects=function(Q){
                                 <div class='char-cont-polygon-spacer'></div>\n\
                             </div>";
             return baseStats;
+        },
+        displayEquipableGear:function(type){
+            $("#equipable-gear-cont").remove();
+            var cont = $("<table id='equipable-gear-cont'><thead><tr><th>Name</th></tr></thead><tbody></tbody></table>");
+            var bag = Q.partyManager.bag;
+            switch(type){
+                case 0:
+                case 1:
+                    for(var i=0;i<bag.items.Weapons.length;i++){
+                        var gear = bag.items.Weapons[i];
+                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
+                        cont.children("tbody").append(item);
+                    }
+                    for(var i=0;i<bag.items.Shields.length;i++){
+                        var gear = bag.items.Shields[i];
+                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
+                        cont.children("tbody").append(item);
+                    }
+                    break;
+                case 2:
+                    for(var i=0;i<bag.items.Armour.length;i++){
+                        var gear = bag.items.Armour[i];
+                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
+                        cont.children("tbody").append(item);
+                    }
+                    break;
+                case 3:
+                    for(var i=0;i<bag.items.Footwear.length;i++){
+                        var gear = bag.items.Footwear[i];
+                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
+                        cont.children("tbody").append(item);
+                    }
+                    break;
+                case 4:
+                    for(var i=0;i<bag.items.Accessories.length;i++){
+                        var gear = bag.items.Accessories[i];
+                        var item = $("<td class='equip-gear-item'><div>"+gear.name+"</div></td>");
+                        cont.children("tbody").append(item);
+                    }
+                    break;
+            }
+            cont.children("tbody").children(".equip-gear-item").click(function(){
+                Q.characterStatsMenu.validateEquipGear(type,$(this).children("div").text());
+            });
+            return cont;
+        },
+        validateEquipGear:function(idx,text){
+            var t = text.split(" ");
+            var quality = t[0];
+            var material = t[1];
+            var gear = t[2];
+            if(t[3]) gear += " "+t[3];
+            var character = Q.partyManager.getAlly($("#status-characters-options").children(".selected-option").children("span").text());
+            var currentlyEquipped = character.equipment[idx];
+            //var gearType = (type === 0 || type === 1) ? ""
+            //Remove whatever is equipped and add to the bag
+            var toEquip = CharacterGenerator.equipment.gear[gear];
+            Q.partyManager.bag.addItem(currentlyEquipped.kind,currentlyEquipped);
+            //Remove the item from bag.
+            Q.partyManager.bag.removeItem(toEquip.kind,{material:material,gear:gear,quality:quality});
+            character.equipment[idx] = CharacterGenerator.convertEquipment([material,gear],quality);
+            console.log(Q.partyManager.bag);
         }
     });
     
@@ -764,7 +823,6 @@ Quintus.UIObjects=function(Q){
             createRecruitMenu:function(){
                 $("#main-container").empty();
                 Q.characterStatsMenu.createMenu();
-                $("#main-container").append("<div id='roster-characters-options' class='big-box'></div>");
                 $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
                 var optionsList = $("#options-cont-location").children(".options-list");
                 var roster = Q.partyManager.roster;
@@ -775,14 +833,14 @@ Quintus.UIObjects=function(Q){
                 
                 //Put each roster character as an option.
                 for(var i=0;i<roster.length;i++){
-                    $("#roster-characters-options").append(this.newOption(roster[i].name));
-                    $("#roster-characters-options").children(".option").last().click(function(){
+                    $("#status-characters-options").append(this.newOption(roster[i].name));
+                    $("#status-characters-options").children(".option").last().click(function(){
                         var char = roster[$(this).index()];
                         $(".selected-option").removeClass("selected-option");
                         $(this).addClass("selected-option");
                         var baseCost = 100;
                         var levelMultiplier = 20;
-                        var cost = baseCost + (char.level * levelMultiplier) + CharacterGenerator.getAllGearCost(char.equipment);
+                        var cost = Math.floor(baseCost + (char.level * levelMultiplier) + CharacterGenerator.getAllGearCost(char.equipment));
                         optionsList.children(".option").first().children("span").text("Recruit "+$(this).text()+" for "+cost+" money?");
                         optionsList.children(".option").first().children("span").attr("cost",cost);
                         Q.characterStatsMenu.showCharacterData(char);
@@ -800,9 +858,9 @@ Quintus.UIObjects=function(Q){
                         Q.partyManager.addToAllies(roster[idx]);
                         Q.partyManager.removeFromRoster(idx);
                         $(".selected-option").remove();
-                        if($("#roster-characters-options").children(".option").length){
+                        if($("#status-characters-options").children(".option").length){
                             var num = idx > 0 ? idx - 1 : idx;
-                            $("#roster-characters-options").children(".option:eq("+(num)+")").trigger("click");
+                            $("#status-characters-options").children(".option:eq("+(num)+")").trigger("click");
                         } else {
                             rosterEmpty();
                         }
@@ -814,13 +872,66 @@ Quintus.UIObjects=function(Q){
                     Q.locationController.changePage(Q.locationController.currentPage.name);
                 }));
                 if(roster.length){
-                    $("#roster-characters-options").children(".option").first().trigger("click");
+                    $("#status-characters-options").children(".option").first().trigger("click");
                 } else {
                     rosterEmpty();
                 }
             },
             displayBuyItemsList:function(props){
+                $("#main-container").empty();
+                $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
+                var optionsList = $("#options-cont-location").children(".options-list");
+                optionsList.append(this.newOption("Buy"));
+                optionsList.children(".option:eq(0)").click(function(){
+                    var selectedCost = parseInt($(".buy-items-item-selected").children("td:eq(1)").text());
+                    var curMoney = Q.state.get("saveData").money;
+                    if(selectedCost > curMoney) {
+                        alert("You don't have enough money!");
+                        return;
+                    }
+                    var selectedItem = props[0][$(".buy-items-item-selected").index()];
+                    Q.partyManager.bag.addItem(selectedItem[0],{gear:selectedItem[1],material:selectedItem[2],quality:selectedItem[3]});
+                    Q.variableProcessor.changeMoney(-selectedCost);
+                    alert(selectedItem[3]+" "+selectedItem[2]+" "+selectedItem[1]+" was bought for "+selectedCost+" money!");
+                });
+                optionsList.append(this.newOption("Back"));
+                optionsList.children(".option:eq(1)").click(function(){
+                    $("#main-container").empty();
+                    Q.locationController.setUpCont();
+                    Q.locationController.changePage(Q.locationController.currentPage.name);
+                });
                 
+                
+                var cont = $("<div id='buy-items-cont' class='big-box'></div>");
+                cont.append("<div class='buy-items-title'><span>BUY ITEMS</span></div>");
+                var list = $("<table id='buy-items-list'><thead><tr><th>Name</th><th>Cost</th></tr></thead><tbody></tbody></table>");
+                cont.append(list);
+                for(var i=0;i<props[0].length;i++){
+                    var itm = props[0][i];
+                    var item = $("<td class='buy-items-item'></td>");
+                    switch(itm[0]){
+                        case "Consumables":
+                        case "Accessories":
+                            item.append("<div>"+itm[1]+"</div>");   
+                            break;
+                        default:
+                            item.append("<div>"+itm[3]+" "+itm[2]+" "+itm[1]+"</div>");
+                            break;
+                    }
+                    var itmCost = CharacterGenerator.getGearCost({cost:CharacterGenerator.equipment.gear[itm[1]].cost,material:itm[2],quality:itm[3]});
+                    var cost = $("<td class='buy-items-cost'></td>");
+                    cost.append("<div>"+itmCost+"</div>");
+                    var tr = $("<tr></tr>");
+                    tr.append(item);
+                    tr.append(cost);
+                    tr.click(function(){
+                        $(".buy-items-item-selected").removeClass("buy-items-item-selected");
+                        $(this).addClass("buy-items-item-selected");
+                    });
+                    list.children("tbody").append(tr);
+                }
+                list.children("tbody").children("tr").first().trigger("click");
+                $("#main-container").append(cont);
             },
             displaySellItemsList:function(props){
                 
@@ -1016,7 +1127,31 @@ Quintus.UIObjects=function(Q){
             $("#options-cont-location").append(this.getOptions(this.currentPage.options,$("#options-cont-location").children(".options-list")));
         },
         entourageEquipmentMenu:function(){
+            $("#main-container").empty();
+            Q.characterStatsMenu.createMenu();
             
+            var allies = Q.partyManager.allies;
+            for(var i=0;i<allies.length;i++){
+                $("#status-characters-options").append(this.newOption(allies[i].name));
+                $("#status-characters-options").children(".option").last().click(function(){
+                    var char = allies[$(this).index()];
+                    $(".selected-option").removeClass("selected-option");
+                    $(this).addClass("selected-option");
+                    Q.characterStatsMenu.showCharacterData(char);
+                    $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").addClass("char-prop-selectable")
+                    $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").click(function(){
+                        $("#main-container").append(Q.characterStatsMenu.displayEquipableGear($(this).index()));
+                    });
+                });
+            }
+            $("#status-characters-options").children(".option").first().trigger("click");
+            $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
+            var optionsList = $("#options-cont-location").children(".options-list");
+            optionsList.append($(this.newOption("Back")).click(function(){
+                $("#main-container").empty();
+                Q.locationController.setUpCont();
+                Q.locationController.changePage(Q.locationController.currentPage.name);
+            }));
         },
         entourageRewardMenu:function(){
             
@@ -1025,9 +1160,27 @@ Quintus.UIObjects=function(Q){
             
         },
         entourageStatusMenu:function(){
-            /*$("#main-container").empty();
-            Q.characterStatsMenu.createMenu();*/
-            console.log("hi")
+            $("#main-container").empty();
+            Q.characterStatsMenu.createMenu();
+            var allies = Q.partyManager.allies;
+            
+            for(var i=0;i<allies.length;i++){
+                $("#status-characters-options").append(this.newOption(allies[i].name));
+                $("#status-characters-options").children(".option").last().click(function(){
+                    var char = allies[$(this).index()];
+                    $(".selected-option").removeClass("selected-option");
+                    $(this).addClass("selected-option");
+                    Q.characterStatsMenu.showCharacterData(char);
+                });
+            }
+            $("#status-characters-options").children(".option").first().trigger("click");
+            $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
+            var optionsList = $("#options-cont-location").children(".options-list");
+            optionsList.append($(this.newOption("Back")).click(function(){
+                $("#main-container").empty();
+                Q.locationController.setUpCont();
+                Q.locationController.changePage(Q.locationController.currentPage.name);
+            }));
         },
         
         loadBrionyMenu:function(){
@@ -1178,7 +1331,7 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
-    
+    /*
     Q.component("locationActions",{
         extend:{
             doAction:function(p){
@@ -1379,7 +1532,7 @@ Quintus.UIObjects=function(Q){
         }
     });
     
-    
+    */
     Q.UI.Container.extend("DialogueController",{
         init:function(p){
             this._super(p,{
