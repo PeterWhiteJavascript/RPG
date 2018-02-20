@@ -223,8 +223,8 @@ body{
 #equipable-gear-cont{
     width:400px;
     height:300px;
-    left:50%;
-    top:30%;
+    left:30%;
+    top:55%;
     position:absolute;
     background-color:#444;
     z-index:2;
@@ -232,10 +232,27 @@ body{
 }
 .equip-gear-item{
     user-select:none;
+    width:100%;
+    height:50px;
 }
 .equip-gear-item:hover{
     background-color:#333;
     cursor:pointer;
+}
+.char-cont-combat-stats{
+    text-align:center;
+}
+.char-cont-combat-stat{
+    color:white;
+}
+.char-cont-combat-stat:nth-child(2n){
+    background-color:#444;
+    
+}
+.char-cont-combat-stat div{
+    width:50%;
+    display:inline-block;
+    font-size:1.2vw;
 }
 
 .char-cont-name{

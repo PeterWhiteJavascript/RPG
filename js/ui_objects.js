@@ -705,6 +705,15 @@ Quintus.UIObjects=function(Q){
             $("#character-stats-display-cont").children(".char-stats-cont-main").append(this.mainCharData(character));
             $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.derivedCharData(character));
             this.setUpBaseStatsPolygon(character.combatStats);
+            $("#equipable-gear-cont").remove();
+        },
+        //Show a character's data
+        showCharacterCombatData:function(character){
+            //Remove the previous character's data
+            $("#character-stats-display-cont").contents().empty();
+            $("#character-stats-display-cont").children(".char-stats-cont-main").append(this.mainCharData(character));
+            $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.combatCharData(character)); 
+            $("#equipable-gear-cont").remove();
         },
         //Adds a character for comparing
         addCharacterData:function(){
@@ -753,67 +762,137 @@ Quintus.UIObjects=function(Q){
                             </div>";
             return baseStats;
         },
+        combatCharData:function(data){
+            var cont = $("<div class='char-cont-combat-stats'></div>");
+            function stat(a,b){
+                return "<div class='char-cont-combat-stat'><div>"+a+"</div><div>"+b+"</div></div>";
+            }
+            var stats = data.combatStats;
+            cont.append(stat("ATK Accuracy",stats.atkAccuracy));
+            cont.append(stat("ATK DMG MIN",stats.minAtkDmg));
+            cont.append(stat("ATK DMG MAX",stats.maxAtkDmg));
+            cont.append(stat("ATK Speed",stats.atkSpeed));
+            cont.append(stat("Counter",stats.counterChance));
+            cont.append(stat("Critical",stats.critChance));
+            cont.append(stat("DMG Reduction",stats.damageReduction));
+            cont.append(stat("DFN Ability",stats.defensiveAbility));
+            cont.append(stat("Movement",stats.moveSpeed));
+            cont.append(stat("Enc. Threshold",stats.encumbranceThreshold));
+            cont.append(stat("Total Weight",stats.totalWeight));
+            cont.append(stat("Enc. Penalty",stats.encumbrancePenalty));
+            return cont;
+        },
         displayEquipableGear:function(type){
             $("#equipable-gear-cont").remove();
             var cont = $("<table id='equipable-gear-cont'><thead><tr><th>Name</th></tr></thead><tbody></tbody></table>");
+            var character = Q.partyManager.getAlly($("#status-characters-options").children(".selected-option").children("span").text());
+            function appendToTable(str){
+                cont.children("tbody").append("<tr><td class='equip-gear-item'><div>"+str+"</div></td></tr>");
+            }
+            if(character.equipment[type]) appendToTable("Unequip");
             var bag = Q.partyManager.bag;
             switch(type){
                 case 0:
                 case 1:
                     for(var i=0;i<bag.items.Weapons.length;i++){
                         var gear = bag.items.Weapons[i];
-                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
-                        cont.children("tbody").append(item);
+                        appendToTable(gear.quality+"_"+gear.material+"_"+gear.name);
                     }
                     for(var i=0;i<bag.items.Shields.length;i++){
                         var gear = bag.items.Shields[i];
-                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
-                        cont.children("tbody").append(item);
+                        appendToTable(gear.quality+"_"+gear.material+"_"+gear.name);
                     }
                     break;
                 case 2:
                     for(var i=0;i<bag.items.Armour.length;i++){
                         var gear = bag.items.Armour[i];
-                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
-                        cont.children("tbody").append(item);
+                        appendToTable(gear.quality+"_"+gear.material+"_"+gear.name);
                     }
                     break;
                 case 3:
                     for(var i=0;i<bag.items.Footwear.length;i++){
                         var gear = bag.items.Footwear[i];
-                        var item = $("<td class='equip-gear-item'><div>"+gear.quality+" "+gear.material+" "+gear.name+"</div></td>");
-                        cont.children("tbody").append(item);
+                        appendToTable(gear.quality+"_"+gear.material+"_"+gear.name);
                     }
                     break;
                 case 4:
                     for(var i=0;i<bag.items.Accessories.length;i++){
                         var gear = bag.items.Accessories[i];
-                        var item = $("<td class='equip-gear-item'><div>"+gear.name+"</div></td>");
-                        cont.children("tbody").append(item);
+                        appendToTable(gear.name);
                     }
                     break;
             }
-            cont.children("tbody").children(".equip-gear-item").click(function(){
+            cont.children("tbody").children("tr").children(".equip-gear-item").click(function(){
                 Q.characterStatsMenu.validateEquipGear(type,$(this).children("div").text());
             });
             return cont;
         },
         validateEquipGear:function(idx,text){
-            var t = text.split(" ");
+            var t = text.split("_");
+            var character = Q.partyManager.getAlly($("#status-characters-options").children(".selected-option").children("span").text());
+            var currentlyEquipped = character.equipment[idx];
+            if(t[0] === "Unequip"){
+                Q.partyManager.bag.addItem(currentlyEquipped.kind,currentlyEquipped);
+                character.equipment[idx] = false;
+                
+                character.combatStats = CharacterGenerator.getCombatStats(character);
+                $("#character-stats-display-cont").children(".char-stats-cont-second").empty();
+                $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.combatCharData(character)); 
+                
+                $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium:eq("+idx+")").children("span").text("-");
+                $("#equipable-gear-cont").remove();
+                return;
+            }
             var quality = t[0];
             var material = t[1];
             var gear = t[2];
             if(t[3]) gear += " "+t[3];
-            var character = Q.partyManager.getAlly($("#status-characters-options").children(".selected-option").children("span").text());
-            var currentlyEquipped = character.equipment[idx];
-            //var gearType = (type === 0 || type === 1) ? ""
-            //Remove whatever is equipped and add to the bag
             var toEquip = CharacterGenerator.equipment.gear[gear];
-            Q.partyManager.bag.addItem(currentlyEquipped.kind,currentlyEquipped);
+            //Figure out which eq should go where if it is a weapon/shield
+            if(idx === 0 || idx === 1){
+                //If it's a shield, always put in secondary hand
+                if(toEquip.kind === "Shields"){
+                    idx = 1;
+                }
+                //If it's a weapon, figure out which one does more damage between the toEquip and secondary
+                else {
+                    var secondary = character.equipment[1];
+                    if(toEquip.maxdmg < secondary.maxdmg){
+                        //Swap the values
+                        [character.equipment[0], character.equipment[1]] = [character.equipment[1], character.equipment[0]];
+                        //Change the text
+                        $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium:eq("+0+")").children("span").text(character.equipment[0].quality+" "+character.equipment[0].material+" "+character.equipment[0].gear);
+                        //We're changing the secondary
+                        idx = 1;    
+                    } else if(idx === 1){
+                        var primary = character.equipment[0];
+                        if(primary.maxdmg < toEquip.maxdmg){
+                            //Swap the values
+                            [character.equipment[0], character.equipment[1]] = [character.equipment[1], character.equipment[0]];
+                            $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium:eq("+1+")").children("span").text(character.equipment[1].quality+" "+character.equipment[1].material+" "+character.equipment[1].gear);
+                            idx = 0;
+                        }
+                    } else {
+                        idx = 0;
+                    }
+                    
+                }
+            }
+            var currentlyEquipped = character.equipment[idx];
+            if(currentlyEquipped){
+                //Remove whatever is equipped and add to the bag
+                Q.partyManager.bag.addItem(currentlyEquipped.kind,currentlyEquipped);
+            }
             //Remove the item from bag.
             Q.partyManager.bag.removeItem(toEquip.kind,{material:material,gear:gear,quality:quality});
             character.equipment[idx] = CharacterGenerator.convertEquipment([material,gear],quality);
-            console.log(Q.partyManager.bag);
+            character.combatStats = CharacterGenerator.getCombatStats(character);
+            $("#character-stats-display-cont").children(".char-stats-cont-second").empty();
+            $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.combatCharData(character)); 
+            
+            
+            $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium:eq("+idx+")").children("span").text(quality+" "+material+" "+gear);
+            $("#equipable-gear-cont").remove();
         }
     });
     
@@ -1137,7 +1216,7 @@ Quintus.UIObjects=function(Q){
                     var char = allies[$(this).index()];
                     $(".selected-option").removeClass("selected-option");
                     $(this).addClass("selected-option");
-                    Q.characterStatsMenu.showCharacterData(char);
+                    Q.characterStatsMenu.showCharacterCombatData(char);
                     $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").addClass("char-prop-selectable")
                     $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").click(function(){
                         $("#main-container").append(Q.characterStatsMenu.displayEquipableGear($(this).index()));

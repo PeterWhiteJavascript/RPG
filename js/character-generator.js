@@ -750,11 +750,11 @@ var CharacterGenerator = {
         //If there is a left hand equipped, we need an average of the two.
         var equipped = p.equipment[1]?2:1;
         var wsk = p.combatStats.weaponSkill,
-            wield = ((this.getEquipmentProp("wield",p.equipment[0])+this.getEquipmentProp("wield",p.equipment[1]))/equipped), 
+            //I multiplied by 2 to get some better accuracies.
+            wield = (((this.getEquipmentProp("wield",p.equipment[0])+this.getEquipmentProp("wield",p.equipment[1]))/equipped))*2, 
             encPenalty = p.talents.includes("Armoured Attack")?0:p.combatStats.encumbrancePenalty,
             level = p.level;
-        //I multiplied by 2 to get some better accuracies.
-        return this.getPassiveEffect(Math.min(99,Math.floor(wsk+wield+encPenalty+level)*2),"combatStats","atkAccuracy",p.techniques.passive);
+        return this.getPassiveEffect(Math.min(99,Math.floor(wsk+wield+encPenalty+level)),"combatStats","atkAccuracy",p.techniques.passive);
     },
     get_critChance:function(p){
         var attackAccuracy = p.combatStats.atkAccuracy,charGroup = p.charGroup;
