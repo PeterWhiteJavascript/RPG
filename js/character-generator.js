@@ -601,7 +601,10 @@ var CharacterGenerator = {
     },
     levelWithExp:function(exp,stats,primary,primaryCoordinate,lean){
         var levels = Math.floor(exp / 100);
-        var newStats = this.levelUp(stats,primary,primaryCoordinate,lean);
+        var newStats = stats;
+        for(var i=0;i<levels;i++){
+            newStats = this.levelUp(newStats,primary,primaryCoordinate,lean);
+        }
         var newExp = exp - levels * 100;
         return {stats:newStats, levels:levels, newExp:newExp};
     },

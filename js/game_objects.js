@@ -1051,6 +1051,7 @@ Quintus.GameObjects=function(Q){
             
             var exp = $(cont).children(".leaderboard-page:eq(1)").children(".leaderboard-cont");
             var defeatedEnemies = this.enemies.filter(function(enemy){return enemy.p.combatStats.hp <= 0;});
+            //Max is 100 per enemy, then 75, 50, 25 based on bonus
             var potentialExp = defeatedEnemies.length * 100;
             var enemiesDefeatedRatio = defeatedEnemies.length / this.enemies.length;
             //All enemies defeated
@@ -1063,14 +1064,13 @@ Quintus.GameObjects=function(Q){
                 var bonusMultiplier = base * bonus;
                 potentialExp *= bonusMultiplier;
             }
-            var averageLevelOfEnemies = Math.ceil(defeatedEnemies.reduce(function(a,b){console.log(b.p.level); return a + b.p.level; }, 0) / defeatedEnemies.length);
+            var averageLevelOfEnemies = Math.ceil(defeatedEnemies.reduce(function(a,b){return a + b.p.level; }, 0) / defeatedEnemies.length);
             var averageLevelOfAllies = Math.ceil(this.allies.reduce(function(a,b){return a + b.p.level;}, 0) / this.allies.length);
             var completeContributions = {
                 damage:this.allyExpContributions.reduce(function(a,b){return a + b.damageDealt;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageTaken;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.damageHealed;},0),
                 status:this.allyExpContributions.reduce(function(a,b){return a + b.statusCured;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.statusApplied;},0),
                 life:this.allyExpContributions.reduce(function(a,b){return a + b.enemiesDefeated;},0) + this.allyExpContributions.reduce(function(a,b){return a + b.alliesRevived;},0)
             };
-            console.log(completeContributions)
             var portionWeight = {
                 damage:0.6,
                 status: 0.2,
@@ -1086,7 +1086,6 @@ Quintus.GameObjects=function(Q){
             if(completeContributions.life === 0){
                 portionWeight.damage += portionWeight.life;
             }
-            var portion = potentialExp / this.allies.length;
             for(var i=0;i<this.allyExpContributions.length;i++){
                 var allyCont = this.allyExpContributions[i];
                 var ally = this.allies.find(function(a){return a.p.name === allyCont.name;});
@@ -1099,9 +1098,10 @@ Quintus.GameObjects=function(Q){
                 var statusPortion = ((potentialExp * portionWeight.status) * (statusRatio || 0)) / this.allyExpContributions.length;
                 var lifePortion = ((potentialExp * portionWeight.life) * (lifeRatio || 0)) / this.allyExpContributions.length;
                 var level = ally.p.level;
+                //0.2+ per level
                 var base = 0.2;
                 var enemyLevelMultiplier = Math.max(base, 1 + ((averageLevelOfEnemies - level) * base));
-                var expGain = Math.floor(((damagePortion + statusPortion + lifePortion) * enemyLevelMultiplier) + portion * enemyLevelMultiplier);
+                var expGain = Math.floor((damagePortion + statusPortion + lifePortion) * enemyLevelMultiplier);
                 ally.p.expGain = expGain;
             }
             
