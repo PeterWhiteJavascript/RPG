@@ -307,48 +307,44 @@
                             18
                         ],
                         [
-                            19
+                            24
                         ],
                         [
-                            10
+                            28
                         ],
                         [
-                            2340
+                            40
                         ],
                         [
-                            23
+                            50
                         ]
                     ]
                 ],
                 "Hide": [
                     [
-                        "Stab",
+                        "Defend",
                         [
                             [
-                                0
+                                20
                             ],
                             [
-                                0
+                                25
                             ]
                         ],
                         [
-                            1,
-                            2
+                            10,
+                            10
                         ]
                     ],
                     [
-                        "Stab",
+                        "Parry",
                         [
-                            [
-                                0
-                            ],
-                            [
-                                0
-                            ]
+                            [],
+                            []
                         ],
                         [
-                            1,
-                            2
+                            10,
+                            8
                         ]
                     ],
                     [
@@ -1233,65 +1229,49 @@
             "hands": 1,
             "techniques": {
                 "Base": [
-                    "Defend",
+                    "Skewer",
                     [
-                        [
-                            10
-                        ],
-                        [
-                            10
-                        ],
-                        [
-                            10
-                        ],
-                        [
-                            10
-                        ],
-                        [
-                            10
-                        ],
-                        [
-                            10
-                        ]
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
                     ],
                     [
                         10,
-                        10,
-                        10,
-                        10,
-                        10,
-                        10
+                        12,
+                        14,
+                        16,
+                        18,
+                        20
                     ]
                 ],
                 "Brass": [
                     [
-                        "Stab",
+                        "Aimed Strike",
                         [
                             [
-                                0
+                                0.5
                             ],
                             [
-                                0
+                                0.6
                             ]
                         ],
                         [
-                            1,
-                            2
+                            10,
+                            8
                         ]
                     ],
                     [
-                        "Stab",
+                        "Force Back",
                         [
-                            [
-                                0
-                            ],
-                            [
-                                0
-                            ]
+                            [],
+                            []
                         ],
                         [
-                            1,
-                            2
+                            20,
+                            16
                         ]
                     ],
                     [
@@ -3589,65 +3569,61 @@
             "hands": 1,
             "techniques": {
                 "Base": [
-                    "Defend",
+                    "Target Weakness",
                     [
                         [
-                            10
+                            40
                         ],
                         [
-                            10
+                            50
                         ],
                         [
-                            10
+                            60
                         ],
                         [
-                            10
+                            70
                         ],
                         [
-                            10
+                            80
                         ],
                         [
-                            10
+                            90
                         ]
                     ],
                     [
                         10,
-                        10,
-                        10,
-                        10,
-                        10,
-                        10
+                        12,
+                        14,
+                        16,
+                        18,
+                        20
                     ]
                 ],
                 "Brass": [
                     [
-                        "Stab",
+                        "Poison Stab",
                         [
-                            [
-                                0
-                            ],
-                            [
-                                0
-                            ]
+                            [],
+                            []
                         ],
                         [
-                            1,
-                            2
+                            10,
+                            20
                         ]
                     ],
                     [
                         "Stab",
                         [
                             [
-                                0
+                                20
                             ],
                             [
-                                0
+                                30
                             ]
                         ],
                         [
-                            1,
-                            2
+                            10,
+                            12
                         ]
                     ],
                     [
@@ -4230,42 +4206,59 @@
         }
     },
     "Consumables": {
-        
-        "Potion":{
+        "Potion": {
             "name": "Potion",
-            "type":"Item",
+            "type": "Item",
             "desc": "Heals 20 hp",
             "kind": "Consumables",
-            "range":[1,"self"],
-            "aoe":[0,"normal"],
-            "resist":"None",
-            "cost":200
+            "range": [
+                1,
+                "self"
+            ],
+            "aoe": [
+                0,
+                "normal"
+            ],
+            "resist": "None",
+            "cost": 200
         },
-        "Gummy":{
+        "Gummy": {
             "name": "Gummy",
-            "type":"Item",
+            "type": "Item",
             "desc": "Heals 10 hp",
             "kind": "Consumables",
-            "range":[1,"self"],
-            "aoe":[0,"normal"],
-            "resist":"None",
-            "cost":100
+            "range": [
+                1,
+                "self"
+            ],
+            "aoe": [
+                0,
+                "normal"
+            ],
+            "resist": "None",
+            "cost": 100
         },
-        "Hard Candy":{
+        "Hard Candy": {
             "name": "Hard Candy",
-            "type":"Item",
+            "type": "Item",
             "desc": "Heals 10 hp",
             "kind": "Consumables",
-            "range":[1,"self"],
-            "aoe":[0,"normal"],
-            "resist":"None",
-            "cost":100
+            "range": [
+                1,
+                "self"
+            ],
+            "aoe": [
+                0,
+                "normal"
+            ],
+            "resist": "None",
+            "cost": 100
         },
-        "Gold Coin":{
+        "Gold Coin": {
             "name": "Gold Coin",
             "desc": "A valuable coin",
-            "kind":"key",
-            "effect":""
+            "kind": "key",
+            "effect": ""
         }
     },
     "Materials": {

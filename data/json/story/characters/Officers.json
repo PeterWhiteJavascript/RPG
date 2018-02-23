@@ -3,8 +3,8 @@
         "Alex": {
             "handle": "Alex",
             "name": "Alex",
-            "levelmin": 5,
-            "levelmax": 5,
+            "levelmin": 1,
+            "levelmax": 1,
             "gender": "Female",
             "team": "Ally",
             "promotion": 1,
@@ -12,12 +12,12 @@
                 [
                     "Short Sword",
                     "Brass",
-                    "Quality"
+                    "Average"
                 ],
                 [
                     "Shield",
                     "Brass",
-                    "Magic"
+                    "Average"
                 ],
                 [
                     "Outfit",

@@ -74,6 +74,9 @@ var CharacterGenerator = {
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
+        
+        char.classTechniques = this.setLevelTechniques(this.generateCharClassTechniques(char.charClass,char.level),char.level);
+        
         //If the character has a random charClass, generate default techniques.
         char.techniques = data.techniques && data.charClass !== "Random" ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment)) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment));
         char.talents = this.getTalents(char.charClass,char.charGroup);
@@ -185,7 +188,7 @@ var CharacterGenerator = {
         var base = gear.cost;
         var quality = this.equipment.Quality[gear.quality] || 0;
         var material = this.equipment.Materials[gear.material] || 0;
-        return base * quality[1] * material[2] || base;
+        return Math.floor(base * quality[1] * material[2]) || base;
     },
     //Changes the equipment from an array to an object containing all of the stats from equipment.json
     //eq is an array [gearMaterial,gearName]
@@ -349,6 +352,31 @@ var CharacterGenerator = {
         }
         return processed;
     },
+    //When equipping a piece of gear
+    addEquipment:function(character,idx,equipment){
+        character.equipment[idx] = equipment;
+        character.techniques = CharacterGenerator.categorizeTechniques(character.classTechniques.concat(CharacterGenerator.getEquipmentTechniques(character.equipment)));
+        //Reset combatStats
+        character.combatStats = CharacterGenerator.getCombatStats(character);
+    },
+    //When removing gear.
+    removeEquipment:function(character,idx){
+        function removeEquipmentTechniques(techs,eq){
+            for(var i=techs.length-1;i>=0;i--){
+                if(techs[i].equipment && techs[i].equipment.gear === eq.gear && techs[i].equipment.quality === eq.quality && techs[i].equipment.material === eq.material){
+                    techs.splice(i,1);
+                }
+            }
+            return techs;
+        };
+        if(idx <= 2){
+            var toRemove = character.equipment[idx];
+            var techs = character.techniques;
+            techs.active = removeEquipmentTechniques(techs.active,toRemove);
+            techs.passive = removeEquipmentTechniques(techs.passive,toRemove);
+        }
+        character.equipment[idx] = false;
+    },
     convertTechniques:function(data){
         var charClassKeys = Object.keys(data.CharClass);
         var techs = data.Active.concat(data.Passive);
@@ -356,18 +384,6 @@ var CharacterGenerator = {
             techs = techs.concat(data.CharClass[charClassKeys[i]]);
         }
         return techs;
-    },
-    generateTechniques:function(charClass,level,equipment){
-        var techniques = this.techniques;
-        var techs = [];
-        //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
-        var len = Math.floor(level/4)+1;
-        //For now, always give class specific techniques.
-        if(len>6) len = 6;
-        for(var i=0;i<len;i++){
-            techs.push(techniques.CharClass[charClass][i]);
-        }
-        return this.setLevelTechniques(techs,level).concat(this.getEquipmentTechniques(equipment));
     },
     findTechnique:function(name){
         return this.allTechs.find(function(tech){return tech[0] === name;});
@@ -447,6 +463,22 @@ var CharacterGenerator = {
             }
         }
         return techniques.concat(this.getEquipmentTechniques(equipment));
+    },
+    generateCharClassTechniques:function(charClass,level){
+        var techniques = this.techniques;
+        var techs = [];
+        //How many techniques are possible (up to level 20, each character gets 1 technique per 4 levels and start with 1 technique).
+        var len = Math.floor(level/4)+1;
+        //For now, always give class specific techniques.
+        if(len>6) len = 6;
+        for(var i=0;i<len;i++){
+            techs.push(techniques.CharClass[charClass][i]);
+        }
+        return techs;
+    },
+    generateTechniques:function(charClass,level,equipment){
+        var techs = this.generateCharClassTechniques(charClass,level);
+        return this.setLevelTechniques(techs,level).concat(this.getEquipmentTechniques(equipment));
     },
     //Remove some later techniques if the level is not enough
     setLevelTechniques:function(techs,level){

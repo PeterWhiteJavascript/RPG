@@ -6,10 +6,10 @@
             "name": "Page 1",
             "music": "demo.mp3",
             "bg": "forest.jpg",
-            "text": "Did it!",
+            "text": "{BattleResult}",
             "choices": [
                 [
-                    "Go back to start",
+                    "Go back to location",
                     false,
                     [
                         [
@@ -17,7 +17,7 @@
                             [
                                 "Story",
                                 "Act-1-1",
-                                "Story-00"
+                                "Location-02"
                             ]
                         ]
                     ],
@@ -25,7 +25,29 @@
                 ]
             ],
             "onload": [],
-            "modules": []
+            "modules": [
+                [
+                    "BattleResult",
+                    "You won the battle!",
+                    [
+                        [
+                            "All",
+                            "You lost the battle...",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Scene",
+                                        "battleSceneResult",
+                                        "==",
+                                        "defeat"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         }
     ],
     "vrs": {}

@@ -79,16 +79,13 @@ Q.newGame=function(options){
     //Gender is based on what the player selected
     alex.gender = options.gender;
     var storyAlex = Q.charGen.generateCharacter(alex);
-    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
-    astraea.combatStats.hp = 0;
-    astraea.wounded = 4;
     Q.partyManager.alex = storyAlex;
-    Q.partyManager.allies = [storyAlex,astraea];
+    Q.partyManager.allies = [storyAlex];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
-    var freeSpaces = 10;
+    var freeSpaces = 3;
     for(var i=0;i<freeSpaces;i++){
         var char = Q.charGen.generateCharacter({level:1});
         Q.partyManager.roster.push(char);
@@ -122,9 +119,8 @@ Q.startGame=function(save){
     });*/
     
     var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex);
-    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
     Q.partyManager.alex = alex;
-    Q.partyManager.allies = [alex,astraea];
+    Q.partyManager.allies = [alex];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
@@ -132,7 +128,7 @@ Q.startGame=function(save){
     Q.timeController.week = Q.state.get("saveData").week;
     
     //This will be passed in from the save file.
-    var freeSpaces = 10;
+    var freeSpaces = 3;
     for(var i=0;i<freeSpaces;i++){
         Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
     };

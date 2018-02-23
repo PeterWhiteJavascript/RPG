@@ -26,19 +26,51 @@
         4
     ],
     "victory": {
-        "events": [],
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battleSceneResult",
+                            "=",
+                            "victory"
+                        ]
+                    ]
+                ]
+            ]
+        ],
         "next": [
             "Story",
             "Act-1-1",
-            "Story-00"
+            "Battle-Scene-09"
         ]
     },
     "defeat": {
-        "events": [],
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battleSceneResult",
+                            "=",
+                            "defeat"
+                        ]
+                    ]
+                ]
+            ]
+        ],
         "next": [
             "Story",
             "Act-1-1",
-            "Story-00"
+            "Battle-Scene-09-Defeat"
         ]
     },
     "events": [],

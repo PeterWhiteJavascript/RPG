@@ -18,12 +18,123 @@
                     ]
                 ],
                 [
-                    "Buy",
+                    "Shop",
                     false,
                     [
                         [
                             "displayBuyItemsList",
-                            []
+                            [
+                                [
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Quality"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Spear",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Spear",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Spear",
+                                        "Brass",
+                                        "Quality"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Knife",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Knife",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Knife",
+                                        "Brass",
+                                        "Quality"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Quality"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Shirt",
+                                        "Wool",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Shirt",
+                                        "Wool",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Shirt",
+                                        "Wool",
+                                        "Quality"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Vest",
+                                        "Wool",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Vest",
+                                        "Wool",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Vest",
+                                        "Wool",
+                                        "Quality"
+                                    ]
+                                ]
+                            ]
                         ]
                     ]
                 ],

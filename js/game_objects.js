@@ -1144,12 +1144,13 @@ Quintus.GameObjects=function(Q){
             Q.partyManager.allies.forEach(function(char){
                 char.placedOnMap = false;
             });
+            
+            
             $("#leaderboard-next-button").click(function(){
                 $("#leaderboard").remove();
                 //TODO: checks
+                Q.timeController.cycleWeek(props);
                 var events = props.events;
-                //Start the next scene
-                Q.startScene(props.next[0],props.next[1],props.next[2]);
                 //Reset contributions
                 //TODO: save awards
                 Q.BatCon.allyExpContributions = [];
@@ -1825,6 +1826,7 @@ Quintus.GameObjects=function(Q){
                 }
             };
             function getAmount(value,user,target){
+                console.log(value)
                 switch(value.type){
                     case "Number":
                         return value.amount;
@@ -1839,17 +1841,28 @@ Quintus.GameObjects=function(Q){
                         
                 }
             }
+            function changeStat(target,statType,stat,oper,value,turns,attacker){
+                var newValue = Math.max(0,Math.floor(evaluateOperator(target.p[statType][stat],oper,getAmount(value,attacker,target))));
+                var difference = target.p[statType][stat] - newValue;
+                if(difference){
+                    console.log(target.p.name+"'s "+stat+" has changed from "+target.p[statType][stat]+" to "+newValue+"!");
+                    target.p[statType][stat] = newValue;
+                    target.addStatChange({stat:stat,statType:statType,amount:difference,turns:turns});
+                }
+            }
             for(var i=0;i<args.length;i++){
                 var arg = args[i];
                 if(arg.func === "Change Stat Active"){
                     if(!this.accuracyCheck(100,arg.accuracy)) return;
                     var target = arg.affects === "User" ? attacker : defender;
-                    var newValue = Math.max(0,evaluateOperator(target.p[arg.statType][arg.stat],arg.oper,getAmount(arg.value,attacker,target)));
-                    var difference = target.p[arg.statType][arg.stat] - newValue;
-                    if(difference){
-                        target.p[arg.statType][arg.stat] = newValue;
-                        target.addStatChange({stat:arg.stat,statType:arg.statType,amount:difference,turns:arg.turns});
+                    var stat = arg.stat;
+                    if(stat === "atkDmg"){
+                        changeStat(target,arg.statType,"maxAtkDmg",arg.oper,arg.value,arg.turns,attacker);
+                        changeStat(target,arg.statType,"minAtkDmg",arg.oper,arg.value,arg.turns,attacker);
+                    } else {
+                        changeStat(target,arg.statType,arg.stat,arg.oper,arg.value,arg.turns,attacker);
                     }
+                    
                 }
             }
         },
@@ -2400,6 +2413,7 @@ Quintus.GameObjects=function(Q){
         
         changeCombatStat:function(amount,stat,target,user,callback){
             target.p.combatStats[stat] += amount;
+            console.log(target.p.name+"'s "+stat+" has increased by "+amount+"!");
             return {func:"showStatUp",obj:target,props:[amount,stat]};
             //Q.BatCon.attackFuncs.text.unshift({func:"showStatUp",obj:target,props:[amount,stat]});
             //callback();

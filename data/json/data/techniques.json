@@ -78,7 +78,7 @@
                         "null",
                         "null",
                         2,
-                        1,
+                        2,
                         100
                     ]
                 ]
@@ -183,7 +183,7 @@
                 "Physical",
                 "Dodge"
             ],
-            50,
+            80,
             90,
             15,
             "Smashing",
@@ -250,38 +250,159 @@
             ]
         ],
         [
-            "Rock Shower",
-            "Test",
+            "Force Back",
+            "Pushes the target one square.",
+            [
+                "Debilitate",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [
+                "Physical"
+            ],
+            30,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Move Character",
+                    [
+                        "Target",
+                        "Forward",
+                        1,
+                        "Push"
+                    ]
+                ]
+            ]
+        ],
+        [
+            "Aimed Strike",
+            "Increased Accuracy for this attack.",
             [
                 "Damage",
                 "Physical"
             ],
             [
-                3,
+                1,
+                "Weapon",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            20,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Change Stat Active",
+                    [
+                        "User",
+                        "combatStats",
+                        "atkAccuracy",
+                        "+",
+                        "User Combat Stats",
+                        "atkAccuracy",
+                        "*",
+                        0.5,
+                        0,
+                        100
+                    ]
+                ]
+            ]
+        ],
+        [
+            "Skewer",
+            "AOE attack 2 tiles in front.",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                2,
                 "Normal",
                 [
-                    "CanTargetGround"
+                    "MaxRangeFixed"
                 ]
             ],
             [
+                2,
+                "VLine",
+                []
+            ],
+            [
+                "Dodge"
+            ],
+            0,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            []
+        ],
+        [
+            "Target Weakness",
+            "Finds the target's weak point and strikes there.",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
                 1,
-                "Box",
+                "Weapon",
+                []
+            ],
+            [
+                0,
+                "Normal",
                 []
             ],
             [
                 "Physical",
                 "Dodge"
             ],
-            20,
-            80,
+            0,
+            100,
             10,
-            "Smashing",
-            "fireball",
-            []
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Change Stat Active",
+                    [
+                        "User",
+                        "combatStats",
+                        "critChance",
+                        "+",
+                        "Number",
+                        "null",
+                        "null",
+                        40,
+                        0,
+                        100
+                    ]
+                ]
+            ]
         ],
         [
-            "New Technique",
-            "",
+            "Poison Stab",
+            "Stabs the target with a poison-laced blade. Can poison the target.",
             [
                 "Damage",
                 "Physical"
@@ -296,13 +417,26 @@
                 "Normal",
                 []
             ],
-            [],
+            [
+                "Physical",
+                "Dodge"
+            ],
             0,
             100,
             10,
             "Charging",
             "slashing",
-            []
+            [
+                [
+                    "Apply Status Effect",
+                    [
+                        "Target",
+                        "Poisoned",
+                        3,
+                        60
+                    ]
+                ]
+            ]
         ]
     ],
     "Passive": [
@@ -611,7 +745,7 @@
                             "Target",
                             "Forward",
                             1,
-                            []
+                            null
                         ]
                     ]
                 ]
@@ -840,7 +974,7 @@
                 ],
                 [
                     1,
-                    null,
+                    "Normal",
                     []
                 ],
                 [

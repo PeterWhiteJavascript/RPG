@@ -833,8 +833,7 @@ Quintus.UIObjects=function(Q){
             var currentlyEquipped = character.equipment[idx];
             if(t[0] === "Unequip"){
                 Q.partyManager.bag.addItem(currentlyEquipped.kind,currentlyEquipped);
-                character.equipment[idx] = false;
-                
+                CharacterGenerator.removeEquipment(character,idx);
                 character.combatStats = CharacterGenerator.getCombatStats(character);
                 $("#character-stats-display-cont").children(".char-stats-cont-second").empty();
                 $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.combatCharData(character)); 
@@ -885,8 +884,8 @@ Quintus.UIObjects=function(Q){
             }
             //Remove the item from bag.
             Q.partyManager.bag.removeItem(toEquip.kind,{material:material,gear:gear,quality:quality});
-            character.equipment[idx] = CharacterGenerator.convertEquipment([material,gear],quality);
-            character.combatStats = CharacterGenerator.getCombatStats(character);
+            CharacterGenerator.removeEquipment(character,idx);
+            CharacterGenerator.addEquipment(character,idx,CharacterGenerator.convertEquipment([material,gear],quality));
             $("#character-stats-display-cont").children(".char-stats-cont-second").empty();
             $("#character-stats-display-cont").children(".char-stats-cont-second").append(this.combatCharData(character)); 
             
@@ -1360,6 +1359,10 @@ Quintus.UIObjects=function(Q){
             }
         },
         checkWeek:function(week){
+            
+            //TODO: Remake (Maybe story events could just be handled in by checking the week var in the editor created events or something). This wouldn't work for flavour, though.
+            //Week should be cycled on returning to location?
+            return;
             //Check the story events first as they are the most important.
             //Story events (important ones)
             var storyEvents = Q.state.get("storyEvents");
@@ -1385,11 +1388,11 @@ Quintus.UIObjects=function(Q){
             }
             return false;
         },
-        cycleWeek:function(){
-            Q.state.inc("saveData.week",1);
-            $("#hud-week").text(Q.state.get("saveData").week);
+        cycleWeek:function(props){
+            Q.timeController.week ++;
+            $("#hud-week").text(Q.timeController.week);
             //All characters that are wounded get reduced by 1
-            var allies = Q.state.get("allies");
+            var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
                 this.reduceWounded(allies[i]);
             }
@@ -1399,14 +1402,15 @@ Quintus.UIObjects=function(Q){
             var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
             console.log(event)*/
             
-            var event = this.checkWeek(Q.state.get("saveData").week);
+            var event = this.checkWeek(Q.timeController.week);
             if(event){
                 Q.locationController.fullDestroy();
                 var curEvent = Q.state.get("currentEvent");
                 Q.state.set("anchorEvent",{event:curEvent.event,scene:curEvent.scene,type:curEvent.type});
                 Q.startScene(event.type,event.scene,event.event,event.char);
             } else {
-                Q.locationController.createMainMenu();
+                //Start the next scene
+                Q.startScene(props.next[0],props.next[1],props.next[2]);
             }
         }
     });

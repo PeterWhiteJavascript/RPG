@@ -34,7 +34,7 @@
         "next": [
             "Story",
             "Act-1-1",
-            "Story-00"
+            "Battle-Scene-08"
         ]
     },
     "defeat": {
@@ -42,7 +42,7 @@
         "next": [
             "Story",
             "Act-1-1",
-            "Story-00"
+            "Battle-Scene-08-Defeat"
         ]
     },
     "events": [],

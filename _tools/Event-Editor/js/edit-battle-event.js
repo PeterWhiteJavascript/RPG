@@ -522,7 +522,7 @@ $(function(){
                     props = props || ["Global","money","+=",1000];
                     cont.append(this.Select("Scope",uic.dataP.scopes,props[0],"var-scope"));
                     cont.append(this.Select("Name",uic.dataP.vars[props[0]],props[1],"var-handle"));
-                    uic.linkSelects($(cont).children(".prop")[0],$(cont).children(".prop")[1],dataP.vars);
+                    uic.linkSelects($(cont).children("select:eq(0)"),$(cont).children("select:eq(1)"),dataP.vars);
                     cont.append(this.Select("Opr",uic.dataP.operators,decodeURIComponent(props[2])));
                     cont.append(this.Input("Value",props[3],"text"));
 
@@ -534,9 +534,9 @@ $(function(){
                     var chars = Object.keys(uic.dataP.charFiles[props[0]][props[1]]);
                     cont.append(this.Select("File",files,props[0]));
                     cont.append(this.Select("Group",groups,props[1]));
-                    uic.linkSelects($(cont).children(".prop")[0],$(cont).children(".prop")[1],uic.dataP.charFiles);
+                    uic.linkSelects($(cont).children("select:eq(0)"),$(cont).children("select:eq(1)"),uic.dataP.charFiles);
                     cont.append(this.Select("Char",chars,props[2]));
-                    uic.linkSelects($(cont).children(".prop")[1],$(cont).children(".prop")[2],uic.dataP.charFiles,[$(cont).children(".prop")[0]]);
+                    uic.linkSelects($(cont).children("select:eq(1)"),$(cont).children("select:eq(2)"),uic.dataP.charFiles,[$(cont).children(".prop")[0]]);
                     cont.append(this.Input("X Loc",props[3],"number",0));
                     cont.append(this.Input("Y Loc",props[4],"number",0));
                     cont.append(this.Select("Dir",uic.dataP.directions,props[5]));
