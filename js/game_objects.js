@@ -1812,7 +1812,7 @@ Quintus.GameObjects=function(Q){
             return this.processResult(this.getBlow(this.getAttackProps(attacker,defender,extraAttack)));
         },
         
-        applyActiveStatArgs:function(attacker,defender,args){
+        applyActiveStatArgs:function(attacker,defender,args,acceptedFunc){
             function evaluateOperator(num1,oper,num2){
                 switch(oper){
                     case "+":
@@ -1826,7 +1826,6 @@ Quintus.GameObjects=function(Q){
                 }
             };
             function getAmount(value,user,target){
-                console.log(value)
                 switch(value.type){
                     case "Number":
                         return value.amount;
@@ -1838,21 +1837,31 @@ Quintus.GameObjects=function(Q){
                         return ~~evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
                     case "Target Combat Stats":
                         return ~~evaluateOperator(target.p.combatStats[value.stat],value.oper,value.amount);
+                    case "Combat Result":
+                        return ~~evaluateOperator(Q.BatCon.attackFuncs.combatResult[value.stat],value.oper,value.amount);
                         
                 }
             }
             function changeStat(target,statType,stat,oper,value,turns,attacker){
                 var newValue = Math.max(0,Math.floor(evaluateOperator(target.p[statType][stat],oper,getAmount(value,attacker,target))));
                 var difference = target.p[statType][stat] - newValue;
+                console.log(difference,newValue)
                 if(difference){
                     console.log(target.p.name+"'s "+stat+" has changed from "+target.p[statType][stat]+" to "+newValue+"!");
-                    target.p[statType][stat] = newValue;
-                    target.addStatChange({stat:stat,statType:statType,amount:difference,turns:turns});
+                    if(stat === "hp" || stat === "tp"){
+                        var max = stat === "hp" ? target.p.combatStats.maxHp : target.p.combatStats.maxTp;
+                        target.p[statType][stat] = Math.min(max,newValue);
+                        Q.BatCon.attackFuncs.text.push({func:"showHealed",obj:target,props:[-difference]});
+                    } else {
+                        target.p[statType][stat] = newValue;
+                        //Add to reverse effect when the turns is 0.
+                        target.addStatChange({stat:stat,statType:statType,amount:difference,turns:turns});
+                    }
                 }
             }
             for(var i=0;i<args.length;i++){
                 var arg = args[i];
-                if(arg.func === "Change Stat Active"){
+                if(arg.func === acceptedFunc){
                     if(!this.accuracyCheck(100,arg.accuracy)) return;
                     var target = arg.affects === "User" ? attacker : defender;
                     var stat = arg.stat;
@@ -1862,13 +1871,12 @@ Quintus.GameObjects=function(Q){
                     } else {
                         changeStat(target,arg.statType,arg.stat,arg.oper,arg.value,arg.turns,attacker);
                     }
-                    
                 }
             }
         },
         techniqueAttack:function(attacker,defender,technique){
             //Apply any stat boosts that happen
-            this.applyActiveStatArgs(attacker,defender,technique.args);
+            this.applyActiveStatArgs(attacker,defender,technique.args,"Change Stat Active");
             
             var props = this.getAttackProps(attacker,defender);
             props.attackerAtkAccuracy = technique.accuracy;
@@ -1934,12 +1942,14 @@ Quintus.GameObjects=function(Q){
                 time = props.time;
                 damage = props.damage;
                 sound = props.sound;
+                this.combatResult.Damage += damage;
             } 
             //Regular attack
             else {
                 var props = this.regularAttack(attacker,defender,extraAttack);
                 damage = props.damage;
                 sound = props.sound;
+                this.combatResult.Damage += damage;
             }
             //After the damage has been calculated, come up with the text to show the user
             if(damage>0){
@@ -1978,6 +1988,7 @@ Quintus.GameObjects=function(Q){
             }
             if(technique){
                 this.checkStatusEffects(attacker,defender,technique);
+                this.applyActiveStatArgs(attacker,defender,technique.args,"Change Stat After Combat");
             }
         },
         checkMovement(attacker,targets,technique,tiles){
@@ -2079,6 +2090,9 @@ Quintus.GameObjects=function(Q){
             return Math.max(1,cost - efficiency);
         },
         doAttack:function(attacker,targets,technique,tiles){
+            this.combatResult = {
+                Damage:0
+            };
             this.text = [];
             var anim = "Attack";
             var sound = "slashing";

@@ -283,6 +283,20 @@ var CharacterGenerator = {
                         arg.turns = props[8];
                         arg.accuracy = props[9];
                         break;
+                    case "Change Stat After Combat":
+                        arg.affects = props[0];
+                        arg.statType = props[1];
+                        arg.stat = props[2];
+                        arg.oper = props[3];
+                        arg.value = {
+                            type:props[4],
+                            stat:props[5],
+                            oper:props[6],
+                            amount:props[7]
+                        };
+                        arg.turns = props[8];
+                        arg.accuracy = props[9];
+                        break;
                     case "Change Stat Passive":
                         arg.statType = props[0];
                         arg.stat = props[1];

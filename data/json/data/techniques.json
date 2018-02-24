@@ -38,6 +38,21 @@
                         0,
                         100
                     ]
+                ],
+                [
+                    "Change Stat After Combat",
+                    [
+                        "User",
+                        "combatStats",
+                        "hp",
+                        "+",
+                        "Combat Result",
+                        "Damage",
+                        "\/",
+                        2,
+                        0,
+                        100
+                    ]
                 ]
             ]
         ],
@@ -335,7 +350,7 @@
                 "Physical"
             ],
             [
-                2,
+                1,
                 "Normal",
                 [
                     "MaxRangeFixed"
