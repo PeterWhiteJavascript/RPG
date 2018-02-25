@@ -430,6 +430,9 @@ var CharacterGenerator = {
             baseTech[baseTech.length-1] = getGearArgs(baseArgs[rank],baseTech[baseTech.length-1]);
             //If there is TP
             if(data.techniques.Base[2]) baseTech[8] = data.techniques.Base[2][rank];
+            //If there is damage
+            if(data.techniques.Base[3]) baseTech[6] += data.techniques.Base[3][rank];
+            console.log(data.techniques.Base)
             processedTechs.push(baseTech);
             var techs = data.techniques[eq.material].slice(0,Math.floor(rank/2)+1);
             for(var i=0;i<techs.length;i++){
@@ -440,6 +443,7 @@ var CharacterGenerator = {
                 var rankIdx = num < rank || num > rank ? 1 : 0;
                 found[found.length-1] = getGearArgs(tech[1][rankIdx],found[found.length-1]);
                 if(tech[2]) found[8] = tech[2][rankIdx];
+                if(tech[3]) found[6] = tech[3][rankIdx];
                 processedTechs.push(found);
             }
             processedTechs.forEach(function(t){

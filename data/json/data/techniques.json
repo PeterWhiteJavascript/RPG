@@ -396,6 +396,88 @@
             ]
         ],
         [
+            "Draining Stab",
+            "Drains 50% of the damage dealt.",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            0,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Change Stat After Combat",
+                    [
+                        "User",
+                        "combatStats",
+                        "hp",
+                        "+",
+                        "Combat Result",
+                        "Damage",
+                        "\/",
+                        2,
+                        0,
+                        100
+                    ]
+                ]
+            ]
+        ],
+        [
+            "Drain TP Stab",
+            "Drains 1\/4 of the damage in tp.",
+            [
+                "Damage",
+                "Physical"
+            ],
+            [
+                1,
+                "Normal",
+                []
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            0,
+            100,
+            10,
+            "Charging",
+            "slashing",
+            [
+                [
+                    "Change Stat After Combat",
+                    [
+                        "User",
+                        "combatStats",
+                        "tp",
+                        "+",
+                        "Combat Result",
+                        "Damage",
+                        "\/",
+                        4,
+                        0,
+                        100
+                    ]
+                ]
+            ]
+        ],
+        [
             "Defend",
             "Increases Defense for 3 turns.",
             [

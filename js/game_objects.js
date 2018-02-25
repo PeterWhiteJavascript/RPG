@@ -1941,6 +1941,7 @@ Quintus.GameObjects=function(Q){
                 var props = this.techniqueAttack(attacker,defender,technique);
                 time = props.time;
                 damage = props.damage;
+                console.log(technique)
                 sound = props.sound;
                 this.combatResult.Damage += damage;
             } 

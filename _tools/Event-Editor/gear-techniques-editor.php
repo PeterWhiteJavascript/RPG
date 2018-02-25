@@ -103,7 +103,7 @@
                     }
                 };
                 function getTech(name,tech){
-                    var techType = tech.length === 3 ? "Active" : "Passive";
+                    var techType = tech.length >= 3 ? "Active" : "Passive";
                     var cont = $("<div class='technique-cont UIC-group-item'><span class='full-width title-text'>"+name+"</span></div>");
                     cont.append(uic.Select("Tech Type",["Active","Passive"],techType));
                     cont.append(uic.Select("Technique",FileSaver.techniqueNames[techType],tech[0]));
@@ -118,13 +118,19 @@
                     function createArguments(args,num,cont,data){
                         if(!args.length) return;
                         for(var i=0;i<args[0].length;i++){
-                            var desc = getArgDesc(data[data.length-1])[i]
+                            var desc = getArgDesc(data[data.length-1])[i];
                             //If we changed the number of props in this technique, then there may be extra data from the previous version
                             if(!desc) continue;
                             cont.append("<span class='full-width'>"+desc+"</span>");
                             for(var j=0;j<num;j++){
                                 cont.append("<input class='sixth-width' value='"+args[j][i]+"'>");
                             }
+                        }
+                    }
+                    function createDamage(cont,num,arg){
+                        cont.append("<span class='full-width'>Damage</span>");
+                        for(var j=0;j<num;j++){
+                            cont.append("<input class='sixth-width' value='"+arg[j]+"'>");
                         }
                     }
                     function createTPCost(cont,num,arg){
@@ -151,9 +157,12 @@
                         }
                         createArguments(Array(numOfLevels).fill(args),numOfLevels,$(this).parent(),data);
                         if(type === "Active") createTPCost($(this).parent(),numOfLevels,Array(numOfLevels).fill([data[data.length-4]]));
+                        if(type === "Active") createDamage($(this).parent(),numOfLevels,Array(numOfLevels).fill([data[6]]));
                         showTechnique(type,tech);
                     });
                     if(techType === "Active") createTPCost(cont,numOfLevels,tech[2]);
+                    if(!tech[3]) tech[3] = [0,0,0,0,0,0];
+                    if(techType === "Active") createDamage(cont,numOfLevels,tech[3]);
                     uic.selectInitialValue(cont);
                     return cont;
                 }
@@ -183,10 +192,15 @@
                             for(var i=0;i<ranks;i++){
                                 tpCost.push(uic.processValue(inputs.eq((numArgs*ranks)+i).val()));
                             } 
+                            var damage = [];
+                            for(var i=0;i<ranks;i++){
+                                damage.push(uic.processValue(inputs.eq((numArgs*(ranks*2))+i).val()));
+                            } 
                             return [
                                 techName,
                                 args,
-                                tpCost
+                                tpCost,
+                                damage
                             ];
                         } else {
                             return [
@@ -208,6 +222,7 @@
                 }
                 function displayTechniques(kind,name){
                     var eqData = FileSaver.equipmentData[kind][name];
+                    console.log(eqData)
                     $("#mid-cont").children(".UIC-group-item-props").empty();
                     $("#mid-cont").children(".UIC-group-item-props").append(getTech("Base Technique",eqData.techniques.Base));
                     $("#mid-cont").children(".UIC-group-item-props").append(Materials(eqData));
