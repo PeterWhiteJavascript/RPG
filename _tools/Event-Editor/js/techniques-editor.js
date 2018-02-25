@@ -27,6 +27,20 @@ $(function(){
     $.getJSON("../../data/json/data/character-generation.json",function(data){
         FileSaver.charGen = data;
         $.getJSON("../../data/json/data/techniques.json",function(data){
+            var dragIdx = 0;
+            $( ".sortable" ).sortable({
+                axis: "y",
+                start:function(event,ui){
+                    dragIdx = ui.item.index();
+                },
+                //Switch the technique in the file
+                update:function(event,ui){
+                    var group = $(this).siblings(".title-text").text();
+                    var dataItm = FileSaver.techniqueData[group].splice(dragIdx,1)[0];
+                    FileSaver.techniqueData[group].splice(ui.item.index(),0,dataItm);
+                }
+            });
+            $( ".sortable" ).disableSelection();
             FileSaver.techniqueData = data;
             var uic = new UIC({
                 topBarProps:{

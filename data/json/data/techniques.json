@@ -38,21 +38,6 @@
                         0,
                         100
                     ]
-                ],
-                [
-                    "Change Stat After Combat",
-                    [
-                        "User",
-                        "combatStats",
-                        "hp",
-                        "+",
-                        "Combat Result",
-                        "Damage",
-                        "\/",
-                        2,
-                        0,
-                        100
-                    ]
                 ]
             ]
         ],
@@ -216,49 +201,6 @@
                         "null",
                         20,
                         0,
-                        100
-                    ]
-                ]
-            ]
-        ],
-        [
-            "Defend",
-            "Increases Defense for 3 turns.",
-            [
-                "Support",
-                "Physical"
-            ],
-            [
-                0,
-                "Normal",
-                [
-                    "TargetSelf"
-                ]
-            ],
-            [
-                0,
-                "Normal",
-                []
-            ],
-            [],
-            0,
-            100,
-            10,
-            "Charging",
-            "charging",
-            [
-                [
-                    "Change Stat Active",
-                    [
-                        "User",
-                        "combatStats",
-                        "defensiveAbility",
-                        "+",
-                        "Number",
-                        "null",
-                        "null",
-                        20,
-                        3,
                         100
                     ]
                 ]
@@ -452,6 +394,49 @@
                     ]
                 ]
             ]
+        ],
+        [
+            "Defend",
+            "Increases Defense for 3 turns.",
+            [
+                "Support",
+                "Physical"
+            ],
+            [
+                0,
+                "Normal",
+                [
+                    "TargetSelf"
+                ]
+            ],
+            [
+                0,
+                "Normal",
+                []
+            ],
+            [],
+            0,
+            100,
+            10,
+            "Charging",
+            "charging",
+            [
+                [
+                    "Change Stat Active",
+                    [
+                        "User",
+                        "combatStats",
+                        "defensiveAbility",
+                        "+",
+                        "Number",
+                        "null",
+                        "null",
+                        20,
+                        3,
+                        100
+                    ]
+                ]
+            ]
         ]
     ],
     "Passive": [
@@ -471,21 +456,6 @@
             ]
         ],
         [
-            "DEF+",
-            "Increased Defence",
-            [
-                [
-                    "Change Stat Passive",
-                    [
-                        "combatStats",
-                        "defensiveAbility",
-                        "+",
-                        10
-                    ]
-                ]
-            ]
-        ],
-        [
             "Blind Immunity",
             "Immune to blind.",
             [
@@ -496,6 +466,21 @@
                         "Blinded",
                         "+",
                         100
+                    ]
+                ]
+            ]
+        ],
+        [
+            "DEF+",
+            "Increased Defence",
+            [
+                [
+                    "Change Stat Passive",
+                    [
+                        "combatStats",
+                        "defensiveAbility",
+                        "+",
+                        10
                     ]
                 ]
             ]
@@ -2252,11 +2237,11 @@
                     []
                 ],
                 [],
-                20,
+                50,
                 100,
                 20,
-                "Slashing",
-                "slashing",
+                "Casting",
+                "fireball",
                 []
             ],
             [
@@ -2280,8 +2265,8 @@
                 50,
                 100,
                 100,
-                "Slashing",
-                "slashing",
+                "Casting",
+                "fireball",
                 []
             ],
             [
@@ -2305,8 +2290,8 @@
                 50,
                 100,
                 100,
-                "Slashing",
-                "slashing",
+                "Casting",
+                "fireball",
                 []
             ],
             [
@@ -2460,16 +2445,16 @@
                 "slashing",
                 [
                     [
-                        "Change Stat Active",
+                        "Change Stat After Combat",
                         [
                             "Target",
                             "combatStats",
-                            "physicalResistance",
+                            "hp",
                             "+",
-                            "Number",
-                            "null",
-                            "null",
-                            0,
+                            "User Base Stats",
+                            "skl",
+                            "*",
+                            2,
                             0,
                             100
                         ]
@@ -2571,7 +2556,7 @@
                 "slashing",
                 [
                     [
-                        "Change Stat Active",
+                        "Change Stat After Combat",
                         [
                             "Target",
                             "combatStats",
@@ -2580,7 +2565,7 @@
                             "User Base Stats",
                             "skl",
                             "+",
-                            25,
+                            0,
                             0,
                             100
                         ]
@@ -2622,7 +2607,7 @@
                         ]
                     ],
                     [
-                        "Change Stat Active",
+                        "Change Stat After Combat",
                         [
                             "Target",
                             "combatStats",
