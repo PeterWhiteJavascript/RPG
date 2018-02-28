@@ -244,15 +244,24 @@ Quintus.UIObjects=function(Q){
             };
             return obj;
         },
+        //Sometimes you just want to add the number value of a variable. See if the text is a number.
+        fixVarType:function(val){
+            var int = Number(val);
+            if(isNaN(int)){
+                return val;
+            } else {
+                return int;
+            }
+        },
         //Takes a string and evaluates anything within {} and then returns a new string
         replaceText:function(text){
             //Loop through each {}
-            while(text.indexOf("{") !== -1){
+            while(typeof text === "string" && text.indexOf("{") !== -1){
                 text = text.replace(/\{(.*?)\}/,function(match, p1, p2, p3, offset, string){
                     return Q.textProcessor.getVarValue(p1);
                 });
             }
-            return text;
+            return Q.textProcessor.fixVarType(text);
            
         },
         getVarValue:function(text){
@@ -395,7 +404,8 @@ Quintus.UIObjects=function(Q){
                 var props = effects[i][1];
                 switch(effects[i][0]){
                     case "setVar":
-                        Q.variableProcessor.setVar(props[0],props[1],props[2],props[3],Q.state.get("currentEvent").scene,Q.state.get("currentEvent").event);
+                        
+                        Q.variableProcessor.setVar(props[0],props[1],props[2],Q.textProcessor.replaceText(props[3]),Q.state.get("currentEvent").scene,Q.state.get("currentEvent").event);
                         
                         break;
                     case "changePage":
@@ -420,11 +430,11 @@ Quintus.UIObjects=function(Q){
                         //Adds the character to the party
                         break;
                     case "changeInfluence":
-                        Q.partyManager.influence[props[0]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.influence[props[0]],props[1],props[2],0,100);
+                        Q.partyManager.influence[props[0]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.influence[props[0]],props[1],Q.textProcessor.replaceText(props[2]),0,100);
                         console.log(props,Q.partyManager.influence)
                         break;
                     case "changeRelation":
-                        Q.partyManager.relations[props[0]][props[1]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.relations[props[0]][props[1]],props[2],props[3],0,100);
+                        Q.partyManager.relations[props[0]][props[1]] = Q.variableProcessor.evaluateStringOperator(Q.partyManager.relations[props[0]][props[1]],props[2],Q.textProcessor.replaceText(props[3]),0,100);
                         console.log(props,Q.partyManager.relations)
                         break;
                     case "tempStatChange":
@@ -631,9 +641,10 @@ Quintus.UIObjects=function(Q){
             var cont = $("<div class='page-choices'></div>");
             for(var i=0;i<choices.length;i++){
                 if(!choices[i][1]){
-                    $(cont).append("<div class='page-choice'><span>"+choices[i][0]+"</span></div>");
+                    //Use data prop as text may use variables
+                    $(cont).append("<div class='page-choice' data='"+choices[i][0]+"'><span>"+Q.textProcessor.replaceText(choices[i][0])+"</span></div>");
                     $(cont).children(".page-choice").last().click(function(){
-                        Q.storyController.selectChoice($(this).text());
+                        Q.storyController.selectChoice($(this).attr("data"));
                     });
                 }
             }

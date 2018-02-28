@@ -6,10 +6,10 @@
             "name": "Page 1",
             "music": "demo.mp3",
             "bg": "Inveraray_Castle_-_south-west_facade.jpg",
-            "text": "Would you like 1000 gold, or 3000 gold?",
+            "text": "Would you like {e@small} gold, or {e@large} gold?",
             "choices": [
                 [
-                    "1000 PLS",
+                    "asd {e@small} asd",
                     false,
                     [
                         [
@@ -18,7 +18,24 @@
                                 "Global",
                                 "money",
                                 "+=",
-                                1000
+                                "{e@small}"
+                            ]
+                        ],
+                        [
+                            "changeRelation",
+                            [
+                                "Venoriae",
+                                "Reputation",
+                                "+=",
+                                "{e@variableRelations}"
+                            ]
+                        ],
+                        [
+                            "changeInfluence",
+                            [
+                                "Pragmatic",
+                                "-=",
+                                "{e@variableRelations}"
                             ]
                         ],
                         [
@@ -33,9 +50,18 @@
                     []
                 ],
                 [
-                    "3000 POLSSS",
+                    "{e@large}",
                     false,
                     [
+                        [
+                            "setVar",
+                            [
+                                "Global",
+                                "money",
+                                "+=",
+                                "{e@large}"
+                            ]
+                        ],
                         [
                             "changeEvent",
                             [
@@ -52,5 +78,9 @@
             "modules": []
         }
     ],
-    "vrs": {}
+    "vrs": {
+        "small": 1000,
+        "large": 10000,
+        "variableRelations": 13
+    }
 }

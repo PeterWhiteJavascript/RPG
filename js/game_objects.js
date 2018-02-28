@@ -1029,7 +1029,7 @@ Quintus.GameObjects=function(Q){
                 topDamageDealt:data.sort(function(a,b){return b.damageDealt - a.damageDealt;}),
                 topDamageTaken:data.sort(function(a,b){return b.damageTaken - a.damageTaken;}),
                 topHealed:data.sort(function(a,b){return b.damageHealed - a.damageHealed;}),
-                mvp:data.sort(function(a,b){return (b.enemiesDefeated+b.alliesRevived) - (a.enemiesDefeated+a.alliesRevived);}),
+                mvp:data.sort(function(a,b){return (b.enemiesDefeated + b.alliesRevived) - (a.enemiesDefeated + a.alliesRevived);}),
                 statusCommander:data.sort(function(a,b){return (b.statusCured+b.statusApplied) - (a.statusCured+a.statusApplied);})
             };
         },

@@ -37,13 +37,19 @@
                             "Global",
                             "money",
                             "+=",
-                            "1000"
+                            "{e@small}"
+                        ],
+                        [
+                            "Global",
+                            "money",
+                            "+=",
+                            "{e@large}"
                         ]
                     ],
                     "name": "Story-01",
                     "type": "Story",
-                    "left": "4px",
-                    "top": "328px"
+                    "left": "3px",
+                    "top": "329px"
                 },
                 {
                     "events": [

@@ -63,9 +63,9 @@
             "Reputation":50
         }
     },
-    "startSceneName":"Act-1-2",
+    "startSceneName":"Act-1-1",
     "startSceneType":"Story",
-    "startEventName":"Demo-1-Start",
+    "startEventName":"Story-00",
     
     "act":"1-1",
     "applicationsRoster":[]

@@ -280,14 +280,14 @@ var uic = new UIC({
                 props = props || [dataP.influence[0],dataP.operators[1],10];
                 cont.append(this.Select("Stat",dataP.influence,props[0]));
                 cont.append(this.Select("Oper",dataP.operators,props[1]));
-                cont.append(this.Input("Value",props[2],"number",0));
+                cont.append(this.Input("Value",props[2]));
                 break;
             case "changeRelation":
                 props = props || [dataP.places[0],dataP.relations[0],dataP.operators[1],10];
                 cont.append(this.Select("Place",dataP.places,props[0]));
                 cont.append(this.Select("Type",dataP.relations,props[1]));
                 cont.append(this.Select("Oper",dataP.operators,props[2]));
-                cont.append(this.Input("Value",props[3],"number",0));
+                cont.append(this.Input("Value",props[3]));
                 break;
             case "obtainItem":
             case "useItem":
