@@ -94,7 +94,6 @@ function UIC(p){
             $(this).val($(this).attr("initial-value"));
         });
     };
-    
     this.Input = function(text,val,type,min,max,step){
         return '<span class="quarter-width">'+text+'</span><input class="UIC-prop three-quarter-width" value="'+val+'" type="'+type+'" min="'+min+'" max="'+max+'" step="'+step+'">';
     };
@@ -109,7 +108,6 @@ function UIC(p){
     this.Container = function(text,data,fillWith,fillData,minimizer){
         data = data || [];
         var cont = $("<div class='UIC-prop full-width UIC-container' data='"+JSON.stringify(data)+"'><span class='full-width sub-title-text'>"+text+"</span><div class='UIC-cont-props'></div></div>"); 
-        console.log(cont)
         if(minimizer){
             $(cont).children(".sub-title-text").on("click",function(){
                 if($(this).siblings(".UIC-cont-props").is(":visible")){

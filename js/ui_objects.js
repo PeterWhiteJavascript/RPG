@@ -168,7 +168,7 @@ Quintus.UIObjects=function(Q){
             Event:{}
         },
         changeMoney:function(amount){
-            Q.state.get("saveData").money += amount;
+            Q.state.get("saveData").money = amount;
             $("#hud-money").text(Q.state.get("saveData").money);
         },
         evaluateStringOperator:function(vr,op,vl,min,max){
@@ -185,8 +185,9 @@ Quintus.UIObjects=function(Q){
         setVar:function(scope,vr,op,vl,scene,event){
             switch(scope){
                 case "Global":
-                    if(vr === "money") this.changeMoney(vl);
-                    this.vars[scope][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][vr],op,vl);
+                    var newValue = Q.variableProcessor.evaluateStringOperator(this.vars[scope][vr],op,vl);
+                    this.vars[scope][vr] = newValue;
+                    if(vr === "money") this.changeMoney(newValue);
                     break;
                 case "Scene":
                     this.vars[scope][scene][vr] = Q.variableProcessor.evaluateStringOperator(this.vars[scope][scene][vr],op,vl);
@@ -246,6 +247,8 @@ Quintus.UIObjects=function(Q){
         },
         //Sometimes you just want to add the number value of a variable. See if the text is a number.
         fixVarType:function(val){
+            if(val === true || val === "true") return true;
+            if(val === false || val === "false") return false;
             var int = Number(val);
             if(isNaN(int)){
                 return val;
@@ -328,7 +331,7 @@ Quintus.UIObjects=function(Q){
                         var scope = props[0];
                         var vr = Q.variableProcessor.getVar(scope,props[1]);
                         var op = props[2];
-                        var vl = props[3];
+                        var vl = Q.textProcessor.replaceText(props[3]);
                         condsEvaluated.push(Q.textProcessor.evaluateStringConditional(vr,op,vl));
                         break;
                     case "checkCharProp":
@@ -404,7 +407,6 @@ Quintus.UIObjects=function(Q){
                 var props = effects[i][1];
                 switch(effects[i][0]){
                     case "setVar":
-                        
                         Q.variableProcessor.setVar(props[0],props[1],props[2],Q.textProcessor.replaceText(props[3]),Q.state.get("currentEvent").scene,Q.state.get("currentEvent").event);
                         
                         break;
@@ -417,6 +419,7 @@ Quintus.UIObjects=function(Q){
                         Q.startScene(props[0],props[1],props[2]);
                         break;
                     case "enableChoice":
+                        console.log(props)
                         obj.currentPage.choices.find(function(choice){return props[0] === choice[0];})[1] = false;
                         break;
                     case "disableChoice":

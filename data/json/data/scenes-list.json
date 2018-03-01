@@ -8,27 +8,17 @@
                         [
                             "Story",
                             "Act-1-1",
-                            "Story-01"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Story-00",
-                    "type": "Story",
-                    "left": "0px",
-                    "top": "368px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Location-02"
+                            "Left-Path"
                         ],
                         [
                             "Story",
                             "Act-1-1",
-                            "Location-02"
+                            "Middle-Path"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Right-Path"
                         ]
                     ],
                     "sceneVars": [],
@@ -37,212 +27,71 @@
                             "Global",
                             "money",
                             "+=",
-                            "{e@small}"
+                            "1000"
+                        ]
+                    ],
+                    "name": "Opening",
+                    "type": "Story",
+                    "left": "0px",
+                    "top": "194px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Gates-to-Pannopolis"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [
+                        [
+                            "Global",
+                            "money",
+                            "-=",
+                            "{e@mealCost}"
                         ],
                         [
                             "Global",
                             "money",
-                            "+=",
-                            "{e@large}"
+                            "<",
+                            "{e@mealCost}"
                         ]
                     ],
-                    "name": "Story-01",
+                    "name": "Middle-Path",
                     "type": "Story",
-                    "left": "3px",
-                    "top": "329px"
+                    "left": "86px",
+                    "top": "194px"
                 },
                 {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-04"
-                        ],
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-05"
-                        ],
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Location-02"
-                        ]
-                    ],
+                    "events": [],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Story-03",
+                    "name": "Left-Path",
                     "type": "Story",
-                    "left": "4px",
-                    "top": "223px"
+                    "left": "85px",
+                    "top": "236px"
                 },
                 {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Story-03"
-                        ]
-                    ],
+                    "events": [],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Location-02",
+                    "name": "Right-Path",
                     "type": "Story",
-                    "left": "0px",
-                    "top": "285px"
+                    "left": "86px",
+                    "top": "152px"
                 },
                 {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-07"
-                        ]
-                    ],
+                    "events": [],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Battle-Scene-04",
-                    "type": "Battle Scene",
-                    "left": "55px",
-                    "top": "191px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-06"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene-05",
-                    "type": "Battle Scene",
-                    "left": "56px",
-                    "top": "135px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-08"
-                        ],
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-08-Defeat"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-07",
-                    "type": "Battle",
-                    "left": "206px",
-                    "top": "193px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-09"
-                        ],
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Battle-Scene-09-Defeat"
-                        ]
-                    ],
-                    "sceneVars": [
-                        "battleSceneResult",
-                        "battleSceneResult"
-                    ],
-                    "globalVars": [],
-                    "name": "Battle-06",
-                    "type": "Battle",
-                    "left": "190px",
-                    "top": "122px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Story-10"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene-09",
-                    "type": "Battle Scene",
-                    "left": "289px",
-                    "top": "98px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Location-02"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene-08",
-                    "type": "Battle Scene",
-                    "left": "182px",
-                    "top": "249px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Location-02"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Story-10",
+                    "name": "Gates-to-Pannopolis",
                     "type": "Story",
-                    "left": "447px",
-                    "top": "121px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Story-10"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene-09-Defeat",
-                    "type": "Story",
-                    "left": "267px",
-                    "top": "145px"
-                },
-                {
-                    "events": [
-                        [
-                            "Story",
-                            "Act-1-1",
-                            "Location-02"
-                        ]
-                    ],
-                    "sceneVars": [],
-                    "globalVars": [],
-                    "name": "Battle-Scene-08-Defeat",
-                    "type": "Battle Scene",
-                    "left": "314px",
-                    "top": "198px"
+                    "left": "194px",
+                    "top": "194px"
                 }
             ],
-            "vrs": {
-                "battleSceneResult": "victory"
-            }
+            "vrs": []
         },
         {
             "name": "Act-1-2",

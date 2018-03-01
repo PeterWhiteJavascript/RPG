@@ -87,7 +87,7 @@ var uic = new UIC({
             Scene:GDATA.dataFiles["scenes-list.json"].Story.find(function(scene){return scene.name===GDATA.eventPointer.scene;}).vrs,
             Global:GDATA.dataFiles["global-vars.json"].vrs
         },
-        conditionals:["==","!=",">=","<="],
+        conditionals:["==","!=",">","<",">=","<="],
         officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
         charFiles:GDATA.characterFiles,
         charPropTypes:["Nationality","Character Class","Character Group","Value","Methodology","Loyalty","Morale","Gender"],

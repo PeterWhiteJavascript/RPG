@@ -1,0 +1,213 @@
+{
+    "name": "Middle-Path",
+    "kind": "Story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "the_usual.mp3",
+            "bg": "merchant-path.gif",
+            "text": "Alex walks along the well maintained path until {@he} reaches a checkpoint. It is getting dark, so {@he} decides to stay the night here. There are always beds available for travelers at these checkpoints.\n\nAfter checking in with the innkeeper, Alex enters the dining area.\n\n{hasEnoughMoney}",
+            "choices": [
+                [
+                    "Buy the meal for the man",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Global",
+                                "money",
+                                "-=",
+                                "{e@mealCost}"
+                            ]
+                        ],
+                        [
+                            "recruitChar",
+                            [
+                                "Act-1-1.json",
+                                "Potential Allies",
+                                "Hungry Man"
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "recruited",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Buy meal"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Order from the free menu",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After Meal"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Global",
+                                "money",
+                                "<",
+                                "{e@mealCost}"
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Buy the meal for the man"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": [
+                [
+                    "hasEnoughMoney",
+                    "The man sitting at the table begs you to buy him a meal off of the main menu.",
+                    [
+                        [
+                            "All",
+                            "The man sitting at the table seems like he wants somebody to buy his meal. Too bad you don't have enough money...",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Global",
+                                        "money",
+                                        "<",
+                                        "{e@mealCost}"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "After Meal",
+            "music": "demo.mp3",
+            "bg": "merchant-path.gif",
+            "text": "After Alex ate {@his} meal, it was time to sleep for the night.",
+            "choices": [
+                [
+                    "Sleep for the night",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After awoken"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "After awoken",
+            "music": "demo.mp3",
+            "bg": "merchant-path.gif",
+            "text": "After waking up, Alex continues on {@his} journey to Pannopolis. {gotHungryMan}",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Gates-to-Pannopolis"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": [
+                [
+                    "gotHungryMan",
+                    "The hungry man follows along.",
+                    [
+                        [
+                            "All",
+                            "The hungry man waves goodbye to Alex, even though he wasn't able to get a free meal.",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "recruited",
+                                        "==",
+                                        false
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Buy meal",
+            "music": "the_usual.mp3",
+            "bg": "merchant-path.gif",
+            "text": "The man thanks you and as a reward, joins your party!",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After Meal"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {
+        "mealCost": 100,
+        "recruited": false
+    },
+    "music": "the_usual.mp3",
+    "bg": "merchant-path.gif",
+    "startPage": "Start"
+}

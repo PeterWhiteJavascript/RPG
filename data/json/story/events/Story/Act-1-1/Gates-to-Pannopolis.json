@@ -1,0 +1,19 @@
+{
+    "name": "Gates-to-Pannopolis",
+    "kind": "Story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "Pumpkins.jpg",
+            "text": "Alex arrives at the gates to Pannopolis.",
+            "choices": [],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {},
+    "music": "demo.mp3",
+    "bg": "Pumpkins.jpg",
+    "startPage": "Start"
+}

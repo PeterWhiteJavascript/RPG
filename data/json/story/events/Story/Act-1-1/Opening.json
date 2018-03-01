@@ -1,0 +1,118 @@
+{
+    "name": "Opening",
+    "kind": "Story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "dragon_quest_4_in_brass_01_-_overture-tx.mp3",
+            "bg": "forest.jpg",
+            "text": "Alex is on {@his} way to Pannopolis, the capital city of Venoriae.\n\n{@His} goal is to recruit some people to help with the ongoing war. Since the recruits in Pannopolis are young and poor, they will need to be outfitted and trained if they are to be of any use.\n\nWhat have you brought with you?",
+            "choices": [
+                [
+                    "Money",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Global",
+                                "money",
+                                "+=",
+                                1000
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Path"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Astraea",
+                    false,
+                    [
+                        [
+                            "recruitChar",
+                            [
+                                "Officers.json",
+                                null,
+                                null
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "Path"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Path",
+            "music": "dragon_quest_4_in_brass_01_-_overture-tx.mp3",
+            "bg": "path.jpeg",
+            "text": "There are three paths to Pannopolis.\n\nThe middle path is a relatively straight path that merchants take as the road is well maintained. There are Venorian checkpoints in a few locations along the way.\n\nThe left path is passes a lake where there is a small tribe of nomadic fishermen. Since the tribe is nomadic, it can be difficult to find them.\n\nThe right path takes a long detour along the side of a mountain. This path is somewhat treacherous and takes much longer to reach Pannopolis. There are some rare plants that sell at a high price in some places that can be found this way.\n\nWhich path will you take?",
+            "choices": [
+                [
+                    "Left Path",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Left-Path"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Middle Path",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Middle-Path"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Right Path",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Right-Path"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {},
+    "music": "dragon_quest_4_in_brass_01_-_overture-tx.mp3",
+    "bg": "path.jpeg",
+    "startPage": "Start"
+}
