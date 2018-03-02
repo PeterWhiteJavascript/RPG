@@ -30,6 +30,45 @@
             "nationality": "Venorian",
             "charClass": "Legionnaire",
             "lean": false
+        },
+        "Nomadic Boy": {
+            "handle": "Nomadic Boy",
+            "name": "Nomadic Boy",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Ally",
+            "equipment": [
+                [
+                    "Dagger",
+                    "Bone",
+                    "Average"
+                ],
+                "None",
+                [
+                    "Shirt",
+                    "Hide",
+                    "Average"
+                ],
+                "None",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Medium"
+            ],
+            "techniques": [
+                "Bleeding Strike",
+                "Caltrops",
+                "Weakening Strike",
+                "Nerve Strike",
+                "Acid Bomb",
+                "Poison Strike"
+            ],
+            "nationality": "Nomadic",
+            "charClass": "Assassin",
+            "lean": false
         }
     }
 }

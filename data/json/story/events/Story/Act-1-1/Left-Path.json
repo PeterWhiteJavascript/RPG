@@ -1,8 +1,778 @@
 {
     "name": "Left-Path",
     "kind": "Story",
-    "pages": [],
-    "vrs": [],
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex can see the lake in the distance. It is still early afternoon, so it's still safe to draw water from the lake. It is said that those who visit the lake at night never return.",
+            "choices": [
+                [
+                    "Approach the lake",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Choose which spot to draw water from"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Continue to Pannopolis",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Continue to Pannopolis"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Choose which spot to draw water from",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex hikes down to the lake's edge to draw water. There seem to be a few locations where it might be easy to take water from the lake without much trouble.\n\nThe first spot has some large rocks just above water that wouldn't be too difficult to bend over and scoop some water.\n\nThe second spot has some fallen trees that extend into the water. They seem sturdy enough to stand on.",
+            "choices": [
+                [
+                    "Draw water from the rocks",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Draw water from rocks"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Draw water from the trees",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Draw water from trees"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Continue to Pannopolis",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex decides that it's best to continue towards Pannopolis as soon as possible.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Gates-to-Pannopolis"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Draw water from rocks",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex approaches the rocks{comeFromTrees} As {@he} gets close to the water, {@he} notices how clear the water is. Alex remembers that this type of pristine water is used in the making of healing potions.\n\nHow much water does Alex take?",
+            "choices": [
+                [
+                    "Just enough to drink at the moment",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After water"
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "All",
+                            [
+                                [
+                                    "Name",
+                                    [
+                                        "==",
+                                        "Alex"
+                                    ]
+                                ]
+                            ],
+                            [
+                                [
+                                    "Stat",
+                                    [
+                                        "end",
+                                        "+=",
+                                        5,
+                                        3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Pack an extra bottle for later after drinking some now",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "waterTaken",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "After water"
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "All",
+                            [
+                                [
+                                    "Name",
+                                    [
+                                        "==",
+                                        "Alex"
+                                    ]
+                                ]
+                            ],
+                            [
+                                [
+                                    "Stat",
+                                    [
+                                        "end",
+                                        "+=",
+                                        5,
+                                        3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": [],
+            "modules": [
+                [
+                    "comeFromTrees",
+                    ".",
+                    [
+                        [
+                            "All",
+                            " instead. The trees were just too slippery looking!",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "wentToTrees",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Draw water from trees",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex makes {@his} way to the logs. They seem sort of slippery upon closer inspection. Alex thinks to {@himself} if the rocks might have been easier to draw water from.\n\n",
+            "choices": [
+                [
+                    "Go to the rocks",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Draw water from rocks"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Attempt to take water from here",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Trees - Take water from"
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "All",
+                            [
+                                [
+                                    "Name",
+                                    [
+                                        "==",
+                                        "Alex"
+                                    ]
+                                ]
+                            ],
+                            [
+                                [
+                                    "Stat",
+                                    [
+                                        "end",
+                                        "+=",
+                                        5,
+                                        3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [],
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "wentToTrees",
+                                "=",
+                                true
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": []
+        },
+        {
+            "name": "After water",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex feels refreshed after drinking the clean water from the lake. It's getting late, so Alex decides that it is best to make {@his} way back to the road.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "At road"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "At road",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "Alex sets up camp near the road. After night fell, {@he} hears a noise coming from the road leading to Pannopolis.",
+            "choices": [
+                [
+                    "Investigate",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Investigate"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Stay put",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Stay put"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Stay put",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "Alex waits at his campfire until the noise subsides. It seems that whatever was moving has left the area.\n\nAlex rests until morning.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "In the morning"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Investigate",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "Alex stands up from {@his} seat and cautiously walks towards the noise. {@He} spots a large man leading a donkey with saddlebags beside it. It is unusual for merchants to be travelling so late.\n\nAlex shouts at the man to see if he is okay. The man seems to be exhausted. He asks if Alex know where he can find some water.\n\n{hasWater}\n\nAlex rests for the night.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "In the morning"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Event",
+                                "waterTaken",
+                                "==",
+                                true
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "obtainItem",
+                            [
+                                "Weapons",
+                                "Sword",
+                                "Iron",
+                                "Quality",
+                                1
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": [
+                [
+                    "hasWater",
+                    "Alex offers the man the extra water that {@he} took from the lake. He happily accepts.\n\nThe merchant explains that he has urgent business in the next town, which is why he was travelling at night.\n\nAs a token of gratitude, the merchant presents Alex with a sword that he was going to sell in town.",
+                    [
+                        [
+                            "All",
+                            "Alex regrets not taking water from the lake, as the merchant could've used it.\n\nAlex points the merchant in the direction of the lake, and he hastily follows the path.",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "waterTaken",
+                                        "==",
+                                        false
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Trees - Take water from",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex slowly inches {@his} way onto the logs. {@He} carefully bends down to draw water. Once {@his} bottle is full, Alex retreats from the logs as it seems like {@he} could slip at any second.\n\nAfter drinking the water, Alex feels very refreshed. So much so that {@he} considers packing some water for later.",
+            "choices": [
+                [
+                    "Fill up water again",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Trees2 - Take water again"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Go back to the road",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "At road"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Trees2 - Take water again",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex carefully inches forward on the logs. {@He} bends down to draw water and fills {@his} bottle. {slips}",
+            "choices": [
+                [
+                    "Continue",
+                    true,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After water"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Swim to land",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Swim to land"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [
+                        [
+                            "checkCharStat",
+                            [
+                                "Alex",
+                                "Base Stats",
+                                "dex",
+                                ">=",
+                                30
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "slips",
+                                "=",
+                                false
+                            ]
+                        ],
+                        [
+                            "setVar",
+                            [
+                                "Event",
+                                "waterTaken",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "enableChoice",
+                            [
+                                "Continue"
+                            ]
+                        ],
+                        [
+                            "disableChoice",
+                            [
+                                "Swim to land"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": [
+                [
+                    "slips",
+                    "After taking the water back to dry land, {@he} is satisfied that {@he} didn't slip into the water.",
+                    [
+                        [
+                            "All",
+                            "Alex's heart races as {@he} slips and falls into the water!",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Event",
+                                        "slips",
+                                        "==",
+                                        true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Swim to land",
+            "music": "demo.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Alex struggles to swim back to land. Once {@he} reaches land, {@he} is out of breath and rests while drying out {@his} clothes. It is getting dark, so Alex has no choice but to set up camp by the lake.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Night at the lake"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Night at the lake",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "As Alex is sitting by the fire, {@he} hears some rustling in the bushes. Alex readies {@his} sword. After a few seconds, a figure appears from the darkness. It is a young boy. He asks Alex for help as he was left behind by his tribe.",
+            "choices": [
+                [
+                    "Listen to what he has to say",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Listen to the boy"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Tell him to leave",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Tell boy to leave"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Listen to the boy",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "Alex invites the boy to stay at {@his} campfire overnight. The boy states that it is a tradition in his tribe for boys who reach the age of 16 to be left to fend for themselves in the wilderness for several weeks as a rite of passage. He asks if he can come along with Alex for the meantime.",
+            "choices": [
+                [
+                    "Help him",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Start"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Tell him to leave",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Tell boy to leave"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Tell boy to leave",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "Alex explains that {@he} cannot help the boy as {@he} is on a similar mission of his own. {@He} explains that it would be cheating to accept help from others.\n\nThe boy leaves and Alex gets some rest for the night.\n",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "In the morning"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "Help the boy",
+            "music": "dragon_quest_4_in_brass_06_-_frightning_dungeons-tx.mp3",
+            "bg": "forest-path-night.jpg",
+            "text": "The boy thanks Alex and joins {@his} party!\n\nBoth Alex and the boy get some rest for the night.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "In the morning"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [],
+                    [
+                        [
+                            "recruitChar",
+                            [
+                                "Act-1-1.json",
+                                "Potential Allies",
+                                "Nomadic Boy"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": []
+        },
+        {
+            "name": "In the morning",
+            "music": "homeland.mp3",
+            "bg": "forest-lake-path.jpeg",
+            "text": "Morning came, and Alex headed of towards Pannopolis.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Gates-to-Pannopolis"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {
+        "waterTaken": false,
+        "wentToTrees": false,
+        "slips": true
+    },
     "music": "the_usual.mp3",
     "bg": "forest-lake-path.jpeg",
     "startPage": "Start"

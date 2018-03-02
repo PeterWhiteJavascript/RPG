@@ -20,6 +20,7 @@
                 </div>
             </div>
             <div id="editor-main-content">
+                <div id="editor-page-title"><p>Text</p></div>
                 <div id="editor-page-options">
                     <div id="text-select">
                         <p class="title-text">Text</p>

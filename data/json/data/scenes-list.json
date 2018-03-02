@@ -60,17 +60,28 @@
                     ],
                     "name": "Middle-Path",
                     "type": "Story",
-                    "left": "86px",
-                    "top": "194px"
+                    "left": "146px",
+                    "top": "148px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Gates-to-Pannopolis"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Gates-to-Pannopolis"
+                        ]
+                    ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Left-Path",
                     "type": "Story",
-                    "left": "85px",
-                    "top": "236px"
+                    "left": "82px",
+                    "top": "192px"
                 },
                 {
                     "events": [],
@@ -78,8 +89,8 @@
                     "globalVars": [],
                     "name": "Right-Path",
                     "type": "Story",
-                    "left": "86px",
-                    "top": "152px"
+                    "left": "225px",
+                    "top": "113px"
                 },
                 {
                     "events": [],
@@ -87,8 +98,8 @@
                     "globalVars": [],
                     "name": "Gates-to-Pannopolis",
                     "type": "Story",
-                    "left": "194px",
-                    "top": "194px"
+                    "left": "176px",
+                    "top": "193px"
                 }
             ],
             "vrs": []

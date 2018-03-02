@@ -1345,7 +1345,7 @@ Quintus.UIObjects=function(Q){
     
     Q.GameObject.extend("OptionsController",{
         options:{
-            musicEnabled:false,
+            musicEnabled:true,
             musicVolume:20,
             soundEnabled:true,
             soundVolume:100,

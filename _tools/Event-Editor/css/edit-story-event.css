@@ -73,6 +73,22 @@
 #editor-page-options{
     padding:5px;
 }
+#editor-page-title{
+    width:90%;
+    height:40px;
+    background: linear-gradient(to bottom right, var(--heading-gradient-one), var(--heading-gradient-two));
+    color:var(--heading-text-color);
+    text-align:center;
+    vertical-align:middle;
+    line-height:40px;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+    border:1px solid black;
+}
+#editor-page-title p{
+    font-family: var(--heading-font-family);
+    font-size:30px;
+}
 #bottom-page-options{
     height:100%;
     padding:5px;
@@ -155,6 +171,7 @@
 .page-button{
     font-size:1.2vw;
     line-height:30px;
+    overflow:hidden;
 }
 .page-button:hover{
     background-color:var(--content-button-hover-color);

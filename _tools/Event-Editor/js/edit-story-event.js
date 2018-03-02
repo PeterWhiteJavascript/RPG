@@ -501,6 +501,7 @@ var start = function(){
         },
         //Using the page data, fill the edit page menu
         displayPage:function(name){
+            $("#editor-page-title p").text(name);
             var data = FileSaver.getPage(name);
             $("#music-select select").val(data.music);
             $("#music-select select").trigger("change");
@@ -518,22 +519,6 @@ var start = function(){
                 uic.createModuleGroup($("#modules-cont"),data.modules[i]);
             }
         },
-        finishEditPageName:function(){
-            var spObj = DC.getSelectedPage();
-            var name = $(spObj).find(':first-child').val();
-            var orig = $(spObj).find(':first-child').attr("origValue");
-            if(!name.length){
-                name = orig;
-            }
-            $(spObj).find(':first-child').remove();
-            $(spObj).append('<div class="page-button menu-button btn btn-default selected-color">'+name+'</div>');
-            $(".pages-to option").each(function(){
-                if($(this).text()===orig){
-                    $(this).text(name);
-                }
-            });
-        },
-
         //Gets the vars from the list
         getVars:function(){
             var scope = "Event";
@@ -582,8 +567,8 @@ var start = function(){
                 if($(this).val()!==id){
                     var oldID = $(this).parent().attr("id");
                     $(this).parent().attr("id",$(this).val());
-                    
                     FileSaver.getPage(oldID).name = $(this).parent().attr("id");
+                    $("#editor-page-title p").text($(this).val());
                 }
                 $(this).replaceWith("<div class='page-button list-item'>"+$(this).val()+"</div>");
             });

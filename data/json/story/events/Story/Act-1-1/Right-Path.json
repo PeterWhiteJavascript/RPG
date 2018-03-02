@@ -1,8 +1,18 @@
 {
     "name": "Right-Path",
     "kind": "Story",
-    "pages": [],
-    "vrs": [],
+    "pages": [
+        {
+            "name": "Start",
+            "music": "prebattle.mp3",
+            "bg": "mountain-path-1119909_960_720.jpg",
+            "text": "Alex carefully scales the side of the mountain.",
+            "choices": [],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {},
     "music": "prebattle.mp3",
     "bg": "mountain-path-1119909_960_720.jpg",
     "startPage": "Start"
