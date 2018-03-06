@@ -108,26 +108,26 @@ Quintus.QFunctions=function(Q){
         var stage = Q.stage(0);
         //var otherTeam = team==="enemy"?"ally":"enemy";
         function getTarget(){
-            return Q.BattleGrid.getObject([i_walk,j_walk]);
+            return Q.BattleGrid.getObject([x,y]);
         }/*
         function getZOC(){
             return Q.BattleGrid.getZOC(otherTeam,[i_walk,j_walk]);
         }*/
         function getModifiedTiles(){
-            return Q.modifiedTilesController.getTile(i_walk,j_walk);
+            return Q.modifiedTilesController.getTile(x,y);
         }
         var tileTypes = Q.state.get("tileTypes");
         var windWalking = obj?obj.p.talents.includes("Wind Walking"):false;
-        for(var i_walk=0;i_walk<stage.lists.TileLayer[0].p.tiles[0].length;i_walk++){
+        for(var x=0;x<stage.lists.TileLayer[0].p.tiles[0].length;x++){
             var costRow = [];
-            for(var j_walk=0;j_walk<stage.lists.TileLayer[0].p.tiles.length;j_walk++){
+            for(var y=0;y<stage.lists.TileLayer[0].p.tiles.length;y++){
                 var cost = 1;
                 var objOn = false;
                 //var zocOn = false;
                 var modified = false;
                 //If we're walking, enemies are impassable
                 if(type==="walk"){
-                    cost = Q.getWalkableOn(tileTypes[Q.BatCon.getTileType([i_walk,j_walk])],required);
+                    cost = Q.getWalkableOn(tileTypes[Q.BatCon.getTileType([x,y])],required);
                     //Don't check for other objects and ZOC in the story
                     if(team!=="story"&&cost<1000000){
                         objOn = getTarget();
@@ -151,7 +151,7 @@ Quintus.QFunctions=function(Q){
                 } 
                 //If modified is sort of a regular tile.
                 else {
-                    costRow.push(cost)
+                    costRow.push(cost);
                 }
             }
             cM.push(costRow);

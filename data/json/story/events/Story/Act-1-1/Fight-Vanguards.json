@@ -1,0 +1,116 @@
+{
+    "name": "Fight-Vanguards",
+    "kind": "Battle",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "defaultDir": "up",
+    "placementSquares": [
+        [
+            8,
+            9
+        ],
+        [
+            8,
+            10
+        ],
+        [
+            7,
+            10
+        ],
+        [
+            9,
+            10
+        ]
+    ],
+    "maxAllies": 4,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
+    "victory": {
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battle2Complete",
+                            "=",
+                            "victory"
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Fight-Vanguards-Victory"
+        ]
+    },
+    "defeat": {
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battle2Complete",
+                            "=",
+                            "defeat"
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Fight-Vanguards-Defeat"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                7,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            1,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            2,
+            [
+                9,
+                7
+            ],
+            "down"
+        ]
+    ]
+}

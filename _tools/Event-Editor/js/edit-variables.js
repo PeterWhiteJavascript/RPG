@@ -17,7 +17,7 @@ function showVar(key,value){
         if(fileData.events){
             //Get the references
             fileData.events.forEach(function(event){
-                if(event.sceneVars.find(function(obj){return obj===val;})){
+                if(event.sceneVars.find(function(obj){return obj[1]===val;})){
                     refs.push({event:event,scene:""});
                 }
             });
@@ -26,12 +26,13 @@ function showVar(key,value){
                 var scene = scenesList.Story[i];
                 for(var j=0;j<scene.events.length;j++){
                     var event = scene.events[j];
-                    if(event.globalVars.find(function(obj){return obj===val;})){
+                    if(event.globalVars.find(function(obj){return obj[1]===val;})){
                         refs.push({event:event,scene:scene.name+" -> "});
                     }
                 }
             }
         }
+        console.log(refs)
         refs.forEach(function(ref){
             $("#ref-cont").append("<div class='reference'><span>"+ref.scene+ref.event.name+"</span></div>");
         });

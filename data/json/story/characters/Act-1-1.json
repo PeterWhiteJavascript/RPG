@@ -70,5 +70,100 @@
             "charClass": "Assassin",
             "lean": false
         }
+    },
+    "First Battles": {
+        "Legionnaire": {
+            "handle": "Legionnaire",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Forced March",
+                "Fortify",
+                "Embolden",
+                "Fervour",
+                "Direct",
+                "Phalanx"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Legionnaire",
+            "lean": false
+        },
+        "Vanguard": {
+            "handle": "Vanguard",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Critical Strike",
+                "Rapid Strike",
+                "Surprising Strike",
+                "Armour Piercing Strike",
+                "Painful Strike",
+                "Whirlwind Strike"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Vanguard",
+            "lean": false
+        },
+        "Archer": {
+            "handle": "Archer",
+            "name": "",
+            "levelmin": 1,
+            "levelmax": 1,
+            "gender": "Male",
+            "promotion": 1,
+            "team": "Enemy",
+            "equipment": [
+                "Default",
+                "Default",
+                "Default",
+                "Default",
+                "None"
+            ],
+            "baseStats": [
+                "Random",
+                "Low"
+            ],
+            "techniques": [
+                "Long Shot",
+                "Armour Piercing Shot",
+                "Rapid Shot",
+                "Critical Shot",
+                "Painful Shot",
+                "Sniper Shot"
+            ],
+            "nationality": "Venorian",
+            "charClass": "Archer",
+            "lean": false
+        }
     }
 }

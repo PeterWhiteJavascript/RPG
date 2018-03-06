@@ -1,0 +1,94 @@
+{
+    "name": "Fight-Legionnaires-Victory",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "playAnim",
+                [
+                    "Legionnaire 0",
+                    "dead",
+                    "down",
+                    "none.mp3"
+                ]
+            ],
+            [
+                "playAnim",
+                [
+                    "Legionnaire 2",
+                    "dead",
+                    "down",
+                    "none.mp3"
+                ]
+            ],
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "Gah, we lost...",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            0,
+            [
+                6,
+                8
+            ],
+            "right"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            1,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            2,
+            [
+                10,
+                8
+            ],
+            "left"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                8
+            ],
+            "up"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Pannopolis-02"
+    ],
+    "viewLoc": [
+        8,
+        8
+    ]
+}

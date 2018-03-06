@@ -21,13 +21,26 @@
                             "Right-Path"
                         ]
                     ],
-                    "sceneVars": [],
+                    "sceneVars": [
+                        [
+                            "Scene",
+                            "knowsOfBrokenBridge",
+                            "==",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "knowsOfBrokenBridge",
+                            "==",
+                            "true"
+                        ]
+                    ],
                     "globalVars": [
                         [
                             "Global",
                             "money",
                             "+=",
-                            "1000"
+                            "500"
                         ]
                     ],
                     "name": "Opening",
@@ -84,25 +97,366 @@
                     "top": "192px"
                 },
                 {
-                    "events": [],
-                    "sceneVars": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Opening"
+                        ]
+                    ],
+                    "sceneVars": [
+                        [
+                            "Scene",
+                            "pickedUpMountainPlants",
+                            "=",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "knowsOfBrokenBridge",
+                            "=",
+                            "true"
+                        ]
+                    ],
                     "globalVars": [],
                     "name": "Right-Path",
                     "type": "Story",
-                    "left": "225px",
-                    "top": "113px"
+                    "left": "0px",
+                    "top": "254px"
                 },
                 {
-                    "events": [],
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-01"
+                        ]
+                    ],
                     "sceneVars": [],
                     "globalVars": [],
                     "name": "Gates-to-Pannopolis",
                     "type": "Story",
                     "left": "176px",
                     "top": "193px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Learn-about-contest"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Pannopolis-01",
+                    "type": "Location",
+                    "left": "184px",
+                    "top": "239px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Learn-about-contest",
+                    "type": "Story",
+                    "left": "167px",
+                    "top": "290px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "preFight-Legionnaries"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "preFight-Vanguards"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "preFight-Mixed"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-After-3-Battles"
+                        ]
+                    ],
+                    "sceneVars": [
+                        [
+                            "Scene",
+                            "battle1Complete",
+                            "set",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "battle2Complete",
+                            "set",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "battle3Complete",
+                            "set",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "battle1Complete",
+                            "set",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "battle2Complete",
+                            "set",
+                            "true"
+                        ],
+                        [
+                            "Scene",
+                            "battle3Complete",
+                            "set",
+                            "true"
+                        ]
+                    ],
+                    "globalVars": [],
+                    "name": "Pannopolis-02",
+                    "type": "Location",
+                    "left": "181px",
+                    "top": "330px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Legionnaires"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "preFight-Legionnaries",
+                    "type": "Battle Scene",
+                    "left": "71px",
+                    "top": "370px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Vanguards"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "preFight-Vanguards",
+                    "type": "Battle Scene",
+                    "left": "0px",
+                    "top": "331px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Mixed"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "preFight-Mixed",
+                    "type": "Battle Scene",
+                    "left": "181px",
+                    "top": "405px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Legionnaires-Victory"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Legionnaires-Defeat"
+                        ]
+                    ],
+                    "sceneVars": [
+                        "battle1Complete",
+                        "battle1Complete"
+                    ],
+                    "globalVars": [],
+                    "name": "Fight-Legionnaires",
+                    "type": "Battle",
+                    "left": "68px",
+                    "top": "475px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Legionnaires-Defeat",
+                    "type": "Battle Scene",
+                    "left": "321px",
+                    "top": "466px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Legionnaires-Victory",
+                    "type": "Battle Scene",
+                    "left": "320px",
+                    "top": "494px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Vanguards-Victory"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Vanguards-Defeat"
+                        ]
+                    ],
+                    "sceneVars": [
+                        "battle2Complete",
+                        "battle2Complete"
+                    ],
+                    "globalVars": [],
+                    "name": "Fight-Vanguards",
+                    "type": "Battle",
+                    "left": "1px",
+                    "top": "518px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Mixed-Victory"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Fight-Mixed-Defeat"
+                        ]
+                    ],
+                    "sceneVars": [
+                        "battle3Complete",
+                        "battle3Complete"
+                    ],
+                    "globalVars": [],
+                    "name": "Fight-Mixed",
+                    "type": "Battle",
+                    "left": "189px",
+                    "top": "444px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Vanguards-Defeat",
+                    "type": "Battle Scene",
+                    "left": "230px",
+                    "top": "525px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Vanguards-Victory",
+                    "type": "Battle Scene",
+                    "left": "228px",
+                    "top": "551px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Mixed-Defeat",
+                    "type": "Battle Scene",
+                    "left": "368px",
+                    "top": "399px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Pannopolis-02"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Fight-Mixed-Victory",
+                    "type": "Battle Scene",
+                    "left": "368px",
+                    "top": "431px"
+                },
+                {
+                    "events": [],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "Pannopolis-After-3-Battles",
+                    "type": "Story",
+                    "left": "518px",
+                    "top": "321px"
                 }
             ],
-            "vrs": []
+            "vrs": {
+                "pickedUpMountainPlants": false,
+                "knowsOfBrokenBridge": false,
+                "battle1Complete": false,
+                "battle2Complete": false,
+                "battle3Complete": false
+            }
         },
         {
             "name": "Act-1-2",

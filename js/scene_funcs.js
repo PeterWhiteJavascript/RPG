@@ -137,9 +137,9 @@ Quintus.SceneFuncs=function(Q){
                 //The range tiles
                 var gridMatrix = function(){
                     var matrix = [];
-                    for(var i=0; i<stage.mapWidth; i++) {
+                    for(var i=0; i<stage.mapHeight; i++) {
                         matrix[i] = [];
-                        for(var j=0; j<stage.mapHeight; j++) {
+                        for(var j=0; j<stage.mapWidth; j++) {
                             matrix[i][j] = 0;
                         }
                     }
@@ -164,6 +164,7 @@ Quintus.SceneFuncs=function(Q){
                     "7":{p:{type:"Caltrops"}},
                     "8":{p:{type:"Mirage"}}
                 };
+                Q.ModifiedGroundTileLayer.add("tween");
                 
                 Q.RangeTileLayer = stage.insert(new Q.TileLayer({
                     tileW:Q.tileW,
@@ -177,6 +178,7 @@ Quintus.SceneFuncs=function(Q){
                     z:-3
                 }));
                 Q.RangeTileLayer.add("tween");
+                
                 Q.AOETileLayer = stage.insert(new Q.TileLayer({
                     tileW:Q.tileW,
                     tileH:Q.tileH,
@@ -189,7 +191,6 @@ Quintus.SceneFuncs=function(Q){
                     z:-3
                 }));
                 Q.AOETileLayer.add("tween");
-                Q.ModifiedGroundTileLayer.add("tween");
                 
                 
                 

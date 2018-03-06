@@ -26,7 +26,7 @@
         "Battle": {
             "music": "demo.mp3",
             "map": "Test\/Act-1-1-Left-Path.tmx",
-            "maxAllies": "4",
+            "maxAllies": 4,
             "defaultDirection": "up"
         }
     },

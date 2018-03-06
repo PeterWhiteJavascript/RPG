@@ -1,0 +1,54 @@
+{
+    "name": "Fight-Vanguards-Victory",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "...",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                8
+            ],
+            "up"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Pannopolis-02"
+    ],
+    "viewLoc": [
+        8,
+        8
+    ]
+}

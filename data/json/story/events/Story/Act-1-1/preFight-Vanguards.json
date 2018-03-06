@@ -1,0 +1,97 @@
+{
+    "name": "preFight-Vanguards",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "prebattle.mp3",
+    "script": [
+        [
+            [
+                "centerViewChar",
+                [
+                    "Alex 0",
+                    0
+                ]
+            ],
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "up",
+                    true,
+                    [
+                        [
+                            8,
+                            11
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "We've been waiting for you!\n\nNow, let's fight!",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                15
+            ],
+            "up"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                7,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            1,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            2,
+            [
+                9,
+                7
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Fight-Vanguards"
+    ],
+    "viewLoc": [
+        8,
+        15
+    ]
+}

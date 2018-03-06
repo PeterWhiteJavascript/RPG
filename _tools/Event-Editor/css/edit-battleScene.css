@@ -89,6 +89,7 @@ body{
 .img-div{
     width:50%;
     height:60px;
+    display:inline-block;
 }
 .img-div img{
     width:auto;

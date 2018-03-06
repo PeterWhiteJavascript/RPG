@@ -1,0 +1,69 @@
+{
+    "name": "Fight-Mixed-Victory",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "waitTime",
+                [
+                    1000
+                ]
+            ],
+            [
+                "playAnim",
+                [
+                    "Archer 0",
+                    "dead",
+                    "down",
+                    "none.mp3"
+                ]
+            ],
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "Gah, we lost...",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                8
+            ],
+            "up"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Archer",
+            0,
+            [
+                8,
+                7
+            ],
+            "up"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Pannopolis-02"
+    ],
+    "viewLoc": [
+        8,
+        8
+    ]
+}

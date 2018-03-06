@@ -71,7 +71,7 @@ var uic = new UIC({
             Scene:GDATA.dataFiles["scenes-list.json"].Story.find(function(scene){return scene.name===GDATA.eventPointer.scene;}).vrs,
             Global:GDATA.dataFiles["global-vars.json"].vrs
         },
-        conditionals:["==","!=",">=","<="],
+        conditionals:["==","!=",">=","<=","set"],
         officers:Object.keys(GDATA.characterFiles["Officers.json"]["Officers"]),
         charFiles:GDATA.characterFiles,
         charPropTypes:["nationality","charClass","value","methodology","personality","gender"],
@@ -214,7 +214,7 @@ var uic = new UIC({
         func = func || "checkVar";
         switch(func){
             case "checkVar":
-                props = props || ["Global","money","==",1000];
+                props = props || ["Global","money","==",true];
                 cont.append(this.Select("Scope",dataP.scopes,props[0]));
                 cont.append(this.Select("Var",dataP.vars[props[0]],props[1]));
                 this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.vars);
@@ -273,7 +273,7 @@ var uic = new UIC({
         func = func || "setVar";
         switch(func){
             case "setVar":
-                props = props || ["Global","money","+=",1000];
+                props = props || ["Global","money","+=",true];
                 cont.append(this.Select("Scope",dataP.scopes,props[0]));
                 cont.append(this.Select("Var",dataP.vars[props[0]],props[1]));
                 this.linkSelects($(cont).children("select")[0],$(cont).children("select")[1],dataP.vars);
@@ -312,7 +312,8 @@ var uic = new UIC({
                 if(!props){
                     $(".UIC-choice").children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
                 } else {
-                    choiceNames = FileSaver.getPage($(".page.selected").attr("id")).choices.map(function(choice){return choice[0];});
+                    console.log(FileSaver.getPage($(".action.selected").attr("id")))
+                    choiceNames = FileSaver.getPage($(".action.selected").attr("id")).options.map(function(choice){return choice[0];});
                 }
                 props = props || [choiceNames[0]];
                 cont.append(this.Select("Choice",choiceNames,props[0]));
@@ -322,7 +323,7 @@ var uic = new UIC({
                 if(!props){
                     $(".UIC-choice").children(".UIC-choice-hud").children(".UIC-choice-title-cont").children(".UIC-choice-title").each(function(){choiceNames.push($(this).text());});
                 } else {
-                    choiceNames = FileSaver.getPage($(".page.selected").attr("id")).choices.map(function(choice){return choice[0];});
+                    choiceNames = FileSaver.getPage($(".action.selected").attr("id")).options.map(function(choice){return choice[0];});
                 }
                 props = props || [choiceNames[0]];
                 cont.append(this.Select("Choice",choiceNames,props[0]));

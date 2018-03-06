@@ -77,11 +77,13 @@ var CharacterGenerator = {
         
         char.classTechniques = this.setLevelTechniques(this.generateCharClassTechniques(char.charClass,char.level),char.level);
         
-        //If the character has a random charClass, generate default techniques.
-        char.techniques = data.techniques && data.charClass !== "Random" ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment)) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment));
-        char.talents = this.getTalents(char.charClass,char.charGroup);
         char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
         char.baseStats = data.baseStats ? this.getBaseStats(data.baseStats,char.primaryStat,char.primaryCoordinate,char.level,char.lean) : this.statsToLevel(this.generateBaseStats(),char.primaryStat,char.primaryCoordinate,char.level,char.lean);
+        
+        //If the character has a random charClass, generate default techniques.
+        char.techniques = data.techniques && data.charClass !== "Random" ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment),char.equipment,char.baseStats.skl) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment),char.equipment,char.baseStats.skl);
+        char.talents = this.getTalents(char.charClass,char.charGroup);
+        
         char.gender = data.gender === "Random" || !data.gender ? this.generateGender(char.charClass,char.natNum) : data.gender;
         char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
         char.exp = data.exp || 0;
@@ -158,6 +160,7 @@ var CharacterGenerator = {
         }
     },
     generateEquipment:function(classNum,natNum,level){
+        
         //TODO: primary/secondary hands wand/staff/bow
         return [
             this.convertEquipment(this.equipGear("Default",false,classNum,natNum,0),this.equipQuality("Default",level)),
@@ -239,13 +242,26 @@ var CharacterGenerator = {
         return gear.reduce(getCost,0);
     },
     getEquipment:function(val,classNum,natNum,level){
-        var rh = typeof val[0]==="string" ? false : this.convertEquipment(this.equipGear(val[0][0],val[0][1],classNum,natNum,0),this.equipQuality(val[0][2],level));
+        function checkDefault(val){
+            return val === "Default";
+        }
+        function checkString(val){
+            return typeof val === "string";
+        }
+        function getEq(gearName,material,classNum,natNum,pos,level,quality){
+            return CharacterGenerator.convertEquipment(CharacterGenerator.equipGear(gearName,material,classNum,natNum,pos),CharacterGenerator.equipQuality(quality,level))
+        }
+        //First, check if it's a default equipment (for randoms). In that case, generate the default. 
+        //Otherwise, check if it's a string (for None).
+        //If it's not a string, generate the equipment from the object provided.
+        var rh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,0,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,0,level,val[0][2]);
+        console.log(rh)
         var lh = false;
         if(!rh||rh.hands!==2){
-            lh = typeof val[1]==="string" ? false : this.convertEquipment(this.equipGear(val[1][0],val[1][1],classNum,natNum,1),this.equipQuality(val[1][2],level));
+            lh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,1,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,1,level,val[0][2]);
         }
-        var ar = typeof val[2]==="string" ? false : this.convertEquipment(this.equipGear(val[2][0],val[2][1],classNum,natNum,2),this.equipQuality(val[2][2],level));
-        var ft = typeof val[3]==="string" ? false : this.convertEquipment(this.equipGear(val[3][0],val[3][1],classNum,natNum,3),this.equipQuality(val[3][2],level));
+        var ar = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,2,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,2,level,val[0][2]);
+        var ft = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,3,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,3,level,val[0][2]);
         //Accessory is always either set or not. No Random.
         var ac = false;
         if(val[4]&&val[4]!=="None"){
@@ -253,7 +269,7 @@ var CharacterGenerator = {
         }
         return [rh,lh,ar,ft,ac];
     },
-    categorizeTechniques:function(techs){
+    categorizeTechniques:function(techs,equipment,skill){
         var processed = {
             active:[],
             passive:[]
@@ -328,13 +344,34 @@ var CharacterGenerator = {
             }
             tech.args = processedArgs;
         }
+        function getRange(amount,type,rh,lh,skill){
+            if(type === "Normal") return amount;
+            if(type === "Weapon"){
+                var weaponOfChoice = rh;
+                if(rh && lh){
+                    weaponOfChoice = rh.range < lh.range ? lh : rh;
+                }
+                return weaponOfChoice.range;
+            }
+            if(type === "Weapon w Skill"){
+                var weaponOfChoice = rh;
+                if(rh && lh){
+                    weaponOfChoice = rh.range >= lh.range ? rh : lh;
+                }
+                return weaponOfChoice.range + Math.max(1,Math.floor(skill/amount));
+            }
+            if(type === "Custom"){
+                alert("Custom range is not yet coded.");
+            }
+        }
         function processActive(data){
             var tech = {
                 name:data[0],
                 desc:data[1],
                 type1:data[2][0],
                 type2:data[2][1],
-                range:data[3][0],
+                initialRange:data[3][0],
+                range:getRange(data[3][0],data[3][1],equipment[0],equipment[1],skill),
                 rangeType:data[3][1],
                 rangeProps:data[3][2],
                 aoe:data[4][0],
@@ -369,7 +406,7 @@ var CharacterGenerator = {
     //When equipping a piece of gear
     addEquipment:function(character,idx,equipment){
         character.equipment[idx] = equipment;
-        character.techniques = CharacterGenerator.categorizeTechniques(character.classTechniques.concat(CharacterGenerator.getEquipmentTechniques(character.equipment)));
+        character.techniques = CharacterGenerator.categorizeTechniques(character.classTechniques.concat(CharacterGenerator.getEquipmentTechniques(character.equipment)),character.equipment,character.baseStats.skl);
         //Reset combatStats
         character.combatStats = CharacterGenerator.getCombatStats(character);
     },
@@ -432,7 +469,6 @@ var CharacterGenerator = {
             if(data.techniques.Base[2]) baseTech[8] = data.techniques.Base[2][rank];
             //If there is damage
             if(data.techniques.Base[3]) baseTech[6] += data.techniques.Base[3][rank];
-            console.log(data.techniques.Base)
             processedTechs.push(baseTech);
             var techs = data.techniques[eq.material].slice(0,Math.floor(rank/2)+1);
             for(var i=0;i<techs.length;i++){
@@ -687,8 +723,8 @@ var CharacterGenerator = {
     resetCombatStat:function(obj,prop){
         obj.p.combatStats[prop] = this["get_"+prop](obj.p);
     },
-    getCombatStats:function(char){
-        var baseCombatStats = {
+    getBaseCombatStats:function(char){
+        return {
             strength:this.get_strength(char),
             endurance:this.get_endurance(char),
             dexterity:this.get_dexterity(char),
@@ -699,7 +735,9 @@ var CharacterGenerator = {
             skill:this.get_skill(char), 
             efficiency:this.get_efficiency(char)
         };
-        char.combatStats = baseCombatStats;
+    },
+    getCombatStats:function(char){
+        char.combatStats = this.getBaseCombatStats(char);
         //var stats = ["maxHp","painTolerance","damageReduction","physicalResistance","mentalResistance","magicalResistance","atkRange","maxAtkDmg","minAtkDmg","maxSecondaryDmg","minSecondaryDmg","maxTp","encumbranceThreshold","totalWeight","encumbrancePenalty","defensiveAbility","atkAccuracy","critChance","counterChance","atkSpeed","moveSpeed"];
         char.combatStats.maxHp = this.get_maxHp(char);
         char.combatStats.hp = char.combatStats.maxHp;

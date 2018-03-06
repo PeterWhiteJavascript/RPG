@@ -209,6 +209,15 @@ Quintus.GameObjects=function(Q){
             this.entity.on("checkConfirm");
             if(this.entity.p.technique){
                 var technique = this.entity.p.technique;
+                if(technique.rangeType === "Weapon w Skill"){
+                    var user = this.entity.p.user;
+                    var weaponOfChoice = user.p.equipment[0];
+                    if(user.p.equipment[0] && user.p.equipment[1]){
+                        weaponOfChoice = user.p.equipment[0].range >= user.p.equipment[1].range ? user.p.equipment[0] : user.p.equipment[1];
+                    }
+                    technique.range = weaponOfChoice.range + Math.max(1,Math.floor(this.entity.p.user.p.combatStats.skill / technique.initialRange));
+                console.log(technique.range,this.entity.p.user)
+                }
                 if(technique.rangeProps.includes("MaxRangeFixed") || technique.range === 0){
                     this.entity.on("checkInputs",this.entity,"checkStraightInputs");
                     this.entity.on("inputMoved",this,"moveTiles");
@@ -1034,6 +1043,8 @@ Quintus.GameObjects=function(Q){
             };
         },
         finishBattle:function(props){
+            Q.groupsProcessor.processGroups(props.events);
+            console.log(props)
             //Figure out exp distribution
             var leaderboard = this.getFinalContributions(this.allyExpContributions);
             
@@ -1155,7 +1166,7 @@ Quintus.GameObjects=function(Q){
                 //TODO: save awards
                 Q.BatCon.allyExpContributions = [];
             });
- 
+            
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
         checkBattleOver:function(){
@@ -1830,9 +1841,9 @@ Quintus.GameObjects=function(Q){
                     case "Number":
                         return value.amount;
                     case "User Base Stats":
-                        return ~~evaluateOperator(user.p.baseStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
                     case "Target Base Stats":
-                        return ~~evaluateOperator(target.p.baseStats[value.stat],value.oper,value.amount);
+                        return ~~evaluateOperator(target.p.combatStats[value.stat],value.oper,value.amount);
                     case "User Combat Stats":
                         return ~~evaluateOperator(user.p.combatStats[value.stat],value.oper,value.amount);
                     case "Target Combat Stats":
@@ -1843,9 +1854,10 @@ Quintus.GameObjects=function(Q){
                 }
             }
             function changeStat(target,statType,stat,oper,value,turns,attacker){
+                if(statType === "baseStats") statType = "combatStats";
                 var newValue = Math.max(0,Math.floor(evaluateOperator(target.p[statType][stat],oper,getAmount(value,attacker,target))));
                 var difference = target.p[statType][stat] - newValue;
-                console.log(difference,newValue)
+                console.log(target,statType,stat,oper,value,turns,attacker)
                 if(difference){
                     console.log(target.p.name+"'s "+stat+" has changed from "+target.p[statType][stat]+" to "+newValue+"!");
                     if(stat === "hp" || stat === "tp"){

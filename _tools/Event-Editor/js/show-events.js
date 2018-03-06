@@ -267,7 +267,7 @@ $(function(){
             case "Battle":
                 newFile.music = cont.children("select:eq(1)").val();
                 newFile.map = cont.children("select:eq(2)").val()+"/"+cont.children("select:eq(3)").val();
-                newFile.maxAllies = cont.children("input:eq(0)").val();
+                newFile.maxAllies = cont.children("input:eq(1)").val();
                 newFile.defaultDirection = cont.children("select:eq(3)").val();
                 newFile.turnBonus = [16,12,8,4];
                 if(!data){

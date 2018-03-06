@@ -1,0 +1,127 @@
+{
+    "name": "Fight-Mixed",
+    "kind": "Battle",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "defaultDir": "up",
+    "placementSquares": [
+        [
+            8,
+            9
+        ],
+        [
+            8,
+            10
+        ],
+        [
+            7,
+            10
+        ],
+        [
+            9,
+            10
+        ]
+    ],
+    "maxAllies": 4,
+    "turnBonus": [
+        16,
+        12,
+        8,
+        4
+    ],
+    "victory": {
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battle3Complete",
+                            "=",
+                            "victory"
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Fight-Mixed-Victory"
+        ]
+    },
+    "defeat": {
+        "events": [
+            [
+                "All",
+                [],
+                [
+                    [
+                        "setVar",
+                        [
+                            "Scene",
+                            "battle3Complete",
+                            "=",
+                            "defeat"
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        "next": [
+            "Story",
+            "Act-1-1",
+            "Fight-Mixed-Defeat"
+        ]
+    },
+    "events": [],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            0,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                7,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            1,
+            [
+                9,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Archer",
+            0,
+            [
+                8,
+                6
+            ],
+            "down"
+        ]
+    ]
+}

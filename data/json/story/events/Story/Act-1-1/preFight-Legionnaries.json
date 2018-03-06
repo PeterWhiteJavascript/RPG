@@ -1,0 +1,97 @@
+{
+    "name": "preFight-Legionnaries",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "prebattle.mp3",
+    "script": [
+        [
+            [
+                "centerViewChar",
+                [
+                    "Alex 0",
+                    0
+                ]
+            ],
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "up",
+                    true,
+                    [
+                        [
+                            8,
+                            11
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "We've been waiting for you!\n\nNow, let's fight!",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            0,
+            [
+                6,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            1,
+            [
+                8,
+                6
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            2,
+            [
+                10,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                15
+            ],
+            "up"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Fight-Legionnaires"
+    ],
+    "viewLoc": [
+        8,
+        15
+    ]
+}

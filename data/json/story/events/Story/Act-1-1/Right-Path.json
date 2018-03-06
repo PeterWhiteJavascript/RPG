@@ -6,8 +6,176 @@
             "name": "Start",
             "music": "prebattle.mp3",
             "bg": "mountain-path-1119909_960_720.jpg",
-            "text": "Alex carefully scales the side of the mountain.",
-            "choices": [],
+            "text": "Alex carefully hikes along the side of the mountain. Looking down, {@he} can see the lake in the distance.\n\nThere are some of the valuable plants that Alex was thinking about earlier along the side of the road.\n\n",
+            "choices": [
+                [
+                    "Pick up the plants",
+                    false,
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Scene",
+                                "pickedUpMountainPlants",
+                                "=",
+                                true
+                            ]
+                        ],
+                        [
+                            "changePage",
+                            [
+                                "After plants"
+                            ]
+                        ]
+                    ],
+                    []
+                ],
+                [
+                    "Ignore the plants",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "After plants"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "After plants",
+            "music": "prebattle.mp3",
+            "bg": "mountain-path-1119909_960_720.jpg",
+            "text": "{picked}\n\n",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Arrive at broken bridge"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": [
+                [
+                    "picked",
+                    "Alex picked the plants and put them in a bottle.",
+                    [
+                        [
+                            "All",
+                            "Alex left the plants as {@he} didn't want to waste any more time on the way to the city.",
+                            [
+                                [
+                                    "checkVar",
+                                    [
+                                        "Scene",
+                                        "pickedUpMountainPlants",
+                                        "==",
+                                        false
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "name": "Arrive at broken bridge",
+            "music": "prebattle.mp3",
+            "bg": "mountain-broken-bridge.jpg",
+            "text": "The bridge, which was to only place to cross was destroyed. The only way to get to Pannopolis now is to turn back. Alex decides to set up camp here since it is getting late.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Night on mountain"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [],
+                    [
+                        [
+                            "setVar",
+                            [
+                                "Scene",
+                                "knowsOfBrokenBridge",
+                                "=",
+                                true
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "modules": []
+        },
+        {
+            "name": "Night on mountain",
+            "music": "prebattle.mp3",
+            "bg": "mountain-night.jpg",
+            "text": "Alex gazes upon the lake from atop the mountain. Tomorrow will be a long day as trekking back to the split path will only leave enough time to travel down the middle path to Pannopolis.",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "In the morning"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        },
+        {
+            "name": "In the morning",
+            "music": "prebattle.mp3",
+            "bg": "mountain-path-1119909_960_720.jpg",
+            "text": "Once morning arrived, Alex packed {@his} belongings and traveled back to the split path. ",
+            "choices": [
+                [
+                    "Continue",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Opening"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
             "onload": [],
             "modules": []
         }

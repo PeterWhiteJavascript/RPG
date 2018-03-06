@@ -1,0 +1,87 @@
+{
+    "name": "Fight-Mixed-Defeat",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "demo.mp3",
+    "script": [
+        [
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "Hah, you were no match for us!",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                8
+            ],
+            "up"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                7,
+                8
+            ],
+            "right"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            1,
+            [
+                9,
+                8
+            ],
+            "left"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Archer",
+            0,
+            [
+                8,
+                6
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            0,
+            [
+                8,
+                7
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Pannopolis-02"
+    ],
+    "viewLoc": [
+        8,
+        8
+    ]
+}

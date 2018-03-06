@@ -1,0 +1,108 @@
+{
+    "name": "preFight-Mixed",
+    "kind": "Battle Scene",
+    "map": "Test\/Pannopolis-Arena.tmx",
+    "music": "prebattle.mp3",
+    "script": [
+        [
+            [
+                "centerViewChar",
+                [
+                    "Alex 0",
+                    0
+                ]
+            ],
+            [
+                "moveAlong",
+                [
+                    "Alex 0",
+                    "up",
+                    true,
+                    [
+                        [
+                            8,
+                            11
+                        ]
+                    ]
+                ]
+            ],
+            [
+                "text",
+                [
+                    "knight.png",
+                    "knight.png",
+                    "We've been waiting for you!\n\nNow, let's fight!",
+                    false,
+                    0,
+                    false
+                ]
+            ]
+        ]
+    ],
+    "characters": [
+        [
+            "Officers.json",
+            "Officers",
+            "Alex",
+            0,
+            [
+                8,
+                15
+            ],
+            "up"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Legionnaire",
+            0,
+            [
+                8,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            0,
+            [
+                7,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Vanguard",
+            1,
+            [
+                9,
+                7
+            ],
+            "down"
+        ],
+        [
+            "Act-1-1.json",
+            "First Battles",
+            "Archer",
+            0,
+            [
+                8,
+                6
+            ],
+            "down"
+        ]
+    ],
+    "finished": [
+        "Story",
+        "Act-1-1",
+        "Fight-Mixed"
+    ],
+    "viewLoc": [
+        8,
+        15
+    ]
+}

@@ -1,0 +1,90 @@
+{
+    "name": "Pannopolis-01",
+    "kind": "Location",
+    "pages": [
+        {
+            "name": "Action 1",
+            "music": "demo.mp3",
+            "bg": "Pannopolis.jpg",
+            "options": [
+                [
+                    "Shop",
+                    false,
+                    [
+                        [
+                            "displayBuyItemsList",
+                            [
+                                [
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Cuirass",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Cuirass",
+                                        "Brass",
+                                        "Average"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Recruit",
+                    false,
+                    [
+                        [
+                            "createRecruitMenu",
+                            []
+                        ]
+                    ]
+                ],
+                [
+                    "Next",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Learn-about-contest"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": []
+        }
+    ],
+    "vrs": {},
+    "music": "demo.mp3",
+    "bg": "Pannopolis.jpg"
+}

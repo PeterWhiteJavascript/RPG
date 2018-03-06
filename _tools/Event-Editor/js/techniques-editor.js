@@ -145,8 +145,8 @@ $(function(){
                 },
                 amountTypes:{
                     "Number":[null],
-                    "User Base Stats":FileSaver.charGen.statNames,
-                    "Target Base Stats":FileSaver.charGen.statNames,
+                    "User Base Stats":FileSaver.charGen.trimmedBaseStats,
+                    "Target Base Stats":FileSaver.charGen.trimmedBaseStats,
                     "User Combat Stats":FileSaver.charGen.combatStats,
                     "Target Combat Stats":FileSaver.charGen.combatStats,
                     "Combat Result":["Damage"]
@@ -161,7 +161,7 @@ $(function(){
                 },
                 argumentTargetProps:{
                     combatStats:FileSaver.charGen.combatStats,
-                    baseStats:FileSaver.charGen.statNames,
+                    baseStats:FileSaver.charGen.trimmedBaseStats,
                     statusResistance:FileSaver.charGen.statuses
                 },
                 argumentGroundProps:{

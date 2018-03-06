@@ -168,7 +168,7 @@ Quintus.UIObjects=function(Q){
             Event:{}
         },
         changeMoney:function(amount){
-            Q.state.get("saveData").money = amount;
+            Q.state.get("saveData").money += amount;
             $("#hud-money").text(Q.state.get("saveData").money);
         },
         evaluateStringOperator:function(vr,op,vl,min,max){
@@ -231,12 +231,13 @@ Quintus.UIObjects=function(Q){
         },
         evaluateStringConditional:function(vr,op,vl){
             switch(op){
-                case "==": return vr==vl;
-                case "!=": return vr!=vl;
-                case ">": return vr>vl;
-                case "<": return vr<vl;
-                case ">=": return vr>=vl;
-                case "<=": return vr<=vl;
+                case "==": return vr == vl;
+                case "!=": return vr != vl;
+                case ">": return vr > vl;
+                case "<": return vr < vl;
+                case ">=": return vr >= vl;
+                case "<=": return vr <= vl;
+                case "set": return vl ? vr : !vr;
             }
         },
         getDeepValue:function(obj, path){
@@ -419,11 +420,12 @@ Quintus.UIObjects=function(Q){
                         Q.startScene(props[0],props[1],props[2]);
                         break;
                     case "enableChoice":
-                        console.log(props)
-                        obj.currentPage.choices.find(function(choice){return props[0] === choice[0];})[1] = false;
+                        var target = obj.currentPage.options || obj.currentPage.choices;
+                        target.find(function(choice){return props[0] === choice[0];})[1] = false;
                         break;
                     case "disableChoice":
-                        obj.currentPage.choices.find(function(choice){return props[0] === choice[0];})[1] = true;
+                        var target = obj.currentPage.options || obj.currentPage.choices;
+                        target.find(function(choice){return props[0] === choice[0];})[1] = true;
                         break;
                     //Flavour only. Sends back to event that happened before triggering the flavour event.
                     case "goToAnchorEvent":
@@ -620,7 +622,10 @@ Quintus.UIObjects=function(Q){
             $("#text-content-story").append(this.newPage(this.currentPage));
         },
         changePage:function(name){
-            $("#text-content-story").children(".page").remove();
+            //Wrap this in setTimeout because jquery append doesn't add to html instantly, which means that if there is a changePage in an onload, it will display two pages.
+            setTimeout(function(){
+                $("#text-content-story").children(".page").first().remove();
+            });
             this.displayPage(name);
         },
         newPage:function(data){
@@ -1204,6 +1209,7 @@ Quintus.UIObjects=function(Q){
         },
         getOptions:function(options,cont){
             for(var i=0;i<options.length;i++){
+                if(options[i][1]) continue;
                 cont.append(this.newOption(options[i][0]));
                 $(cont).children(".option").last().click(function(){
                     Q.locationController.selectOption($(this).text());
@@ -1345,7 +1351,7 @@ Quintus.UIObjects=function(Q){
     
     Q.GameObject.extend("OptionsController",{
         options:{
-            musicEnabled:true,
+            musicEnabled:false,
             musicVolume:20,
             soundEnabled:true,
             soundVolume:100,
@@ -1899,8 +1905,9 @@ Quintus.UIObjects=function(Q){
             obj.playStand(props[1]);
         },
         playAnim:function(obj,props){
-            Q.audioController.playSound(props[0]);
-            this.getChar(props[0]);["play"+anim](dir);
+            Q.audioController.playSound(props[3]);
+            var char = this.getChar(props[0]);
+            char.play(props[1]+props[2]);
         },
         changeMoveSpeed:function(obj,props){
             var obj = this.getChar(props[0]);

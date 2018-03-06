@@ -1,15 +1,15 @@
 {
-    "name": "Gates-to-Pannopolis",
+    "name": "Learn-about-contest",
     "kind": "Story",
     "pages": [
         {
             "name": "Start",
-            "music": "demo.mp3",
-            "bg": "merchant-path.gif",
-            "text": "Alex arrives at the gates to Pannopolis. There are some guards at the gate, but they don't seem to mind Alex as they are checking a merchant's goods. Alex walks through the gate into Pannopolis. The city is bustling and there are many shops along the streets.",
+            "music": "the_usual.mp3",
+            "bg": "Pannopolis.jpg",
+            "text": "In town, Alex learns of a contest where people fight to prove who is the strongest. {@He} decides to participate.",
             "choices": [
                 [
-                    "Continue",
+                    "Next",
                     false,
                     [
                         [
@@ -17,7 +17,7 @@
                             [
                                 "Story",
                                 "Act-1-1",
-                                "Pannopolis-01"
+                                "Pannopolis-02"
                             ]
                         ]
                     ],
@@ -29,7 +29,7 @@
         }
     ],
     "vrs": {},
-    "music": "demo.mp3",
-    "bg": "Pumpkins.jpg",
+    "music": "the_usual.mp3",
+    "bg": "Pannopolis.jpg",
     "startPage": "Start"
 }

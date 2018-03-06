@@ -1,0 +1,33 @@
+{
+    "name": "Pannopolis-After-3-Battles",
+    "kind": "Story",
+    "pages": [
+        {
+            "name": "Start",
+            "music": "demo.mp3",
+            "bg": "Pannopolis.jpg",
+            "text": "After all three of the arena battles, Alex goes to the awards ceremony.",
+            "choices": [
+                [
+                    "Next",
+                    false,
+                    [
+                        [
+                            "changePage",
+                            [
+                                "Start"
+                            ]
+                        ]
+                    ],
+                    []
+                ]
+            ],
+            "onload": [],
+            "modules": []
+        }
+    ],
+    "vrs": {},
+    "music": "demo.mp3",
+    "bg": "Pannopolis.jpg",
+    "startPage": "Start"
+}

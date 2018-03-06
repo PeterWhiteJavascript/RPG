@@ -1,0 +1,239 @@
+{
+    "name": "Pannopolis-02",
+    "kind": "Location",
+    "pages": [
+        {
+            "name": "Action 1",
+            "music": "demo.mp3",
+            "bg": "Pannopolis.jpg",
+            "options": [
+                [
+                    "Shop",
+                    false,
+                    [
+                        [
+                            "displayBuyItemsList",
+                            [
+                                [
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Weapons",
+                                        "Short Sword",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Shields",
+                                        "Small Shield",
+                                        "Brass",
+                                        "Average"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Cuirass",
+                                        "Brass",
+                                        "Shoddy"
+                                    ],
+                                    [
+                                        "Armour",
+                                        "Cuirass",
+                                        "Brass",
+                                        "Average"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Recruit",
+                    false,
+                    [
+                        [
+                            "createRecruitMenu",
+                            []
+                        ]
+                    ]
+                ],
+                [
+                    "Battle 1",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "preFight-Legionnaries"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Battle 2",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "preFight-Vanguards"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Battle 3",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "preFight-Mixed"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "Next",
+                    true,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "Pannopolis-After-3-Battles"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "onload": [
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle1Complete",
+                                "set",
+                                true
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Battle 1"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle2Complete",
+                                "set",
+                                true
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Battle 2"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle3Complete",
+                                "set",
+                                true
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "disableChoice",
+                            [
+                                "Battle 3"
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    "All",
+                    [
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle1Complete",
+                                "set",
+                                true
+                            ]
+                        ],
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle2Complete",
+                                "set",
+                                true
+                            ]
+                        ],
+                        [
+                            "checkVar",
+                            [
+                                "Scene",
+                                "battle3Complete",
+                                "set",
+                                true
+                            ]
+                        ]
+                    ],
+                    [
+                        [
+                            "enableChoice",
+                            [
+                                "Next"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        }
+    ],
+    "vrs": {},
+    "music": "demo.mp3",
+    "bg": "Pannopolis.jpg"
+}

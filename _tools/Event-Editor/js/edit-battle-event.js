@@ -519,7 +519,7 @@ $(function(){
             func = func || "setVar";
             switch(func){
                 case "setVar":
-                    props = props || ["Global","money","+=",1000];
+                    props = props || ["Global","money","+=",true];
                     cont.append(this.Select("Scope",uic.dataP.scopes,props[0],"var-scope"));
                     cont.append(this.Select("Name",uic.dataP.vars[props[0]],props[1],"var-handle"));
                     uic.linkSelects($(cont).children("select:eq(0)"),$(cont).children("select:eq(1)"),dataP.vars);
