@@ -107,6 +107,16 @@ body{
 .page-choice:hover{
     background-color:#CCC;
 }
+
+.fancy-border{
+    border: 16px solid transparent;
+    border-radius:16px;
+    padding: 16px;
+    -webkit-border-image: url(../images/ui/menu-border.png) 33% round; /* Safari 3.1-5 */
+    -o-border-image: url(../images/ui/menu-border.png) 33% round; /* Opera 11-12.1 */
+    border-image: url(../images/ui/menu-border.png) 33% round;
+}
+
 /* Story End */
 /* Locations Start*/
 .big-box{

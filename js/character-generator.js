@@ -74,7 +74,6 @@ var CharacterGenerator = {
         char.primaryStat = this.primaryStats[char.classNum];
         char.primaryCoordinate = this.primaryCoordinates[char.classNum];
         char.equipment = data.equipment ? this.getEquipment(data.equipment,char.classNum,char.natNum,char.level) : this.generateEquipment(char.classNum,char.natNum,char.level);
-        
         char.classTechniques = this.setLevelTechniques(this.generateCharClassTechniques(char.charClass,char.level),char.level);
         
         char.lean = this.getLean(data.lean) || [this.generateStatLean(),this.generateStatLean()];
@@ -249,7 +248,7 @@ var CharacterGenerator = {
             return typeof val === "string";
         }
         function getEq(gearName,material,classNum,natNum,pos,level,quality){
-            return CharacterGenerator.convertEquipment(CharacterGenerator.equipGear(gearName,material,classNum,natNum,pos),CharacterGenerator.equipQuality(quality,level))
+            return CharacterGenerator.convertEquipment(CharacterGenerator.equipGear(gearName,material,classNum,natNum,pos),CharacterGenerator.equipQuality(quality,level));
         }
         //First, check if it's a default equipment (for randoms). In that case, generate the default. 
         //Otherwise, check if it's a string (for None).
@@ -258,10 +257,10 @@ var CharacterGenerator = {
         console.log(rh)
         var lh = false;
         if(!rh||rh.hands!==2){
-            lh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,1,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,1,level,val[0][2]);
+            lh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,1,level,"Default") : checkString(val[0]) ? false : getEq(val[1][0],val[1][1],classNum,natNum,1,level,val[0][2]);
         }
-        var ar = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,2,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,2,level,val[0][2]);
-        var ft = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,3,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,3,level,val[0][2]);
+        var ar = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,2,level,"Default") : checkString(val[0]) ? false : getEq(val[2][0],val[2][1],classNum,natNum,2,level,val[0][2]);
+        var ft = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,3,level,"Default") : checkString(val[0]) ? false : getEq(val[3][0],val[3][1],classNum,natNum,3,level,val[0][2]);
         //Accessory is always either set or not. No Random.
         var ac = false;
         if(val[4]&&val[4]!=="None"){

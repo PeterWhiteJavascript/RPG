@@ -65,7 +65,7 @@
     },
     "startSceneName":"Act-1-1",
     "startSceneType":"Story",
-    "startEventName":"Story-00",
+    "startEventName":"Opening",
     
     "act":"1-1",
     "applicationsRoster":[]

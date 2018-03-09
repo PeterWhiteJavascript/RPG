@@ -604,7 +604,7 @@ Quintus.UIObjects=function(Q){
         //When a story event starts, set data and show the container.
         startEvent:function(data){
             //Elements used for displaying text
-            $("#main-container").append('<div id="text-content"></div>');
+            $("#main-container").append('<div id="text-content" class="fancy-border"></div>');
             $("#text-content").append('<div id="text-content-story"></div>');
             this.data = data;
             //Start should actually be party menu.
