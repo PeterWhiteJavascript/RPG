@@ -15,16 +15,16 @@ $(function(){
     
     
     $("#story").on("click",function(){
-        $.redirect('show-events.php', {scene:$(".selected").text(), type:"Story"});
+        window.location.href = "show-events.php?" + $.param({scene:$(".selected").text(), type:"Story"});
     });
     $("#vars").on("click",function(){
-        $.redirect('edit-vars.php', {scene:$(".selected").text()});
+        window.location.href = 'edit-vars.php?scene=' + $(".selected").text();
     });
     $("#defaults").on("click",function(){
-        $.redirect('edit-scene-defaults.php', {scene:$(".selected").text()});
+        window.location.href = "edit-scene-defaults.php?" + $.param({scene:$(".selected").text()});
     });
     $("#back").on("click",function(){
-        $.redirect("index.php");
+        window.location.href = "index.php";
     });
     
 });

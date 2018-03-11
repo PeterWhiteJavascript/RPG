@@ -34,15 +34,8 @@ $(function(){
                 "defaultDirection":$(props[12]).val()
             }
         };
-        
-        $.ajax({
-            type:'POST',
-            url:'save-scene-defaults.php',
-            data:{data:JSON.stringify(data),scene:scene},
-            dataType:'json'
-        })
-        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-        .fail(function(data){console.log(data)});
+
+        saveJsonToFile('scene-defaults', scene, data);
     };
     var uic = new UIC({
         fileData:fileData,
@@ -51,8 +44,8 @@ $(function(){
                 saveFile();
             },
             Back:function(){
-                if(confirm("Are you sure you want to go back without saving?")){
-                    $.redirect("load.php");
+                if(promptAboutChanges()) {
+                    window.location.href = "load.php";
                 }
             }
         }

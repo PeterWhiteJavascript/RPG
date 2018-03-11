@@ -42,6 +42,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             </div>
                 
         </div>
+        <script src="js/common.js"></script>
         <script src="js/show-events.js"></script>
     </body>
 </html>

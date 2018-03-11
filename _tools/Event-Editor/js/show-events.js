@@ -286,14 +286,7 @@ $(function(){
                 }
                 break;
         }
-        $.ajax({
-            type:'POST',
-            url:'create-event.php',
-            data:{scene:scene,type:"Story",data:JSON.stringify(newFile)},
-            dataType:'json'
-        })
-        .done(function(data){console.log(data);changed=false;})
-        .fail(function(data){console.log(data)});
+        saveStoryJsonToFile('Story', scene, newFile.name, newFile);
         setTimeout(function(){
             saveEvents();
         });
@@ -323,7 +316,7 @@ $(function(){
     $("#edit-event").click(function(){
         if(!$(".selected.event-button").attr("id")) return alert("There is no event to edit!");
         confirmFlowchartPosition();
-        $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
+        window.location.href = 'edit-event.php?' + $.param({'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
     });
     $("#copy-event").click(function(){
         var event = $(".selected.event-button");
@@ -343,7 +336,7 @@ $(function(){
     });
     $("#edit-vars").click(function(){
         confirmFlowchartPosition();
-        $.redirect("edit-vars.php",{scene:scene});
+        window.location.href = "edit-vars.php?scene="+scene;
     });
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
@@ -357,15 +350,7 @@ $(function(){
                 }
             });
             //Remove the event file
-            var path = "../../data/json/story/events/Story/"+scene+"/"+eventName+".json";
-            $.ajax({
-                type:'POST',
-                url:'delete-file.php',
-                data:{path:path},
-                dataType:'json'
-            })
-            .done(function(data){console.log(data);alert(eventName+" was removed successfully.");})
-            .fail(function(data){console.log(data);});
+            saveStoryJsonToFile('Story', scene, eventName, {});
             $(event).remove();
             saveEvents();
             $(".event-button").last().trigger("click");
@@ -385,15 +370,7 @@ $(function(){
             savedEvents.push(event);
         });
         file["Story"].find(function(itm){return itm.name===scene;}).events = savedEvents;
-        $.ajax({
-            type:'POST',
-            url:'save-flowchart.php',
-            data:{file:JSON.stringify(file)},
-            dataType:'json'
-        })
-        .done(function(data){console.log(data);changed=false;})
-        .fail(function(data){console.log(data)});
-        
+        saveJsonToFile('data', 'scenes-list', file);
     }
     $("#save-flowchart").click(function(){
         saveEvents();
@@ -401,7 +378,7 @@ $(function(){
     });
     $("#test-event").click(function(){
         if(!$(".selected.event-button").text()) return alert("There is no event to test!");
-        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
+        window.location.href = '../../index.php?' + $.param({'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
     });
 
     $("#back").click(function(){

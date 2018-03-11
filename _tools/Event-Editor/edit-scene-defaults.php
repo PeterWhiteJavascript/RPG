@@ -1,5 +1,5 @@
 <?php
-$scene = $_POST["scene"];
+$scene = $_GET["scene"];
 $data  = json_decode(file_get_contents('data/scene-defaults.json'));
 ?>
 <!DOCTYPE html>
@@ -81,6 +81,7 @@ $data  = json_decode(file_get_contents('data/scene-defaults.json'));
                 </div>
             </div>
         </div>
+        <script src="js/common.js"></script>
         <script src="js/edit-scene-defaults.js"></script>
     </body>
 </html>

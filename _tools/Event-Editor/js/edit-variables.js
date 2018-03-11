@@ -115,14 +115,7 @@ function updateMenuOptions(type){
             save[key] = convertValue(value);
         });
 
-        $.ajax({
-            type:'POST',
-            url:'save-vars.php',
-            data:{vrs:JSON.stringify(save),scene:scene},
-            dataType:'json'
-        })
-        .done(function(data){console.log(data)})
-        .fail(function(data){console.log(data)});
+        saveJsonToFile('variables', $('body').data('scene'), save);
     });
     $("#go-to-event").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
@@ -131,13 +124,13 @@ function updateMenuOptions(type){
         var text = $(".reference.selected").text().split(" -> ");
         var event = text[1] || text[0];
         var scene = fileData.name || text[0];
-        $.redirect('edit-event.php', {'scene':scene, 'event':event, 'type':'Story'});
+        window.location.href = "edit-event.php?" + $.param({'scene':scene, 'event':event, 'type':'Story'});
     });
     $("#show-story-events").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
             $("#save-vars").trigger("click");
         }
-        $.redirect('show-events.php', {'scene':scene, type:"Story"});
+        window.location.href = "show-events.php?" + $.param({'scene': $('body').data('scene'), type:"Story"});
     });
     $("#back").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
@@ -159,6 +152,7 @@ function updateMenuOptions(type){
 $(function(){
     $.getJSON("../../data/json/data/scenes-list.json",function(data){
         scenesList = data;
+        var scene = $('body').data('scene');
         if(scene){
             $("#scene-title").append("<div>"+scene+"</div>");
                 fileData = data["Story"].find(function(elm){return elm.name===scene});
@@ -171,14 +165,19 @@ $(function(){
 
         } else {
             $("#scene-title").append("<div>Global</div>");
-            $.getJSON("../../data/json/story/global-vars.json",function(data){
-                fileData = data;
-                var keys = Object.keys(data.vrs);
-                keys.forEach(function(key){
-                    showVar(key,data.vrs[key]);
-                });
-                if(!keys.length) showVar();
-                $(".variable").first().trigger("click");
+            $.ajax({
+                cache: false,
+                url: "../../data/json/story/global-vars.json",
+                dataType: "json",
+                success: function(data) {
+                    fileData = data;
+                    var keys = Object.keys(data.vrs);
+                    keys.forEach(function(key){
+                        showVar(key,data.vrs[key]);
+                    });
+                    if(!keys.length) showVar();
+                    $(".variable").first().trigger("click");
+                }
             });
         }
     });

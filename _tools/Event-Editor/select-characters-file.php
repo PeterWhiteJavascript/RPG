@@ -1,11 +1,5 @@
 <?php
 $files = array_diff(scandir('../../data/json/story/characters'), array('..', '.'));
-if(isset($_GET['err'])){
-    $err = $_GET['err'];
-    echo $err;
-};
-
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -79,42 +73,30 @@ if(isset($_GET['err'])){
             }
             
         </style>
+        <script src="js/common.js"></script>
     </head>
     <body>
         <script>
             $(function(){
                 $("#load-file").click(function(){
-                    $.redirect('create-characters.php', {filename:$("#file-select").val()});
+                    window.location.href = 'create-characters.php?name=' + $("#file-select").val();
                 });
                 $("#delete-file").click(function(){
                     var sure = confirm("Are you sure you want to delete "+$("#file-select").val()+"?");
                     if(sure){
-                        $.ajax({
-                            type:'POST',
-                            url:'delete-character-file.php',
-                            data:{filename:$("#file-select").val()},
-                            dataType:'json'
-                        });
+                        saveJsonToFile('character', $("file-select").val(), {});
                         $("#file-select option[value='"+$("#file-select").val()+"']").remove();
                     }
                 });
                 $("#create-new-file").click(function(){
                     if($("#new-file-name").val().length){
-                        $.ajax({
-                            type:'POST',
-                            url:'create-character-file.php',
-                            data:{filename:$("#new-file-name").val()},
-                            dataType:'json'
-                        })
-                        .done(function(data){$.redirect('create-characters.php', {filename:$("#new-file-name").val()+".json"});})
-                        .fail(function(data){alert("This file already exists!");});
-                        
+                        window.location.href = 'create-characters.php?name=' + $("#new-file-name").val();
                     } else {
                         alert("Please fill out a name.");
                     }
                 });
                 $("#back").click(function(){
-                    $.redirect("index.php");
+                    window.location.href = "index.php";
                 });
             });
         </script>
@@ -127,6 +109,7 @@ if(isset($_GET['err'])){
                         <select id="file-select">
                             <?php
                             forEach($files as $file){
+                                $file = substr($file, 0, -5);
                                 echo '<option value="'.$file.'">'.$file.'</option>';
                             }
                             ?>

@@ -18,6 +18,7 @@ $globalVars = json_decode(file_get_contents('../../data/json/story/global-vars.j
             var globalVars = <?php echo json_encode($globalVars); ?>;
             var flavour = <?php echo json_encode($flavour); ?>;
         </script>
+        <script src="js/common.js"></script>
         <script src="js/show-flavour.js"></script>
         <div id="wrapper">
             <div class="full-screen-hider"></div>

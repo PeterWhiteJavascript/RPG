@@ -363,14 +363,7 @@ $(function(){
     }
     function saveFile(){
         var data = FileSaver.getSaveFile();
-        $.ajax({
-            type:'POST',
-            url:'save-battleScene-script.php',
-            data:{file:JSON.stringify(data.file),name:uic.dataP.eventPointer.event,scene:uic.dataP.eventPointer.scene,type:uic.dataP.eventPointer.type},
-            dataType:'json'
-        })
-        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-        .fail(function(data){console.log(data)});
+        saveStoryJsonToFile(uic.dataP.eventPointer.type, uic.dataP.eventPointer.scene, uic.dataP.eventPointer.event, data.file);
 
         if(uic.dataP.eventPointer.type==="Story"){
             $.ajax({
@@ -431,7 +424,7 @@ $(function(){
             Test:function(){
                 window.onbeforeunload = null;
                 saveFile();
-                $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
+                window.location.href = '../../index.php?' + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
             },
             "Load Chars":function(){
                 if($("#load-chars-from-cont").length) return;
@@ -480,12 +473,12 @@ $(function(){
                 });
             },
             Back:function(){
-                if(confirm("Are you sure you want to go back without saving?")){
+                if(promptAboutChanges()) {
                     var to = "show-events.php";
                     if(uic.dataP.eventPointer.type==="Flavour"){
                         to = "show-flavour.php";
                     }
-                    $.redirect(to,  {'scene':uic.dataP.eventPointer.scene, 'event':uic.dataP.eventPointer.event, 'type':uic.dataP.eventPointer.type});
+                    window.location.href = to + "?" + $.param({'scene':uic.dataP.eventPointer.scene, 'event':uic.dataP.eventPointer.event, 'type':uic.dataP.eventPointer.type});
                 }
             }
         },

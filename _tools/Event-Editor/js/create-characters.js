@@ -13,9 +13,8 @@ $(function(){
                 FileSaver.saveFile();
             },
             Back:function(){
-                if(confirm("Are you sure you want to go back without saving?")){
-                    var to = "select-characters-file.php";
-                    $.redirect(to);
+                if(promptAboutChanges()){
+                    window.location.href = "select-characters-file.php";
                 }
             }
         }
@@ -115,14 +114,7 @@ $(function(){
         },
         saveFile:function(){
             this.saveCharacter();
-            $.ajax({
-                type:'POST',
-                url:'save-characters.php',
-                data:{data:JSON.stringify(FileSaver.fileData),filename:GDATA.eventPointer.event},
-                dataType:'json'
-            })
-            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-            .fail(function(data){console.log(data)});
+            saveJsonToFile('character', GDATA.eventPointer.event, FileSaver.fileData);
         }
     };
     var DC = {

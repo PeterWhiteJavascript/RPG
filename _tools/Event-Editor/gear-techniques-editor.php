@@ -20,6 +20,7 @@
                 vertical-align:top;
             }
         </style>
+        <script src="js/common.js"></script>
         <script>
             $(function(){
                 var FileSaver = {
@@ -29,14 +30,7 @@
                     },
                     saveFile:function(){
                         saveCurrentTechniques();
-                        $.ajax({
-                            type:'POST',
-                            url:'save-gear.php',
-                            data:{data:JSON.stringify(FileSaver.equipmentData)},
-                            dataType:'json'
-                        })
-                        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-                        .fail(function(data){console.log(data)});
+                        saveJsonToFile('data', 'equipment', FileSaver.equipmentData);
                     }
                 };
                 var uic = new UIC({
@@ -45,9 +39,8 @@
                             FileSaver.saveFile();
                         },
                         Back:function(){
-                            if(confirm("Are you sure you want to go back without saving?")){
-                                var to = "index.php";
-                                $.redirect(to);
+                            if(promptAboutChanges()) {
+                                window.location.href = "index.php";
                             }
                         }
                     }

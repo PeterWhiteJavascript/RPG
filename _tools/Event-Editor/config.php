@@ -7,7 +7,6 @@
 
 <script src="lib/jquery-3.1.1.js"></script>
 <script src="lib/jquery-ui.min.js"></script>
-<script src="lib/jquery.redirect.min.js"></script>
 <script src="lib/jquery.connections.min.js"></script>
 <script src="lib/js.cookie.js"></script>
 

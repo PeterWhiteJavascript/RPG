@@ -18,11 +18,11 @@
         </div>
         <script>
             var testing = false;
-            <?php if(isset($_POST['testing'])){ ?>
+            <?php if(isset($_GET['testing'])){ ?>
             testing = {
-                type: '<?php echo $_POST['type']; ?>',
-                scene: '<?php echo $_POST['scene']; ?>',
-                event: '<?php echo $_POST['event']; ?>'
+                type: '<?php echo $_GET['type']; ?>',
+                scene: '<?php echo $_GET['scene']; ?>',
+                event: '<?php echo $_GET['event']; ?>'
             };
             <?php } ?>
         </script>

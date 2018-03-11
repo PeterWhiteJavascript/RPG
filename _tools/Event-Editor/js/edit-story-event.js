@@ -3,14 +3,7 @@ var uniquePages = 1;
 function saveEvent(){
     FileSaver.savePage($(".page.selected").attr("id"));
     var refs = FileSaver.getSaveReferences();
-    $.ajax({
-        type:'POST',
-        url:'save-file.php',
-        data:{file:JSON.stringify(FileSaver.event),type:uic.dataP.eventPointer.type,scene:uic.dataP.eventPointer.scene,event:uic.dataP.eventPointer.event},
-        dataType:'json'
-    })
-    .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-    .fail(function(data){console.log(data)});
+    saveStoryJsonToFile(uic.dataP.eventPointer.type, uic.dataP.eventPointer.scene, uic.dataP.eventPointer.event, FileSaver.event);
 
     if(uic.dataP.eventPointer.type==="Story"){
         $.ajax({
@@ -135,21 +128,21 @@ var uic = new UIC({
         },
         Test:function(){
             saveEvent();
-            $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
+            window.location.href = '../../index.php?' + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
         },
         "To Scene Vars":function(){
             if(confirm("Save file?")){
                 saveEvent();
             }
-            $.redirect('edit-vars.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
+            window.location.href = "edit-vars.php?" + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
         },
         Back:function(){
-            if(confirm("Are you sure you want to go back without saving?")){
+            if(promptAboutChanges()) {
                 var to = "show-events.php";
                 if(GDATA.eventPointer.type==="Flavour"){
                     to = "show-flavour.php";
                 }
-                $.redirect(to, {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
+                window.location.href = to + "?" + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
             }
         }
     },

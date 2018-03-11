@@ -13,14 +13,7 @@ $(function(){
             }
         },
         saveFile:function(){
-            $.ajax({
-                type:'POST',
-                url:'save-techniques.php',
-                data:{data:JSON.stringify(FileSaver.techniqueData)},
-                dataType:'json'
-            })
-            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-            .fail(function(data){console.log(data)});
+            saveJsonToFile('data', 'techniques', FileSaver.techniqueData);
         }
     };
     
@@ -49,9 +42,8 @@ $(function(){
                         FileSaver.saveFile();
                     },  
                     Back:function(){
-                        if(confirm("Are you sure you want to go back without saving?")){
-                            var to = "index.php";
-                            $.redirect(to);
+                        if(promptAboutChanges()) {
+                            window.location.href = "index.php";
                         }
                     }
                 },
