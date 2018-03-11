@@ -1,4 +1,3 @@
-var changed = false;
 //Any hidden events are included in the list
 //When an event is shown, remove the event from all arrays it is a part of.
 var groupsList = {};

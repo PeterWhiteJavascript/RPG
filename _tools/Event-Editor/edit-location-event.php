@@ -60,6 +60,7 @@
                 </div>
             </div>
         </div>
+        <script src="js/common.js"></script>
         <script src="js/edit-location-event.js"></script>
     </body>
 </html>

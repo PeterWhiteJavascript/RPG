@@ -449,7 +449,7 @@ $(function(){
                 });
             },
             Back:function(){
-                if(confirm("Are you sure you want to go back without saving?")){
+                if(promptAboutChanges()) {
                     var to = "show-events.php";
                     if(uic.dataP.eventPointer.type==="Flavour"){
                         to = "show-flavour.php";

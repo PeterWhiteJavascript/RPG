@@ -44,7 +44,7 @@ $(function(){
                 saveFile();
             },
             Back:function(){
-                if(confirm("Are you sure you want to go back without saving?")){
+                if(promptAboutChanges()) {
                     window.location.href = "load.php";
                 }
             }

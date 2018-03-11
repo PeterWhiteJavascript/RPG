@@ -137,7 +137,7 @@ var uic = new UIC({
             window.location.href = "edit-vars.php?" + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
         },
         Back:function(){
-            if(confirm("Are you sure you want to go back without saving?")){
+            if(promptAboutChanges()) {
                 var to = "show-events.php";
                 if(GDATA.eventPointer.type==="Flavour"){
                     to = "show-flavour.php";
