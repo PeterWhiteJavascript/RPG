@@ -15,3 +15,8 @@ function dieIfFilenameUnsafe($filename) {
     }
     return $filename;
 }
+
+function redirect($url, $statusCode=302) {
+    header("Location: {$url}", true, $statusCode);
+    die();
+}
