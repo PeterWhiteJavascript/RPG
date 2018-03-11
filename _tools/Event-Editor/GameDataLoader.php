@@ -4,12 +4,17 @@ $type = isset($_POST['type']) ? $_POST['type'] : false;
 $scene = isset($_POST['scene']) ? $_POST['scene'] : false;
 $name = isset($_POST['event']) ? $_POST['event'] : false;
 if(!$name){
-    $name = isset($_POST['filename']) ? $_POST['filename'] : false;
+    $name = isset($_GET['name']) ? $_GET['name'] : false;
 }
 if($type && $scene && $name){
     $event = json_decode(file_get_contents('../../data/json/story/events/'.$type.'/'.$scene.'/'.$name.'.json'), true);
 } else if($name) {
-    $event = json_decode(file_get_contents('../../data/json/story/characters/'.$name), true);
+    $filePath = "../../data/json/story/characters/{$name}.json";
+    if (file_exists($filePath)) {
+        $event = json_decode(file_get_contents($filePath), true);
+    } else {
+        $event = [];
+    }
 } 
 //There is no event, just get the data
 else {

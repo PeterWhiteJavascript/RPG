@@ -267,14 +267,7 @@ $(function(){
                     newFile.music = "demo.mp3";
                     break;
             }
-            $.ajax({
-                type:'POST',
-                url:'create-event.php',
-                data:{type:"Flavour",data:JSON.stringify(newFile),scene:$(".event-group.selected").children(".group-name").text()},
-                dataType:'json'
-            })
-            .done(function(data){console.log(data);changed=false;})
-            .fail(function(data){console.log(data)});
+            saveStoryJsonToFile('Flavour', $(".event-group.selected").children(".group-name").text(), newFile.name, newFile);
             saveEvents();
             
         });
@@ -298,15 +291,7 @@ $(function(){
         var eventGroup = $(event).parent().parent().children(".group-name").text();
         if(confirm("Are you sure you want to delete "+eventName+"?")){
             //Remove the event file
-            var path = "../../data/json/story/events/Flavour/"+eventGroup+"/"+eventName+".json";
-            $.ajax({
-                type:'POST',
-                url:'delete-file.php',
-                data:{path:path},
-                dataType:'json'
-            })
-            .done(function(data){console.log(data);alert(eventName+" was removed successfully.");})
-            .fail(function(data){console.log(data);});
+            saveStoryJsonToFile('Flavour', eventGroup, eventName, {});
             $(event).remove();
             saveEvents();
         }
@@ -315,12 +300,7 @@ $(function(){
         var text = $(".selected.event-group").children(".group-name").text();
         if(confirm("Are you sure you want to delete "+text+"?")){
             $(".selected.event-group").remove();
-            $.ajax({
-                type:'POST',
-                url:'delete-flavour-group.php',
-                data:{name:text},
-                dataType:'json'
-            });
+            saveJsonToFile('remove-flavour-group', text, {});
         };
         
     });
@@ -402,15 +382,8 @@ $(function(){
             ];
         });
         flavour.groups = savedGroups;
-        
-        $.ajax({
-            type:'POST',
-            url:'save-flavour-groups.php',
-            data:{file:JSON.stringify(flavour)},
-            dataType:'json'
-        })
-        .done(function(data){console.log(data);changed=false;})
-        .fail(function(data){console.log(data);});
+
+        saveJsonToFile('data', 'flavour-events-list', flavour);
     }
     $("#save").click(function(){
         saveEvents();
@@ -434,23 +407,9 @@ $(function(){
     $(document).on("change",".group-name-input",function(){
         if($(this).val().length>0){
             var name = $(this).val().replace(/\s+/g, '-');
-            var t = this;
-            $.ajax({
-                type:'POST',
-                url:'new-flavour-group.php',
-                data:{name:name}
-            })
-            .done(function(data){
-                if(!data.length){
-                    alert("Group name already in use!");
-                } else {
-                    makeEventContSortable($(t).parent().children(".event-cont"));
-                    $(t).replaceWith("<div class='group-name'>"+name+"</div>");
-                    saveEvents();
-                }
-            });
-            
-            
+            makeEventContSortable($(this).parent().children(".event-cont"));
+            $(this).replaceWith("<div class='group-name'>"+name+"</div>");
+            saveEvents();
         }
     });
     $(document).on("click",".event-button",function(){

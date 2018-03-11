@@ -5,6 +5,7 @@
         <title>Create Techniques</title>
         <link rel="stylesheet" type="text/css" href="css/new-style.css">
         <link rel="stylesheet" type="text/css" href="css/techniques-editor.css">
+        <script src="js/common.js"></script>
         <script src="js/techniques-editor.js"></script>
     </head>
     <body>

@@ -4,14 +4,7 @@ var uniqueActions = 1;
 function saveEvent(){
     FileSaver.savePage($(".action.selected").attr("id"));
     var refs = FileSaver.getSaveReferences();
-    $.ajax({
-        type:'POST',
-        url:'save-location.php',
-        data:{file:JSON.stringify(FileSaver.event),type:uic.dataP.eventPointer.type,scene:uic.dataP.eventPointer.scene,event:uic.dataP.eventPointer.event},
-        dataType:'json'
-    })
-    .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-    .fail(function(data){console.log(data)});
+    saveStoryJsonToFile(uic.dataP.eventPointer.type, uic.dataP.eventPointer.scene,uic.dataP.eventPointer.event, FileSaver.event);
 
     if(uic.dataP.eventPointer.type==="Story"){
         $.ajax({

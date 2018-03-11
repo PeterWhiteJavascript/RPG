@@ -115,14 +115,7 @@ $(function(){
         },
         saveFile:function(){
             this.saveCharacter();
-            $.ajax({
-                type:'POST',
-                url:'save-characters.php',
-                data:{data:JSON.stringify(FileSaver.fileData),filename:GDATA.eventPointer.event},
-                dataType:'json'
-            })
-            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-            .fail(function(data){console.log(data)});
+            saveJsonToFile('character', GDATA.eventPointer.event, FileSaver.fileData);
         }
     };
     var DC = {

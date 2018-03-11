@@ -34,15 +34,8 @@ $(function(){
                 "defaultDirection":$(props[12]).val()
             }
         };
-        
-        $.ajax({
-            type:'POST',
-            url:'save-scene-defaults.php',
-            data:{data:JSON.stringify(data),scene:scene},
-            dataType:'json'
-        })
-        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-        .fail(function(data){console.log(data)});
+
+        saveJsonToFile('scene-defaults', scene, data);
     };
     var uic = new UIC({
         fileData:fileData,

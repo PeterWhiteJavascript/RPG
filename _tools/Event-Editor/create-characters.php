@@ -162,6 +162,7 @@
             </div>
             
         </div>
+        <script src="js/common.js"></script>
         <script src="js/create-characters.js"></script>
         <script src="../../js/character-generator.js"></script>
     </body>

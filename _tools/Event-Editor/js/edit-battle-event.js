@@ -363,14 +363,7 @@ $(function(){
     }
     function saveFile(){
         var data = FileSaver.getSaveFile();
-        $.ajax({
-            type:'POST',
-            url:'save-battleScene-script.php',
-            data:{file:JSON.stringify(data.file),name:uic.dataP.eventPointer.event,scene:uic.dataP.eventPointer.scene,type:uic.dataP.eventPointer.type},
-            dataType:'json'
-        })
-        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-        .fail(function(data){console.log(data)});
+        saveStoryJsonToFile(uic.dataP.eventPointer.type, uic.dataP.eventPointer.scene, uic.dataP.eventPointer.event, data.file);
 
         if(uic.dataP.eventPointer.type==="Story"){
             $.ajax({

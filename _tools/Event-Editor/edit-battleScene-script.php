@@ -60,7 +60,7 @@
                 </div>
             </div>
         </div>
-        
+        <script src="js/common.js"></script>
         <script src="js/edit-battleScene-script.js"></script>
         <script src="../../js/music.js"></script>
         <script src="../../js/animations.js"></script>

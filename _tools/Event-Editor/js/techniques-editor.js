@@ -13,14 +13,7 @@ $(function(){
             }
         },
         saveFile:function(){
-            $.ajax({
-                type:'POST',
-                url:'save-techniques.php',
-                data:{data:JSON.stringify(FileSaver.techniqueData)},
-                dataType:'json'
-            })
-            .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-            .fail(function(data){console.log(data)});
+            saveJsonToFile('data', 'techniques', FileSaver.techniqueData);
         }
     };
     

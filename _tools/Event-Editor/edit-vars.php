@@ -5,10 +5,7 @@
         <title>Edit Variables</title>
         <link rel="stylesheet" href="css/edit-vars.css">
     </head>
-    <body>
-        <script>
-            var scene = '<?php if(isset($_POST['scene'])){ echo $_POST['scene']; }?>';
-        </script>
+    <body data-scene="<?= isset($_POST['scene']) ? $_POST['scene'] : ''?>">=
         <div id="wrapper">
             <div id="main-content">
                 <div id="scene-title"></div>
@@ -24,6 +21,7 @@
                 </div>
             </div>
         </div>
+        <script src="js/common.js"></script>
         <script src="js/edit-variables.js"></script>
     </body>
 </html>

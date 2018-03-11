@@ -49,6 +49,7 @@
                 background-color:var(--button-hover-color);
             }
         </style>
+        <script src="js/common.js"></script>
         <script>
             $(function(){
                 var FileSaver = {
@@ -61,14 +62,7 @@
                         Accessories:["weight","effect","cost"]
                     },
                     saveFile:function(){
-                        $.ajax({
-                            type:'POST',
-                            url:'save-gear.php',
-                            data:{data:JSON.stringify(FileSaver.fileData)},
-                            dataType:'json'
-                        })
-                        .done(function(data){alert("Saved successfully. Check the console to see the file.");console.log(data)})
-                        .fail(function(data){console.log(data)});
+                        saveJsonToFile('data', 'equipment', FileSaver.fileData);
                     }
                 };
                 var uic = new UIC({
