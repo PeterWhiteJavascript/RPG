@@ -128,13 +128,13 @@ var uic = new UIC({
         },
         Test:function(){
             saveEvent();
-            $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
+            window.location.href = '../../index.php?' + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
         },
         "To Scene Vars":function(){
             if(confirm("Save file?")){
                 saveEvent();
             }
-            $.redirect('edit-vars.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
+            window.location.href = "edit-vars.php?" + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
         },
         Back:function(){
             if(confirm("Are you sure you want to go back without saving?")){
@@ -142,7 +142,7 @@ var uic = new UIC({
                 if(GDATA.eventPointer.type==="Flavour"){
                     to = "show-flavour.php";
                 }
-                $.redirect(to, {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
+                window.location.href = to + "?" + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type});
             }
         }
     },

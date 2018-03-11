@@ -124,13 +124,13 @@ function updateMenuOptions(type){
         var text = $(".reference.selected").text().split(" -> ");
         var event = text[1] || text[0];
         var scene = fileData.name || text[0];
-        $.redirect('edit-event.php', {'scene':scene, 'event':event, 'type':'Story'});
+        window.location.href = "edit-event.php?" + $.param({'scene':scene, 'event':event, 'type':'Story'});
     });
     $("#show-story-events").click(function(){
         if(changed&&confirm("Save vars before leaving?")){
             $("#save-vars").trigger("click");
         }
-        $.redirect('show-events.php', {'scene': $('body').data('scene'), type:"Story"});
+        window.location.href = "show-events.php?" + $.param({'scene': $('body').data('scene'), type:"Story"});
     });
     $("#back").click(function(){
         if(changed&&confirm("Save vars before leaving?")){

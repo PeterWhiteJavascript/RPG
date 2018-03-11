@@ -27,7 +27,7 @@ Quintus.SceneFuncs=function(Q){
                             path += "edit-battle-event.php";
                             break;
                     }
-                    $.redirect(path, {'scene':testing.scene, 'event':testing.event, 'type':testing.type});
+                    window.location.href = path + '?' + $.param({'scene':testing.scene, 'event':testing.event, 'type':testing.type});
                 });
             }
         });

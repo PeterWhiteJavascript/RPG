@@ -96,7 +96,7 @@ $files = array_diff(scandir('../../data/json/story/characters'), array('..', '.'
                     }
                 });
                 $("#back").click(function(){
-                    $.redirect("index.php");
+                    window.location.href = "index.php";
                 });
             });
         </script>

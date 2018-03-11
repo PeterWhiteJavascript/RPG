@@ -1,8 +1,8 @@
 <?php
 
-$type = isset($_POST['type']) ? $_POST['type'] : false;
-$scene = isset($_POST['scene']) ? $_POST['scene'] : false;
-$name = isset($_POST['event']) ? $_POST['event'] : false;
+$type = isset($_GET['type']) ? $_GET['type'] : false;
+$scene = isset($_GET['scene']) ? $_GET['scene'] : false;
+$name = isset($_GET['event']) ? $_GET['event'] : false;
 if(!$name){
     $name = isset($_GET['name']) ? $_GET['name'] : false;
 }

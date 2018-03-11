@@ -5,7 +5,7 @@
         <title>Edit Variables</title>
         <link rel="stylesheet" href="css/edit-vars.css">
     </head>
-    <body data-scene="<?= isset($_POST['scene']) ? $_POST['scene'] : ''?>">=
+    <body data-scene="<?= isset($_GET['scene']) ? $_GET['scene'] : ''?>">=
         <div id="wrapper">
             <div id="main-content">
                 <div id="scene-title"></div>

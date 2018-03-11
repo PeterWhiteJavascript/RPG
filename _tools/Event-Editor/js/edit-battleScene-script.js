@@ -400,7 +400,7 @@ $(function(){
             Test:function(){
                 window.onbeforeunload = null;
                 saveFile();
-                $.redirect('../../index.php', {'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
+                window.location.href = '../../index.php?' + $.param({'scene':GDATA.eventPointer.scene, 'event':GDATA.eventPointer.event, 'type':GDATA.eventPointer.type, testing:true});
             },
             "Load Chars":function(){
                 if($("#load-chars-from-cont").length) return;
@@ -454,7 +454,7 @@ $(function(){
                     if(uic.dataP.eventPointer.type==="Flavour"){
                         to = "show-flavour.php";
                     }
-                    $.redirect(to,  {'scene':uic.dataP.eventPointer.scene, 'event':uic.dataP.eventPointer.event, 'type':uic.dataP.eventPointer.type});
+                    window.location.href = to + "?" + $.param({'scene':uic.dataP.eventPointer.scene, 'event':uic.dataP.eventPointer.event, 'type':uic.dataP.eventPointer.type});
                 }
             }
         },

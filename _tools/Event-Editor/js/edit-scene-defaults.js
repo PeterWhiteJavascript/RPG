@@ -45,7 +45,7 @@ $(function(){
             },
             Back:function(){
                 if(confirm("Are you sure you want to go back without saving?")){
-                    $.redirect("load.php");
+                    window.location.href = "load.php";
                 }
             }
         }

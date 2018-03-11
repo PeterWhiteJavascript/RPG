@@ -283,7 +283,7 @@ $(function(){
     });
     $("#edit-event").click(function(){
         saveEvents();
-        $.redirect('edit-event.php', {'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour"});
+        window.location.href = 'edit-event.php?' + $.param({'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour"});
     });
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
@@ -390,7 +390,7 @@ $(function(){
         alert("Saved!");
     });
     $("#test-event").click(function(){
-        $.redirect('../../index.php', {'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour", testing:true});
+        window.location.href = '../../index.php?' + $.param({'scene':$(".selected.event-button").parent().parent().children(".group-name").text(), 'event':$(".selected.event-button").text(), 'type':"Flavour", testing:true});
     });
 
     $("#back").click(function(){

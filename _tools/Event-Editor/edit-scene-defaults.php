@@ -1,5 +1,5 @@
 <?php
-$scene = $_POST["scene"];
+$scene = $_GET["scene"];
 $data  = json_decode(file_get_contents('data/scene-defaults.json'));
 ?>
 <!DOCTYPE html>

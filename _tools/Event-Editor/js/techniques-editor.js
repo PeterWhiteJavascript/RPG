@@ -43,8 +43,7 @@ $(function(){
                     },  
                     Back:function(){
                         if(confirm("Are you sure you want to go back without saving?")){
-                            var to = "index.php";
-                            $.redirect(to);
+                            window.location.href = "index.php";
                         }
                     }
                 },

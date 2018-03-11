@@ -14,8 +14,7 @@ $(function(){
             },
             Back:function(){
                 if(confirm("Are you sure you want to go back without saving?")){
-                    var to = "select-characters-file.php";
-                    $.redirect(to);
+                    window.location.href = "select-characters-file.php";
                 }
             }
         }

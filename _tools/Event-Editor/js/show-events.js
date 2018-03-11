@@ -316,7 +316,7 @@ $(function(){
     $("#edit-event").click(function(){
         if(!$(".selected.event-button").attr("id")) return alert("There is no event to edit!");
         confirmFlowchartPosition();
-        $.redirect('edit-event.php', {'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
+        window.location.href = 'edit-event.php?' + $.param({'scene':scene, 'event':$(".selected.event-button").attr("id"), 'type':"Story"});
     });
     $("#copy-event").click(function(){
         var event = $(".selected.event-button");
@@ -336,7 +336,7 @@ $(function(){
     });
     $("#edit-vars").click(function(){
         confirmFlowchartPosition();
-        $.redirect("edit-vars.php",{scene:scene});
+        window.location.href = "edit-vars.php?scene="+scene;
     });
     $("#delete-event").click(function(){
         var event = $(".selected.event-button");
@@ -378,7 +378,7 @@ $(function(){
     });
     $("#test-event").click(function(){
         if(!$(".selected.event-button").text()) return alert("There is no event to test!");
-        $.redirect('../../index.php', {'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
+        window.location.href = '../../index.php?' + $.param({'scene':scene, 'event':$(".selected.event-button").text(), 'type':"Story", testing:true});
     });
 
     $("#back").click(function(){
