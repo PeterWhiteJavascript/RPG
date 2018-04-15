@@ -30,7 +30,7 @@
             
         ]
     },
-    "money":0,
+    "money":500,
     "week":1,
         
     "influence":{
@@ -63,9 +63,9 @@
             "Reputation":50
         }
     },
-    "startSceneName":"Act-2-3",
+    "startSceneName":"Act-1-1",
     "startSceneType":"Story",
-    "startEventName":"testbattle",
+    "startEventName":"Opening",
     
     "act":"1-1",
     "applicationsRoster":[],

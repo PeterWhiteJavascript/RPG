@@ -95,8 +95,14 @@ var CharacterGenerator = {
         
         //TEMP: print out alex for testing
         //char.name === "Alex" ? console.log(char) : false;
-        console.log(char)
+        //console.log(char)
         return char;
+    },
+    calculateCostOfCharacter:function(char){
+        var baseCost = 100;
+        var levelMultiplier = 20;
+        var cost = Math.floor(baseCost + (char.level * levelMultiplier) + this.getAllGearCost(char.equipment));
+        return cost;
     },
     emptyAwards:function(){
         var awards = this.awards;
@@ -254,7 +260,7 @@ var CharacterGenerator = {
         //Otherwise, check if it's a string (for None).
         //If it's not a string, generate the equipment from the object provided.
         var rh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,0,level,"Default") : checkString(val[0]) ? false : getEq(val[0][0],val[0][1],classNum,natNum,0,level,val[0][2]);
-        console.log(rh)
+        
         var lh = false;
         if(!rh||rh.hands!==2){
             lh = checkDefault(val[0]) ? getEq("Default",false,classNum,natNum,1,level,"Default") : checkString(val[0]) ? false : getEq(val[1][0],val[1][1],classNum,natNum,1,level,val[0][2]);

@@ -1,7 +1,7 @@
 $(function() {
 var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, QFunctions, AI, Animations, HUD, Music, Objects, UIObjects, SceneFuncs, GameObjects")
-        .setup({development: true})
+        .setup("quintus",{development:true, width:$("#content-container").width(), height:$("#content-container").height()})
         .touch().controls(true)
         .enableSound();
 
@@ -27,7 +27,6 @@ Q.progressCallback = function(loaded,total){
         $("#loading-bar").hide();
     }
 };
-$(document.body).append("<div id=main-container></div>");
 //Wraps the text to fit inside a container.
 //Really useful for long descriptions
 //Automatically run when the label is changed and the text is inside a container
@@ -67,7 +66,6 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
     }
     return newLabel;
 };
-
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
     Q.state.set("saveData",GDATA.dataFiles["new-game.json"]);
@@ -80,15 +78,16 @@ Q.newGame=function(options){
     alex.gender = options.gender;
     var storyAlex = Q.charGen.generateCharacter(alex);
     Q.partyManager.alex = storyAlex;
-    Q.partyManager.allies = [storyAlex];
+    var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
+    astraea.loyalty = 60;
+    Q.partyManager.allies = [storyAlex,astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
     var freeSpaces = 3;
     for(var i=0;i<freeSpaces;i++){
-        var char = Q.charGen.generateCharacter({level:1});
-        Q.partyManager.roster.push(char);
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter({level:1}));
     };
     Q.state.set(
         "sceneVars",
@@ -96,7 +95,7 @@ Q.newGame=function(options){
             return sc.name===Q.state.get("saveData").startSceneName;
         })[0].vrs
     );
-    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,Q.state.get("saveData").startEventName);
+    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,"Pannopolis-01"/*Q.state.get("saveData").startEventName*/);
         
     $("#hud-money").text(Q.state.get("saveData").money);
     $("#hud-week").text(Q.state.get("saveData").week);
@@ -108,7 +107,6 @@ Q.startGame=function(save){
     });
     */
     Q.state.set("saveData",save);
-    
     /*
     var storyChars = [];
     save.characters.story.forEach(function(ally){
@@ -132,7 +130,6 @@ Q.startGame=function(save){
     for(var i=0;i<freeSpaces;i++){
         Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
     };
-    //Set up the Bag.
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
     
     $("#hud-money").text(Q.state.get("saveData").money);
@@ -207,10 +204,10 @@ Q.load(toLoad.join(","),function(){
     //Initialize the sprite sheets and make the animations work. -> animations.js
     Q.setUpAnimations();
     
-    //Controls music/sounds
-    Q.audioController = new Q.AudioController();
     //Sets and gets options
     Q.optionsController = new Q.OptionsController();
+    //Controls music/sounds
+    Q.audioController = new Q.AudioController();
     
     //The battle controller holds all battle specific functions. Includes getting range/aoe and the damage calculations in the attackFuncs component
     Q.BatCon = new Q.BattleController();
@@ -238,6 +235,12 @@ Q.load(toLoad.join(","),function(){
     Q.storyController = new Q.StoryController();
     //Functions for the location scene
     Q.locationController = new Q.LocationController();
+    //Advance jobs each week
+    Q.jobsController = new Q.JobsController();
+    
+    
+    //Creates menus (screens)
+    Q.menuBuilder = new Q.MenuBuilder();
     
     //Changes week and does other time-related functions
     Q.timeController = new Q.TimeController();

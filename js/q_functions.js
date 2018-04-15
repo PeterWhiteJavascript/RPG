@@ -182,4 +182,19 @@ Quintus.QFunctions=function(Q){
         }
         return dir;
     };
+    Q.fadeAnim = function(ms, color, startTime, opacityTo, opacityStart, callback){
+        color = color || "white";
+        var fader = $("<div id='fader' class='fader-"+color+"'></div>");
+        $("#main-content").append(fader);
+        opacityStart = opacityStart || 0;
+        $("#fader").css("opacity",opacityStart);
+        opacityTo = opacityTo || 0;
+        startTime = startTime || 0;
+        setTimeout(function(){
+            $( "#fader" ).fadeTo( ms , opacityTo, function() {
+                $("#fader").remove();
+                if(callback) callback();
+            });
+        }, startTime);
+    };
 };

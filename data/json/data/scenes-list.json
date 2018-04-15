@@ -8,6 +8,11 @@
                         [
                             "Story",
                             "Act-1-1",
+                            "test-battle"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
                             "Left-Path"
                         ],
                         [
@@ -448,6 +453,26 @@
                     "type": "Story",
                     "left": "518px",
                     "top": "321px"
+                },
+                {
+                    "events": [
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Opening"
+                        ],
+                        [
+                            "Story",
+                            "Act-1-1",
+                            "Opening"
+                        ]
+                    ],
+                    "sceneVars": [],
+                    "globalVars": [],
+                    "name": "test-battle",
+                    "type": "Battle",
+                    "left": "0px",
+                    "top": "105px"
                 }
             ],
             "vrs": {

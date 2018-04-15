@@ -776,13 +776,16 @@ Quintus.GameObjects=function(Q){
                             if(char.p.name===ally.name&&char.p.uniqueId===ally.uniqueId){
                                 char.add("directionControls");
                                 char.on("pressedConfirm",function(){
+                                    Q.BattleMenusController.actionsMenu.placingCharacter = false;
                                     Q.BatCon.battlePlacement.confirmPlacement(this);
                                     this.directionControls.removeControls();
                                 });
                                 char.on("pressedBack",function(){
                                     this.directionControls.removeControls();
+                                    Q.BattleMenusController.actionsMenu.empty();
+                                    Q.BattleMenusController.displayActions("characterSelection");
+                                    Q.RangeTileLayer.setTile(this.p.loc[0],this.p.loc[1],2);
                                     this.destroy();
-                                    Q.stageScene("placeCharacterMenu",1,{placedIdx:0});
                                 });
                             }
                         });
@@ -801,7 +804,9 @@ Quintus.GameObjects=function(Q){
             });
             //If we're on a placement square, load the menu that shows all of the allies that the player can choose from for this battle.
             if(canPlace){
-                Q.stageScene("placeCharacterMenu",1);
+                Q.BattleMenusController.actionsMenu.placingCharacter = false;
+                Q.BattleMenusController.actionsMenu.empty();
+                Q.BattleMenusController.displayActions("characterSelection");
                 pointer.pointerPlaceAllies.remove();
             } else {
                 Q.audioController.playSound("cannot_do.mp3");
@@ -844,13 +849,8 @@ Quintus.GameObjects=function(Q){
             //Set all allies to the direction they should be facing for this battle
             this.setAlliesDir(data.defaultDir);
             this.genPlaceableAllies();
-            Q.pointer.add("pointerPlaceAllies"); 
             
-            //Anything after is temp to auto place first ally.
-            this.checkPlacement(Q.pointer);
-            Q.stage(1).lists['CharacterSelectionMenu'][0].pressConfirm();
-            Q.stage(0).lists['Character'][0].trigger("pressedConfirm");
-            Q.inputs["confirm"] = true;
+            return;
             
         },
         //Confirms when a character is placed after their direction is set
@@ -1160,7 +1160,9 @@ Quintus.GameObjects=function(Q){
             $("#leaderboard-next-button").click(function(){
                 $("#leaderboard").remove();
                 //TODO: checks
-                Q.timeController.cycleWeek(props);
+                //Cycle week happens in location
+                //TODO: change event here
+                //Q.timeController.cycleWeek(props);
                 var events = props.events;
                 //Reset contributions
                 //TODO: save awards

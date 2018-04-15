@@ -1,90 +1,19 @@
 {
     "name": "Pannopolis-01",
     "kind": "Location",
-    "pages": [
+    "mainMusic": "01-Town02.mp3",
+    "townMusic": "00-Town01.mp3",
+    "mainBG": "Pannopolis-BG.jpg",
+    "townBG":"Pannopolis.jpg",
+    "jobs":[
         {
-            "name": "Action 1",
-            "music": "demo.mp3",
-            "bg": "Pannopolis.jpg",
-            "options": [
-                [
-                    "Shop",
-                    false,
-                    [
-                        [
-                            "displayBuyItemsList",
-                            [
-                                [
-                                    [
-                                        "Weapons",
-                                        "Short Sword",
-                                        "Brass",
-                                        "Shoddy"
-                                    ],
-                                    [
-                                        "Weapons",
-                                        "Short Sword",
-                                        "Brass",
-                                        "Average"
-                                    ],
-                                    [
-                                        "Shields",
-                                        "Small Shield",
-                                        "Brass",
-                                        "Shoddy"
-                                    ],
-                                    [
-                                        "Shields",
-                                        "Small Shield",
-                                        "Brass",
-                                        "Average"
-                                    ],
-                                    [
-                                        "Armour",
-                                        "Cuirass",
-                                        "Brass",
-                                        "Shoddy"
-                                    ],
-                                    [
-                                        "Armour",
-                                        "Cuirass",
-                                        "Brass",
-                                        "Average"
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                [
-                    "Recruit",
-                    false,
-                    [
-                        [
-                            "createRecruitMenu",
-                            []
-                        ]
-                    ]
-                ],
-                [
-                    "Next",
-                    false,
-                    [
-                        [
-                            "changeEvent",
-                            [
-                                "Story",
-                                "Act-1-1",
-                                "Learn-about-contest"
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "onload": []
+            "job":"woodcutting",
+            "tier": 0,
+            "name":"Woodcutting",
+            "desc":"Help the people in Pannopolis cut some wood."
         }
     ],
-    "vrs": {},
-    "music": "demo.mp3",
-    "bg": "Pannopolis.jpg"
+    "missions":[
+    
+    ]
 }

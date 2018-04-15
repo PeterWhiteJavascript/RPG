@@ -105,6 +105,21 @@
                             ]
                         ]
                     ]
+                ],
+                [
+                    "Do test battle",
+                    false,
+                    [
+                        [
+                            "changeEvent",
+                            [
+                                "Story",
+                                "Act-1-1",
+                                "test-battle"
+                            ]
+                        ]
+                    ],
+                    []
                 ]
             ],
             "onload": [

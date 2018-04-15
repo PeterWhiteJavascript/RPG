@@ -1,11 +1,1834 @@
 Quintus.UIObjects=function(Q){
+    var locationsMenu = {
+        main:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Actions",
+                                            desc:"Give characters tasks for this week.",
+                                            confirm:{func:"displayMenu",props:["actions"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Status",
+                                            desc:"View character's status.",
+                                            confirm:{func:"displayMenu",props:["status"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Equip",
+                                            desc:"Outfit the party.",
+                                            confirm:{func:"displayMenu",props:["equip"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Briony's Orders",
+                                            desc:"Get insights from Briony.",
+                                            confirm:{func:"displayMenu",props:["briony"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Options",
+                                            desc:"Change game settings.",
+                                            confirm:{func:"displayMenu",props:["options"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"System",
+                                            desc:"Save, load, quit.",
+                                            confirm:{func:"displayMenu",props:["system"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },  
+        actions:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Visit Town",
+                                            desc:"Recruit, Shops, Refinery.",
+                                            confirm:{func:"displayMenu",props:["town"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Reward",
+                                            desc:"Give someone a bonus!",
+                                            confirm:{func:"displayMenu",props:["reward"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Jobs",
+                                            desc:"Task party members to jobs.",
+                                            confirm:{func:"displayMenu",props:["jobs"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Missions",
+                                            desc:"Continue with the story.",
+                                            confirm:{func:"displayMenu",props:["missions"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Advance Week",
+                                            desc:"Let one week pass.",
+                                            confirm:{func:"displayMenu",props:["advanceWeek"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        town:{
+            music:"townMusic",
+            bg:"townBG",
+            screen:[
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Recruit",
+                                            desc:"Find new party members.",
+                                            confirm:{func:"displayMenu",props:["recruit"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Shop",
+                                            desc:"Purchase consumables.",
+                                            confirm:{func:"displayMenu",props:["shop"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Blacksmith",
+                                            desc:"Purchase equipment.",
+                                            confirm:{func:"displayMenu",props:["blacksmith"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Refinery",
+                                            desc:"Refine or trade raw materials.",
+                                            confirm:{func:"displayMenu",props:["refinery"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to actions.",
+                                            confirm:{func:"displayMenu",props:["actions"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        recruit:{
+            music:"townMusic",
+            bg:"townBG",
+            screen:[{
+                    cl:"w-s menu-style3-left",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:"roster"
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-m menu-style3-middle",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"arrow-container",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            img:"left-arrow.png",
+                                            desc:"Cycle menu left.",
+                                            confirm:{func:"cycleMenu", props:["recruit", -1]}, 
+                                            imgClass:"menu-option left-arrow"
+                                        }
+                                    ]
+                                ]
+                            },
+                            {
+                                listClass:"arrow-container",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            img:"right-arrow.png",
+                                            desc:"Cycle menu right.",
+                                            confirm:{func:"cycleMenu", props:["recruit", 1]},
+                                            imgClass:"menu-option right-arrow"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-s menu-style3-right",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Recruit",
+                                            desc:"Recruit.",
+                                            confirm:{func:"confirmRecruit",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to town.",
+                                            confirm:{func:"displayMenu",props:["town"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        shop:{
+            music:"townMusic",
+            bg:"townBG",
+            screen:[
+                
+            ]
+        },
+        blacksmith:{
+            music:"townMusic",
+            bg:"townBG",
+            screen:[
+                
+            ]
+        },
+        refinery:{
+            music:"townMusic",
+            bg:"townBG",
+            screen:[
+                
+            ]
+        },
+        reward:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-s menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                textClass:"retain-selected",
+                                items:[
+                                    [
+                                        {
+                                            text:"Award 200 Gold",
+                                            desc:"Give a small bonus."
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Award 1000 Gold",
+                                            desc:"Give a medium bonus."
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Award 5000 Gold",
+                                            desc:"Give a large bonus."
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-m menu-style5",
+                    data:{}
+                },
+                {
+                    cl:"w-s menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Confirm",
+                                            desc:"",
+                                            confirm:{func:"confirmedGiveReward",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back.",
+                                            confirm:{func:"displayMenu",props:["actions"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        jobs:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                
+            ]
+        },
+        missions:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                
+            ]
+        },
+        advanceWeek:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Confirm",
+                                            desc:"Are you sure you're ready to advance the week?",
+                                            confirm:{func:"advanceWeek",props:["actions"]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to town.",
+                                            confirm:{func:"displayMenu",props:["actions"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        status:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-s menu-style3-left",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:"allies"
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-m menu-style3-middle",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"arrow-container",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            img:"left-arrow.png",
+                                            desc:"Cycle menu left.",
+                                            confirm:{func:"cycleMenu", props:["status", -1]}, 
+                                            imgClass:"menu-option left-arrow"
+                                        }
+                                    ]
+                                ]
+                            },
+                            {
+                                listClass:"arrow-container",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            img:"right-arrow.png",
+                                            desc:"Cycle menu right.",
+                                            confirm:{func:"cycleMenu", props:["status", 1]},
+                                            imgClass:"menu-option right-arrow"
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-s menu-style3-right",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        equip:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-s menu-style3-left",
+                    data:{
+                        lists:[
+                            {
+                                items:"allies"
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-m menu-style3-middle",
+                    data:{
+                        lists:[
+                            {
+                                items:[
+                                    [
+                                    {
+                                        img:"left-arrow.png",
+                                        desc:"Cycle menu left.",
+                                        confirm:{func:"cycleStatusMenu", props:[-1]}, 
+                                        imgClass:"menu-option left-arrow arrow-container"
+                                    }
+                                    ]
+                                ]
+                            },
+                            {
+                                items:[
+                                    [
+                                    {
+                                        img:"right-arrow.png",
+                                        desc:"Cycle menu right.",
+                                        confirm:{func:"cycleStatusMenu", props:[1]},
+                                        imgClass:"menu-option right-arrow arrow-container"
+                                    }]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-s menu-style3-right",
+                    data:{
+                        lists:[
+                            {
+                                items:[
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        briony:{
+            music:"brionyMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-sm menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        options:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-l menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"w-xl h-m",
+                                rowClass:"flex-h h-s",
+                                items:[
+                                    [
+                                        {
+                                            text:"Music",
+                                            desc:"Toggle Music on/off.",
+                                            confirm:{func:"changeOption", props:["musicEnabled", true]}
+                                        },
+                                        {
+                                            text:"Text Speed",
+                                            desc:"Change the speed at which text scrolls.",
+                                            confirm:{func:"changeOption", props:["textSpeed", true]}
+                                        },
+                                        {
+                                            text:"Auto Scroll",
+                                            desc:"Turn on to automatically scroll to the next text.",
+                                            confirm:{func:"changeOption", props:["autoScroll", true]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Music Volume",
+                                            desc:"Adjust BGM Volume.",
+                                            confirm:{func:"changeOption", props:["musicVolume", true]}
+                                        },
+                                        {
+                                            text:"Pointer Speed",
+                                            desc:"How fast the pointer moves in battles.",
+                                            confirm:{func:"changeOption", props:["cursorSpeed", true]}
+                                        },
+                                        {
+                                            text:"Damage Indicators",
+                                            desc:"Show animated damage above characters who take damage.",
+                                            confirm:{func:"changeOption", props:["damageIndicators", true]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Sound",
+                                            desc:"Toggle Sound on/off.",
+                                            confirm:{func:"changeOption", props:["soundEnabled", true]}
+                                        },
+                                        {
+                                            text:"Faction Highlighting",
+                                            desc:"Highlight different teams.",
+                                            confirm:{func:"changeOption", props:["factionHighlighting", true]}
+                                        },
+                                        {
+                                            text:"Recall Move",
+                                            desc:"Allow moves to be recalled.",
+                                            confirm:{func:"changeOption", props:["recallMove", true]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Sound Volume",
+                                            desc:"Adjust SFX Volume.",
+                                            confirm:{func:"changeOption", props:["soundVolume", true]}
+                                        },
+                                        {
+                                            text:"Brightness",
+                                            desc:"Adjust the brightness of the game.",
+                                            confirm:{func:"changeOption", props:["pointerSpeed", true]}
+                                        },
+                                        {
+                                            text:"Tooltips",
+                                            desc:"Display a tooltip next to hovered options.",
+                                            confirm:{func:"changeOption", props:["tooltips", true]}
+                                        }
+                                    ]
+                                    
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-s menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        system:{
+            music:"mainMusic",
+            bg:"mainBG",
+            screen:[
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Save",
+                                            desc:"Save the game.",
+                                            confirm:{func:"saveGame",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Load",
+                                            desc:"Load from previous save file.",
+                                            confirm:{func:"loadGame",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Quit",
+                                            desc:"Quit to loading screen.",
+                                            confirm:{func:"quitToMainMenu",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Retire",
+                                            desc:"Quit to desktop.",
+                                            confirm:{func:"quitToDesktop",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back to main menu.",
+                                            confirm:{func:"displayMenu",props:["main"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    };
+    Q.GameObject.extend("MenuBuilder",{
+        init:function(p){
+            var obj = this;
+            //Set defaults for styles (TODO and probably mostly css) 
+            this.p = {
+                
+            };
+            Object.assign(obj.p,p);
+            this.add("MBUtility");
+            this.add("MenuControls");
+        },
+        text:function(cl, text, hoverText, bar){
+            var elm = $("<div class='menu-text flex-h "+cl+"'><span>"+text+"</span></div>");
+            if(hoverText){ 
+                elm.addClass("menu-text-hoverable");
+                elm.on("mouseover",function(){
+                    Q.menuBuilder.MBUtility.changeBarText(bar, hoverText);
+                });
+            }
+            return elm;
+        },
+        paragraph:function(cl, text){
+            return $("<div class='text-paragraph "+cl+"'><span>"+text+"</span></div>");
+        },
+        cont:function(cl, w, h){
+            var cont = $("<div class='menu-container "+cl+"'></div>");
+            !w || cont.css("width",w);
+            !h || cont.css("height",h);
+            return cont;
+        },
+        //Set up the screen layout including any button lists (they can be re-positioned in the addCustomMenu function).
+        screen:function(menus, controller){
+            var bar = this.cont("text-bar "+Q.optionsController.options.menuStyleC);
+            bar.append(this.text("bar-text",""));
+            var screen = this.cont("screen "+Q.optionsController.options.menuStyleA);
+            for(var i=0;i<menus.length;i++){
+                var menu = this.cont("screen-menu menu-style3 "+menus[i].cl+" ");
+                var data = menus[i].data;
+                if(data.lists){
+                    for(var j=0;j<data.lists.length;j++){
+                        menu.append(this.optionsList(data.lists[j], controller, bar));
+                    }
+                }
+                screen.append(menu);
+            }
+            screen.append(bar);
+            return screen;
+        },
+        createOption:function(data, obj, descBar, textClass){
+            textClass = textClass || "";
+            var dataTC = data.textClass || "";
+            var opt = data.text ? this.text(textClass+" "+dataTC+" menu-option", data.text) : data.img ? this.icon(data.imgClass || "menu-option", data.img) : false;
+            if(data.confirm) this.MBUtility.clickFor(opt, obj, obj[data.confirm.func] || data.confirm.func, data.confirm.props);
+            if(data.back) this.MBUtiltiy.setBack(opt, obj, obj[data.back.func] || data.back.func, data.back.props);
+            this.MBUtility.hoverForDesc(opt, descBar, data.desc, "menu-option-selected");
+            return opt;
+        },
+        optionsList:function(options, obj, descBar){
+            var list = this.cont("options-list " + (options.listClass || ""));
+            var items = this.MBUtility.getOptionsListItems(options.items, options.props);
+            for(var i=0;i<items.length;i++){
+                var row = this.cont("options-list-row " + (options.rowClass || ""));
+                var textClass = options.textClass || "";
+                for(var j=0;j<items[i].length;j++){
+                    if(items[i][j].disabled) continue; // option is hidden (disabled)
+                    var opt = this.createOption(items[i][j], obj, descBar, textClass);
+                    row.append(opt);
+                }
+                list.append(row);
+            }
+            return list;
+        },
+        portrait:function(src){
+            return $("<div class='char-portrait-container'><div class='char-portrait-bg'><img class='char-portrait-img' src='images/story/"+src+"'></div></div>");
+        },
+        //Displays 1-3 rectangles that can store a character portrait for sending them to do something.
+        portraitsScreen:function(portraits, statsShown, weeks, requirements, menu, backMenu, confirmButton, backButton){
+            function getConvertedStat(stat, char){
+                var lower = stat.toLowerCase();
+                switch(lower){
+                    case "name":
+                        return char[lower];
+                    case "str":
+                    case "end":
+                    case "dex":
+                    case "wsk":
+                    case "rfl":
+                    case "ini":
+                    case "enr":
+                    case "skl":
+                    case "eff":
+                        return char.baseStats[lower];
+                    case "lvl":
+                        return char.level;
+                    case "nat":
+                        return char.nationality;
+                    case "cls":
+                        return char.charClass;
+                    case "mor":
+                        return char.morale;
+                    case "loy":
+                        return char.loyalty;
+                    case "exp":
+                        return char.exp;
+                }
+            }
+            var MB = this;
+            var portraitsCont = this.cont("w-xl h-ml options-list");
+            var nameRow = this.cont("h-s flex-h");
+            var portraitRow = this.cont("h-m flex-h options-list-row");
+            var statsRow = this.cont("h-s flex-h");
+            for(var i=0; i<portraits.length; i++){
+                var portraitChar = portraits[i];
+                //TEMP
+                if(portraitChar.name) portraitChar.sprite = "knight.png";
+                
+                var nameCont = this.cont("w-xl");
+                nameCont.append(this.text("w-xl h-xl", portraitChar.name || ""));
+                var portraitSection = this.cont("h-xl flex-v portrait-section menu-option");
+                this.MBUtility.hoverForDesc(portraitSection, $(".text-bar"), "Press ENTER to select a character.", "menu-option-selected");
+                portraitSection.append(this.portrait(portraitChar.sprite || "empty.png"));
+                var statsCont = this.cont("w-sm flex-v");
+                for(var j=0; j<statsShown.length; j++){
+                    var statCont = this.cont("w-xl flex-h");
+                    statCont.append(this.text("justify-left w-ms",statsShown[j].toUpperCase()));
+                    statCont.append(this.text("justify-right w-ms",getConvertedStat(statsShown[j],portraitChar) || ""));
+                    statsCont.append(statCont);
+                }
+                portraitSection.on("click",function(){
+                    var idx = $(this).index();
+                    var lastChar = portraits[idx];
+                    lastChar.name ?  lastChar.tempAction = false : false;
+                    menu.empty();
+                    
+                    var menuClass = menu.attr("class");
+                    var placeholder = $("<div class='"+menuClass+"'></div>");
+                    var fader = $("<div id='fader' class='fader-black'></div>");
+                    fader.css("opacity", 0.2);
+                    $("#main-content").append(fader);
+                    menu.addClass("above-fader");
+                    var width = menu.outerWidth();
+                    var height = menu.outerHeight();
+                    var pos = menu.offset();
+                    
+                    menu.replaceWith(placeholder);
+                    $("#main-content").append(menu);
+                    menu.css({width:width, height:height, top:pos.top, left:pos.left - width/2});
+                    
+                    function chooseChar(){
+                        var index = MB.MBUtility.getSelectedIdx(menu) - 2;
+                        menu.empty();
+                        portraits[idx] = characters[index] || {};
+                        portraits[idx].tempAction = true;
+                        MB.portraitsScreen(portraits, statsShown, weeks, requirements, menu, backMenu, confirmButton, backButton);
+                        menu.removeClass("above-fader");
+                        menu.removeAttr('style');
+                        placeholder.replaceWith(menu);
+                        fader.remove();
+                        MB.MenuControls.focusList = false;
+                        MB.MenuControls.selectSelectedIdx([1,0,idx]);
+                        menu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option:eq("+idx+")").trigger("mouseover");
+                        var metAllRequirements = true;
+                        var allCharsSelected = Q.partyManager.allies.filter(function(ally){return ally.tempAction;});
+                        if(allCharsSelected.length){
+                            //requirements are always baseStats
+                            for(var i=0;i<requirements.length;i++){
+                                var req = requirements[i];
+                                var stat = req[0];
+                                var amount = req[1];
+                                var total = allCharsSelected.reduce(function(a, b){return a[stat] + b[stat];}, 0);
+                                if(total < amount) metAllRequirements = false;
+                            }
+                            if(metAllRequirements){ 
+                                confirmButton.removeClass("menu-option-disabled");
+                            } else {
+                                confirmButton.addClass("menu-option-disabled");
+                            }
+                        }
+                    }
+                    //Go back by selecting the current character
+                    function goBack(){
+                        if(!lastChar){
+                            menu.children(".options-list").children(".options-list-row").last().children(".menu-option").trigger("mouseover");
+                        } else {
+                            var lastCharIdx = characters.indexOf(lastChar);
+                            menu.children(".options-list").children(".options-list-row:eq("+lastCharIdx+")").children(".menu-option").trigger("mouseover");
+                        }
+                        chooseChar();
+                    }
+                    //Show the list of characters with their statsShown as a special list
+                    var characters = Q.partyManager.allies.filter(function(char){return !char.action;});
+                    
+                    var listCont = MB.cont("w-ll h-xl options-list retain-selected-index left-right-border");
+                    
+                    var dynamicList = [
+                        ["NAME", "20%"]
+                    ];
+                    for(var i=0;i<statsShown.length;i++){
+                        dynamicList.push([statsShown[i].toUpperCase(), (80 / statsShown.length) + "%"]);
+                    }
+                    var lists = [
+                        [
+                            ["NAME", "20%"],
+                            ["STR", "9%"],
+                            ["END", "9%"],
+                            ["DEX", "9%"],
+                            ["WSK", "9%"],
+                            ["RFL", "9%"],
+                            ["INI", "9%"],
+                            ["ENR", "9%"],
+                            ["SKL", "9%"],
+                            ["EFF", "8%"]
+                        ],
+                        [
+                            ["NAME", "20%"],
+                            ["LVL", "10%"],
+                            ["NAT", "20%"],
+                            ["CLS", "20%"],
+                            ["MOR", "10%"],
+                            ["LOY", "10%"],
+                            ["EXP", "10%"]
+                        ]
+                    ];
+                    lists.splice(0,0,dynamicList);
+                    var currentList = 0;
+                    function clickHeading(){
+                        var headingIndex = $(this).index();
+                        MB.MBUtility.sortBy = lists[currentList][headingIndex][0];
+                        MB.MBUtility.sortOrder *= -1;
+                        sortCharacters();
+                        MB.MenuControls.selectSelectedIdx(0, MB.MenuControls.selectedIdx[1], headingIndex);
+                        $(MB.MenuControls.getSelected()).mouseover();
+                        
+                    }
+                    function sortCharacters(){
+                        var type = typeof MB.MBUtility.sortBy;
+                        characters = characters.sort(function(a, b){
+                            if(type === 'string'){
+                                return getConvertedStat(MB.MBUtility.sortBy, a) > getConvertedStat(MB.MBUtility.sortBy, b) ? 1 * MB.MBUtility.sortOrder : -1 * MB.MBUtility.sortOrder;
+                            } else if(type === 'number'){
+                                return getConvertedStat(MB.MBUtility.sortBy, a) * MB.MBUtility.sortOrder > getConvertedStat(MB.MBUtility.sortBy, b);
+                            }
+                        });
+                        showList();
+                    }
+                    function hoverTableOption(){
+                        $(".hovered-column").removeClass("hovered-column");
+                        $(".hovered-row").removeClass("hovered-row");
+                        $(".hovered-center").removeClass("hovered-center");
+                        $(".menu-option-retained-index").removeClass("menu-option-retained-index");
+                        if($(this).hasClass("remover")) return;
+                        $(this).siblings().addClass("hovered-row");
+                        var headIdx = $(this).index();
+                        var listIdx = $(this).parent().index();
+                        var cols = $(this).parent().parent().children(".options-list-row").not(":last").not(":eq("+listIdx+")");
+                        cols.each(function(){$(this).children(".char-table-item:eq("+headIdx+")").addClass("hovered-column");});
+                        $(this).addClass("hovered-row menu-option-retained-index");
+                    }
+                    function cycleList(amount){
+                        currentList += amount;
+                        currentList = MB.MenuControls.checkWrap(lists.length, currentList);
+                        var selectedRowIdx = menu.children(".options-list:eq(1)").children(".options-list-row").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent());
+                        var selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent().children(".menu-option").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index"));
+                        showList();
+                        selectedOptIdx = selectedOptIdx > 0 ? selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row:eq(0)").children(".menu-option").length - 1 : 0;
+                        hoverTableOption.call(menu.children(".options-list:eq(1)").children(".options-list-row:eq("+selectedRowIdx+")").children(".menu-option:eq("+selectedOptIdx+")"));
+                    };
+                    function showList(){
+                        listCont.empty();
+                        var list = lists[currentList];
+                        var headingRow = MB.cont("w-xl h-xs table-row flex-h options-list-row heading-row");
+                        for(var j=0;j<list.length;j++){
+                            var headingCont = MB.cont("w-xl h-xl menu-option char-table-item");
+                            headingCont.css({width:list[j][1]});
+                            headingCont.on("mouseover",hoverTableOption);
+                            MB.MBUtility.hoverForDesc(headingCont, $(".text-bar"), "Sort by "+list[j][0], "menu-option-selected");
+                            headingCont.on("click",clickHeading);
+                            headingCont.on("back",goBack);
+                            headingCont.append(MB.text("w-xl h-xl justify-center", list[j][0]));
+                            headingRow.append(headingCont);
+                        }
+                        listCont.append(headingRow);
+                        for(var j=0;j<characters.length;j++){
+                            var char = characters[j];
+                            var charCont = MB.cont("w-xl h-xs table-row flex-h options-list-row");
+                            for(var k=0;k<list.length;k++){
+                                var charOption = MB.cont("w-xl h-xl menu-option char-table-item");
+                                charOption.css({width:list[k][1]});
+                                charOption.on("mouseover",hoverTableOption);
+                                MB.MBUtility.hoverForDesc(charOption, $(".text-bar"), "Select "+char.name, "menu-option-selected");
+                                charOption.on("click",chooseChar);
+                                charOption.on("back",goBack);
+                                var text = MB.text("w-xl h-xl justify-center",getConvertedStat(list[k][0], char));
+                                text.children("span").addClass("small-font");
+                                charOption.append(text);
+                                charCont.append(charOption);
+                            }
+                            listCont.append(charCont);
+                        }
+                        var backCont = MB.cont("w-xl h-xs table-row options-list-row");
+                        var back = MB.text("w-xl h-xl menu-option remover", "Remove");
+                        MB.MBUtility.hoverForDesc(back, $(".text-bar"), "Remove character.", "menu-option-selected");
+                        back.on("mouseover",hoverTableOption);
+                        back.on("click",chooseChar);
+                        back.on("back",goBack);
+                        backCont.append(back);
+                        listCont.append(backCont);
+                        MB.MBUtility.squareList(listCont);
+                    }
+                    if(MB.MBUtility.sortBy){
+                        sortCharacters();
+                    } else {
+                        showList();
+                    }
+                    
+                    var leftArrowList = MB.cont("options-list arrow-container");
+                    var leftArrowCont = MB.cont("options-list-row w-xl h-xl");
+                    var leftArrow = MB.icon("menu-option left-arrow", "left-arrow.png");
+                    leftArrow.on("click",function(){cycleList(-1);});
+                    leftArrow.on("back",goBack);
+                    MB.MBUtility.hoverForDesc(leftArrow, $(".text-bar"), "Change Menu.", "menu-option-selected");
+
+                    leftArrowCont.append(leftArrow);
+                    leftArrowList.append(leftArrowCont);
+                    
+                    
+                    var rightArrowList = MB.cont("options-list arrow-container");
+                    var rightArrowCont = MB.cont("options-list-row w-xl h-xl");
+                    var rightArrow = MB.icon("menu-option right-arrow", "right-arrow.png");
+                    rightArrow.on("click",function(){cycleList(1);});
+                    rightArrow.on("back",goBack);
+                    MB.MBUtility.hoverForDesc(rightArrow, $(".text-bar"), "Change Menu.", "menu-option-selected");
+
+                    rightArrowCont.append(rightArrow);
+                    rightArrowList.append(rightArrowCont);
+                    menu.append(rightArrowList);
+                    
+                    menu.append(leftArrowList);
+                    menu.append(listCont);
+                    menu.append(rightArrowList);
+                    var lastCharIdx = Math.max(0,characters.indexOf(lastChar)) + 2;
+                    menu.children(".options-list").children(".options-list-row:eq("+(lastCharIdx)+")").children(".menu-option").first().trigger("mouseover");
+                    
+                    confirmButton.parent().parent().addClass("list-keyboard-disabled");
+                    //MB.MenuControls.focusList = true;
+                });
+                portraitSection.on("back",function(){
+                    backMenu.children(".options-list").children(".options-list-row").children(".menu-option-selected").trigger("mouseover");
+                    Q.partyManager.resetTempAction();
+                });
+                nameRow.append(nameCont);
+                portraitRow.append(portraitSection);
+                statsRow.append(statsCont);
+            }
+            portraitsCont.append(nameRow, portraitRow, statsRow);
+            
+            
+            var infoCont = this.cont("w-xl h-sm flex-h");
+            var left = this.cont("w-ms h-xl ");
+            left.append(this.text("w-xl h-s", "Weeks: "+weeks));
+            if(requirements.length) {
+                left.append(this.text("w-xl h-s heading-text", "Required"));
+                var reqsCont = this.cont("w-xl h-m flex-v");
+                for(var i=0;i<requirements.length;i++){
+                    reqsCont.append(this.text("w-xl", requirements[i][0].toUpperCase()+": "+requirements[i][1]));
+                }
+                left.append(reqsCont);
+            }/* else {
+                left.append(this.text("w-xl h-s", "-"));
+            }*/
+            
+            backButton.on("click", Q.partyManager.resetTempAction);
+            confirmButton.on("click", Q.partyManager.resetTempAction);
+            confirmButton.addClass("menu-option-disabled");
+            
+            infoCont.append(left);
+            
+            var right = this.cont("w-ml h-xl");
+            right.append(this.text("w-xl h-xl align-left text-paragraph",""));
+            
+            infoCont.append(right);
+            menu.append(portraitsCont, infoCont);
+            confirmButton.parent().parent().removeClass("list-keyboard-disabled");
+        },
+        replaceList:function(elm, list, obj, bar){
+            elm.replaceWith(this.optionsList(list, obj, bar));
+        },
+        icon:function(cl, sprite){
+            return $("<div class='icon-container flex-v "+cl+"'><img src='images/ui/"+sprite+"'></div>");
+        },
+        equipment:function(cl, eq){
+            var cont = this.cont("eq-"+eq.quality);
+            cont.append(this.icon(cl, eq.material));
+            cont.append(this.text(cl, eq.gear));
+            return cont;
+        },
+        quantifier:function(cl, step){
+            var cont = this.cont(cl);
+            cont.append(this.icon("quantifier-arrow", "quantifier-down-arrow"));
+            cont.append(this.icon("quantifier-arrow", "quantifier-up-arrow"));
+            return cont;
+        },
+        qualityButtons:function(buttons){
+            var cont = this.cont("quality-buttons-container");
+            for(var i=0;i<buttons.length;i++){
+                var b = buttons[i];
+                var qcont = this.cont("quality-button");
+                //Disabled buttons will not have hovering or selecting.
+                qcont.append(this.icon(b));
+                cont.append(qcont);
+            }
+            return cont;
+        }
+    });
+    //Any functions that do not build a specific menu element, but are used by the built menus.
+    Q.component("MBUtility",{
+        sortBy:null,
+        sortOrder: -1,
+        setText:function(elm, text){
+            elm.children("span").text(text);
+        },
+        changeBarText:function(descBar, text){
+            descBar.children(".bar-text").children("span").text(text);
+        },
+        changeHoverDesc:function(itm, descBar, desc, selectedClass){
+            this.hoverForDesc(itm, descBar, desc, selectedClass);
+        },
+        hoverForDesc:function(itm, descBar, desc, selectedClass){
+            var util = this;
+            itm.on("mouseover",function(){
+                if(Q.menuBuilder.MenuControls.disabled || itm.hasClass("menu-option-disabled")) return;
+                $("."+selectedClass).not(".retain-selected").removeClass(selectedClass);
+                if($(this).hasClass("retain-selected") && $("."+selectedClass+".retain-selected").length){
+                    var mousedListIdx = $(".options-list").index($(this).closest($(".options-list")));
+                    $("."+selectedClass+".retain-selected").each(function(){
+                        var idx = $(".options-list").index($(this).closest($(".options-list")));
+                        if(mousedListIdx === idx){
+                            $(this).removeClass(selectedClass);
+                        }
+                    });
+                }
+                $(this).addClass(selectedClass);
+                util.changeBarText(descBar, desc);
+                var MC = util.entity.MenuControls;
+                if(this === $(MC.getSelected()).get(0)) return; //Don't do anything if we've mouse over'd the same element
+                var toZ = $(".options-list").index($(this).closest($(".options-list")));
+                MC.setIdx(toZ,$(this).closest($(".options-list-row")).index(), $(this).index());
+            });
+        },
+        clickFor:function(elm, obj, func, props){
+            elm.on("click",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        setBack:function(elm, obj, func, props){
+            elm.on("back",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        getOptionsListItems:function(items, props){
+            if(Array.isArray(items)) return items;
+            //Keywords
+            switch(items){
+                case "allies":
+                    var allies = Q.partyManager.allies;
+                    if(props){ 
+                        if(props.includes("removeActed")){
+                            allies = allies.filter(function(char){return !char.action;})
+                        } 
+                        /*if(props.includes("removeAlex")){
+                            allies = allies.filter(function(char){return char.name !== "Alex";});
+                        }*/
+                    };
+                    
+                    return allies.map(function(char){ return [{text:char.name, desc: "Displaying "+char.name, textClass:"retain-selected"}]; });
+                case "roster":
+                    var roster = Q.partyManager.roster;
+                    return roster.map(function(char){ return [{text:char.name, desc: "Displaying "+char.name, textClass:"retain-selected"}]; });
+                case "techniques":
+                    var techniques = props;
+                    return techniques.map(function(tech){ return [{text:tech.name, desc: tech.desc, textClass:"retain-selected"}]; });
+            }
+            alert(items +" keyword does not exist!");
+        },
+        
+        //Applies some styles to the edges of a matrix list to create a nice, smooth border.
+        roundList:function(list){
+            var left = list.children(".options-list-row").children(".menu-option:first-child");
+            left.first().addClass("borderless-bottom-left");
+            left.not(":first").not(":last").addClass("borderless-top-left borderless-bottom-left");
+            left.last().addClass("borderless-top-left");
+            var right = list.children(".options-list-row").children(".menu-option:last-child");
+            right.first().addClass("borderless-bottom-right");
+            right.not(":first").not(":last").addClass("borderless-top-right borderless-bottom-right");
+            right.last().addClass("borderless-top-right");
+        },
+        squareList:function(list){
+            list.children(".options-list-row").children(".menu-option").addClass("borderless");
+        },
+        getSelectedIdx:function(screenMenu){
+            return screenMenu.children(".options-list").children(".options-list-row").index(screenMenu.children(".options-list").children(".options-list-row").children(".menu-option-selected").parent());
+        }
+    });
+    
+    //Enables controlling of menus
+    //Includes up, down, confirm, and esc.
+    Q.component("MenuControls", {
+        disabled:false,
+        turnOn:function(){
+            var menu = this;
+            $(document).keydown(function( e ){
+                if(!menu.disabled){
+                    if(e.which == Q.KEY_NAMES.UP){
+                        menu.pressUp();
+                    } else if(e.which == Q.KEY_NAMES.DOWN){
+                        menu.pressDown();
+                    }
+                    if(e.which == Q.KEY_NAMES.LEFT){
+                        menu.pressLeft();
+                    } else if(e.which == Q.KEY_NAMES.RIGHT){
+                        menu.pressRight();
+                    }
+                    if(e.which == Q.KEY_NAMES.ENTER){
+                        menu.pressConfirm();
+                    } else if(e.which == Q.KEY_NAMES.ESC){
+                        menu.pressBack();
+                    }
+                }
+            });
+        },
+        reset:function(){
+            this.selectedIdx = [0, 0, 0];
+            this.noWrap = false;
+            
+            this.pressUp = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] - 1, this.selectedIdx[2]); };
+            this.pressDown = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] + 1, this.selectedIdx[2]); };
+            this.pressLeft = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] - 1); };
+            this.pressRight = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] + 1); };
+            this.pressConfirm = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.click){
+                    $(elm).trigger("click");
+                } else {
+                    this.changeMenu(1, this.selectedIdx[0]);
+                }
+            };
+            this.pressBack = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.back){
+                    $(elm).trigger("back");
+                } else {
+                    this.changeMenu(-1, this.selectedIdx[0]);
+                }
+            };
+        },
+        selectSelectedIdx:function(idx){
+            idx = idx || this.selectedIdx;
+            this.setIdx(idx[0], idx[1], idx[2]);
+        },
+        setIdx:function(z, y, x, yAdd, xAdd){
+            if(z !== this.selectedIdx[0]) this.trigger("changedMenu");
+            yAdd = yAdd || 1;
+            xAdd = xAdd || 1;
+            this.selectedIdx = [z, y, x];
+            var elm = this.getSelected();
+            if(elm.hasClass("menu-option-disabled")){ 
+                var disabledInList = elm.parent().parent().children(".options-list-row").children(".menu-option-disabled").length;
+                var options = elm.parent().parent().children(".options-list-row").children(".menu-option").length;
+                if(disabledInList === options) x += xAdd;
+                this.cycleIndex(z, y + yAdd, x);
+            } else {
+                this.setFocus();
+                Q.audioController.playSound("option-hover.mp3");
+            }
+        },
+        setFocus:function(){
+            $(".focussed-selected-menu-option").removeClass("focussed-selected-menu-option");
+            $(this.getSelected()).addClass("focussed-selected-menu-option");
+        },
+        getSelected:function(){
+            var idx = this.selectedIdx;
+            var y = this.checkWrap($(".options-list:eq("+idx[0]+")").children(".options-list-row").length, idx[1]);
+            return $(".options-list:eq("+idx[0]+")").children(".options-list-row:eq("+y+")").children(".menu-option:eq("+idx[2]+")");
+        },
+        cycleIndex:function(toZ, toY, toX){
+            
+            var cur = this.selectedIdx;
+            var width = $(".options-list:eq("+cur[0]+")").children(".options-list-row:eq("+cur[1]+")").children(".menu-option").length;
+            var lastX = false;
+            var xAdd = toX - cur[0];
+            var yAdd = toY - cur[1];
+            var mod = 0;
+            if(toX >= width){
+                mod = 1;
+                toX = 0;
+            } else if(toX < 0){
+                mod = -1;
+                lastX = true;
+            }
+            toZ += mod;
+            
+            var newZ = this.checkWrap($(".options-list").length, toZ);
+            //If we're not allowed to wrap this screen from max -> min and the opposite.
+            if(this.noWrap && newZ !== toZ){return;} else if(this.focusList && newZ !== this.selectedIdx[0]){return;} else { toZ = newZ;};
+            if(toZ !== this.selectedIdx[0]){
+                //If the list is disabled, cycle again
+                if($(".options-list:eq("+toZ+")").hasClass("list-keyboard-disabled")) return this.cycleIndex(toZ, toY, toX + mod);
+                //If the elm at that index should be held, go to that idx.
+                var list = $(".options-list:eq("+toZ+")");
+                var row = list.children(".options-list-row:eq("+0+")");
+                var itm = row.children(".menu-option:eq("+0+")");
+                //Only works for single row option lists
+                if(itm.hasClass("retain-selected")){
+                    var idx = list.children(".options-list-row").children(".menu-option").index(list.children(".options-list-row").children(".retain-selected.menu-option-selected"));
+                    toY = idx >= 0 ? idx : 0;
+                }
+                if(list.hasClass("retain-selected-index")){
+                    var idx = list.children(".options-list-row").index(list.children(".options-list-row").children(".menu-option-retained-index").parent());
+                    toY = idx >= 0 ? idx : 0;
+                }
+            }
+            toY = this.checkWrap($(".options-list:eq("+toZ+")").children(".options-list-row").length, toY);
+            if($(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+")").children(".menu-option").length !== $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+this.selectedIdx[1]+")").children(".menu-option").length){
+                width = $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+")").children(".menu-option").length;
+            }
+            if(lastX) {
+                width = $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+")").children(".menu-option").length;
+                toX = width - 1;
+            }
+            
+            toX = this.checkWrap(width, toX);
+            this.setIdx(toZ, toY, toX, yAdd, xAdd);
+            $(this.getSelected()).mouseover();
+        },
+        //Move the menu based on menu idx
+        changeMenu:function(change, curIdx){
+            curIdx = curIdx || this.selectedIdx[0];
+            change = change || 1;
+            var idx = this.checkWrap($(".options-list").length, curIdx + change);
+            this.cycleIndex(idx, this.selectedIdx[1], this.selectedIdx[2]);
+        },
+        //If the idx is less than 0 or greater than the len, wrap to other side
+        checkWrap:function(len, idx){
+            if(idx < 0) return len - 1;
+            if(idx >= len) return 0;
+            return idx;
+        }
+    });
+    
+    Q.GameObject.extend("LocationController",{
+        //Contains all of the menus that are always available
+        baseMenu:locationsMenu,
+        characterCombatStats:[
+            ["maxAtkDmg","damageReduction","defensiveAbility","atkAccuracy","atkSpeed","counterChance","critChance","moveSpeed","totalWeight"],
+            ["Attack","DMG Reduction","DFN Ability","Accuracy","Attack Speed","Counter","Critical","Move","Weight"],
+            ["Maximum attack damage before damage calculation.", "Damage reduction from armour.", "Defensive ability from reflexes and equipped shield.", "Attack accuracy from weapon skill and wield from equipped weapon.", "Attack speed contributes to how many hits a character can make with one regular attack. It is based on dexterity and the speed of both equipped weapons.", "Percent chance of countering an enemy attack.", "Percent chance of making a critical hit while doing a regular attack.", "The number of spaces that can be moved each turn.", "The amount of weight the character is currently carrying."]
+        ],
+        statusMenus:["CharStatus","CharTechniques"],
+        recruitMenus:["CharStatus","CharTechniques"],
+        rewardMenus:["CharStatus","CharTechniques"],
+        equipmentMenus:["AdjustEquipment"],
+        brionyMusic:"02-Briony.mp3",
+        savedElements:[],
+        rewardAmounts:[200, 1000, 5000],
+        menuNum:0,
+        curChar:{},
+        startEvent:function(data){
+            this.mainMusic = data.mainMusic;
+            this.townMusic = data.townMusic;
+            this.mainBG = data.mainBG;
+            this.townBG = data.townBG;
+            this.data = data;
+            this.displayMenu("main", true);
+            //Turn on inputs for the menus
+            Q.menuBuilder.MenuControls.turnOn();
+            
+            
+            //TEMP
+            $(".menu-option:eq(0)").trigger("click");
+            $(".menu-option:eq(1)").trigger("click");
+        },
+        resetData:function(){
+            this.curChar = {};
+            this.menuNum = 0;
+            $("#main-container").empty();
+        },
+        /* functions called from menus confirms START */
+        displayMenu:function(name, noSound){
+            if(!noSound) Q.audioController.playSound("rotate_tech.mp3");
+            this.resetData();
+            var data = this.baseMenu[name];
+            console.log(data)
+            this.currentPageName = name;
+            this.currentPage = data;
+            this.setMusic(data.music);
+            this.setBG(data.bg);
+            //Reset the controls so that there is default functionality for arrows, enter, and esc. This can be modified when buttons are created.
+            Q.menuBuilder.MenuControls.reset();
+            var screen = Q.menuBuilder.screen(this.currentPage.screen, this);
+            $("#main-container").append(screen);
+            screen.children(".menu-container").children(".options-list").children(".options-list-row").children(".menu-option").first().trigger("mouseover");
+            this.addCustomMenu(screen, name);
+            Q.menuBuilder.MenuControls.setIdx(Q.menuBuilder.MenuControls.selectedIdx[0], Q.menuBuilder.MenuControls.selectedIdx[1], Q.menuBuilder.MenuControls.selectedIdx[2]);
+            //Set the focus to the selected menu item
+            Q.menuBuilder.MenuControls.setFocus();
+        },
+        advanceWeek:function(pageTo){
+            var controller = this;
+            Q.menuBuilder.MenuControls.disabled = true;
+            var music = Q.audioController.currentMusic;
+            
+            Q.audioController.stopMusic(music);
+            Q.audioController.playSound("101-Week_End.mp3");
+            Q.menuBuilder.MBUtility.changeBarText($(".text-bar"),"Going to sleep...");
+            
+            Q.timeController.cycleWeek(function(){
+                Q.audioController.currentMusic = false;
+                Q.audioController.playMusic(music,function(){
+                    Q.menuBuilder.MenuControls.disabled = false;
+                    controller.displayMenu(pageTo, true);
+                });
+            });
+        },
+        cycleMenu:function(menuName, inc){
+            var MB = Q.menuBuilder;
+            var lastSelected = MB.MenuControls.getSelected();
+            var data = this[menuName+"Menus"];
+            var newMenuNum = MB.MenuControls.checkWrap(data.length, this.menuNum + inc);
+            this.menuNum = newMenuNum;
+            var id = "allies";
+            if(menuName === "recruit") id = "roster";
+            var char = this.getCurrentChar(id);
+            this.curChar = char;
+            this["build"+data[newMenuNum]](char);
+            
+            //Make sure that even if we've inserted another list that the currently selected item remains so.
+            lastSelected.trigger("mouseover");
+        },
+        /* functions called from menus confirms END */
+        setMusic:function(music){
+            music = this[music];
+            Q.audioController.playMusic(music);
+        },
+        setBG:function(bg){
+            bg = this[bg];
+            $("#background-container").css('background-image', 'url(images/bg/'+bg+')');
+        },
+        changeOption:function(option){
+            var c = Q.optionsController;
+            switch(option){
+                case "musicEnabled":
+                case "soundEnabled":
+                case "factionHighlighting":
+                case "autoScroll":
+                case "recallMove":
+                case "tooltips":
+                case "damageIndicators":
+                    c.toggleBoolOpt(option);
+                    break;
+                case "musicVolume":
+                    Q.optionsController.musicVolume = Math.random();
+                    Q.audioController.changeVolume(Q.optionsController.musicVolume);
+                    
+                    break;
+                case "soundVolume":
+                    Q.optionsController.soundVolume = Math.random();
+                    break;
+                case "textSpeed":
+                    
+                    break;
+                case "pointerSpeed":
+                    
+                    break;
+                case "brightness":
+                    
+                    break;
+            }
+        },
+        
+        addCustomMenu:function(screen, name){
+            var MB = Q.menuBuilder;
+            var controller = this;
+            function buildStatusMenu(type){
+                if(Q.menuBuilder.MenuControls.disabled) return;
+                var char = controller.getCurrentChar(type);
+                if(char.name === controller.curChar.name) return;
+                controller.curChar = char;
+                controller["build"+controller[name+"Menus"][controller.menuNum]](char);
+            }
+            //Name is unique because it comes from the keys in the baseMenu.
+            //Any custom functions for the menu (anything that is more than lists of buttons)
+            switch(name){
+                case "actions":
+                    //If there are no characters available, cross out some options.
+                    if(Q.jobsController.noMoreAvailable){
+                        var list = screen.children(".screen-menu:eq(0)").children(".options-list");
+                        list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
+                        list.children(".options-list-row:eq(2)").children(".menu-option").addClass("menu-option-disabled");
+                    }
+                    var money = Q.state.get("saveData").money;
+                    if(money < this.rewardAmounts[0]){
+                        var list = screen.children(".screen-menu:eq(0)").children(".options-list");
+                        list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
+                        
+                    }
+                    break;
+                case "shop":
+                    
+                    break;
+                case "blacksmith":
+                
+                    break;
+                case "status":
+                case "equip":
+                    screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
+                        $(this).on("mouseover",function(){
+                            buildStatusMenu("allies");
+                        });
+                    });
+                    //Append a placeholder for replacing
+                    screen.children(".screen-menu:eq(1)").children(".arrow-container:eq(0)").after(MB.cont());
+                    buildStatusMenu("allies");
+                    break;
+                case "town":
+                    if(!Q.partyManager.roster.length){
+                        screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row:eq(0)").children(".menu-option").addClass("menu-option-disabled");
+                    }
+                    break;
+                case "reward":
+                    //MB.MenuControls.noWrap = true; //This will not allow wrapping (fixed with list-keyboard-disabled)
+                    var leftMenu = screen.children(".screen-menu:eq(0)");
+                    var middleMenu = screen.children(".screen-menu:eq(1)");
+                    var rightMenu = screen.children(".screen-menu:eq(2)");
+                    var confirmButton = rightMenu.children(".options-list").children(".options-list-row:eq(0)").children(".menu-option");
+                    var backButton = rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option");
+                    leftMenu.children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
+                        $(this).on("mouseover",function(){
+                            var idx = MB.MBUtility.getSelectedIdx(leftMenu);
+                            middleMenu.empty();
+                            middleMenu.append(MB.portraitsScreen([{}], ["loy"], idx + 1, [], middleMenu, leftMenu, confirmButton, backButton));
+                        });
+                        $(this).on("click",function(){
+                            if(Q.menuBuilder.MenuControls.disabled) return;
+                            MB.MenuControls.selectSelectedIdx([1, 0, 0]);
+                            middleMenu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option:eq(0)").mouseover();
+                        });
+                        $(this).on("back", function(){
+                            rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option").trigger("click");
+                        });
+                    });
+                    var money = Q.state.get("saveData").money;
+                    for(var i=0;i<this.rewardAmounts.length;i++){
+                        if(money < this.rewardAmounts[i]){
+                            leftMenu.children(".options-list").children(".options-list-row:eq("+i+")").children(".menu-option").addClass("menu-option-disabled");
+                        }
+                    }
+                    middleMenu.empty();
+                    leftMenu.children(".options-list").addClass("list-keyboard-disabled");
+                    middleMenu.append(MB.portraitsScreen([{}], ["loy"], 1, [], middleMenu, leftMenu, confirmButton, backButton));
+                    break;
+                case "recruit":
+                    function editCostText(){
+                        var char = controller.curChar;
+                        var desc = "Recruit "+char.name+" for "+char.cost+" gold?";
+                        MB.MBUtility.changeHoverDesc(recruitButton, $(".text-bar"), desc);
+                        var money = Q.state.get("saveData").money;
+                        if(money < char.cost){
+                            recruitButton.addClass("menu-option-disabled");
+                            $(recruitButton).css("pointer-events", "none");
+                        } else {
+                            recruitButton.removeClass("menu-option-disabled");
+                            $(recruitButton).css("pointer-events", "auto");
+                        }
+                        recruitButton.children("span").text("Recruit ("+char.cost+")");
+                    }
+                    
+                    var rightMenu = screen.children(".screen-menu:eq(2)");
+                    var recruitButton = rightMenu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").first();
+                    screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
+                        $(this).on("mouseover",function(){
+                            buildStatusMenu("roster");
+                            editCostText();
+                        });
+                        $(this).on("click",function(){
+                            if(Q.menuBuilder.MenuControls.disabled) return;
+                            MB.MenuControls.selectSelectedIdx([5, 0, 0]);
+                            rightMenu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").mouseover();
+                        });
+                    });
+                    screen.children(".screen-menu:eq(1)").children(".arrow-container:eq(0)").after(MB.cont());
+                    buildStatusMenu("roster");
+                    editCostText();
+                    break;
+                case "options":
+                    this.buildOptionsMenu();
+                    break;
+                    
+            }
+        },
+        confirmRecruit:function(){
+            var cont = $(".screen").children(".screen-menu:eq(2)");
+            var MB = Q.menuBuilder;
+            var char = this.curChar;
+            this.savedElements.push(cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").detach());
+            cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").append(MB.createOption({text:"Confirm",desc:"Are you sure you want to recruit "+char.name+" for "+char.cost+" gold?", confirm:{func:"confirmedRecruit", props:[char]}}, this, $(".text-bar")));
+            MB.MenuControls.selectSelectedIdx();
+            cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").mouseover();
+            var controller = this;
+            Q.jobsController.noMoreAvailable = false;
+            MB.MenuControls.on("changedMenu",function(){
+                cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-text").replaceWith(controller.savedElements[0]);
+                controller.savedElements.splice(0,1);
+                MB.MenuControls.off("changedMenu");
+            });
+        },
+        confirmedRecruit:function(char){
+            var MB = Q.menuBuilder;
+            MB.MenuControls.off("changedMenu");
+            Q.variableProcessor.changeMoney(-char.cost);
+            var idx = Q.partyManager.roster.indexOf(char);
+            Q.partyManager.removeFromRoster(idx);
+            Q.partyManager.addToAllies(char);
+            var controller = this;
+            Q.menuBuilder.MenuControls.disabled = true;
+            Q.menuBuilder.MBUtility.changeBarText($(".text-bar"),char.name+" recruited!");
+            Q.audioController.interruptMusic("102-Recruit_Roster_Character.mp3",function(){
+                Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                Q.menuBuilder.MenuControls.disabled = false;
+                if(!Q.partyManager.roster.length) return controller.displayMenu("town");
+
+                var cont = $(".screen").children(".screen-menu:eq(2)");
+                cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-text").replaceWith(controller.savedElements[0]);
+                controller.savedElements.splice(0,1);
+                $(".screen").children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row:eq("+idx+")").remove();
+                
+                MB.MenuControls.selectSelectedIdx([0, 0, 0]);
+                MB.MenuControls.getSelected().mouseover();
+            });
+        },
+        confirmedGiveReward:function(){
+            var MB = Q.menuBuilder;
+            var controller = this;
+            var idx = MB.MBUtility.getSelectedIdx($(".screen-menu:eq(0)"));
+            var amount = this.rewardAmounts[idx];
+            Q.variableProcessor.changeMoney(-amount);
+            var char = Q.partyManager.allies.filter(function(ally){return ally.tempAction;})[0];
+            char.tempAction = false;
+            Q.menuBuilder.MBUtility.changeBarText($(".text-bar"),"Gave "+char.name+" "+amount+" gold!");
+            Q.menuBuilder.MenuControls.disabled = true;
+            var jingle = idx === 1 ? "103-Small_Reward.mp3" : idx === 2 ? "104-Large_Reward.mp3" : "102-Recruit_Roster_Character.mp3";
+            char.loyalty = Math.min(100,char.loyalty + 3 + (idx*idx)*6);
+            Q.jobsController.addAction([char], "reward", idx + 1);
+            Q.audioController.interruptMusic(jingle,function(){
+                Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                Q.menuBuilder.MenuControls.disabled = false;
+                if(Q.jobsController.noMoreAvailable) return controller.displayMenu("actions");
+                var money = Q.state.get("saveData").money;
+                for(var i=0;i<controller.rewardAmounts.length;i++){
+                    if(money < controller.rewardAmounts[i]){
+                        if(i === 0) return $(".screen-menu:eq(2)").children(".options-list").children(".options-list-row").children(".menu-option:eq(1)").trigger("click");
+                        $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row:eq("+i+")").children(".menu-option").addClass("menu-option-disabled");
+                    }
+                }
+                
+                MB.MenuControls.selectSelectedIdx([0, 0, 0]);
+                MB.MenuControls.getSelected().mouseover();
+            });
+        },
+        getCurrentChar:function(type){
+            return Q.partyManager[type].filter(function(ally){return ally.name === $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option-selected").children("span").text();})[0];
+        },
+        buildCharEquipment:function(){
+            var cont = $(".screen").children(".screen-menu:eq(1)");
+        },
+        buildCharStatus:function(char){
+            this.menuNum = 0;
+            var cont = $(".screen").children(".screen-menu:eq(1)");
+            
+            var MB = Q.menuBuilder;
+            
+            var meat = MB.cont("sub-menu w-ll");
+            var mainStats = MB.cont("char-stats-main-container");
+            mainStats.append(MB.portrait("knight.png"));
+            var basicStatsCont = MB.cont("char-stats-basic flex-v");
+
+            basicStatsCont.append(MB.text("char-name",char.name));
+            basicStatsCont.append(MB.text("char-levelclass","LV " + char.level + " " + char.charClass));
+            var hp = MB.cont("w-xl flex-h");
+
+            hp.append(MB.icon("text-icon","icon-hp.png"), MB.text("char-hp w-m h-xl", char.combatStats.maxHp+"/"+char.combatStats.hp));
+            var tp = MB.cont("w-xl flex-h");
+            tp.append(MB.icon("text-icon","icon-tp.png"), MB.text("char-tp w-m h-xl", char.combatStats.maxTp+"/"+char.combatStats.tp));
+            basicStatsCont.append(hp, tp);
+            mainStats.append(basicStatsCont);
+            
+            var combatStats = MB.cont("menu-container char-stats-combat-container");
+            var statNames = Q.state.get("charGeneration").statNames;
+            var statDescs = Q.state.get("charGeneration").statDescs;
+            var bsList = {
+                listClass:"h-xl w-xs flex-v",
+                rowClass:"w-xl",
+                textClass:"no-border no-bg justify-left",
+                items:[]
+            };
+            var bsS = MB.cont("h-xl w-xs flex-v");
+            for(var i=0;i<statNames.length;i++){
+                var primary = char.primaryStat === statNames[i] ? "primary-stat-shine" : "";
+                bsList.items.push([{text:statNames[i].toUpperCase(), desc:statDescs[i], textClass:primary}]);
+                bsS.append(MB.text("char-"+statNames[i]+" "+primary,char.baseStats[statNames[i]])); 
+            }
+            combatStats.append(MB.optionsList(bsList, this, $(".text-bar")));
+            
+            combatStats.append(bsS);
+            combatStats.append(MB.cont("h-xl w-xs"));
+            
+            var csNames = this.characterCombatStats[0];
+            var csTexts = this.characterCombatStats[1];
+            var csDescs = this.characterCombatStats[2];
+            var csList =  {
+                listClass:"h-xl w-m flex-v",
+                rowClass:"w-xl",
+                textClass:"no-border no-bg justify-left",
+                items:[]
+            };
+            var csS = MB.cont("h-xl w-xs flex-v");
+            for(var i=0;i<csNames.length;i++){
+                csList.items.push([{text:csTexts[i], desc:csDescs[i]}]);
+                csS.append(MB.text("justify-right char-"+csNames[i],char.combatStats[csNames[i]]));
+            }
+            combatStats.append(MB.optionsList(csList, this, $(".text-bar")));
+            combatStats.append(csS);
+            
+            meat.append(mainStats, combatStats);
+            
+            cont.children(".menu-container:eq(1)").replaceWith(meat);
+        },
+        buildCharTechniques:function(char){
+            this.menuNum = 1;
+            var cont = $(".screen-menu:eq(1)");
+            var MB = Q.menuBuilder;
+            var meat = MB.cont("sub-menu w-ll flex-h");
+            var techs = char.techniques.active;
+            
+            var techsList = MB.optionsList({items:"techniques", props:techs, listClass:"v-list", rowClass:"h-xl"}, this, $(".text-bar"));
+            techsList.children(".options-list-row").first().children(".menu-text").first().addClass("borderless-top-left");
+            techsList.children(".options-list-row").last().children(".menu-text").first().addClass("borderless-bottom-left");
+            var techsCont = MB.cont("w-m h-xl");
+            techsCont.append(techsList);
+            meat.append(techsCont);
+            
+            var techsData = MB.cont("w-m h-xl");
+            var lastTech = {};
+            function generateTechInfo(){
+                var curTech = techs[techsList.children(".options-list-row").index(techsList.children(".options-list-row").children(".menu-text.menu-option-selected").parent())];
+                if(curTech === lastTech) return;
+                lastTech = curTech;
+                techsData.empty();
+                techsData.append(MB.text("",curTech.name));
+                techsData.append(MB.text("","etc..."));
+            }
+            
+            meat.append(techsData);
+            cont.children(".menu-container:eq(1)").replaceWith(meat);
+            
+            techsList.children(".options-list-row").children(".menu-text").on("mouseover",generateTechInfo);
+            techsList.children(".options-list-row").first().children(".menu-text").first().addClass("menu-option-selected");
+            generateTechInfo();
+            
+        },
+        buildOptionsMenu:function(){
+            var cont = $(".screen-menu:eq(0)");
+            var MB = Q.menuBuilder;
+            MB.MBUtility.roundList(cont.children(".options-list:eq(0)"));
+            
+            var optBuilder = MB.cont("w-xl h-m");
+            optBuilder.append(MB.text("","Options Builder code goes here. "));
+            cont.append(optBuilder);
+        },
+        saveGame:function(){
+            var music = Q.audioController.currentMusic;
+            
+            Q.audioController.stopMusic(music);
+            Q.menuBuilder.MenuControls.disabled = true;
+            Q.audioController.playSound("100-Save_Game.mp3",function(){
+                Q.menuBuilder.MenuControls.disabled = false;
+                Q.audioController.playMusic(music);
+                Q.menuBuilder.MBUtility.changeBarText($(".text-bar"),"Game Saved!");
+            });
+        },
+        loadGame:function(){
+            
+        },
+        quitToMainMenu:function(){
+            
+        },
+        quitToDesktop:function(){
+            
+        }
+        
+        
+    });
     
     Q.GameObject.extend("PartyManager",{
         allies:[],
         roster:[],
         init:function(){
-            //Generate the HUD that has money and the current week on it.
-            $("body").append("<div id='HUD-container'><div><span>Money: </span><span id='hud-money'></span></div><div><span>Week: </span><span id='hud-week'></span></div></div>");
+            
         },
         adjustTempStatChange:function(char,props){
             char.tempStatChanges.push(props);
@@ -19,13 +1842,17 @@ Quintus.UIObjects=function(Q){
         },
         
         addToRoster:function(character){
+            character.cost = CharacterGenerator.calculateCostOfCharacter(character);
             this.roster.push(character);
         },
         removeFromRoster:function(idx){
             this.roster.splice(idx,1);
         },
-        
-        
+        resetTempAction:function(){
+            Q.partyManager.allies.forEach(function(ally){
+                ally.tempAction = false;
+            });
+        },
         getAlly:function(name){
             if(name==="Current") return Q.state.get("currentEvent").character;
             return this.allies.find(function(ally){return name === ally.name;});
@@ -459,43 +2286,6 @@ Quintus.UIObjects=function(Q){
                     case "useItem":
                         Q.partyManager.bag.decreaseItem(props[0],{gear:props[1],material:props[2],quality:props[3],amount:props[4]});
                         break;
-                    //Locations-specific below
-                    case "createRecruitMenu":
-                        obj.createRecruitMenu();
-                        break;
-                    case "displayBuyItemsList":
-                        obj.displayBuyItemsList(props);
-                        break;
-                    case "displaySellItemsList":
-                        obj.displaySellItemsList(props);
-                        break;
-                    case "createGatherInfoMenu":
-                        obj.createGatherInfoMenu();
-                        break;
-                    case "createHuntMenu":
-                        obj.createHuntMenu();
-                        break;
-                    case "loadEntourageMenu":
-                        obj.loadEntourageMenu();
-                        break;
-                    case "loadBrionyMenu":
-                        obj.loadBrionyMenu();
-                        break;
-                    case "loadOptionsMenu":
-                        obj.loadOptionsMenu();
-                        break;
-                    case "entourageEquipmentMenu":
-                        obj.entourageEquipmentMenu();
-                        break;
-                    case "entourageRewardMenu":
-                        obj.entourageRewardMenu();
-                        break;
-                    case "entourageTaskForcesMenu":
-                        obj.entourageTaskForcesMenu();
-                        break;
-                    case "entourageStatusMenu":
-                        obj.entourageStatusMenu();
-                        break;
                 }
             }
         },
@@ -617,7 +2407,8 @@ Quintus.UIObjects=function(Q){
         },
         displayPage:function(name){
             this.currentPage = this.getPageData(name);
-            $("#background-image").attr('src', 'images/bg/'+this.currentPage.bg);
+            var url = 'images/bg/'+this.currentPage.bg;
+            $("#background-container").css('background-image', "url('"+url+"')");
             Q.groupsProcessor.processGroups(this.currentPage.onload,this);
             $("#text-content-story").append(this.newPage(this.currentPage));
         },
@@ -920,8 +2711,8 @@ Quintus.UIObjects=function(Q){
             createRecruitMenu:function(){
                 $("#main-container").empty();
                 Q.characterStatsMenu.createMenu();
-                $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
-                var optionsList = $("#options-cont-location").children(".options-list");
+                $("#main-container").append("<div id='location-container' class='big-box'><div class='options-list inner-box'></div></div>");
+                var optionsList = $("#location-container").children(".options-list");
                 var roster = Q.partyManager.roster;
                 
                 function rosterEmpty(){
@@ -976,8 +2767,8 @@ Quintus.UIObjects=function(Q){
             },
             displayBuyItemsList:function(props){
                 $("#main-container").empty();
-                $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
-                var optionsList = $("#options-cont-location").children(".options-list");
+                $("#main-container").append("<div id='location-container' class='big-box'><div class='options-list inner-box'></div></div>");
+                var optionsList = $("#location-container").children(".options-list");
                 optionsList.append(this.newOption("Buy"));
                 optionsList.children(".option:eq(0)").click(function(){
                     var selectedCost = parseInt($(".buy-items-item-selected").children("td:eq(1)").text());
@@ -1041,320 +2832,13 @@ Quintus.UIObjects=function(Q){
             }
         }
     });
-    Q.GameObject.extend("LocationController",{
-        startEvent:function(data){
-            this.add("locationsMenus");
-            this.setUpCont();
-            this.data = data;
-            var pages = this.pages = [];
-            for(var i=0;i<data.pages.length;i++){
-                pages.push(data.pages[0]);
-            }
-            this.startPage = pages[0].name;
-            //Set up the menu options that are always available, regardless of which location the player is at.
-            pages.unshift({
-                name:"_entourage",
-                music:pages[0].music,
-                bg:pages[0].bg,
-                options:[
-                    [
-                        "Equip",
-                        false,
-                        [
-                            [
-                                "entourageEquipmentMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "Reward",
-                        false,
-                        [
-                            [
-                                "entourageRewardMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "Manage Taskforces",
-                        false,
-                        [
-                            [
-                                "entourageTaskForcesMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "View Status",
-                        false,
-                        [
-                            [
-                                "entourageStatusMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "Go Back",
-                        false,
-                        [
-                            [
-                                "changePage",
-                                [
-                                    "_base"
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                onload:[]
-            });
-            pages.unshift({
-                name:"_base",
-                music:pages[1].music,
-                bg:pages[1].bg,
-                options:[
-                    [
-                        "View Entourage",
-                        false,
-                        [
-                            [
-                                "loadEntourageMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "Briony's Orders",
-                        false,
-                        [
-                            [
-                                "loadBrionyMenu",
-                                []
-                            ]
-                        ]
-                    ],
-                    [
-                        "Select Action",
-                        false,
-                        [
-                            [
-                                "changePage",
-                                [
-                                    pages[1].name
-                                ]
-                            ]
-                        ]
-                    ],
-                    [
-                        "Options",
-                        false,
-                        [
-                            [
-                                "loadOptionsMenu",
-                                []
-                            ]
-                        ]
-                    ]
-                ],
-                onload:[]
-            });
-            this.displayPage(pages[0].name);
-        },
-        setUpCont:function(){
-            $("#main-container").append('<div id="options-cont-location" class="big-box"><div class="options-list inner-box"></div></div>');
-        },
-        finishEvent:function(){
-            $("#options-cont-location").remove();
-        },
-        newOption:function(text){
-            return $("<div class='option'><span>"+text+"</span></div>");
-        },
-        getPageData:function(name){
-            return this.pages.filter(function(page){return page.name === name; })[0];
-        },
-        addBaseOptions:function(){
-            $("#options-cont-location").children(".options-list").append(this.newOption("Entourage"));
-        },
-        displayPage:function(name){
-            this.currentPage = this.getPageData(name);
-            $("#background-image").attr('src', 'images/bg/'+this.currentPage.bg);
-            Q.groupsProcessor.processGroups(this.currentPage.onload,this);
-            $("#options-cont-location").append(this.newPage(this.currentPage));
-            //If we're at the first set of user created options, add a go back button to go to the default options
-            if(this.currentPage.name === this.startPage){ 
-                $("#options-cont-location").children(".options-list").append($(this.newOption("Back")).click(function(){
-                    $("#main-container").empty();
-                    Q.locationController.setUpCont();
-                    Q.locationController.changePage(Q.locationController.pages[0].name);
-                }));
-            }
-        },
-        changePage:function(name){
-            $("#options-cont-location").children(".options-list").empty();
-            this.displayPage(name);
-        },
-        getOption:function(chosen){
-            return this.currentPage.options.find(function(option){return option[0] === chosen;});
-        },
-        newPage:function(data){
-            return this.getOptions(data.options,$("#options-cont-location").children(".options-list"));
-        },
-        selectOption:function(option){
-            var data = Q.locationController.getOption(option);
-            Q.groupsProcessor.processEffects(data[2],Q.locationController);
-        },
-        getOptions:function(options,cont){
-            for(var i=0;i<options.length;i++){
-                if(options[i][1]) continue;
-                cont.append(this.newOption(options[i][0]));
-                $(cont).children(".option").last().click(function(){
-                    Q.locationController.selectOption($(this).text());
-                });
-            }
-            return cont;
-        },
-        
-        //Base options funcs below
-        loadEntourageMenu:function(){
-            $("#options-cont-location").children(".options-list").empty();
-            this.currentPage = this.getPageData("_entourage");
-            $("#options-cont-location").append(this.getOptions(this.currentPage.options,$("#options-cont-location").children(".options-list")));
-        },
-        entourageEquipmentMenu:function(){
-            $("#main-container").empty();
-            Q.characterStatsMenu.createMenu();
-            
-            var allies = Q.partyManager.allies;
-            for(var i=0;i<allies.length;i++){
-                $("#status-characters-options").append(this.newOption(allies[i].name));
-                $("#status-characters-options").children(".option").last().click(function(){
-                    var char = allies[$(this).index()];
-                    $(".selected-option").removeClass("selected-option");
-                    $(this).addClass("selected-option");
-                    Q.characterStatsMenu.showCharacterCombatData(char);
-                    $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").addClass("char-prop-selectable")
-                    $("#character-stats-display-cont").children(".char-stats-cont-main").children(".char-cont-equipment").children(".char-prop-medium").click(function(){
-                        $("#main-container").append(Q.characterStatsMenu.displayEquipableGear($(this).index()));
-                    });
-                });
-            }
-            $("#status-characters-options").children(".option").first().trigger("click");
-            $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
-            var optionsList = $("#options-cont-location").children(".options-list");
-            optionsList.append($(this.newOption("Back")).click(function(){
-                $("#main-container").empty();
-                Q.locationController.setUpCont();
-                Q.locationController.changePage(Q.locationController.currentPage.name);
-            }));
-        },
-        entourageRewardMenu:function(){
-            
-        },
-        entourageTaskForcesMenu:function(){
-            
-        },
-        entourageStatusMenu:function(){
-            $("#main-container").empty();
-            Q.characterStatsMenu.createMenu();
-            var allies = Q.partyManager.allies;
-            
-            for(var i=0;i<allies.length;i++){
-                $("#status-characters-options").append(this.newOption(allies[i].name));
-                $("#status-characters-options").children(".option").last().click(function(){
-                    var char = allies[$(this).index()];
-                    $(".selected-option").removeClass("selected-option");
-                    $(this).addClass("selected-option");
-                    Q.characterStatsMenu.showCharacterData(char);
-                });
-            }
-            $("#status-characters-options").children(".option").first().trigger("click");
-            $("#main-container").append("<div id='options-cont-location' class='big-box'><div class='options-list inner-box'></div></div>");
-            var optionsList = $("#options-cont-location").children(".options-list");
-            optionsList.append($(this.newOption("Back")).click(function(){
-                $("#main-container").empty();
-                Q.locationController.setUpCont();
-                Q.locationController.changePage(Q.locationController.currentPage.name);
-            }));
-        },
-        
-        loadBrionyMenu:function(){
-            
-        },
-        loadOptionsMenu:function(){
-            $("#main-container").empty();
-            $("#main-container").append("<div id='options-menu' class='big-box'><div id='options-cont' class='inner-box'></div></div>");
-            function makeOption(props){
-                var itm = $("<div class='option-itm'><div><span>"+props[0]+"</span></div><div></div></div>");
-                switch(props[1]){
-                    case "checkbox":
-                        var elm = $("<input type='checkbox' class='option-prop'>");
-                        elm.prop("checked",Q.optionsController.options[props[2]]);
-                        itm.children("div").last().append(elm);
-                        break;
-                    case "range":
-                        itm.children("div").last().append("<input type='range' min='0' max='100' value="+Q.optionsController.options[props[2]]+" class='option-prop'>");
-                        break;
-                    case "select":
-                        var options = "";
-                        props[3].forEach(function(v){
-                            options += "<option value = "+v+">"+v+"</option>";
-                        });
-                        var elm = $("<select class='option-prop'>"+options+"</select>");
-                        itm.children("div").last().append(elm);
-                        itm.children("div").last().children("select").last().val(Q.optionsController.options[props[2]]);
-                        break;
-                }
-                $("#options-cont").append(itm);
-            }
-            var options = [
-                ["Music","checkbox","musicEnabled"],
-                ["Music Volume","range","musicVolume"],
-                ["Sound","checkbox","soundEnabled"],
-                ["Sound Volume","range","soundVolume"],
-                ["Text Speed","select","textSpeed",["Slow","Normal","Fast"]],
-                ["Auto Scroll","checkbox","autoScroll"],
-                ["Cursor Speed","select","cursorSpeed",["Slow","Normal","Fast"]],
-                ["Pointer Speed","select","pointerSpeed",["Slow","Normal","Fast"]],
-                ["Brightness","range","brightness"],
-                ["Damage Indicators","checkbox","damageIndicators"],
-                ["Faction Highlighting","checkbox","factionHighlighting"],
-                ["Recall Move","checkbox","recallMove"],
-                ["Tool Tips","checkbox","tooltips"]
-            ];
-            options.forEach(function(opt){
-                makeOption(opt);
-            });
-            $("#options-cont").append("<div class='options-cont-confirm-cont'><div>Save Options</div><div>Go Back</div></div>");
-            function goBack(){
-                $("#main-container").empty();
-                Q.locationController.setUpCont();
-                Q.locationController.displayPage(Q.locationController.pages[0].name);
-            };
-            $("#options-cont").children(".options-cont-confirm-cont").children("div").first().click(function(){
-                $("#options-cont").children(".option-itm").each(function(idx){
-                    if($(this).children("div").children(".option-prop[type='checkbox']").length){
-                        Q.optionsController.options[options[idx][2]] = $(this).children("div").children(".option-prop").prop("checked");
-                    } else {
-                        Q.optionsController.options[options[idx][2]] = $(this).children("div").children(".option-prop").val();
-                    }
-                });
-                Q.audioController.checkMusicEnabled();
-                goBack();
-            });
-            $("#options-cont").children(".options-cont-confirm-cont").children("div").last().click(goBack);
-        }
-    });
     
     Q.GameObject.extend("OptionsController",{
         options:{
             musicEnabled:false,
-            musicVolume:20,
+            musicVolume:0.5,
             soundEnabled:true,
-            soundVolume:100,
+            soundVolume:0.5,
             textSpeed:"Fast",
             autoScroll:true,
             cursorSpeed:"Fast",
@@ -1366,12 +2850,70 @@ Quintus.UIObjects=function(Q){
 
             recallMove:true,
 
-            tooltips:true
+            tooltips:true,
+            menuStyleA: "menu-style1",
+            menuStyleB: "menu-style2",
+            menuStyleC: "menu-style3",
+            menuStyleD: "menu-style4",
+            menuStyleE: "menu-style5"
+        },
+        toggleBoolOpt:function(opt){
+            if(this.options[opt]) this.options[opt] = false;
+            else this.options[opt] = true;
+            
+            if(opt === "musicEnabled"){
+                Q.audioController.checkMusicEnabled();
+            }
+        },
+        adjustSound:function(){
+            
         }
+    });
+    Q.GameObject.extend("JobsController",{
+        inProgress:[],
+        completedJobs:[],
+        noMoreAvailable: false,
+        addAction:function(chars, type, weeks){
+            this.inProgress.push({chars:chars, type:type, weeks:weeks});
+            chars.forEach(function(char){char.action = true;})
+            var avaliable = Q.partyManager.allies.filter(function(char){return !char.action;});
+            if(!avaliable.length) this.noMoreAvailable = true;
+        },  
+        completeJob:function(job){
+            this.noMoreAvailable = false;
+            var chars = job.chars;
+            var type = job.type;
+            for(var i=0; i<chars.length; i++){
+                chars[i].action = false;
+            }
+            //TODO: calculate earnings based on characters
+            var earnings = {};
+            switch(type){
+                //Any actions that do not give a reward after completed (for actions list reward/barter)
+                case "reward":
+                case "barter":
+                    return;
+                case "forage":
+                    
+                    break;
+            }
+            this.completedJobs.push({earnings:earnings, char:chars[0]});
+        },
+        progressJobs:function(){
+            var jobs = this.inProgress;
+            for(var i=0;i<jobs.length;i++){
+                var job = jobs[i];
+                job.weeks --;
+                if(!job.weeks){
+                    this.completeJob(job);
+                }
+            }
+        },
+        
     });
     
     Q.GameObject.extend("TimeController",{
-        week:0,
+        week:1,
         reduceWounded:function(char){
             char.wounded--;
             if(!char.wounded){
@@ -1408,7 +2950,7 @@ Quintus.UIObjects=function(Q){
             }
             return false;
         },
-        cycleWeek:function(props){
+        cycleWeek:function(callback){
             Q.timeController.week ++;
             $("#hud-week").text(Q.timeController.week);
             //All characters that are wounded get reduced by 1
@@ -1416,13 +2958,21 @@ Quintus.UIObjects=function(Q){
             for(var i=0;i<allies.length;i++){
                 this.reduceWounded(allies[i]);
             }
-            /*
+            
+            Q.jobsController.progressJobs();
+            
+            //ms, color, startTime, opacityTo, opacityStart, callback
+            Q.fadeAnim(3800, "black", 0, 1, 0, function(){
+                if(callback) callback();
+                Q.fadeAnim(500, "black", 0, 0, 1);
+            });
             
             //Find the event with the highest priority (lowest number)
-            var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
+            /*var event = potentialEvents.sort(function(a, b){return a[1] - b[1];})[0];
             console.log(event)*/
             
-            var event = this.checkWeek(Q.timeController.week);
+            //This will get flavour events that occur when a certain character meets a set of requirements
+            /*var event = this.checkWeek(Q.timeController.week);
             if(event){
                 Q.locationController.fullDestroy();
                 var curEvent = Q.state.get("currentEvent");
@@ -1431,7 +2981,7 @@ Quintus.UIObjects=function(Q){
             } else {
                 //Start the next scene
                 Q.startScene(props.next[0],props.next[1],props.next[2]);
-            }
+            }*/
         }
     });
     /*
@@ -2066,21 +3616,6 @@ Quintus.UIObjects=function(Q){
             } else {
                 this.off("step","follow");
             }
-        }
-    });
-    Q.UI.Container.extend("Fader",{
-        init:function(p){
-            this._super(p,{
-                x:Q.width/2,
-                y:Q.height/2,
-                w:Q.width,h:Q.height,
-                fill:"#FFF",
-                time:1,
-                z:1000000
-            });
-            this.add("tween");
-            this.animate({opacity:0},this.p.time,Q.Easing.Quadratic.In,{callback:function(){Q.clearStage(11);}});
-
         }
     });
     Q.UI.Container.extend("PlacementSquare",{

@@ -10,6 +10,7 @@
     "statTexts":["Strength","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
     "trimmedBaseStats":["strength","endurance","dexterity","weaponSkill","reflexes","initiative","energy","skill","efficiency"],
     "statNames":["str","end","dex","wsk","rfl","ini","enr","skl","eff"],
+    "statDescs":["How strong","Endurance","Dexterity","Weapon Skill","Reflexes","Initiative","Energy","Skill","Efficiency"],
     "primaryStats":["end","str","wsk","dex","rfl","ini","eff","skl","enr"],
     "primaryCoords":[[2,0],[1,0],[0,0],[1,1],[2,1],[0,1],[2,1],[2,0],[2,2]],
     "levelUpMultiplier":[[0,-1],[1,0],[0,1],[-1,0],[-1,-1],[1,-1],[1,1],[-1,1]],

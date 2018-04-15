@@ -1,0 +1,37 @@
+{
+    "jobs":{
+        "woodcutting":[
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": ["str", 30],
+                "loots":[[["materials", "wood"], 60], [["equipment", "Shoddy", "Wood", "Bow"], 1]],
+                "earnings":[[["materials", "wood"], 2]]
+            },
+            {},
+            {},
+            {},
+            {}
+        ]
+    },
+    "defaults": {
+        "texts":[
+            "Minimum requirements not met!",
+            "Barely passable...",
+            "Looks like it'll go smoothly.",
+            "Exceeding expectations!"
+        ],
+        "lootRolls":[
+            [1, 1],
+            [2, 2],
+            [3, 3]
+        ],
+        "weighted":[
+            [100],
+            [75, 25],
+            [50, 30, 20]
+        ],
+        "tiermin": [50, 20],
+        "tiermax": [30, 10]
+    }
+}

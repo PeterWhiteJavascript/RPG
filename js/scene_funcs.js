@@ -42,7 +42,7 @@ Quintus.SceneFuncs=function(Q){
     Q.scene("Location",function(stage){
         $("#HUD-container").show();
         var data = stage.options.data;
-        Q.audioController.playMusic(data.pages[0].music,function(){
+        Q.audioController.playMusic(data.mainMusic,function(){
             Q.locationController.startEvent(data);
         });
     });
@@ -86,9 +86,9 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         var map = "maps/"+data.map;
         Q.loadTMX(map, function() {
-            $("#background-image").attr("src","images/bg/battle-bg.png");
+            $("#background-container").css("background-image","url('images/bg/battle-bg.png')");
             Q.audioController.playMusic(data.music,function(){
-                Q.stageScene("fader",11);
+                Q.fadeAnim(800);
                 //Display the tmx tile map
                 //If one is not passed in, we are re-using the map from the previous battle
                 if(map){//TODO
@@ -125,9 +125,9 @@ Quintus.SceneFuncs=function(Q){
         var battleData = stage.options.data;//.battleData = Q.getPathData(stage.options.data,stage.options.path);
         var map = "maps/"+battleData.map;
         Q.loadTMX(map, function() {
-            $("#background-image").attr("src","images/bg/battle-bg.png");
+            $("#background-container").css("background-image","url('images/bg/battle-bg.png')");
             Q.audioController.playMusic(battleData.music,function(){
-                Q.stageScene("fader",11);
+                Q.fadeAnim(400);
                 //Display the tmx tile map
                 Q.stageTMX(map, stage);
                 stage.lists.TileLayer[0].p.z = -5;
@@ -224,11 +224,13 @@ Quintus.SceneFuncs=function(Q){
                 Q.viewFollow(Q.pointer,stage);
 
                 //Display the hud which shows character and terrain information
-                Q.stageScene("battleHUD",3);
+                //Q.stageScene("battleHUD",3);
                 Q.BatCon.battleTriggers.setUpTriggers(battleData.events);
                 Q.BatCon.battlePlacement.showPlacementSquares(battleData.placementSquares);
                 Q.BatCon.battlePlacement.startPlacingAllies(battleData);
                 
+                Q.BattleMenusController = new Q.Menus("battle");
+                Q.BattleMenusController.displayActions("characterSelection");
             });
         },{
             progressCallback:Q.progressCallback,
@@ -236,10 +238,6 @@ Quintus.SceneFuncs=function(Q){
         });
         
     },{sort:true});
-    //Displayed when selecting a character to place in battle
-    Q.scene("placeCharacterMenu",function(stage){
-        stage.insert(new Q.CharacterSelectionMenu({selected:stage.options.placedIdx}));
-    });
     
     //Displayed when selecting a character in battle
     Q.scene("characterMenu",function(stage){
@@ -253,6 +251,7 @@ Quintus.SceneFuncs=function(Q){
     });
     //Displayed when pressing the menu button at any time.
     Q.scene("optionsMenu",function(stage){
+        alert("This will be deleted (options menu)")
         var menu = stage.insert(new Q.UI.Container({w:Q.width/2,h:Q.height/2,cx:0,cy:0,fill:"blue",opacity:0.5}));
         menu.p.x = Q.width/2-menu.p.w/2;
         menu.p.y = Q.height/2-menu.p.h/2;
@@ -311,8 +310,5 @@ Quintus.SceneFuncs=function(Q){
     });
     Q.scene("battleText",function(stage){
         stage.insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));
-    });
-    Q.scene("fader",function(stage){
-        stage.insert(new Q.Fader());
     });
 };

@@ -1,14 +1,42 @@
+html, body{
+    width:100%;
+    height:100%;   
+}
 body{
     overflow:hidden;
+}
+#main-content{
+    width:100%;
+    height:100%;
+    background-color:black;
+    font-size:1.2vw;
+}
+#content-container, #background-container{
+    width:85%;
+    height:100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 #main-container{
     width:100%;
     height:100%;
+    position:fixed;
+    top:0;
+    pointer-events: none;
 }
-#background-image{
-    position:absolute;
-    width:100%;
-    height:100%;
+#main-container div{
+    pointer-events:auto;
+}
+#background-container{
+    background-image: url("../images/ui/loading-screen.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+#quintus{
+    width:100px;
 }
 
 /* Loading Start*/
@@ -44,6 +72,21 @@ body{
     height:100%;
     background-color:lightblue;
 }
+#fader{
+    width:100%;
+    height:100%;
+    z-index:1000;
+    position:absolute;
+    top:0;
+    left:0;
+}
+.fader-white{
+    background-color:#EEE;
+}
+.fader-black{
+    background-color:#111;
+}
+
 /* Loading End*/
 
 #HUD-container{
@@ -51,7 +94,6 @@ body{
     width:100%;
     height:5%;
     background-color:#555;
-    font-size:20px;
     border-bottom:1px solid black;
     position:absolute;
     display: flex;
@@ -60,13 +102,11 @@ body{
     text-align:center;
 }
 #HUD-container div{
-    font-size:20px;
     color:white;
     width:25%;
 }
 /* Story Start */
 #text-content{
-    font-size:1.5vw;
     top:10%;
     left:25%;
     position:absolute;
@@ -108,14 +148,6 @@ body{
     background-color:#CCC;
 }
 
-.fancy-border{
-    border: 16px solid transparent;
-    border-radius:16px;
-    padding: 16px;
-    -webkit-border-image: url(../images/ui/menu-border.png) 33% round; /* Safari 3.1-5 */
-    -o-border-image: url(../images/ui/menu-border.png) 33% round; /* Opera 11-12.1 */
-    border-image: url(../images/ui/menu-border.png) 33% round;
-}
 
 /* Story End */
 /* Locations Start*/
@@ -180,9 +212,6 @@ body{
     right:5%;
     width:20%;
     height:40%;
-}
-.options-list{
-    text-align:center;
 }
 .option, .option-title{
     color:#EEE;
@@ -395,6 +424,108 @@ body{
 
 /* Battle Scene End */
 /* Battle Start */
+#actions-menu{
+    width:200px;
+    height:300px;
+    right:10px;
+    bottom:10px;
+}
+#terrain-menu{
+    width:200px;
+    height:150px;
+    left:10px;
+    top:10px;
+}
+#char-summary-menu{
+    width:200px;
+    height:150px;
+    right:10px;
+    top:10px;
+}
+
+.menu{
+    position:absolute;
+}
+.menu-option-cont{
+    width:100%;
+    height:30px;
+    border-radius:5px;
+    background-color:#BBB;
+    text-align:center;
+    user-select:none;
+}
+/* For mouse and keyboard */
+.menu-option-cont:hover, .menu-option-cont-selected{
+    cursor:pointer;
+    background-color:#999;
+}
+.menu-option-disabled{
+    text-decoration: line-through;
+}
+/*
+.menu-text{
+    font-size:20px;
+    color:white;
+    font-family:"Consolas";
+    width:100%;
+    height:100%;
+}*/
+/* Character direction selector */
+.battle-dir-selector{
+    width:124px;
+    height:124px;
+    position:absolute;
+    opacity:0.7;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+.battle-dir-center{
+    width:50%;
+    height:50%;
+    position:absolute;
+    left:25%;
+    top:25%;
+}
+.battle-dir-arrow-bg{
+    background-color:purple;
+    position:absolute;
+    cursor:pointer;
+}
+.battle-dir-arrow-bg:hover, .battle-dir-arrow-bg-selected{
+    background-color:green;
+}
+.battle-dir-arrow-left{
+    width:25%;
+    height:50%;
+    border-bottom-left-radius:124px;
+    border-top-left-radius:124px;
+    top:25%;
+}
+.battle-dir-arrow-up{
+    width:50%;
+    height:25%;
+    border-top-left-radius:124px;
+    border-top-right-radius:124px;
+    left:25%;
+}
+.battle-dir-arrow-right{
+    width:25%;
+    height:50%;
+    border-bottom-right-radius:124px;
+    border-top-right-radius:124px;
+    left:75%;
+    top:25%;
+}
+.battle-dir-arrow-down{
+    width:50%;
+    height:25%;
+    border-bottom-left-radius:124px;
+    border-bottom-right-radius:124px;
+    left:25%;
+    top:75%;
+}
+
 #leaderboard{
     position:absolute;
     width:400px;
