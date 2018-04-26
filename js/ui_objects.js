@@ -259,7 +259,90 @@ Quintus.UIObjects=function(Q){
             music:"townMusic",
             bg:"townBG",
             screen:[
-                
+                {
+                    cl: "w-l",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"w-xl h-xl",
+                                rowClass:"flex-h w-xl h-xs retain-selected-row",
+                                textClass:"item-category-heading retain-selected",
+                                items:[
+                                    [
+                                        {
+                                            text:"Accessories",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Accessories"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}}
+                                        },
+                                        {
+                                            text:"Consumables",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Consumables"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}}
+                                        },
+                                        {
+                                            text:"Materials",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Materials"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}},
+                                            pressRight:{func:function(){}}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl: "w-s",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Purchase",
+                                            desc:"",
+                                            //Get the number of items and display the price
+                                            confirm:{func:"askQuantityPurchaseItem",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Barter",
+                                            desc:"",
+                                            //Get the character to barter, as well as the number of items and proposed price (per unit)
+                                            confirm:{func:"askQuantityBarterItem",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Exchange",
+                                            desc:"",
+                                            confirm:{func:"askExchangeItem",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back.",
+                                            confirm:{func:"displayMenu",props:["town"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
             ]
         },
         blacksmith:{
@@ -349,7 +432,50 @@ Quintus.UIObjects=function(Q){
             music:"mainMusic",
             bg:"mainBG",
             screen:[
-                
+                {
+                    cl:"w-s menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                textClass:"retain-selected",
+                                items:"jobs"
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl:"w-m menu-style5",
+                    data:{}
+                },
+                {
+                    cl:"w-s menu-style3",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Confirm",
+                                            desc:"",
+                                            confirm:{func:"confirmedDoJob",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back.",
+                                            confirm:{func:"displayMenu",props:["actions"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
             ]
         },
         missions:{
@@ -772,7 +898,13 @@ Quintus.UIObjects=function(Q){
             var opt = data.text ? this.text(textClass+" "+dataTC+" menu-option", data.text) : data.img ? this.icon(data.imgClass || "menu-option", data.img) : false;
             if(data.confirm) this.MBUtility.clickFor(opt, obj, obj[data.confirm.func] || data.confirm.func, data.confirm.props);
             if(data.back) this.MBUtiltiy.setBack(opt, obj, obj[data.back.func] || data.back.func, data.back.props);
-            this.MBUtility.hoverForDesc(opt, descBar, data.desc, "menu-option-selected");
+            if(data.hover) this.MBUtility.hoverFor(opt, obj, obj[data.hover.func] || data.hover.func, data.hover.props);
+            if(data.pressUp) this.MBUtility.pressUpFor(opt, obj, obj[data.pressUp.func] || data.pressUp.func, data.pressUp.props);
+            if(data.pressDown) this.MBUtility.pressDownFor(opt, obj, obj[data.pressDown.func] || data.pressDown.func, data.pressDown.props);
+            if(data.pressLeft) this.MBUtility.pressLeftFor(opt, obj, obj[data.pressLeft.func] || data.pressLeft.func, data.pressLeft.props);
+            if(data.pressRight) this.MBUtility.pressRightFor(opt, obj, obj[data.pressRight.func] || data.pressRight.func, data.pressRight.props);
+            this.MBUtility.hoverMenuOption(opt, "menu-option-selected", descBar, data.desc);
+            if(data.idx !== undefined) opt.attr("idx", data.idx);
             return opt;
         },
         optionsList:function(options, obj, descBar){
@@ -794,8 +926,9 @@ Quintus.UIObjects=function(Q){
             return $("<div class='char-portrait-container'><div class='char-portrait-bg'><img class='char-portrait-img' src='images/story/"+src+"'></div></div>");
         },
         //Displays 1-3 rectangles that can store a character portrait for sending them to do something.
-        portraitsScreen:function(portraits, statsShown, weeks, requirements, menu, backMenu, confirmButton, backButton){
+        portraitsScreen:function(portraits, statsShown, weeks, requirements, tier, menu, backMenu, confirmButton, backButton){
             function getConvertedStat(stat, char){
+                if(!char.name) return 0;
                 var lower = stat.toLowerCase();
                 switch(lower){
                     case "name":
@@ -837,7 +970,7 @@ Quintus.UIObjects=function(Q){
                 var nameCont = this.cont("w-xl");
                 nameCont.append(this.text("w-xl h-xl", portraitChar.name || ""));
                 var portraitSection = this.cont("h-xl flex-v portrait-section menu-option");
-                this.MBUtility.hoverForDesc(portraitSection, $(".text-bar"), "Press ENTER to select a character.", "menu-option-selected");
+                this.MBUtility.hoverMenuOption(portraitSection,"menu-option-selected" ,$(".text-bar"), "Press ENTER to select a character.");
                 portraitSection.append(this.portrait(portraitChar.sprite || "empty.png"));
                 var statsCont = this.cont("w-sm flex-v");
                 for(var j=0; j<statsShown.length; j++){
@@ -847,6 +980,7 @@ Quintus.UIObjects=function(Q){
                     statsCont.append(statCont);
                 }
                 portraitSection.on("click",function(){
+                    if(Q.menuBuilder.MenuControls.disabled) return;
                     var idx = $(this).index();
                     var lastChar = portraits[idx];
                     lastChar.name ?  lastChar.tempAction = false : false;
@@ -871,7 +1005,7 @@ Quintus.UIObjects=function(Q){
                         menu.empty();
                         portraits[idx] = characters[index] || {};
                         portraits[idx].tempAction = true;
-                        MB.portraitsScreen(portraits, statsShown, weeks, requirements, menu, backMenu, confirmButton, backButton);
+                        MB.portraitsScreen(portraits, statsShown, weeks, requirements, tier, menu, backMenu, confirmButton, backButton);
                         menu.removeClass("above-fader");
                         menu.removeAttr('style');
                         placeholder.replaceWith(menu);
@@ -887,7 +1021,7 @@ Quintus.UIObjects=function(Q){
                                 var req = requirements[i];
                                 var stat = req[0];
                                 var amount = req[1];
-                                var total = allCharsSelected.reduce(function(a, b){return a[stat] + b[stat];}, 0);
+                                var total = allCharsSelected.map(function(char){return getConvertedStat(stat, char)}).reduce(function(a, b){return a + b;}, 0);
                                 if(total < amount) metAllRequirements = false;
                             }
                             if(metAllRequirements){ 
@@ -908,7 +1042,7 @@ Quintus.UIObjects=function(Q){
                         chooseChar();
                     }
                     //Show the list of characters with their statsShown as a special list
-                    var characters = Q.partyManager.allies.filter(function(char){return !char.action;});
+                    var characters = Q.partyManager.allies.filter(function(char){return !char.tempAction && !char.action;});
                     
                     var listCont = MB.cont("w-ll h-xl options-list retain-selected-index left-right-border");
                     
@@ -948,52 +1082,41 @@ Quintus.UIObjects=function(Q){
                         MB.MBUtility.sortBy = lists[currentList][headingIndex][0];
                         MB.MBUtility.sortOrder *= -1;
                         sortCharacters();
-                        MB.MenuControls.selectSelectedIdx(0, MB.MenuControls.selectedIdx[1], headingIndex);
+                        Q.audioController.playSound("rotate_tech.mp3");
                         $(MB.MenuControls.getSelected()).mouseover();
                         
                     }
                     function sortCharacters(){
-                        var type = typeof MB.MBUtility.sortBy;
+                        //var type = typeof MB.MBUtility.sortBy;
                         characters = characters.sort(function(a, b){
-                            if(type === 'string'){
+                            //if(type === 'string'){
                                 return getConvertedStat(MB.MBUtility.sortBy, a) > getConvertedStat(MB.MBUtility.sortBy, b) ? 1 * MB.MBUtility.sortOrder : -1 * MB.MBUtility.sortOrder;
-                            } else if(type === 'number'){
+                            /*} else if(type === 'number'){
                                 return getConvertedStat(MB.MBUtility.sortBy, a) * MB.MBUtility.sortOrder > getConvertedStat(MB.MBUtility.sortBy, b);
-                            }
+                            }*/
                         });
                         showList();
                     }
-                    function hoverTableOption(){
-                        $(".hovered-column").removeClass("hovered-column");
-                        $(".hovered-row").removeClass("hovered-row");
-                        $(".hovered-center").removeClass("hovered-center");
-                        $(".menu-option-retained-index").removeClass("menu-option-retained-index");
-                        if($(this).hasClass("remover")) return;
-                        $(this).siblings().addClass("hovered-row");
-                        var headIdx = $(this).index();
-                        var listIdx = $(this).parent().index();
-                        var cols = $(this).parent().parent().children(".options-list-row").not(":last").not(":eq("+listIdx+")");
-                        cols.each(function(){$(this).children(".char-table-item:eq("+headIdx+")").addClass("hovered-column");});
-                        $(this).addClass("hovered-row menu-option-retained-index");
-                    }
-                    function cycleList(amount){
-                        currentList += amount;
+                    function cycleList(event){
+                        currentList += event.data.amount;
                         currentList = MB.MenuControls.checkWrap(lists.length, currentList);
                         var selectedRowIdx = menu.children(".options-list:eq(1)").children(".options-list-row").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent());
                         var selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent().children(".menu-option").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index"));
                         showList();
                         selectedOptIdx = selectedOptIdx > 0 ? selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row:eq(0)").children(".menu-option").length - 1 : 0;
-                        hoverTableOption.call(menu.children(".options-list:eq(1)").children(".options-list-row:eq("+selectedRowIdx+")").children(".menu-option:eq("+selectedOptIdx+")"));
+                        menu.children(".options-list:eq(1)").children(".options-list-row:eq("+selectedRowIdx+")").children(".menu-option:eq("+selectedOptIdx+")").trigger("mouseover");
+                        
+                        $(this).trigger("mouseover");
                     };
                     function showList(){
                         listCont.empty();
                         var list = lists[currentList];
                         var headingRow = MB.cont("w-xl h-xs table-row flex-h options-list-row heading-row");
                         for(var j=0;j<list.length;j++){
-                            var headingCont = MB.cont("w-xl h-xl menu-option char-table-item");
+                            var headingCont = MB.cont("w-xl h-xl menu-option item-table-item");
                             headingCont.css({width:list[j][1]});
-                            headingCont.on("mouseover",hoverTableOption);
-                            MB.MBUtility.hoverForDesc(headingCont, $(".text-bar"), "Sort by "+list[j][0], "menu-option-selected");
+                            headingCont.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
+                            MB.MBUtility.hoverMenuOption(headingCont, "menu-option-selected", $(".text-bar"), "Sort by "+list[j][0]);
                             headingCont.on("click",clickHeading);
                             headingCont.on("back",goBack);
                             headingCont.append(MB.text("w-xl h-xl justify-center", list[j][0]));
@@ -1004,10 +1127,10 @@ Quintus.UIObjects=function(Q){
                             var char = characters[j];
                             var charCont = MB.cont("w-xl h-xs table-row flex-h options-list-row");
                             for(var k=0;k<list.length;k++){
-                                var charOption = MB.cont("w-xl h-xl menu-option char-table-item");
+                                var charOption = MB.cont("w-xl h-xl menu-option item-table-item");
                                 charOption.css({width:list[k][1]});
-                                charOption.on("mouseover",hoverTableOption);
-                                MB.MBUtility.hoverForDesc(charOption, $(".text-bar"), "Select "+char.name, "menu-option-selected");
+                                charOption.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
+                                MB.MBUtility.hoverMenuOption(charOption, "menu-option-selected", $(".text-bar"), "Select "+char.name);
                                 charOption.on("click",chooseChar);
                                 charOption.on("back",goBack);
                                 var text = MB.text("w-xl h-xl justify-center",getConvertedStat(list[k][0], char));
@@ -1019,8 +1142,8 @@ Quintus.UIObjects=function(Q){
                         }
                         var backCont = MB.cont("w-xl h-xs table-row options-list-row");
                         var back = MB.text("w-xl h-xl menu-option remover", "Remove");
-                        MB.MBUtility.hoverForDesc(back, $(".text-bar"), "Remove character.", "menu-option-selected");
-                        back.on("mouseover",hoverTableOption);
+                        MB.MBUtility.hoverMenuOption(back, "menu-option-selected", $(".text-bar"), "Remove character.");
+                        back.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
                         back.on("click",chooseChar);
                         back.on("back",goBack);
                         backCont.append(back);
@@ -1036,9 +1159,9 @@ Quintus.UIObjects=function(Q){
                     var leftArrowList = MB.cont("options-list arrow-container");
                     var leftArrowCont = MB.cont("options-list-row w-xl h-xl");
                     var leftArrow = MB.icon("menu-option left-arrow", "left-arrow.png");
-                    leftArrow.on("click",function(){cycleList(-1);});
+                    leftArrow.on("click",{amount:-1},cycleList);
                     leftArrow.on("back",goBack);
-                    MB.MBUtility.hoverForDesc(leftArrow, $(".text-bar"), "Change Menu.", "menu-option-selected");
+                    MB.MBUtility.hoverMenuOption(leftArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
 
                     leftArrowCont.append(leftArrow);
                     leftArrowList.append(leftArrowCont);
@@ -1047,9 +1170,9 @@ Quintus.UIObjects=function(Q){
                     var rightArrowList = MB.cont("options-list arrow-container");
                     var rightArrowCont = MB.cont("options-list-row w-xl h-xl");
                     var rightArrow = MB.icon("menu-option right-arrow", "right-arrow.png");
-                    rightArrow.on("click",function(){cycleList(1);});
+                    rightArrow.on("click",{amount:1},cycleList);
                     rightArrow.on("back",goBack);
-                    MB.MBUtility.hoverForDesc(rightArrow, $(".text-bar"), "Change Menu.", "menu-option-selected");
+                    MB.MBUtility.hoverMenuOption(rightArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
 
                     rightArrowCont.append(rightArrow);
                     rightArrowList.append(rightArrowCont);
@@ -1078,16 +1201,56 @@ Quintus.UIObjects=function(Q){
             var infoCont = this.cont("w-xl h-sm flex-h");
             var left = this.cont("w-ms h-xl ");
             left.append(this.text("w-xl h-s", "Weeks: "+weeks));
+            var right = this.cont("w-ml h-xl");
+            
+            left.append(this.text("w-xl h-s heading-text", "Required"));
+            var jobDefaults = Q.state.get("jobsList").defaults;
+            function getRating(){
+                var chars = portraits.filter(function(char){return char.name;});    
+                if(!chars.length) return 0;
+                var tiermin = jobDefaults.tiermin[0] + jobDefaults.tiermin[1] * tier;
+                var tiermax = tiermin + jobDefaults.tiermax[0] + jobDefaults.tiermax[1] * tier;
+                var eachRating = [];
+                for(var i=0;i<statsShown.length;i++){
+                    var base = 0;
+                    for(var j=0;j<requirements.length;j++){
+                        if(requirements[j][0]===statsShown[i]) base += requirements[i][1];
+                    }
+                    var weight = jobDefaults.weighted[statsShown.length-1][i];
+                    
+                    var reducedCharStats = chars.map(function(char){return getConvertedStat(statsShown[0], char); }).reduce(function(a, b){return a + b;}, 0);
+                    eachRating.push((reducedCharStats - base)* weight);
+                    
+                }
+                for(var i=0;i<eachRating.length;i++){
+                    var num = eachRating[i];
+                    if(num < 0){
+                        return 0;
+                    }
+                }
+                var rating = 0;
+                var added = eachRating.reduce(function(a, b) {return a + b;},0);
+                if(added < tiermin){
+                    rating = 1;
+                } else if(added > tiermax){
+                    rating = 3;
+                } else { 
+                    rating = 2;
+                }
+                return rating;
+            }
             if(requirements.length) {
-                left.append(this.text("w-xl h-s heading-text", "Required"));
                 var reqsCont = this.cont("w-xl h-m flex-v");
                 for(var i=0;i<requirements.length;i++){
-                    reqsCont.append(this.text("w-xl", requirements[i][0].toUpperCase()+": "+requirements[i][1]));
+                    var req = requirements[i];
+                    reqsCont.append(this.text("w-xl", req[0].toUpperCase()+": "+req[1]));
                 }
                 left.append(reqsCont);
-            }/* else {
+            } else {
                 left.append(this.text("w-xl h-s", "-"));
-            }*/
+            }
+            var rating = getRating();
+            right.append(this.text("w-xl h-xl align-left text-paragraph",jobDefaults.texts[rating]));
             
             backButton.on("click", Q.partyManager.resetTempAction);
             confirmButton.on("click", Q.partyManager.resetTempAction);
@@ -1095,8 +1258,6 @@ Quintus.UIObjects=function(Q){
             
             infoCont.append(left);
             
-            var right = this.cont("w-ml h-xl");
-            right.append(this.text("w-xl h-xl align-left text-paragraph",""));
             
             infoCont.append(right);
             menu.append(portraitsCont, infoCont);
@@ -1114,11 +1275,38 @@ Quintus.UIObjects=function(Q){
             cont.append(this.text(cl, eq.gear));
             return cont;
         },
-        quantifier:function(cl, step){
-            var cont = this.cont(cl);
-            cont.append(this.icon("quantifier-arrow", "quantifier-down-arrow"));
-            cont.append(this.icon("quantifier-arrow", "quantifier-up-arrow"));
-            return cont;
+        quantifier:function(cl, numCl, start, step, min, max){
+            var upCont = this.cont(cl);
+            var upIcon = this.icon("quantifier-arrow menu-option", "quantifier-up-arrow.png");
+            this.MBUtility.hoverMenuOption(upIcon, "menu-option-selected");
+            
+            var downCont = this.cont(cl);
+            var downIcon = this.icon("quantifier-arrow menu-option", "quantifier-down-arrow.png");
+            this.MBUtility.hoverMenuOption(downIcon, "menu-option-selected");
+            upCont.append(upIcon);
+            downCont.append(downIcon);
+            
+            var amountNum = this.text(numCl, start);
+            function inBounds(val){
+                if(val < min) return min;
+                if(val > max) return max;
+                return val;
+            }
+            downIcon.on("click", function(){
+                if(Q.menuBuilder.MenuControls.disabled) return;
+                var newVal = parseInt(amountNum.children("span").text()) - step;
+                amountNum.children("span").text(inBounds(newVal));
+                amountNum.trigger("changed");
+            });
+            upIcon.on("click", function(){
+                if(Q.menuBuilder.MenuControls.disabled) return;
+                var newVal = parseInt(amountNum.children("span").text()) + step;
+                amountNum.children("span").text(inBounds(newVal));
+                amountNum.trigger("changed");
+            });
+            
+            
+            return upCont.add(amountNum).add(downCont);
         },
         qualityButtons:function(buttons){
             var cont = this.cont("quality-buttons-container");
@@ -1142,10 +1330,10 @@ Quintus.UIObjects=function(Q){
         changeBarText:function(descBar, text){
             descBar.children(".bar-text").children("span").text(text);
         },
-        changeHoverDesc:function(itm, descBar, desc, selectedClass){
-            this.hoverForDesc(itm, descBar, desc, selectedClass);
+        changeHoverDesc:function(itm, selectedClass, descBar, desc){
+            this.hoverMenuOption(itm, selectedClass, descBar, desc);
         },
-        hoverForDesc:function(itm, descBar, desc, selectedClass){
+        hoverMenuOption:function(itm, selectedClass, descBar, desc){
             var util = this;
             itm.on("mouseover",function(){
                 if(Q.menuBuilder.MenuControls.disabled || itm.hasClass("menu-option-disabled")) return;
@@ -1160,12 +1348,29 @@ Quintus.UIObjects=function(Q){
                     });
                 }
                 $(this).addClass(selectedClass);
-                util.changeBarText(descBar, desc);
+                if(descBar) util.changeBarText(descBar, desc);
                 var MC = util.entity.MenuControls;
                 if(this === $(MC.getSelected()).get(0)) return; //Don't do anything if we've mouse over'd the same element
                 var toZ = $(".options-list").index($(this).closest($(".options-list")));
-                MC.setIdx(toZ,$(this).closest($(".options-list-row")).index(), $(this).index());
+                MC.setIdx(toZ,$(this).closest($(".options-list-row")).parent().children(".options-list-row").index($(this).closest($(".options-list-row"))), $(this).index());
             });
+        },
+        hoverTableOption:function(event){
+            $(".hovered-column").removeClass("hovered-column");
+            $(".hovered-row").removeClass("hovered-row");
+            $(".hovered-center").removeClass("hovered-center");
+            $(".menu-option-retained-index").removeClass("menu-option-retained-index");
+            if($(this).hasClass("remover")) return;
+            var headIdx = $(this).index();
+            var listIdx = $(this).parent().parent().children(".table-row").index($(this).parent());
+            if(listIdx === 0){
+                var cols = $(this).parent().parent().children(".options-list-row").not(":eq("+listIdx+")");
+                if(event.data.excludeLast) cols = cols.not(":last");
+                cols.each(function(){$(this).children(".item-table-item:eq("+headIdx+")").addClass("hovered-column");});
+            } else {
+                $(this).siblings().addClass("hovered-row");
+                $(this).addClass("hovered-row menu-option-retained-index");
+            }
         },
         clickFor:function(elm, obj, func, props){
             elm.on("click",function(){
@@ -1175,6 +1380,36 @@ Quintus.UIObjects=function(Q){
         },
         setBack:function(elm, obj, func, props){
             elm.on("back",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        hoverFor:function(elm, obj, func, props){
+            elm.on("mouseover",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        pressUpFor:function(elm, obj, func, props){
+            elm.on("pressUp",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        pressDownFor:function(elm, obj, func, props){
+            elm.on("pressDown",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        pressLeftFor:function(elm, obj, func, props){
+            elm.on("pressLeft",function(){
+                if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
+                func.apply(obj, props);
+            });
+        },
+        pressRightFor:function(elm, obj, func, props){
+            elm.on("pressRight",function(){
                 if(Q.menuBuilder.MenuControls.disabled || elm.hasClass("menu-option-disabled")) return;
                 func.apply(obj, props);
             });
@@ -1195,6 +1430,9 @@ Quintus.UIObjects=function(Q){
                     };
                     
                     return allies.map(function(char){ return [{text:char.name, desc: "Displaying "+char.name, textClass:"retain-selected"}]; });
+                case "jobs":
+                    var jobs = Q.jobsController.currentJobs;
+                    return jobs.map(function(job, idx){return [{text:job.name, desc: job.desc, textClass:"retain-selected"+(job.inProgress ? " job-in-progress menu-option-disabled" : ""), idx:idx}];});
                 case "roster":
                     var roster = Q.partyManager.roster;
                     return roster.map(function(char){ return [{text:char.name, desc: "Displaying "+char.name, textClass:"retain-selected"}]; });
@@ -1254,10 +1492,42 @@ Quintus.UIObjects=function(Q){
             this.selectedIdx = [0, 0, 0];
             this.noWrap = false;
             
-            this.pressUp = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] - 1, this.selectedIdx[2]); };
-            this.pressDown = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] + 1, this.selectedIdx[2]); };
-            this.pressLeft = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] - 1); };
-            this.pressRight = function(){ this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] + 1); };
+            this.pressUp = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.pressUp){
+                    $(elm).trigger("pressUp");
+                } else {
+                    this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] - 1, this.selectedIdx[2]); 
+                }
+            };
+            this.pressDown = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.pressDown){
+                    $(elm).trigger("pressDown");
+                } else {
+                    this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1] + 1, this.selectedIdx[2]); 
+                }
+            };
+            this.pressLeft = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.pressLeft){
+                    $(elm).trigger("pressLeft");
+                } else {
+                    this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] - 1); 
+                }
+            };
+            this.pressRight = function(){ 
+                var elm = this.getSelected().get(0);
+                var ev = $._data(elm, 'events');
+                if(ev && ev.pressRight){
+                    $(elm).trigger("pressRight");
+                } else {
+                    this.cycleIndex(this.selectedIdx[0], this.selectedIdx[1], this.selectedIdx[2] + 1); 
+                }
+            };
             this.pressConfirm = function(){ 
                 var elm = this.getSelected().get(0);
                 var ev = $._data(elm, 'events');
@@ -1282,9 +1552,11 @@ Quintus.UIObjects=function(Q){
             this.setIdx(idx[0], idx[1], idx[2]);
         },
         setIdx:function(z, y, x, yAdd, xAdd){
+            console.log(z, y, x)
             if(z !== this.selectedIdx[0]) this.trigger("changedMenu");
             yAdd = yAdd || 1;
             xAdd = xAdd || 1;
+            if(this.selectedIdx[0] === z && this.selectedIdx[1] === y && this.selectedIdx[2] === x) return;
             this.selectedIdx = [z, y, x];
             var elm = this.getSelected();
             if(elm.hasClass("menu-option-disabled")){ 
@@ -1307,7 +1579,6 @@ Quintus.UIObjects=function(Q){
             return $(".options-list:eq("+idx[0]+")").children(".options-list-row:eq("+y+")").children(".menu-option:eq("+idx[2]+")");
         },
         cycleIndex:function(toZ, toY, toX){
-            
             var cur = this.selectedIdx;
             var width = $(".options-list:eq("+cur[0]+")").children(".options-list-row:eq("+cur[1]+")").children(".menu-option").length;
             var lastX = false;
@@ -1338,12 +1609,18 @@ Quintus.UIObjects=function(Q){
                     var idx = list.children(".options-list-row").children(".menu-option").index(list.children(".options-list-row").children(".retain-selected.menu-option-selected"));
                     toY = idx >= 0 ? idx : 0;
                 }
-                if(list.hasClass("retain-selected-index")){
+                if(row.hasClass("retain-selected-row")){
                     var idx = list.children(".options-list-row").index(list.children(".options-list-row").children(".menu-option-retained-index").parent());
                     toY = idx >= 0 ? idx : 0;
                 }
+                
             }
             toY = this.checkWrap($(".options-list:eq("+toZ+")").children(".options-list-row").length, toY);
+            if(toY !== this.selectedIdx[1]){
+                //If we're cycling in the y direction and there is a heading that is retained
+                var hasRetainIdx = $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+").retain-selected-row").children(".menu-option").index($(".options-list:eq("+toZ+")").children(".retain-selected-row").children(".menu-option-selected"));
+                if(hasRetainIdx >= 0) toX = hasRetainIdx;
+            }
             if($(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+")").children(".menu-option").length !== $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+this.selectedIdx[1]+")").children(".menu-option").length){
                 width = $(".options-list:eq("+toZ+")").children(".options-list-row:eq("+toY+")").children(".menu-option").length;
             }
@@ -1393,7 +1670,6 @@ Quintus.UIObjects=function(Q){
             this.townMusic = data.townMusic;
             this.mainBG = data.mainBG;
             this.townBG = data.townBG;
-            this.data = data;
             this.displayMenu("main", true);
             //Turn on inputs for the menus
             Q.menuBuilder.MenuControls.turnOn();
@@ -1401,7 +1677,9 @@ Quintus.UIObjects=function(Q){
             
             //TEMP
             $(".menu-option:eq(0)").trigger("click");
+            $(".menu-option:eq(0)").trigger("click");
             $(".menu-option:eq(1)").trigger("click");
+            //$(".menu-option:eq(2)").trigger("click");
         },
         resetData:function(){
             this.curChar = {};
@@ -1413,7 +1691,6 @@ Quintus.UIObjects=function(Q){
             if(!noSound) Q.audioController.playSound("rotate_tech.mp3");
             this.resetData();
             var data = this.baseMenu[name];
-            console.log(data)
             this.currentPageName = name;
             this.currentPage = data;
             this.setMusic(data.music);
@@ -1422,8 +1699,8 @@ Quintus.UIObjects=function(Q){
             Q.menuBuilder.MenuControls.reset();
             var screen = Q.menuBuilder.screen(this.currentPage.screen, this);
             $("#main-container").append(screen);
-            screen.children(".menu-container").children(".options-list").children(".options-list-row").children(".menu-option").first().trigger("mouseover");
             this.addCustomMenu(screen, name);
+            screen.children(".menu-container").children(".options-list").children(".options-list-row").children(".menu-option").not(".menu-option-disabled").first().trigger("mouseover");
             Q.menuBuilder.MenuControls.setIdx(Q.menuBuilder.MenuControls.selectedIdx[0], Q.menuBuilder.MenuControls.selectedIdx[1], Q.menuBuilder.MenuControls.selectedIdx[2]);
             //Set the focus to the selected menu item
             Q.menuBuilder.MenuControls.setFocus();
@@ -1440,7 +1717,6 @@ Quintus.UIObjects=function(Q){
             Q.timeController.cycleWeek(function(){
                 Q.audioController.currentMusic = false;
                 Q.audioController.playMusic(music,function(){
-                    Q.menuBuilder.MenuControls.disabled = false;
                     controller.displayMenu(pageTo, true);
                 });
             });
@@ -1507,6 +1783,7 @@ Quintus.UIObjects=function(Q){
             function buildStatusMenu(type){
                 if(Q.menuBuilder.MenuControls.disabled) return;
                 var char = controller.getCurrentChar(type);
+                if(!char) char = $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option").children("span").text();
                 if(char.name === controller.curChar.name) return;
                 controller.curChar = char;
                 controller["build"+controller[name+"Menus"][controller.menuNum]](char);
@@ -1516,7 +1793,7 @@ Quintus.UIObjects=function(Q){
             switch(name){
                 case "actions":
                     //If there are no characters available, cross out some options.
-                    if(Q.jobsController.noMoreAvailable){
+                    if(Q.jobsController.noCharsAvailable){
                         var list = screen.children(".screen-menu:eq(0)").children(".options-list");
                         list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
                         list.children(".options-list-row:eq(2)").children(".menu-option").addClass("menu-option-disabled");
@@ -1525,13 +1802,31 @@ Quintus.UIObjects=function(Q){
                     if(money < this.rewardAmounts[0]){
                         var list = screen.children(".screen-menu:eq(0)").children(".options-list");
                         list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
-                        
+                    }
+                    if(Q.jobsController.noJobsAvailable){
+                        var list = screen.children(".screen-menu:eq(0)").children(".options-list");
+                        list.children(".options-list-row:eq(2)").children(".menu-option").addClass("menu-option-disabled");
                     }
                     break;
                 case "shop":
+                    MB.MenuControls.noWrap = true;
+                    this.currentItems = Q.locationController.data.shop;
+                    if(Q.jobsController.noCharsAvailable){
+                        var list = screen.children(".screen-menu:eq(1)").children(".options-list");
+                        list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
+                    }
                     
+                    
+                    var headings = screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").first();
+                    headings.children(".menu-text").first().addClass("borderless-bottom-left");
+                    headings.children(".menu-text").last().addClass("borderless-bottom-right");
+                    
+                    
+                    Q.locationController.sortOrder = 1;
+                    this.showItemsList("Accessories");
                     break;
                 case "blacksmith":
+                    this.currentItems = Q.locationController.data.blacksmith;
                 
                     break;
                 case "status":
@@ -1551,7 +1846,7 @@ Quintus.UIObjects=function(Q){
                     }
                     break;
                 case "reward":
-                    //MB.MenuControls.noWrap = true; //This will not allow wrapping (fixed with list-keyboard-disabled)
+                    MB.MenuControls.noWrap = true;
                     var leftMenu = screen.children(".screen-menu:eq(0)");
                     var middleMenu = screen.children(".screen-menu:eq(1)");
                     var rightMenu = screen.children(".screen-menu:eq(2)");
@@ -1559,9 +1854,10 @@ Quintus.UIObjects=function(Q){
                     var backButton = rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option");
                     leftMenu.children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
                         $(this).on("mouseover",function(){
+                            Q.partyManager.resetTempAction();
                             var idx = MB.MBUtility.getSelectedIdx(leftMenu);
                             middleMenu.empty();
-                            middleMenu.append(MB.portraitsScreen([{}], ["loy"], idx + 1, [], middleMenu, leftMenu, confirmButton, backButton));
+                            middleMenu.append(MB.portraitsScreen([{}], ["loy"], idx + 1, [], 0, middleMenu, leftMenu, confirmButton, backButton));
                         });
                         $(this).on("click",function(){
                             if(Q.menuBuilder.MenuControls.disabled) return;
@@ -1580,13 +1876,48 @@ Quintus.UIObjects=function(Q){
                     }
                     middleMenu.empty();
                     leftMenu.children(".options-list").addClass("list-keyboard-disabled");
-                    middleMenu.append(MB.portraitsScreen([{}], ["loy"], 1, [], middleMenu, leftMenu, confirmButton, backButton));
+                    middleMenu.append(MB.portraitsScreen([{}], ["loy"], 1, [], 0, middleMenu, leftMenu, confirmButton, backButton));
+                    break; 
+                case "jobs":
+                    MB.MenuControls.noWrap = true;
+                    var leftMenu = screen.children(".screen-menu:eq(0)");
+                    var middleMenu = screen.children(".screen-menu:eq(1)");
+                    var rightMenu = screen.children(".screen-menu:eq(2)");
+                    var confirmButton = rightMenu.children(".options-list").children(".options-list-row:eq(0)").children(".menu-option");
+                    var backButton = rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option");
+                    var jobsList = Q.state.get("jobsList");
+                    var jobData = Q.jobsController.currentJobs;
+                    for(var i=0;i<jobData.length;i++){
+                        if(jobData[i].inProgress) leftMenu.children(".options-list").children(".options-list-row").children(".menu-option:eq("+i+")").addClass("job-in-progress menu-option-disabled");
+                    }
+                    function chooseJob(){
+                        if(Q.menuBuilder.MenuControls.disabled) return;
+                        Q.partyManager.resetTempAction();
+                        var jobIndex = parseInt(MB.MenuControls.getSelected().attr("idx"));
+                        var data = jobsList.jobs[jobData[jobIndex].job][jobData[jobIndex].tier];
+                        middleMenu.empty();
+                        middleMenu.append(MB.portraitsScreen([{},{},{}], data.stats, data.weeks, data.reqs, jobData[jobIndex].tier, middleMenu, leftMenu, confirmButton, backButton));
+                    };
+                    leftMenu.children(".options-list").children(".options-list-row").children(".menu-text:not(.job-in-progress)").each(function(){
+                        $(this).on("mouseover",chooseJob);
+                        $(this).on("click",function(){
+                            if(Q.menuBuilder.MenuControls.disabled) return;
+                            MB.MenuControls.selectSelectedIdx([1, 0, 0]);
+                            middleMenu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option:eq(0)").mouseover();
+                        });
+                        $(this).on("back", function(){
+                            rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option").trigger("click");
+                        });
+                    });
+                    leftMenu.children(".options-list").addClass("list-keyboard-disabled");
+                    chooseJob();
+                    
                     break;
                 case "recruit":
                     function editCostText(){
                         var char = controller.curChar;
                         var desc = "Recruit "+char.name+" for "+char.cost+" gold?";
-                        MB.MBUtility.changeHoverDesc(recruitButton, $(".text-bar"), desc);
+                        MB.MBUtility.changeHoverDesc(recruitButton, "menu-option-selected",$(".text-bar"), desc);
                         var money = Q.state.get("saveData").money;
                         if(money < char.cost){
                             recruitButton.addClass("menu-option-disabled");
@@ -1627,10 +1958,10 @@ Quintus.UIObjects=function(Q){
             var char = this.curChar;
             this.savedElements.push(cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").detach());
             cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").append(MB.createOption({text:"Confirm",desc:"Are you sure you want to recruit "+char.name+" for "+char.cost+" gold?", confirm:{func:"confirmedRecruit", props:[char]}}, this, $(".text-bar")));
-            MB.MenuControls.selectSelectedIdx();
+            MB.MenuControls.selectSelectedIdx([2, 0, 0]);
             cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option").mouseover();
             var controller = this;
-            Q.jobsController.noMoreAvailable = false;
+            Q.jobsController.noCharsAvailable = false;
             MB.MenuControls.on("changedMenu",function(){
                 cont.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-text").replaceWith(controller.savedElements[0]);
                 controller.savedElements.splice(0,1);
@@ -1661,6 +1992,206 @@ Quintus.UIObjects=function(Q){
                 MB.MenuControls.getSelected().mouseover();
             });
         },
+        selectCertainIndex:function(z, y, x){
+            var MB = Q.menuBuilder;
+            MB.MenuControls.selectSelectedIdx([z, y, x]);
+            MB.MenuControls.getSelected().mouseover();
+        },
+        showItemsList:function(field){
+            var curItems = this.currentItems;
+            var items = curItems[field];
+            var allItems = Q.state.get("equipment");
+            var MB = Q.menuBuilder;
+            var cont = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
+            cont.children(".options-list-row:eq(0)").nextAll().remove();
+            var currentHeadings = [];
+            function getConvertedStat(value, item){
+                item = allItems[field][item];
+                if(!item || !item.name) return 0;
+                switch(value){
+                    case "Name":
+                        return item.name;
+                    case "Value":
+                        return item.cost;
+                    case "Description":
+                        return item.desc;
+                }
+            }
+            function sortTable(){
+                curItems[field] = curItems[field].sort(function(a, b){
+                    return getConvertedStat(Q.locationController.sortBy, a) > getConvertedStat(Q.locationController.sortBy, b) ? 1 * Q.locationController.sortOrder : -1 * Q.locationController.sortOrder;
+                });
+                Q.locationController.showItemsList(field);
+            }
+            function clickHeading(){
+                var headingIndex = $(this).index();
+                Q.locationController.sortBy = currentHeadings[headingIndex];
+                Q.locationController.sortOrder *= -1;
+                sortTable();
+                Q.audioController.playSound("rotate_tech.mp3");
+                $(MB.MenuControls.getSelected()).mouseover();
+                MB.MenuControls.setFocus();
+            }
+            function displayTable(headings){
+                currentHeadings = headings;
+                var headingCont = MB.cont("w-xl h-xs table-row flex-h options-list-row retain-selected-index");
+                for(var i=0;i<headings.length;i++){
+                    var itm = MB.text("w-xl h-xl item-table-item menu-option borderless", headings[i]);
+                    itm.on("mouseover", {}, MB.MBUtility.hoverTableOption);
+                    MB.MBUtility.hoverMenuOption(itm, "menu-option-selected");
+                    itm.on("click",clickHeading);
+                    headingCont.append(itm);
+                }
+                headingCont.children(".menu-option").first().on("pressLeft", function(){
+                    headingCont.children(".menu-option").last().trigger("mouseover");
+                });
+                headingCont.children(".menu-option").last().on("pressRight", function(){
+                    headingCont.children(".menu-option").first().trigger("mouseover");
+                });
+                cont.append(headingCont);
+            }
+            function displayTableItem(values){
+                var valueCont = MB.cont("w-xl h-xs table-row flex-h options-list-row retain-selected-index");
+                for(var i=0;i<values.length;i++){
+                    var itm = MB.text("w-xl h-xl item-table-item menu-option borderless",values[i]);
+                    itm.on("mouseover", {} ,MB.MBUtility.hoverTableOption);
+                    MB.MBUtility.hoverMenuOption(itm, "menu-option-selected");
+                    itm.on("click",function(){MB.MenuControls.cycleIndex(1, 0, 0);});
+                    $(itm).on("pressRight", function(){
+                        $(this).trigger("click");
+                    });
+                    valueCont.append(itm);
+                }
+                cont.append(valueCont);
+            }
+            switch(field){
+                case "Materials":
+                    displayTable(["Name", "Value"]);
+                    for(var i=0;i<items.length;i++){
+                        displayTableItem([items[i], allItems[field][items[i]].cost]);
+                    }
+                    break;
+                case "Consumables":
+                    displayTable(["Name", "Value", "Description"]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = allItems[field][items[i]];
+                        displayTableItem([items[i], itm.cost, itm.desc]);
+                    }
+                    break;
+                case "Accessories":
+                    displayTable(["Name", "Value", "Description"]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = allItems[field][items[i]];
+                        displayTableItem([items[i], itm.cost, itm.desc]);
+                    }
+                    break;
+                case "Weapons":
+
+                    break;
+                case "Shields":
+
+                    break;
+                case "Armour":
+
+                    break;
+                case "Footwear":
+
+                    break;
+            }
+            //cont.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
+        },
+        askQuantityPurchaseItem:function(){
+            var controller = this;
+            var allItems = Q.state.get("equipment");
+            var menu = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
+            var typeIdx = menu.children(".options-list-row:eq(0)").children(".menu-option-selected").text();
+            var itmIdx = menu.children(".options-list-row").not(":eq(0)").children(".hovered-row:eq(0)").text();
+            if(!itmIdx){
+                itmIdx = menu.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").text();
+                menu.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
+            }
+            var item = allItems[typeIdx][itmIdx];
+            var MB = Q.menuBuilder;
+            var cont = MB.cont("screen-menu menu-style3 w-s");
+            var list = MB.cont("w-xl h-l options-list");
+            var text = MB.text("w-xl h-s text-paragraph", "Purchase how many "+item.name+"?");
+            cont.append(text);
+            list.append(MB.quantifier("w-m h-xs options-list-row flex-v", "w-xl h-xs flex-v", 1, 1, 1, 99));
+            list.children(".menu-text").on("changed",function(){
+                var amount = parseInt($(this).children("span").text());
+                var cost = item.cost;
+                var money = Q.state.get("saveData").money;
+                if(amount * cost > money){
+                    cont.children(".options-list").children(".options-list-row:eq(2)").children(".menu-option").addClass("menu-option-disabled");
+                } else {
+                    cont.children(".options-list").children(".options-list-row:eq(2)").children(".menu-option").removeClass("menu-option-disabled");
+                }
+            });
+            var confirmCont = MB.cont("w-xl h-s options-list-row flex-v");
+            var confirm = MB.text("w-xl h-xl menu-option", "Confirm");
+            
+            MB.MBUtility.hoverMenuOption(confirm, "menu-option-selected");
+            confirm.on("click",function(){
+                if($(this).hasClass("menu-option-disabled") || Q.menuBuilder.MenuControls.disabled) return;
+                Q.menuBuilder.MenuControls.disabled = true;
+                var amount = parseInt(cont.children(".options-list").children(".menu-text").children("span").text());
+                var cost = item.cost;
+                Q.variableProcessor.changeMoney(-amount * cost);
+                Q.audioController.interruptMusic("103-Small_Reward.mp3",function(){
+                    Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                    Q.menuBuilder.MenuControls.disabled = false;
+                    MB.MenuControls.selectSelectedIdx([1, 0, 0]);
+                    MB.MenuControls.getSelected().mouseover();
+                    $("#fader").remove();
+                    $(".screen-menu:eq(2)").remove();
+                    $(".screen-menu:eq(1)").css("visibility", "visible");
+                    $(".screen-menu:eq(0)").children(".options-list").removeClass("list-keyboard-disabled");
+                    $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
+                });
+            });
+            confirmCont.append(confirm);
+            var backCont = MB.cont("w-xl h-s options-list-row");
+            var back = MB.text("w-xl h-xl menu-option", "Back");
+            MB.MBUtility.hoverMenuOption(back, "menu-option-selected");
+            back.on("click",function(){
+                if(Q.menuBuilder.MenuControls.disabled) return;
+                $("#fader").remove();
+                $(".screen-menu:eq(2)").remove();
+                $(".screen-menu:eq(1)").css("visibility", "visible");
+                MB.MenuControls.selectSelectedIdx([1, 0, 0]);
+                MB.MenuControls.getSelected().mouseover();
+                $(".screen-menu:eq(0)").children(".options-list").removeClass("list-keyboard-disabled");
+                $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
+            });
+            backCont.append(back);
+            list.append(confirmCont);
+            list.append(backCont);
+            cont.append(list);
+            
+            list.children(".menu-text").trigger("changed");
+            MB.MenuControls.noWrap = true;
+            $(".screen-menu:eq(0)").children(".options-list").addClass("list-keyboard-disabled");
+            $(".screen-menu:eq(1)").children(".options-list").addClass("list-keyboard-disabled");
+            
+            var fader = $("<div id='fader' class='fader-black'></div>");
+            fader.css("opacity", 0.2);
+            $("#main-content").append(fader);
+            cont.addClass("above-fader");
+            var takeFrom = $(".screen-menu:eq(1)");
+            var width = takeFrom.outerWidth();
+            var height = takeFrom.outerHeight();
+            var pos = takeFrom.offset();
+            $("#main-content").append(cont);
+            $(takeFrom).css("visibility", "hidden");
+            cont.css({width:width, height:height, top:pos.top, left:pos.left});
+            cont.children(".options-list").children(".options-list-row:eq(0)").children(".menu-option").first().trigger("mouseover");
+        },
+        askQuantityBarterItem:function(){
+            
+        },
+        askExchangeItem:function(){
+            
+        },
         confirmedGiveReward:function(){
             var MB = Q.menuBuilder;
             var controller = this;
@@ -1677,7 +2208,7 @@ Quintus.UIObjects=function(Q){
             Q.audioController.interruptMusic(jingle,function(){
                 Q.audio.resume("bgm/"+Q.audioController.currentMusic);
                 Q.menuBuilder.MenuControls.disabled = false;
-                if(Q.jobsController.noMoreAvailable) return controller.displayMenu("actions");
+                if(Q.jobsController.noCharsAvailable) return controller.displayMenu("actions");
                 var money = Q.state.get("saveData").money;
                 for(var i=0;i<controller.rewardAmounts.length;i++){
                     if(money < controller.rewardAmounts[i]){
@@ -1685,7 +2216,50 @@ Quintus.UIObjects=function(Q){
                         $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row:eq("+i+")").children(".menu-option").addClass("menu-option-disabled");
                     }
                 }
-                
+                MB.MenuControls.selectSelectedIdx([0, 0, 0]);
+                MB.MenuControls.getSelected().mouseover();
+            });
+        },
+        confirmedDoJob:function(){
+            var MB = Q.menuBuilder;
+            var controller = this;
+            var jobElement = $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option-selected");
+            jobElement.off("click");
+            jobElement.off("mouseover");
+            
+            var idx = parseInt(jobElement.attr("idx"));
+            var jobsData = Q.state.get("jobsList");
+            var curJob = Q.jobsController.currentJobs[idx];
+            var job = jobsData.jobs[curJob.job][curJob.tier];
+            
+            curJob.lootsTier = jobsData.defaults.texts.indexOf($(".screen-menu:eq(1)").children(".menu-container:eq(1)").children(".menu-container:eq(1)").children(".menu-text").children("span").text()) - 1;
+            curJob.reward = job.reward;
+            var characters = Q.partyManager.allies.filter(function(ally){return ally.tempAction;});
+            
+            characters.forEach(function(char, i){
+                char.tempAction = false;
+            });
+            var descString = "";
+            if(characters.length === 1){
+                descString = "Sent "+characters[0].name+" to do "+curJob.name;
+            } else if(characters.length === 2){
+                descString = "Sent "+characters[0].name+" and "+characters[1].name+" to do "+curJob.name;
+            } else if(characters.length === 3){
+                descString = "Sent "+characters[0].name+", "+characters[1].name+", and "+characters[2].name+" to do "+curJob.name;
+            }
+            Q.jobsController.addAction(characters, curJob.job, job.weeks, curJob);
+            Q.menuBuilder.MBUtility.changeBarText($(".text-bar"),descString);
+            Q.menuBuilder.MenuControls.disabled = true;
+            Q.audioController.interruptMusic("103-Small_Reward.mp3",function(){
+                Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                Q.menuBuilder.MenuControls.disabled = false;
+                curJob.inProgress = characters;
+                if(Q.jobsController.noCharsAvailable) return controller.displayMenu("actions");
+                jobElement.addClass("job-in-progress menu-option-disabled");
+                if($(".job-in-progress").length === $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option").length){
+                    Q.jobsController.noJobsAvailable = true;
+                    return controller.displayMenu("actions");
+                }
                 MB.MenuControls.selectSelectedIdx([0, 0, 0]);
                 MB.MenuControls.getSelected().mouseover();
             });
@@ -1853,9 +2427,19 @@ Quintus.UIObjects=function(Q){
                 ally.tempAction = false;
             });
         },
+        cycleRoster:function(){
+            this.roster.splice(0,1);
+            this.addToRoster(Q.charGen.generateCharacter());
+        },
         getAlly:function(name){
             if(name==="Current") return Q.state.get("currentEvent").character;
             return this.allies.find(function(ally){return name === ally.name;});
+        },
+        getRankProp:function(name){
+            var ranks = Q.state.get("entourageRanks");
+            var idx = ranks.properties.indexOf(name);
+            var rank = Q.state.get("saveData").entourageRank;
+            return ranks.base[idx] + ranks.mult[idx] * rank;
         },
         convertPropName:function(name){
             switch(name){
@@ -2872,32 +3456,60 @@ Quintus.UIObjects=function(Q){
     Q.GameObject.extend("JobsController",{
         inProgress:[],
         completedJobs:[],
-        noMoreAvailable: false,
-        addAction:function(chars, type, weeks){
-            this.inProgress.push({chars:chars, type:type, weeks:weeks});
-            chars.forEach(function(char){char.action = true;})
+        noCharsAvailable: false,
+        noJobsAvailable: false,
+        currentJobs:[],
+        addAction:function(chars, type, weeks, job){
+            this.inProgress.push({chars:chars, type:type, weeks:weeks, job:job});
+            chars.forEach(function(char){char.action = true;});
             var avaliable = Q.partyManager.allies.filter(function(char){return !char.action;});
-            if(!avaliable.length) this.noMoreAvailable = true;
+            if(!avaliable.length) this.noCharsAvailable = true;
         },  
-        completeJob:function(job){
-            this.noMoreAvailable = false;
-            var chars = job.chars;
-            var type = job.type;
+        completeJob:function(data){
+            this.noCharsAvailable = false;
+            this.noJobsAvailable = false;
+            var chars = data.chars;
+            var type = data.type;
             for(var i=0; i<chars.length; i++){
                 chars[i].action = false;
             }
-            //TODO: calculate earnings based on characters
-            var earnings = {};
             switch(type){
                 //Any actions that do not give a reward after completed (for actions list reward/barter)
                 case "reward":
                 case "barter":
                     return;
-                case "forage":
-                    
+                default:
+                    var job = data.job;
+                    var jobsData = Q.state.get("jobsList");
+                    var jobData = jobsData.jobs[job.job][job.tier];
+                    function rollForLoot(){
+                        var num = ~~(Math.random()*100);
+                        for(var i=0;i<jobData.loots.length;i++){
+                            if(num < jobData.loots[i][1]){
+                                return jobData.loots[i];
+                            }
+                        }
+                        return false;
+                    }
+                    var loot = jobData.earnings.slice(0);
+                    var lootsTier = job.lootsTier;
+                    var numRolls = jobsData.defaults.lootRolls[lootsTier][0] + ~~(Math.random()*(jobsData.defaults.lootRolls[lootsTier][1] + 1));
+                    for(var i=0;i<numRolls;i++){
+                        var gotLoot = rollForLoot();
+                        if(gotLoot) loot.push(gotLoot[0]);
+                    }
+                    var processed = [];
+                    loot.forEach(function(l){
+                        var contains = false;
+                        var idx = false;
+                        processed.forEach(function(p, i){if(p[0] === l[0] && p[1] === l[1]){contains = p; idx = i;};});
+                        if(contains) processed[idx][2] ++;
+                        else processed.push([l[0],l[1],1]);
+                    });
+                    this.completedJobs.push({loot:processed, chars:chars, job:data.job});
+                    job.inProgress = false;
                     break;
             }
-            this.completedJobs.push({earnings:earnings, char:chars[0]});
         },
         progressJobs:function(){
             var jobs = this.inProgress;
@@ -2909,8 +3521,88 @@ Quintus.UIObjects=function(Q){
                 }
             }
         },
-        
+        //Get the currently available jobs
+        getCurrentJobs:function(){
+            var available = Q.partyManager.getRankProp("jobsAvailable");
+            var currentWeek = Q.timeController.week;
+            var jobs = Q.locationController.data.jobs;
+            //The remainder is where we start
+            var start = (currentWeek - 1) % jobs.length;
+            var jobsRoster = [];
+            for(var i = 0, num = start; i < available; i++){
+                if(num > jobs.length - 1) num = 0;
+                var job = jobs[num];
+                jobsRoster.push(job);
+                num ++;
+            }
+            return jobsRoster;
+        },
+        showCompletedJobsEarnings:function(callback){
+            var controller = Q.locationController;
+            controller.resetData();
+            var MB = Q.menuBuilder;
+            if(this.completedJobs.length){
+                var comp = this.completedJobs.splice(0,1)[0];
+                var bigCont = MB.cont("screen "+Q.optionsController.options.menuStyleA);
+                var cont = MB.cont("earnings-container w-xl h-xl "+Q.optionsController.options.menuStyleC);
+                bigCont.append(cont);
+                var top = MB.cont("w-xl h-s flex-h");
+                var iconCont = MB.cont("w-sm h-xl");
+                iconCont.append(MB.icon("job-complete-icon","job-complete.png"));
+                var titleCont = MB.cont("w-sm h-xl");
+                titleCont.append(MB.text("w-xl h-xl heading-text", comp.job.name+" ("+(comp.job.tier+1)+")"));
+                var proceedButtonOptionsCont = MB.cont("w-sm h-xl flex-v options-list");
+                var proceedButtonCont = MB.cont("w-sm h-m options-list-row");
+                proceedButtonOptionsCont.append(proceedButtonCont);
+                var proceed = MB.text("w-xl h-xl menu-option","Proceed");
+                proceedButtonCont.append(proceed);
+                MB.MBUtility.hoverMenuOption(proceed, "menu-option-selected");
+                proceed.on("click",function(){
+                    Q.jobsController.showCompletedJobsEarnings(callback);
+                });
+                top.append(iconCont);
+                top.append(titleCont);
+                top.append(proceedButtonOptionsCont);
+                var bottom = MB.cont("w-xl h-l flex-h");
+                
+                var completedByCont = MB.cont("w-sm h-ml");
+                completedByCont.append(MB.text("w-xl h-s heading-text", "Completed By"));
+                for(var i=0;i<comp.chars.length;i++){
+                    completedByCont.append(MB.text("w-xl h-s", comp.chars[i].name));
+                }
+                var earningsCont = MB.cont("w-ml h-l");
+                earningsCont.append(MB.text("w-xl h-sx heading-text", "Earnings"));
+                var leftCont = MB.cont("w-m h-xl");
+                var rightCont = MB.cont("w-m h-xl");
+                earningsCont.append(leftCont);
+                earningsCont.append(rightCont);
+                leftCont.append(MB.text("w-xl h-s", comp.job.reward+"G"));
+                //Add money to the bag
+                Q.variableProcessor.changeMoney(comp.job.reward);
+                var max = 3;
+                for(var i=0;i<comp.loot.length;i++){
+                    var loot = comp.loot[i];
+                    if(i >= max){
+                        rightCont.append(MB.text("w-xl h-s", loot[1] + " x" +loot[2]));
+                    } else {
+                        leftCont.append(MB.text("w-xl h-s", loot[1] + " x" +loot[2]));
+                    }
+                    //Add the earnings to the bag
+                    Q.partyManager.bag.addItem(loot[0], {amount:loot[2], gear:loot[1]});
+                }
+                bottom.append(completedByCont);
+                bottom.append(earningsCont);
+                cont.append(top);
+                cont.append(bottom);
+                $("#main-container").append(bigCont);
+                MB.MenuControls.selectSelectedIdx([0,0,0]);
+                proceed.trigger("mouseover");
+            } else {
+                if(callback) callback();
+            }
+        }
     });
+    
     
     Q.GameObject.extend("TimeController",{
         week:1,
@@ -2951,8 +3643,6 @@ Quintus.UIObjects=function(Q){
             return false;
         },
         cycleWeek:function(callback){
-            Q.timeController.week ++;
-            $("#hud-week").text(Q.timeController.week);
             //All characters that are wounded get reduced by 1
             var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
@@ -2961,10 +3651,18 @@ Quintus.UIObjects=function(Q){
             
             Q.jobsController.progressJobs();
             
+            //Remove the first roster char and add another char to the bottom.
+            Q.partyManager.cycleRoster();
+            
+            
             //ms, color, startTime, opacityTo, opacityStart, callback
             Q.fadeAnim(3800, "black", 0, 1, 0, function(){
-                if(callback) callback();
+                Q.timeController.week ++;
+                Q.jobsController.currentJobs = Q.jobsController.getCurrentJobs();
+                $("#hud-week").text(Q.timeController.week);
                 Q.fadeAnim(500, "black", 0, 0, 1);
+                Q.menuBuilder.MenuControls.disabled = false;
+                Q.jobsController.showCompletedJobsEarnings(callback);
             });
             
             //Find the event with the highest priority (lowest number)

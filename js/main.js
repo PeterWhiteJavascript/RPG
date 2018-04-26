@@ -68,7 +68,6 @@ Q.UI.Text.prototype.wrapLabel = function(label,maxWidth){
 };
 //When new game is selected, generate a new game state
 Q.newGame=function(options){
-    Q.state.set("saveData",GDATA.dataFiles["new-game.json"]);
 
     Q.state.set("potentialEvents",[]);
 
@@ -81,13 +80,13 @@ Q.newGame=function(options){
     var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
     astraea.loyalty = 60;
     Q.partyManager.allies = [storyAlex,astraea];
-    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
+    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["bag"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     //Set up the applications roster
     var freeSpaces = 3;
     for(var i=0;i<freeSpaces;i++){
-        Q.partyManager.addToRoster(Q.charGen.generateCharacter({level:1}));
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter());
     };
     Q.state.set(
         "sceneVars",
@@ -95,10 +94,11 @@ Q.newGame=function(options){
             return sc.name===Q.state.get("saveData").startSceneName;
         })[0].vrs
     );
-    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,"Pannopolis-01"/*Q.state.get("saveData").startEventName*/);
+    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,"Pannopolis"/*Q.state.get("saveData").startEventName*/);
         
     $("#hud-money").text(Q.state.get("saveData").money);
     $("#hud-week").text(Q.state.get("saveData").week);
+    Q.timeController.week = Q.state.get("saveData").week;
 };
 //Start the game from the save data
 Q.startGame=function(save){
@@ -106,7 +106,6 @@ Q.startGame=function(save){
         options:save.options
     });
     */
-    Q.state.set("saveData",save);
     /*
     var storyChars = [];
     save.characters.story.forEach(function(ally){
@@ -119,7 +118,7 @@ Q.startGame=function(save){
     var alex = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Alex);
     Q.partyManager.alex = alex;
     Q.partyManager.allies = [alex];
-    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["inventory"]});
+    Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["bag"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
     
@@ -128,12 +127,13 @@ Q.startGame=function(save){
     //This will be passed in from the save file.
     var freeSpaces = 3;
     for(var i=0;i<freeSpaces;i++){
-        Q.partyManager.addToRoster(Q.charGen.generateCharacter({nationality:"Venorian"}));
+        Q.partyManager.addToRoster(Q.charGen.generateCharacter());
     };
     Q.startScene(Q.state.get("startSceneType"),Q.state.get("startSceneName"),Q.state.get("startEventName"));
     
     $("#hud-money").text(Q.state.get("saveData").money);
     $("#hud-week").text(Q.state.get("saveData").week);
+    
 };
 
 function convertTechs(data){
@@ -162,8 +162,6 @@ for(var i=0;i<fileKeys.length;i++){
 toLoad.push("json/story/global-vars.json");
 toLoad.push("json/data/ui-objects.json");
 Q.load(toLoad.join(","),function(){
-    //Items that are not equipment. I may make key items seperate.
-    Q.state.set("items",GDATA.dataFiles["items.json"]);
     //All base settings for character classes
     Q.state.set("charClasses",GDATA.dataFiles['character-classes.json']);
     
@@ -196,6 +194,10 @@ Q.load(toLoad.join(","),function(){
     //Events that are triggered after doing things
     Q.state.set("flavourEvents",GDATA.dataFiles["flavour-events-list.json"]);
     
+    Q.state.set("jobsList",GDATA.dataFiles["jobs-list.json"]);
+    Q.state.set("entourageRanks", GDATA.dataFiles["entourage-ranks.json"]);
+    
+    Q.state.set("saveData",GDATA.dataFiles["new-game.json"]);
     //UI Objects
     Q.compileSheets("ui/ui-objects.png","json/data/ui-objects.json");
     
@@ -235,6 +237,11 @@ Q.load(toLoad.join(","),function(){
     Q.storyController = new Q.StoryController();
     //Functions for the location scene
     Q.locationController = new Q.LocationController();
+    
+    //Changes week and does other time-related functions
+    Q.timeController = new Q.TimeController();
+    //Controls adding and removing party members and much more
+    Q.partyManager = new Q.PartyManager();
     //Advance jobs each week
     Q.jobsController = new Q.JobsController();
     
@@ -242,11 +249,6 @@ Q.load(toLoad.join(","),function(){
     //Creates menus (screens)
     Q.menuBuilder = new Q.MenuBuilder();
     
-    //Changes week and does other time-related functions
-    Q.timeController = new Q.TimeController();
-    
-    //Controls adding and removing party members and much more
-    Q.partyManager = new Q.PartyManager();
     
     
     /* TESTING EVENT */

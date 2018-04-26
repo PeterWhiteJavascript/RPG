@@ -5072,7 +5072,7 @@
         "Ruby Ring": {
             "materials": [],
             "weight": 0.5,
-            "effect": "Immune to blind.",
+            "desc": "Immune to blind.",
             "cost": 2000,
             "techniques": {
                 "Base": [
@@ -5154,105 +5154,125 @@
             "name": "Gold Coin",
             "desc": "A valuable coin",
             "kind": "key",
-            "effect": ""
+            "desc": ""
         }
     },
     "Materials": {
-        "Wool": [
-            0.5,
-            0.5,
-            5
-        ],
-        "Hide": [
-            0.75,
-            0.6,
-            7
-        ],
-        "Fur": [
-            1,
-            0.6,
-            6
-        ],
-        "Soft Leather": [
-            0.75,
-            0.7,
-            15
-        ],
-        "Hard Leather": [
-            1,
-            0.8,
-            50
-        ],
-        "Brass": [
-            2,
-            0.9,
-            150
-        ],
-        "Bronze": [
-            1.5,
-            1,
-            400
-        ],
-        "Iron": [
-            1.5,
-            1.25,
-            2000
-        ],
-        "Steel": [
-            1.25,
-            1.5,
-            15000
-        ],
-        "Wicker": [
-            0.25,
-            0.7,
-            15
-        ],
-        "Bone": [
-            0.25,
-            0.7,
-            5
-        ],
-        "Wood": [
-            1,
-            0.9,
-            250
-        ],
-        "Flint": [
-            0.5,
-            0.5,
-            2
-        ],
-        "Silk": [
-            0.25,
-            0.6,
-            300
-        ]
+        "Wool": {
+            "name":"Wool", 
+            "weight":0.5, 
+            "power": 0.5, 
+            "cost": 5
+        },
+        "Hide": {
+            "name":"Hide", 
+            "weight":0.75, 
+            "power": 0.6, 
+            "cost": 7
+        },
+        "Fur": {
+            "name":"Fur", 
+            "weight":1, 
+            "power": 0.6, 
+            "cost": 6
+        },
+        "Soft Leather":{
+            "name":"Soft Leather", 
+            "weight":0.75, 
+            "power": 0.7, 
+            "cost": 15
+        },
+        "Hard Leather": {
+            "name":"Hard Leather", 
+            "weight":1, 
+            "power": 0.8, 
+            "cost": 50
+        },
+        "Brass":{
+            "name":"Brass", 
+            "weight":2, 
+            "power": 0.9, 
+            "cost": 150
+        }, 
+        "Bronze":{
+            "name":"Bronze", 
+            "weight":1.5, 
+            "power": 1, 
+            "cost": 400
+        }, 
+        "Iron": {
+            "name":"Iron", 
+            "weight":1.5, 
+            "power": 1.25, 
+            "cost": 2000
+        },
+        "Steel":{
+            "name":"Steel", 
+            "weight":1.25, 
+            "power": 1.5, 
+            "cost": 15000
+        },
+        "Wicker":{
+            "name":"Wicker", 
+            "weight":0.25, 
+            "power": 0.7, 
+            "cost": 15
+        }, 
+        "Bone":{
+            "name":"Bone", 
+            "weight":0.25, 
+            "power": 0.7, 
+            "cost": 5
+        }, 
+        "Wood": {
+            "name":"Wood", 
+            "weight":1, 
+            "power": 0.9, 
+            "cost": 250
+        },
+        "Flint":{
+            "name":"Flint", 
+            "weight":0.5, 
+            "power": 0.5, 
+            "cost": 2
+        },
+        "Silk":{
+            "name":"Silk", 
+            "weight":0.25, 
+            "power": 0.6, 
+            "cost": 300
+        }
     },
     "Quality": {
-        "Shoddy": [
-            0.75,
-            0.5
-        ],
-        "Average": [
-            1,
-            1
-        ],
-        "Quality": [
-            1.25,
-            2
-        ],
-        "Excellent": [
-            1.5,
-            3
-        ],
-        "Masterwork": [
-            1.75,
-            5
-        ],
-        "Magic": [
-            2,
-            10
-        ]
+        "Shoddy": {
+            "name":"Shoddy",
+            "power": 0.75, 
+            "cost": 0.5
+        },
+        "Average": {
+            "name":"Average",
+            "power": 1, 
+            "cost": 1
+        },
+        "Quality": {
+            "name":"Quality",
+            "power": 1.25, 
+            "cost": 2
+        },
+        "Excellent": {
+            "name":"Excellent",
+            "power": 1.5, 
+            "cost": 3
+        },
+        "Masterwork":  {
+            "name":"Masterwork",
+            "power": 1.75, 
+            "cost": 5
+        },
+        "Magic":  {
+            "name":"Magic",
+            "power": 2, 
+            "cost": 10
+        }
     }
 }

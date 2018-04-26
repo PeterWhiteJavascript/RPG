@@ -15,20 +15,27 @@ Quintus.Objects=function(Q){
             });
             return newItem;
         },
+        convertMaterial:function(m){
+            return {amount:m[0], name:m[1]};
+        },
         convertItemData:function(data){
             var bagItems = {};
             var keys = Object.keys(data);
             var t = this;
             keys.forEach(function(key){
-                if(key === "Consumables" || key === "Key"){
                     bagItems[key]=[];
+                if(key === "Consumables" || key === "Key"){
                     //Loop through the category
                     data[key].forEach(function(k){
                         bagItems[key].push(t.convertConsumable(k));
                     });
                     
+                } else if(key === "Materials"){
+                    //Loop through the category
+                    data[key].forEach(function(k){
+                        bagItems[key].push(t.convertMaterial(k));
+                    });
                 } else {
-                    bagItems[key]=[];
                     //Loop through the category
                     data[key].forEach(function(k){
                         var eq = Q.charGen.convertEquipment([k[3],k[1]],k[2]);
@@ -43,15 +50,14 @@ Quintus.Objects=function(Q){
             var items = this.items[type];
             switch(type){
                 case "Consumables":
+                case "Materials":
+                case "Key":
                     for(var i=0;i<items.length;i++){
                         var item = items[i];
                         if(item.name===props.gear){
                             return item;
                         }
                     }
-                    break;
-                case "Key":
-                    
                     break;
                 default:
                     for(var i=0;i<items.length;i++){
@@ -63,10 +69,10 @@ Quintus.Objects=function(Q){
                     break;
             }
         },
-        addItem:function(type,props){
+        addItem:function(type, props){
             if(!props.gear) props.gear = props.name;    
             //Check if the item is contained in the bag already
-            var item = this.getItem(type,props);
+            var item = this.getItem(type, props);
             //If the item wasn't found, add it
             if(!item){
                 switch(type){
@@ -75,6 +81,9 @@ Quintus.Objects=function(Q){
                         break;
                     case "Key":
                         this.items[type].push(this.convertConsumable([props.amount || 1, props.gear]));
+                        break;
+                    case "Materials":
+                        this.items[type].push(this.convertMaterial([props.amount || 1, props.gear]));
                         break;
                     default:
                         item = Q.charGen.convertEquipment([props.material,props.gear],props.quality);

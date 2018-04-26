@@ -134,7 +134,7 @@
                         [
                             "Story",
                             "Act-1-1",
-                            "Pannopolis-01"
+                            "Pannopolis"
                         ]
                     ],
                     "sceneVars": [],
@@ -154,7 +154,7 @@
                     ],
                     "sceneVars": [],
                     "globalVars": [],
-                    "name": "Pannopolis-01",
+                    "name": "Pannopolis",
                     "type": "Location",
                     "left": "184px",
                     "top": "239px"

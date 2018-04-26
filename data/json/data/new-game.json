@@ -1,18 +1,13 @@
 {
-    "characters":{
-        "story":[
-            
-        ],
-        "rand":[
-            
-        ]
-    },
-    "inventory":{
+    "allies":[
+        
+    ],
+    "bag":{
         "Consumables":[
             
         ],
         "Weapons":[
-            [null,"Short Sword","Shoddy","Brass"]
+            
         ],
         "Shields":[
             
@@ -28,10 +23,19 @@
         ],
         "Key":[
             
+        ],
+        "Materials":[
+        
         ]
     },
+    "jobs":{
+        "inProgress":[]
+    },
+    "missions":{
+        
+    },
     "money":5000,
-    "week":1,
+    "week":5,
         
     "influence":{
         "Egoist":50,
@@ -68,5 +72,7 @@
     "startEventName":"Opening",
     
     "act":"1-1",
-    "applicationsRoster":[]
+    "applicationsRoster":[],
+    "entourageRank":0,
+    "entourageRankEXP":0
 }

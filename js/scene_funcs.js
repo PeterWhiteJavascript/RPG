@@ -43,6 +43,8 @@ Quintus.SceneFuncs=function(Q){
         $("#HUD-container").show();
         var data = stage.options.data;
         Q.audioController.playMusic(data.mainMusic,function(){
+            Q.locationController.data = data;
+            Q.jobsController.currentJobs = Q.jobsController.getCurrentJobs();
             Q.locationController.startEvent(data);
         });
     });

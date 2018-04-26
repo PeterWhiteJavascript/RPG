@@ -1,0 +1,87 @@
+{
+    "name": "Pannopolis",
+    "kind": "Location",
+    "mainMusic": "01-Town02.mp3",
+    "townMusic": "00-Town01.mp3",
+    "mainBG": "Pannopolis-BG.jpg",
+    "townBG":"Pannopolis.jpg",
+    "blacksmith":{
+        "Weapons":[
+            ["Bronze","Short Sword"],
+            ["Iron", "Short Sword"],
+            ["Wood", "Bow"]
+        ],
+        "Shields":[
+            ["Brass", "Small Shield"],
+            ["Bronze", "Small Shield"]
+        ],
+        "Armour":[
+            ["Brass", "Breastplate"],
+            ["Bronze", "Breastplate"]
+        ],
+        "Footwear":[
+            ["Soft Leather", "Shoes"],
+            ["Wood", "Shoes"]
+        ]
+    },
+    "shop":{
+        "Accessories":[
+            "Ruby Ring"
+        ],
+        "Consumables":[
+            "Potion",
+            "Gummy"
+        ],
+        "Materials":[
+            "Wood",
+            "Bronze"
+        ]
+    },
+    "jobs":[
+        {
+            "job":"woodcutting",
+            "tier": 0,
+            "name":"Woodcutting",
+            "desc":"Help the people in Pannopolis cut some wood."
+        },
+        {
+            "job":"mining",
+            "tier": 0,
+            "name":"Mine Iron",
+            "desc":"Help the people in Pannopolis mine some iron."
+        },
+        {
+            "job":"woodcutting",
+            "tier": 0,
+            "name":"Trimming",
+            "desc":"Trim some trees."
+        },
+        {
+            "job":"mining",
+            "tier": 0,
+            "name":"Mine Bronze",
+            "desc":"Help the people in Pannopolis mine some bronze."
+        },
+        {
+            "job":"woodcutting",
+            "tier": 0,
+            "name":"Woodcutting",
+            "desc":"Help the people in Pannopolis cut some wood."
+        },
+        {
+            "job":"woodcutting",
+            "tier": 1,
+            "name":"Woodcutting",
+            "desc":"Help the people in Pannopolis cut a lot of wood."
+        },
+        {
+            "job":"woodcutting",
+            "tier": 0,
+            "name":"Woodcutting",
+            "desc":"Help the people in Pannopolis cut some wood."
+        }
+    ],
+    "missions":[
+    
+    ]
+}

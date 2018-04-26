@@ -1,0 +1,14 @@
+{
+    "properties":[
+        "jobsAvailable",
+        "maxPartySize"
+    ],
+    "base":[
+        3,
+        10
+    ],
+    "mult":[
+        1,
+        2
+    ]
+}

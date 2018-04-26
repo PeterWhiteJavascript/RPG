@@ -55,6 +55,7 @@ var CharacterGenerator = {
         
     },
     generateCharacter:function(data){
+        data = data || {};
         var act = Q ? "Act-"+Q.state.get("saveData").act : "Act-1-1";
         var char = {
             tempStatChanges:[]
@@ -196,7 +197,7 @@ var CharacterGenerator = {
         var base = gear.cost;
         var quality = this.equipment.Quality[gear.quality] || 0;
         var material = this.equipment.Materials[gear.material] || 0;
-        return Math.floor(base * quality[1] * material[2]) || base;
+        return Math.floor(base * quality.cost * material.cost) || base;
     },
     //Changes the equipment from an array to an object containing all of the stats from equipment.json
     //eq is an array [gearMaterial,gearName]
@@ -215,14 +216,14 @@ var CharacterGenerator = {
         });
         var materialData = this.equipment.Materials[gear.material] || 0;
         var qualityData = this.equipment.Quality[gear.quality] || 0;
-        gear.weight = Math.ceil(gear.weight+materialData[0]) || gear.weight;
+        gear.weight = Math.ceil(gear.weight+materialData.weight) || gear.weight;
         gear.cost = this.getGearCost(gear);
-        if(gear.block) gear.block = Math.ceil(gear.block*materialData[1]*qualityData[0]);
-        if(gear.wield) gear.wield = Math.ceil(gear.wield*qualityData[0]);
-        if(gear.mindmg) gear.mindmg = Math.ceil(gear.mindmg*materialData[1]);
-        if(gear.maxdmg) gear.maxdmg = Math.ceil(gear.maxdmg*materialData[1]);
-        if(gear.speed) gear.speed = Math.ceil(gear.speed*qualityData[0]);
-        if(gear.damageReduction) gear.damageReduction = Math.ceil(gear.damageReduction*materialData[1]*qualityData[0]);
+        if(gear.block) gear.block = Math.ceil(gear.block*materialData.power*qualityData.power);
+        if(gear.wield) gear.wield = Math.ceil(gear.wield*qualityData.power);
+        if(gear.mindmg) gear.mindmg = Math.ceil(gear.mindmg*materialData.power);
+        if(gear.maxdmg) gear.maxdmg = Math.ceil(gear.maxdmg*materialData.power);
+        if(gear.speed) gear.speed = Math.ceil(gear.speed*qualityData.power);
+        if(gear.damageReduction) gear.damageReduction = Math.ceil(gear.damageReduction*materialData.power*qualityData.power);
         return gear;
     },
     getTalents:function(charClass,charGroup,promo){

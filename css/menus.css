@@ -13,6 +13,7 @@
     height:60%;
     border-radius:16px;
 }
+
 .menu-container{
     margin:0 auto;
     text-align:center;
@@ -161,7 +162,7 @@
 .menu-option-selected:not(.retain-selected){
     
 }
-.retain-selected.menu-option-selected{
+.retain-selected.menu-option-selected:not(.item-category-heading){
     width:103%;
     border-top-right-radius: 8px !important;
     border-bottom-right-radius: 8px !important;
@@ -172,6 +173,13 @@
     border-width: 4px;
     filter: brightness(110%);
 }
+.item-category-heading.menu-option-selected{
+    height:120%;
+    align-self: flex-end;
+    background-color:#222;
+    color:#EEE;
+}
+
 .no-bg{
     background-color:transparent;
 }
@@ -206,6 +214,11 @@
 .icon-container img{
     width:100%;
     height:auto;
+}
+.job-complete-icon{
+    margin-left:-50px;
+    margin-top:-30px;
+    transform: rotate(-20deg);
 }
 .arrow-container{
     width:5%;
@@ -269,6 +282,10 @@
     display:flex;
 }
 
+.job-in-progress{
+    filter: brightness(80%);
+}
+
 .focussed-selected-menu-option{
     border-style: ridge;
     border-color: silver;
@@ -276,12 +293,13 @@
     filter: brightness(110%);
 }
 
-.char-table-item.hovered-column{
+.item-table-item.hovered-column{
     background-color:#ABA!important;
     border-color:#ABA !important;
     filter: brightness(110%);
 }
 .table-row{
+    
 }
 .hovered-row{
     filter: brightness(120%);
@@ -304,12 +322,15 @@
     padding-right:4px;
 }
 .menu-option-retained-index{
-    background-color:#BDB !important;
-    
+    /*background-color:#BDB !important;*/
 }
 
 .quantifier-arrow{
-    
+    width:25%;
+    height:90%;
+    display: flex;
+    flex-direction:column;
+      
 }
 .quantifier-up-arrow{
     
@@ -330,6 +351,9 @@
 
 .w-xs{
     width:12.5%;
+}
+.w-sx{
+    width:20%;
 }
 .w-s{
     width:25%;
@@ -355,6 +379,9 @@
 .w-l{
     width:75%;
 }
+.w-lml{
+    height:87.5%;
+}
 .w-ll{
     width:90%;
 }
@@ -364,6 +391,9 @@
 
 .h-xs{
     height:12.5%
+}
+.h-sx{
+    height:20%;
 }
 .h-s{
     height:25%;
@@ -388,6 +418,9 @@
 }
 .h-l{
     height:75%;
+}
+.h-lml{
+    height:87.5%;
 }
 .h-ll{
     height:90%;
