@@ -5107,15 +5107,6 @@
             "type": "Item",
             "desc": "Heals 20 hp",
             "kind": "Consumables",
-            "range": [
-                1,
-                "self"
-            ],
-            "aoe": [
-                0,
-                "normal"
-            ],
-            "resist": "None",
             "cost": 200
         },
         "Gummy": {
@@ -5123,15 +5114,6 @@
             "type": "Item",
             "desc": "Heals 10 hp",
             "kind": "Consumables",
-            "range": [
-                1,
-                "self"
-            ],
-            "aoe": [
-                0,
-                "normal"
-            ],
-            "resist": "None",
             "cost": 100
         },
         "Hard Candy": {
@@ -5139,21 +5121,12 @@
             "type": "Item",
             "desc": "Heals 10 hp",
             "kind": "Consumables",
-            "range": [
-                1,
-                "self"
-            ],
-            "aoe": [
-                0,
-                "normal"
-            ],
-            "resist": "None",
             "cost": 100
         },
         "Gold Coin": {
             "name": "Gold Coin",
             "desc": "A valuable coin",
-            "kind": "key",
+            "kind": "Key",
             "desc": ""
         }
     },
@@ -5162,85 +5135,99 @@
             "name":"Wool", 
             "weight":0.5, 
             "power": 0.5, 
-            "cost": 5
+            "cost": 5,
+            "kind": "Materials"
         },
         "Hide": {
             "name":"Hide", 
             "weight":0.75, 
             "power": 0.6, 
-            "cost": 7
+            "cost": 7,
+            "kind": "Materials"
         },
         "Fur": {
             "name":"Fur", 
             "weight":1, 
             "power": 0.6, 
-            "cost": 6
+            "cost": 6,
+            "kind": "Materials"
         },
         "Soft Leather":{
             "name":"Soft Leather", 
             "weight":0.75, 
             "power": 0.7, 
-            "cost": 15
+            "cost": 15,
+            "kind": "Materials"
         },
         "Hard Leather": {
             "name":"Hard Leather", 
             "weight":1, 
             "power": 0.8, 
-            "cost": 50
+            "cost": 50,
+            "kind": "Materials"
         },
         "Brass":{
             "name":"Brass", 
             "weight":2, 
             "power": 0.9, 
-            "cost": 150
+            "cost": 150,
+            "kind": "Materials"
         }, 
         "Bronze":{
             "name":"Bronze", 
             "weight":1.5, 
             "power": 1, 
-            "cost": 400
+            "cost": 400,
+            "kind": "Materials"
         }, 
         "Iron": {
             "name":"Iron", 
             "weight":1.5, 
             "power": 1.25, 
-            "cost": 2000
+            "cost": 2000,
+            "kind": "Materials"
         },
         "Steel":{
             "name":"Steel", 
             "weight":1.25, 
             "power": 1.5, 
-            "cost": 15000
+            "cost": 15000,
+            "kind": "Materials"
         },
         "Wicker":{
             "name":"Wicker", 
             "weight":0.25, 
             "power": 0.7, 
-            "cost": 15
+            "cost": 15,
+            "kind": "Materials"
         }, 
         "Bone":{
             "name":"Bone", 
             "weight":0.25, 
             "power": 0.7, 
-            "cost": 5
+            "cost": 5,
+            "kind": "Materials"
         }, 
         "Wood": {
             "name":"Wood", 
             "weight":1, 
             "power": 0.9, 
-            "cost": 250
+            "cost": 250,
+            "kind": "Materials"
         },
         "Flint":{
             "name":"Flint", 
             "weight":0.5, 
             "power": 0.5, 
-            "cost": 2
+            "cost": 2,
+            "kind": "Materials"
         },
         "Silk":{
             "name":"Silk", 
             "weight":0.25, 
             "power": 0.6, 
-            "cost": 300
+            "cost": 300,
+            "kind": "Materials"
         }
     },
     "Quality": {

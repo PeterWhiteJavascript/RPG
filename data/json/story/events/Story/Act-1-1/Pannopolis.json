@@ -7,21 +7,27 @@
     "townBG":"Pannopolis.jpg",
     "blacksmith":{
         "Weapons":[
-            ["Bronze","Short Sword"],
-            ["Iron", "Short Sword"],
-            ["Wood", "Bow"]
+            ["Shoddy", "Bronze", "Short Sword"],
+            ["Average", "Bronze", "Short Sword"],
+            ["Quality", "Bronze", "Short Sword"],
+            ["Shoddy", "Iron", "Short Sword"],
+            ["Average", "Iron", "Short Sword"],
+            ["Quality", "Iron", "Short Sword"],
+            ["Shoddy", "Wood", "Bow"],
+            ["Average", "Wood", "Bow"],
+            ["Quality", "Wood", "Bow"]
         ],
         "Shields":[
-            ["Brass", "Small Shield"],
-            ["Bronze", "Small Shield"]
+            ["Shoddy", "Brass", "Small Shield"],
+            ["Shoddy", "Bronze", "Small Shield"]
         ],
         "Armour":[
-            ["Brass", "Breastplate"],
-            ["Bronze", "Breastplate"]
+            ["Shoddy", "Brass", "Breastplate"],
+            ["Shoddy","Bronze", "Breastplate"]
         ],
         "Footwear":[
-            ["Soft Leather", "Shoes"],
-            ["Wood", "Shoes"]
+            ["Shoddy", "Soft Leather", "Shoes"],
+            ["Shoddy", "Wood", "Shoes"]
         ]
     },
     "shop":{

@@ -26,6 +26,7 @@
                         <div id="gear-editor" class="menu-button">Edit Equipment</div>
                         <div id="techniques-editor" class="menu-button">Edit Techniques</div>
                         <div id="gear-techniques-editor" class="menu-button">Edit Gear Techniques</div>
+                        <div id="edit-jobs" class="menu-button">Edit Jobs Data</div>
                         <div id="options" class="menu-button">Options</div>
                         <div id="help" class="menu-button">Help</div>
                         <div id="about" class="menu-button">About</div>

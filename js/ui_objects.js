@@ -201,10 +201,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                         {
-                                            img:"left-arrow.png",
+                                            img:"arrow-left",
                                             desc:"Cycle menu left.",
                                             confirm:{func:"cycleMenu", props:["recruit", -1]}, 
-                                            imgClass:"menu-option left-arrow"
+                                            imgClass:"menu-option"
                                         }
                                     ]
                                 ]
@@ -215,10 +215,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                         {
-                                            img:"right-arrow.png",
+                                            img:"arrow-right",
                                             desc:"Cycle menu right.",
                                             confirm:{func:"cycleMenu", props:["recruit", 1]},
-                                            imgClass:"menu-option right-arrow"
+                                            imgClass:"menu-option"
                                         }
                                     ]
                                 ]
@@ -326,13 +326,6 @@ Quintus.UIObjects=function(Q){
                                     ],
                                     [
                                         {
-                                            text:"Exchange",
-                                            desc:"",
-                                            confirm:{func:"askExchangeItem",props:[]}
-                                        }
-                                    ],
-                                    [
-                                        {
                                             text:"Back",
                                             desc:"Back.",
                                             confirm:{func:"displayMenu",props:["town"]}
@@ -349,7 +342,91 @@ Quintus.UIObjects=function(Q){
             music:"townMusic",
             bg:"townBG",
             screen:[
-                
+                {
+                    cl: "w-l",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"w-xl h-xl",
+                                rowClass:"flex-h w-xl h-xs retain-selected-row",
+                                textClass:"item-category-heading retain-selected",
+                                items:[
+                                    [
+                                        {
+                                            text:"Weapons",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Weapons"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}}
+                                        },
+                                        {
+                                            text:"Shields",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Shields"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}}
+                                        },
+                                        {
+                                            text:"Armour",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Armour"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}}
+                                        },
+                                        {
+                                            text:"Footwear",
+                                            desc:"",
+                                            confirm:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            hover:{func:"showItemsList", props:["Footwear"]},
+                                            pressDown:{func:"selectCertainIndex", props:[0, 2, 0]},
+                                            pressUp:{func:function(){}},
+                                            pressRight:{func:function(){}}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    cl: "w-s",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:[
+                                    [
+                                        {
+                                            text:"Purchase",
+                                            desc:"",
+                                            //Get the number of items and display the price
+                                            confirm:{func:"askQuantityPurchaseItem",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Barter",
+                                            desc:"",
+                                            //Get the character to barter, as well as the number of items and proposed price (per unit)
+                                            confirm:{func:"askQuantityBarterItem",props:[]}
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text:"Back",
+                                            desc:"Back.",
+                                            confirm:{func:"displayMenu",props:["town"]}
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                }
             ]
         },
         refinery:{
@@ -544,10 +621,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                         {
-                                            img:"left-arrow.png",
+                                            img:"arrow-left",
                                             desc:"Cycle menu left.",
                                             confirm:{func:"cycleMenu", props:["status", -1]}, 
-                                            imgClass:"menu-option left-arrow"
+                                            imgClass:"menu-option"
                                         }
                                     ]
                                 ]
@@ -558,10 +635,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                         {
-                                            img:"right-arrow.png",
+                                            img:"arrow-right",
                                             desc:"Cycle menu right.",
                                             confirm:{func:"cycleMenu", props:["status", 1]},
-                                            imgClass:"menu-option right-arrow"
+                                            imgClass:"menu-option"
                                         }
                                     ]
                                 ]
@@ -613,10 +690,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                     {
-                                        img:"left-arrow.png",
+                                        img:"arrow-left",
                                         desc:"Cycle menu left.",
                                         confirm:{func:"cycleStatusMenu", props:[-1]}, 
-                                        imgClass:"menu-option left-arrow arrow-container"
+                                        imgClass:"menu-option"
                                     }
                                     ]
                                 ]
@@ -625,10 +702,10 @@ Quintus.UIObjects=function(Q){
                                 items:[
                                     [
                                     {
-                                        img:"right-arrow.png",
+                                        img:"arrow-right",
                                         desc:"Cycle menu right.",
                                         confirm:{func:"cycleStatusMenu", props:[1]},
-                                        imgClass:"menu-option right-arrow arrow-container"
+                                        imgClass:"menu-option"
                                     }]
                                 ]
                             }
@@ -896,6 +973,7 @@ Quintus.UIObjects=function(Q){
             textClass = textClass || "";
             var dataTC = data.textClass || "";
             var opt = data.text ? this.text(textClass+" "+dataTC+" menu-option", data.text) : data.img ? this.icon(data.imgClass || "menu-option", data.img) : false;
+            var obj = obj || Window;
             if(data.confirm) this.MBUtility.clickFor(opt, obj, obj[data.confirm.func] || data.confirm.func, data.confirm.props);
             if(data.back) this.MBUtiltiy.setBack(opt, obj, obj[data.back.func] || data.back.func, data.back.props);
             if(data.hover) this.MBUtility.hoverFor(opt, obj, obj[data.hover.func] || data.hover.func, data.hover.props);
@@ -925,38 +1003,188 @@ Quintus.UIObjects=function(Q){
         portrait:function(src){
             return $("<div class='char-portrait-container'><div class='char-portrait-bg'><img class='char-portrait-img' src='images/story/"+src+"'></div></div>");
         },
+        getPortraitSection:function(click, back, portraitChar){
+            var portraitSection = this.cont("h-xl flex-v portrait-section menu-option");
+            this.MBUtility.hoverMenuOption(portraitSection,"menu-option-selected" ,$(".text-bar"), "Press ENTER to select a character.");
+            portraitSection.append(this.portrait(portraitChar.sprite || "empty.png"));
+            portraitSection.on("click",click);
+            portraitSection.on("back",back);
+            return portraitSection;
+        },
+        produceHeadingLists:function(statsShown, menu, characters, chooseChar, goBack){
+            var MB = this;
+            var listCont = MB.cont("w-ll h-xl options-list retain-selected-index left-right-border");
+
+            var dynamicList = [
+                ["NAME", "20%"]
+            ];
+            for(var i=0;i<statsShown.length;i++){
+                dynamicList.push([statsShown[i].toUpperCase(), (80 / statsShown.length) + "%"]);
+            }
+            var lists = [
+                [
+                    ["NAME", "20%"],
+                    ["STR", "9%"],
+                    ["END", "9%"],
+                    ["DEX", "9%"],
+                    ["WSK", "9%"],
+                    ["RFL", "9%"],
+                    ["INI", "9%"],
+                    ["ENR", "9%"],
+                    ["SKL", "9%"],
+                    ["EFF", "8%"]
+                ],
+                [
+                    ["NAME", "20%"],
+                    ["LVL", "10%"],
+                    ["NAT", "20%"],
+                    ["CLS", "20%"],
+                    ["MOR", "10%"],
+                    ["LOY", "10%"],
+                    ["EXP", "10%"]
+                ]
+            ];
+            lists.splice(0,0,dynamicList);
+            var currentList = 0;
+            function clickHeading(){
+                var headingIndex = $(this).index();
+                MB.MBUtility.sortBy = lists[currentList][headingIndex][0];
+                MB.MBUtility.sortOrder *= -1;
+                sortCharacters();
+                Q.audioController.playSound("rotate_tech.mp3");
+                MB.MenuControls.selectSelectedIdx();
+                MB.MenuControls.setFocus();
+                $(MB.MenuControls.getSelected()).mouseover();
+
+            }
+            function sortCharacters(){
+                //var type = typeof MB.MBUtility.sortBy;
+                characters = characters.sort(function(a, b){
+                    //if(type === 'string'){
+                        return MB.getConvertedStat(MB.MBUtility.sortBy, a) > MB.getConvertedStat(MB.MBUtility.sortBy, b) ? 1 * MB.MBUtility.sortOrder : -1 * MB.MBUtility.sortOrder;
+                    /*} else if(type === 'number'){
+                        return MB.getConvertedStat(MB.MBUtility.sortBy, a) * MB.MBUtility.sortOrder > MB.getConvertedStat(MB.MBUtility.sortBy, b);
+                    }*/
+                });
+                showList();
+            }
+            function cycleList(event){
+                currentList += event.data.amount;
+                currentList = MB.MenuControls.checkWrap(lists.length, currentList);
+                var selectedRowIdx = menu.children(".options-list:eq(1)").children(".options-list-row").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent());
+                var selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent().children(".menu-option").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index"));
+                showList();
+                selectedOptIdx = selectedOptIdx > 0 ? selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row:eq(0)").children(".menu-option").length - 1 : 0;
+                menu.children(".options-list:eq(1)").children(".options-list-row:eq("+selectedRowIdx+")").children(".menu-option:eq("+selectedOptIdx+")").trigger("mouseover");
+
+                $(this).trigger("mouseover");
+            };
+            function showList(){
+                listCont.empty();
+                var list = lists[currentList];
+                var headingRow = MB.cont("w-xl h-xs table-row flex-h options-list-row heading-row");
+                for(var j=0;j<list.length;j++){
+                    var headingCont = MB.cont("w-xl h-xl menu-option item-table-item");
+                    headingCont.css({width:list[j][1]});
+                    headingCont.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
+                    MB.MBUtility.hoverMenuOption(headingCont, "menu-option-selected", $(".text-bar"), "Sort by "+list[j][0]);
+                    headingCont.on("click",clickHeading);
+                    headingCont.on("back",goBack);
+                    headingCont.append(MB.text("w-xl h-xl justify-center", list[j][0]));
+                    headingRow.append(headingCont);
+                }
+                listCont.append(headingRow);
+                for(var j=0;j<characters.length;j++){
+                    var char = characters[j];
+                    var charCont = MB.cont("w-xl h-xs table-row flex-h options-list-row");
+                    for(var k=0;k<list.length;k++){
+                        var charOption = MB.cont("w-xl h-xl menu-option item-table-item");
+                        charOption.css({width:list[k][1]});
+                        charOption.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
+                        MB.MBUtility.hoverMenuOption(charOption, "menu-option-selected", $(".text-bar"), "Select "+char.name);
+                        charOption.on("click",chooseChar);
+                        charOption.on("back",goBack);
+                        var text = MB.text("w-xl h-xl justify-center",MB.getConvertedStat(list[k][0], char));
+                        text.children("span").addClass("small-font");
+                        charOption.append(text);
+                        charCont.append(charOption);
+                    }
+                    listCont.append(charCont);
+                }
+                var backCont = MB.cont("w-xl h-xs table-row options-list-row");
+                var back = MB.text("w-xl h-xl menu-option remover", "Remove");
+                MB.MBUtility.hoverMenuOption(back, "menu-option-selected", $(".text-bar"), "Remove character.");
+                back.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
+                back.on("click",chooseChar);
+                back.on("back",goBack);
+                backCont.append(back);
+                listCont.append(backCont);
+                MB.MBUtility.squareList(listCont);
+            }
+            if(MB.MBUtility.sortBy){
+                sortCharacters();
+            } else {
+                showList();
+            }
+
+            var leftArrowList = MB.cont("options-list arrow-container");
+            var leftArrowCont = MB.cont("options-list-row w-xl h-xl");
+            var leftArrow = MB.icon("menu-option", "arrow-left");
+            leftArrow.on("click",{amount:-1},cycleList);
+            leftArrow.on("back",goBack);
+            MB.MBUtility.hoverMenuOption(leftArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
+
+            leftArrowCont.append(leftArrow);
+            leftArrowList.append(leftArrowCont);
+
+
+            var rightArrowList = MB.cont("options-list arrow-container");
+            var rightArrowCont = MB.cont("options-list-row w-xl h-xl");
+            var rightArrow = MB.icon("menu-option", "arrow-right");
+            rightArrow.on("click",{amount:1},cycleList);
+            rightArrow.on("back",goBack);
+            MB.MBUtility.hoverMenuOption(rightArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
+
+            rightArrowCont.append(rightArrow);
+            rightArrowList.append(rightArrowCont);
+            menu.append(rightArrowList);
+
+            menu.append(leftArrowList);
+            menu.append(listCont);
+            menu.append(rightArrowList);
+        },
+        getConvertedStat:function(stat, char){
+            if(!char.name) return 0;
+            var lower = stat.toLowerCase();
+            switch(lower){
+                case "name":
+                    return char[lower];
+                case "str":
+                case "end":
+                case "dex":
+                case "wsk":
+                case "rfl":
+                case "ini":
+                case "enr":
+                case "skl":
+                case "eff":
+                    return char.baseStats[lower];
+                case "lvl":
+                    return char.level;
+                case "nat":
+                    return char.nationality;
+                case "cls":
+                    return char.charClass;
+                case "mor":
+                    return char.morale;
+                case "loy":
+                    return char.loyalty;
+                case "exp":
+                    return char.exp;
+            }
+        },
         //Displays 1-3 rectangles that can store a character portrait for sending them to do something.
         portraitsScreen:function(portraits, statsShown, weeks, requirements, tier, menu, backMenu, confirmButton, backButton){
-            function getConvertedStat(stat, char){
-                if(!char.name) return 0;
-                var lower = stat.toLowerCase();
-                switch(lower){
-                    case "name":
-                        return char[lower];
-                    case "str":
-                    case "end":
-                    case "dex":
-                    case "wsk":
-                    case "rfl":
-                    case "ini":
-                    case "enr":
-                    case "skl":
-                    case "eff":
-                        return char.baseStats[lower];
-                    case "lvl":
-                        return char.level;
-                    case "nat":
-                        return char.nationality;
-                    case "cls":
-                        return char.charClass;
-                    case "mor":
-                        return char.morale;
-                    case "loy":
-                        return char.loyalty;
-                    case "exp":
-                        return char.exp;
-                }
-            }
             var MB = this;
             var portraitsCont = this.cont("w-xl h-ml options-list");
             var nameRow = this.cont("h-s flex-h");
@@ -966,233 +1194,95 @@ Quintus.UIObjects=function(Q){
                 var portraitChar = portraits[i];
                 //TEMP
                 if(portraitChar.name) portraitChar.sprite = "knight.png";
-                
                 var nameCont = this.cont("w-xl");
                 nameCont.append(this.text("w-xl h-xl", portraitChar.name || ""));
-                var portraitSection = this.cont("h-xl flex-v portrait-section menu-option");
-                this.MBUtility.hoverMenuOption(portraitSection,"menu-option-selected" ,$(".text-bar"), "Press ENTER to select a character.");
-                portraitSection.append(this.portrait(portraitChar.sprite || "empty.png"));
+                var portraitSection = this.getPortraitSection(
+                    function(){
+                        if(Q.menuBuilder.MenuControls.disabled) return;
+                        var idx = $(this).index();
+                        var lastChar = portraits[idx];
+                        lastChar.name ?  lastChar.tempAction = false : false;
+                        menu.empty();
+
+                        var menuClass = menu.attr("class");
+                        var placeholder = $("<div class='"+menuClass+"'></div>");
+                        var fader = $("<div id='fader' class='fader-black'></div>");
+                        fader.css("opacity", 0.2);
+                        $("#main-content").append(fader);
+                        menu.addClass("above-fader");
+                        var width = menu.outerWidth();
+                        var height = menu.outerHeight();
+                        var pos = menu.offset();
+
+                        menu.replaceWith(placeholder);
+                        $("#main-content").append(menu);
+                        menu.css({width:width, height:height, top:pos.top, left:pos.left - width/2});
+
+                        function chooseChar(){
+                            var index = MB.MBUtility.getSelectedIdx(menu) - 2;
+                            menu.empty();
+                            portraits[idx] = characters[index] || {};
+                            portraits[idx].tempAction = true;
+                            MB.portraitsScreen(portraits, statsShown, weeks, requirements, tier, menu, backMenu, confirmButton, backButton);
+                            menu.removeClass("above-fader");
+                            menu.removeAttr('style');
+                            placeholder.replaceWith(menu);
+                            fader.remove();
+                            MB.MenuControls.focusList = false;
+                            MB.MenuControls.selectSelectedIdx([1,0,idx]);
+                            menu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option:eq("+idx+")").trigger("mouseover");
+                            var metAllRequirements = true;
+                            var allCharsSelected = Q.partyManager.allies.filter(function(ally){return ally.tempAction;});
+                            if(allCharsSelected.length){
+                                //requirements are always baseStats
+                                for(var i=0;i<requirements.length;i++){
+                                    var req = requirements[i];
+                                    var stat = req[0];
+                                    var amount = req[1];
+                                    var total = allCharsSelected.map(function(char){return MB.getConvertedStat(stat, char);}).reduce(function(a, b){return a + b;}, 0);
+                                    if(total < amount) metAllRequirements = false;
+                                }
+                                if(metAllRequirements){ 
+                                    confirmButton.removeClass("menu-option-disabled");
+                                } else {
+                                    confirmButton.addClass("menu-option-disabled");
+                                }
+                            }
+                        }
+                        //Go back by selecting the current character
+                        function goBack(){
+                            if(!lastChar){
+                                menu.children(".options-list").children(".options-list-row").last().children(".menu-option").trigger("mouseover");
+                            } else {
+                                var lastCharIdx = characters.indexOf(lastChar);
+                                menu.children(".options-list").children(".options-list-row:eq("+lastCharIdx+")").children(".menu-option").trigger("mouseover");
+                            }
+                            chooseChar();
+                        }
+                        //Show the list of characters with their statsShown as a special list
+                        var characters = Q.partyManager.allies.filter(function(char){return !char.tempAction && !char.action;});
+                        MB.produceHeadingLists(statsShown, menu, characters, chooseChar, goBack);
+                        var lastCharIdx = Math.max(0,characters.indexOf(lastChar)) + 2;
+                        menu.children(".options-list").children(".options-list-row:eq("+(lastCharIdx)+")").children(".menu-option").first().trigger("mouseover");
+
+                        confirmButton.parent().parent().addClass("list-keyboard-disabled");
+                        //MB.MenuControls.focusList = true;
+                    }, 
+                    function(){
+                        backMenu.children(".options-list").children(".options-list-row").children(".menu-option-selected").trigger("mouseover");
+                        Q.partyManager.resetTempAction();
+                    },
+                    portraitChar
+                );
+                nameRow.append(nameCont);
+                portraitRow.append(portraitSection);
                 var statsCont = this.cont("w-sm flex-v");
                 for(var j=0; j<statsShown.length; j++){
                     var statCont = this.cont("w-xl flex-h");
                     statCont.append(this.text("justify-left w-ms",statsShown[j].toUpperCase()));
-                    statCont.append(this.text("justify-right w-ms",getConvertedStat(statsShown[j],portraitChar) || ""));
+                    statCont.append(this.text("justify-right w-ms",MB.getConvertedStat(statsShown[j],portraitChar) || ""));
                     statsCont.append(statCont);
                 }
-                portraitSection.on("click",function(){
-                    if(Q.menuBuilder.MenuControls.disabled) return;
-                    var idx = $(this).index();
-                    var lastChar = portraits[idx];
-                    lastChar.name ?  lastChar.tempAction = false : false;
-                    menu.empty();
-                    
-                    var menuClass = menu.attr("class");
-                    var placeholder = $("<div class='"+menuClass+"'></div>");
-                    var fader = $("<div id='fader' class='fader-black'></div>");
-                    fader.css("opacity", 0.2);
-                    $("#main-content").append(fader);
-                    menu.addClass("above-fader");
-                    var width = menu.outerWidth();
-                    var height = menu.outerHeight();
-                    var pos = menu.offset();
-                    
-                    menu.replaceWith(placeholder);
-                    $("#main-content").append(menu);
-                    menu.css({width:width, height:height, top:pos.top, left:pos.left - width/2});
-                    
-                    function chooseChar(){
-                        var index = MB.MBUtility.getSelectedIdx(menu) - 2;
-                        menu.empty();
-                        portraits[idx] = characters[index] || {};
-                        portraits[idx].tempAction = true;
-                        MB.portraitsScreen(portraits, statsShown, weeks, requirements, tier, menu, backMenu, confirmButton, backButton);
-                        menu.removeClass("above-fader");
-                        menu.removeAttr('style');
-                        placeholder.replaceWith(menu);
-                        fader.remove();
-                        MB.MenuControls.focusList = false;
-                        MB.MenuControls.selectSelectedIdx([1,0,idx]);
-                        menu.children(".options-list:eq(0)").children(".options-list-row:eq(0)").children(".menu-option:eq("+idx+")").trigger("mouseover");
-                        var metAllRequirements = true;
-                        var allCharsSelected = Q.partyManager.allies.filter(function(ally){return ally.tempAction;});
-                        if(allCharsSelected.length){
-                            //requirements are always baseStats
-                            for(var i=0;i<requirements.length;i++){
-                                var req = requirements[i];
-                                var stat = req[0];
-                                var amount = req[1];
-                                var total = allCharsSelected.map(function(char){return getConvertedStat(stat, char)}).reduce(function(a, b){return a + b;}, 0);
-                                if(total < amount) metAllRequirements = false;
-                            }
-                            if(metAllRequirements){ 
-                                confirmButton.removeClass("menu-option-disabled");
-                            } else {
-                                confirmButton.addClass("menu-option-disabled");
-                            }
-                        }
-                    }
-                    //Go back by selecting the current character
-                    function goBack(){
-                        if(!lastChar){
-                            menu.children(".options-list").children(".options-list-row").last().children(".menu-option").trigger("mouseover");
-                        } else {
-                            var lastCharIdx = characters.indexOf(lastChar);
-                            menu.children(".options-list").children(".options-list-row:eq("+lastCharIdx+")").children(".menu-option").trigger("mouseover");
-                        }
-                        chooseChar();
-                    }
-                    //Show the list of characters with their statsShown as a special list
-                    var characters = Q.partyManager.allies.filter(function(char){return !char.tempAction && !char.action;});
-                    
-                    var listCont = MB.cont("w-ll h-xl options-list retain-selected-index left-right-border");
-                    
-                    var dynamicList = [
-                        ["NAME", "20%"]
-                    ];
-                    for(var i=0;i<statsShown.length;i++){
-                        dynamicList.push([statsShown[i].toUpperCase(), (80 / statsShown.length) + "%"]);
-                    }
-                    var lists = [
-                        [
-                            ["NAME", "20%"],
-                            ["STR", "9%"],
-                            ["END", "9%"],
-                            ["DEX", "9%"],
-                            ["WSK", "9%"],
-                            ["RFL", "9%"],
-                            ["INI", "9%"],
-                            ["ENR", "9%"],
-                            ["SKL", "9%"],
-                            ["EFF", "8%"]
-                        ],
-                        [
-                            ["NAME", "20%"],
-                            ["LVL", "10%"],
-                            ["NAT", "20%"],
-                            ["CLS", "20%"],
-                            ["MOR", "10%"],
-                            ["LOY", "10%"],
-                            ["EXP", "10%"]
-                        ]
-                    ];
-                    lists.splice(0,0,dynamicList);
-                    var currentList = 0;
-                    function clickHeading(){
-                        var headingIndex = $(this).index();
-                        MB.MBUtility.sortBy = lists[currentList][headingIndex][0];
-                        MB.MBUtility.sortOrder *= -1;
-                        sortCharacters();
-                        Q.audioController.playSound("rotate_tech.mp3");
-                        $(MB.MenuControls.getSelected()).mouseover();
-                        
-                    }
-                    function sortCharacters(){
-                        //var type = typeof MB.MBUtility.sortBy;
-                        characters = characters.sort(function(a, b){
-                            //if(type === 'string'){
-                                return getConvertedStat(MB.MBUtility.sortBy, a) > getConvertedStat(MB.MBUtility.sortBy, b) ? 1 * MB.MBUtility.sortOrder : -1 * MB.MBUtility.sortOrder;
-                            /*} else if(type === 'number'){
-                                return getConvertedStat(MB.MBUtility.sortBy, a) * MB.MBUtility.sortOrder > getConvertedStat(MB.MBUtility.sortBy, b);
-                            }*/
-                        });
-                        showList();
-                    }
-                    function cycleList(event){
-                        currentList += event.data.amount;
-                        currentList = MB.MenuControls.checkWrap(lists.length, currentList);
-                        var selectedRowIdx = menu.children(".options-list:eq(1)").children(".options-list-row").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent());
-                        var selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index").parent().children(".menu-option").index(menu.children(".options-list:eq(1)").children(".options-list-row").children(".menu-option-retained-index"));
-                        showList();
-                        selectedOptIdx = selectedOptIdx > 0 ? selectedOptIdx = menu.children(".options-list:eq(1)").children(".options-list-row:eq(0)").children(".menu-option").length - 1 : 0;
-                        menu.children(".options-list:eq(1)").children(".options-list-row:eq("+selectedRowIdx+")").children(".menu-option:eq("+selectedOptIdx+")").trigger("mouseover");
-                        
-                        $(this).trigger("mouseover");
-                    };
-                    function showList(){
-                        listCont.empty();
-                        var list = lists[currentList];
-                        var headingRow = MB.cont("w-xl h-xs table-row flex-h options-list-row heading-row");
-                        for(var j=0;j<list.length;j++){
-                            var headingCont = MB.cont("w-xl h-xl menu-option item-table-item");
-                            headingCont.css({width:list[j][1]});
-                            headingCont.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
-                            MB.MBUtility.hoverMenuOption(headingCont, "menu-option-selected", $(".text-bar"), "Sort by "+list[j][0]);
-                            headingCont.on("click",clickHeading);
-                            headingCont.on("back",goBack);
-                            headingCont.append(MB.text("w-xl h-xl justify-center", list[j][0]));
-                            headingRow.append(headingCont);
-                        }
-                        listCont.append(headingRow);
-                        for(var j=0;j<characters.length;j++){
-                            var char = characters[j];
-                            var charCont = MB.cont("w-xl h-xs table-row flex-h options-list-row");
-                            for(var k=0;k<list.length;k++){
-                                var charOption = MB.cont("w-xl h-xl menu-option item-table-item");
-                                charOption.css({width:list[k][1]});
-                                charOption.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
-                                MB.MBUtility.hoverMenuOption(charOption, "menu-option-selected", $(".text-bar"), "Select "+char.name);
-                                charOption.on("click",chooseChar);
-                                charOption.on("back",goBack);
-                                var text = MB.text("w-xl h-xl justify-center",getConvertedStat(list[k][0], char));
-                                text.children("span").addClass("small-font");
-                                charOption.append(text);
-                                charCont.append(charOption);
-                            }
-                            listCont.append(charCont);
-                        }
-                        var backCont = MB.cont("w-xl h-xs table-row options-list-row");
-                        var back = MB.text("w-xl h-xl menu-option remover", "Remove");
-                        MB.MBUtility.hoverMenuOption(back, "menu-option-selected", $(".text-bar"), "Remove character.");
-                        back.on("mouseover", {excludeLast:true}, MB.MBUtility.hoverTableOption);
-                        back.on("click",chooseChar);
-                        back.on("back",goBack);
-                        backCont.append(back);
-                        listCont.append(backCont);
-                        MB.MBUtility.squareList(listCont);
-                    }
-                    if(MB.MBUtility.sortBy){
-                        sortCharacters();
-                    } else {
-                        showList();
-                    }
-                    
-                    var leftArrowList = MB.cont("options-list arrow-container");
-                    var leftArrowCont = MB.cont("options-list-row w-xl h-xl");
-                    var leftArrow = MB.icon("menu-option left-arrow", "left-arrow.png");
-                    leftArrow.on("click",{amount:-1},cycleList);
-                    leftArrow.on("back",goBack);
-                    MB.MBUtility.hoverMenuOption(leftArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
-
-                    leftArrowCont.append(leftArrow);
-                    leftArrowList.append(leftArrowCont);
-                    
-                    
-                    var rightArrowList = MB.cont("options-list arrow-container");
-                    var rightArrowCont = MB.cont("options-list-row w-xl h-xl");
-                    var rightArrow = MB.icon("menu-option right-arrow", "right-arrow.png");
-                    rightArrow.on("click",{amount:1},cycleList);
-                    rightArrow.on("back",goBack);
-                    MB.MBUtility.hoverMenuOption(rightArrow, "menu-option-selected", $(".text-bar"), "Change Menu.");
-
-                    rightArrowCont.append(rightArrow);
-                    rightArrowList.append(rightArrowCont);
-                    menu.append(rightArrowList);
-                    
-                    menu.append(leftArrowList);
-                    menu.append(listCont);
-                    menu.append(rightArrowList);
-                    var lastCharIdx = Math.max(0,characters.indexOf(lastChar)) + 2;
-                    menu.children(".options-list").children(".options-list-row:eq("+(lastCharIdx)+")").children(".menu-option").first().trigger("mouseover");
-                    
-                    confirmButton.parent().parent().addClass("list-keyboard-disabled");
-                    //MB.MenuControls.focusList = true;
-                });
-                portraitSection.on("back",function(){
-                    backMenu.children(".options-list").children(".options-list-row").children(".menu-option-selected").trigger("mouseover");
-                    Q.partyManager.resetTempAction();
-                });
-                nameRow.append(nameCont);
-                portraitRow.append(portraitSection);
                 statsRow.append(statsCont);
             }
             portraitsCont.append(nameRow, portraitRow, statsRow);
@@ -1218,7 +1308,7 @@ Quintus.UIObjects=function(Q){
                     }
                     var weight = jobDefaults.weighted[statsShown.length-1][i];
                     
-                    var reducedCharStats = chars.map(function(char){return getConvertedStat(statsShown[0], char); }).reduce(function(a, b){return a + b;}, 0);
+                    var reducedCharStats = chars.map(function(char){return MB.getConvertedStat(statsShown[0], char); }).reduce(function(a, b){return a + b;}, 0);
                     eachRating.push((reducedCharStats - base)* weight);
                     
                 }
@@ -1258,7 +1348,6 @@ Quintus.UIObjects=function(Q){
             
             infoCont.append(left);
             
-            
             infoCont.append(right);
             menu.append(portraitsCont, infoCont);
             confirmButton.parent().parent().removeClass("list-keyboard-disabled");
@@ -1267,7 +1356,8 @@ Quintus.UIObjects=function(Q){
             elm.replaceWith(this.optionsList(list, obj, bar));
         },
         icon:function(cl, sprite){
-            return $("<div class='icon-container flex-v "+cl+"'><img src='images/ui/"+sprite+"'></div>");
+            //return $("<div class='icon-container flex-v w-xl h-xl "+cl+"'><img class='w-xl h-xl "+sprite+"'></div>");
+            return $("<div class='icon-container flex-v h-xl "+cl+"'><img src='images/ui-sprite-images/"+sprite+".png' class='auto-dimensions'></div>");
         },
         equipment:function(cl, eq){
             var cont = this.cont("eq-"+eq.quality);
@@ -1275,38 +1365,80 @@ Quintus.UIObjects=function(Q){
             cont.append(this.text(cl, eq.gear));
             return cont;
         },
-        quantifier:function(cl, numCl, start, step, min, max){
-            var upCont = this.cont(cl);
-            var upIcon = this.icon("quantifier-arrow menu-option", "quantifier-up-arrow.png");
-            this.MBUtility.hoverMenuOption(upIcon, "menu-option-selected");
-            
-            var downCont = this.cont(cl);
-            var downIcon = this.icon("quantifier-arrow menu-option", "quantifier-down-arrow.png");
-            this.MBUtility.hoverMenuOption(downIcon, "menu-option-selected");
-            upCont.append(upIcon);
-            downCont.append(downIcon);
-            
-            var amountNum = this.text(numCl, start);
+        quantifier:function(cl, numCl, start, step, min, max, bigBooster){
             function inBounds(val){
+                var min = amountNum.attr("min");
+                var max = amountNum.attr("max");
                 if(val < min) return min;
                 if(val > max) return max;
                 return val;
             }
+            
+            var upCont = this.cont(cl);
+            var upIcon = this.icon("menu-option","quantifier-up-arrow");
+            this.MBUtility.hoverMenuOption(upIcon, "menu-option-selected");
+            upCont.append(upIcon);
+            
+            var downCont = this.cont(cl);
+            var downIcon = this.icon("menu-option", "quantifier-down-arrow");
+            this.MBUtility.hoverMenuOption(downIcon, "menu-option-selected");
+            downCont.append(downIcon);
+            
+            var amountNum = this.text(numCl, start);
+            amountNum.attr("step", step);
+            amountNum.attr("min", min);
+            amountNum.attr("max", max);
+            
+            if(bigBooster){
+                var upBigCont = this.cont(cl);
+                var upBigIcon = this.icon("menu-option", "quantifier-up-big-arrow");
+                this.MBUtility.hoverMenuOption(upBigIcon, "menu-option-selected");
+                upBigCont.append(upBigIcon);
+                
+                var downBigCont = this.cont(cl);
+                var downBigIcon = this.icon("menu-option", "quantifier-down-big-arrow");
+                this.MBUtility.hoverMenuOption(downBigIcon, "menu-option-selected");
+                downBigCont.append(downBigIcon);
+                
+                downBigIcon.on("click", function(){
+                    if(Q.menuBuilder.MenuControls.disabled) return;
+                    var num = parseInt(amountNum.attr("step")) * 10;
+                    var oldVal = parseInt(amountNum.children("span").text());
+                    var newVal = oldVal - num;
+                    amountNum.children("span").text(inBounds(newVal));
+                    amountNum.trigger("changed", [-num, oldVal]);
+                });
+                upBigIcon.on("click", function(){
+                    if(Q.menuBuilder.MenuControls.disabled) return;
+                    var num = parseInt(amountNum.attr("step")) * 10;
+                    var oldVal = parseInt(amountNum.children("span").text());
+                    var newVal = oldVal + num;
+                    amountNum.children("span").text(inBounds(newVal));
+                    amountNum.trigger("changed", [num, oldVal]);
+                });
+            }
+            
             downIcon.on("click", function(){
                 if(Q.menuBuilder.MenuControls.disabled) return;
-                var newVal = parseInt(amountNum.children("span").text()) - step;
+                var num = parseInt(amountNum.attr("step"));
+                var oldVal = parseInt(amountNum.children("span").text());
+                var newVal = oldVal - num;
                 amountNum.children("span").text(inBounds(newVal));
-                amountNum.trigger("changed");
+                amountNum.trigger("changed", [-num, oldVal]);
             });
             upIcon.on("click", function(){
                 if(Q.menuBuilder.MenuControls.disabled) return;
-                var newVal = parseInt(amountNum.children("span").text()) + step;
+                var num = parseInt(amountNum.attr("step"));
+                    var oldVal = parseInt(amountNum.children("span").text());
+                var newVal = oldVal + num;
                 amountNum.children("span").text(inBounds(newVal));
-                amountNum.trigger("changed");
+                amountNum.trigger("changed", [num, oldVal]);
             });
             
-            
-            return upCont.add(amountNum).add(downCont);
+            if(bigBooster){
+                return this.MBUtility.roundVerticalList(upBigCont.add(upCont).add(amountNum).add(downCont).add(downBigCont));
+            }
+            return this.MBUtility.roundVerticalList(upCont.add(amountNum).add(downCont));
         },
         qualityButtons:function(buttons){
             var cont = this.cont("quality-buttons-container");
@@ -1445,14 +1577,23 @@ Quintus.UIObjects=function(Q){
         
         //Applies some styles to the edges of a matrix list to create a nice, smooth border.
         roundList:function(list){
-            var left = list.children(".options-list-row").children(".menu-option:first-child");
+            var left = list.children(".menu-option:first-child");
             left.first().addClass("borderless-bottom-left");
             left.not(":first").not(":last").addClass("borderless-top-left borderless-bottom-left");
             left.last().addClass("borderless-top-left");
-            var right = list.children(".options-list-row").children(".menu-option:last-child");
+            var right = list.children(".menu-option:last-child");
             right.first().addClass("borderless-bottom-right");
             right.not(":first").not(":last").addClass("borderless-top-right borderless-bottom-right");
             right.last().addClass("borderless-top-right");
+            return list;
+        },
+        roundVerticalList:function(list){
+            var top = list.first();
+            top.children(".menu-option").addClass("round-border-top");
+            
+            var bottom = list.last();
+            bottom.children(".menu-option").addClass("round-border-bottom");
+            return list;
         },
         squareList:function(list){
             list.children(".options-list-row").children(".menu-option").addClass("borderless");
@@ -1543,7 +1684,7 @@ Quintus.UIObjects=function(Q){
                 if(ev && ev.back){
                     $(elm).trigger("back");
                 } else {
-                    this.changeMenu(-1, this.selectedIdx[0]);
+                    //this.changeMenu(-1, this.selectedIdx[0]);
                 }
             };
         },
@@ -1552,14 +1693,13 @@ Quintus.UIObjects=function(Q){
             this.setIdx(idx[0], idx[1], idx[2]);
         },
         setIdx:function(z, y, x, yAdd, xAdd){
-            console.log(z, y, x)
             if(z !== this.selectedIdx[0]) this.trigger("changedMenu");
             yAdd = yAdd || 1;
             xAdd = xAdd || 1;
             if(this.selectedIdx[0] === z && this.selectedIdx[1] === y && this.selectedIdx[2] === x) return;
             this.selectedIdx = [z, y, x];
             var elm = this.getSelected();
-            if(elm.hasClass("menu-option-disabled")){ 
+            if(elm.hasClass("menu-option-disabled") || !elm.is(':visible')){ 
                 var disabledInList = elm.parent().parent().children(".options-list-row").children(".menu-option-disabled").length;
                 var options = elm.parent().parent().children(".options-list-row").children(".menu-option").length;
                 if(disabledInList === options) x += xAdd;
@@ -1593,7 +1733,6 @@ Quintus.UIObjects=function(Q){
                 lastX = true;
             }
             toZ += mod;
-            
             var newZ = this.checkWrap($(".options-list").length, toZ);
             //If we're not allowed to wrap this screen from max -> min and the opposite.
             if(this.noWrap && newZ !== toZ){return;} else if(this.focusList && newZ !== this.selectedIdx[0]){return;} else { toZ = newZ;};
@@ -1678,7 +1817,11 @@ Quintus.UIObjects=function(Q){
             //TEMP
             $(".menu-option:eq(0)").trigger("click");
             $(".menu-option:eq(0)").trigger("click");
-            $(".menu-option:eq(1)").trigger("click");
+            $(".menu-option:eq(2)").trigger("click");
+            /*$(".screen-menu:eq(1)").children(".options-list").children(".options-list-row").children(".menu-option:eq(1)").trigger("click");
+            $(".menu-option:eq(0)").trigger("click");
+            $(".screen-menu:eq(1)").children(".options-list:eq(1)").children(".options-list-row:eq(1)").children(".menu-option:eq(0)").trigger("mouseover");  
+            $(".screen-menu:eq(1)").children(".options-list:eq(1)").children(".options-list-row:eq(1)").children(".menu-option:eq(0)").trigger("click");*/
             //$(".menu-option:eq(2)").trigger("click");
         },
         resetData:function(){
@@ -1809,8 +1952,13 @@ Quintus.UIObjects=function(Q){
                     }
                     break;
                 case "shop":
+                    var allItems = Q.state.get("equipment");
                     MB.MenuControls.noWrap = true;
-                    this.currentItems = Q.locationController.data.shop;
+                    this.currentItems = {
+                        Accessories:Q.locationController.data.shop.Accessories.map(function(itm){return allItems.Accessories[itm];}),
+                        Consumables:Q.locationController.data.shop.Consumables.map(function(itm){return allItems.Consumables[itm];}),
+                        Materials:Q.locationController.data.shop.Materials.map(function(itm){return allItems.Materials[itm];})
+                    };
                     if(Q.jobsController.noCharsAvailable){
                         var list = screen.children(".screen-menu:eq(1)").children(".options-list");
                         list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
@@ -1826,7 +1974,27 @@ Quintus.UIObjects=function(Q){
                     this.showItemsList("Accessories");
                     break;
                 case "blacksmith":
-                    this.currentItems = Q.locationController.data.blacksmith;
+                    MB.MenuControls.noWrap = true;
+                    //Gen items
+                    this.currentItems = {
+                        Weapons:Q.locationController.data.blacksmith.Weapons.map(function(itm){return CharacterGenerator.convertEquipment([itm[1], itm[2]], itm[0]);}),
+                        Shields:Q.locationController.data.blacksmith.Shields.map(function(itm){return CharacterGenerator.convertEquipment([itm[1], itm[2]], itm[0]);}),
+                        Armour:Q.locationController.data.blacksmith.Armour.map(function(itm){return CharacterGenerator.convertEquipment([itm[1], itm[2]], itm[0]);}),
+                        Footwear:Q.locationController.data.blacksmith.Footwear.map(function(itm){return CharacterGenerator.convertEquipment([itm[1], itm[2]], itm[0]);})
+                    };
+                    
+                    if(Q.jobsController.noCharsAvailable){
+                        var list = screen.children(".screen-menu:eq(1)").children(".options-list");
+                        list.children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
+                    }
+                    
+                    
+                    var headings = screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").first();
+                    headings.children(".menu-text").first().addClass("borderless-bottom-left");
+                    headings.children(".menu-text").last().addClass("borderless-bottom-right");
+                    
+                    Q.locationController.sortOrder = 1;
+                    this.showItemsList("Weapons");
                 
                     break;
                 case "status":
@@ -1854,6 +2022,7 @@ Quintus.UIObjects=function(Q){
                     var backButton = rightMenu.children(".options-list").children(".options-list-row:eq(1)").children(".menu-option");
                     leftMenu.children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
                         $(this).on("mouseover",function(){
+                            if(Q.menuBuilder.MenuControls.disabled) return;
                             Q.partyManager.resetTempAction();
                             var idx = MB.MBUtility.getSelectedIdx(leftMenu);
                             middleMenu.empty();
@@ -1997,35 +2166,46 @@ Quintus.UIObjects=function(Q){
             MB.MenuControls.selectSelectedIdx([z, y, x]);
             MB.MenuControls.getSelected().mouseover();
         },
-        showItemsList:function(field){
+        showItemsList:function(field, sorted){
             var curItems = this.currentItems;
             var items = curItems[field];
             var allItems = Q.state.get("equipment");
             var MB = Q.menuBuilder;
+            var maxItemsShown = 6;
             var cont = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
             cont.children(".options-list-row:eq(0)").nextAll().remove();
             var currentHeadings = [];
             function getConvertedStat(value, item){
-                item = allItems[field][item];
+                item = typeof item === "string" ? allItems[field][item] : item;
                 if(!item || !item.name) return 0;
                 switch(value){
-                    case "Name":
+                    case "name":
                         return item.name;
-                    case "Value":
+                    case "cost":
                         return item.cost;
-                    case "Description":
+                    case "desc":
                         return item.desc;
+                    case "damage":
+                        return ~~((item.mindmg + item.maxdmg) / 2);
+                    case "atkspeed":
+                        return item.attackSpeed;
+                    case "range":
+                        return item.range;
+                    case "defense":
+                        return item.damageReduction;
+                    case "block":
+                        return item.block;
                 }
             }
             function sortTable(){
                 curItems[field] = curItems[field].sort(function(a, b){
                     return getConvertedStat(Q.locationController.sortBy, a) > getConvertedStat(Q.locationController.sortBy, b) ? 1 * Q.locationController.sortOrder : -1 * Q.locationController.sortOrder;
                 });
-                Q.locationController.showItemsList(field);
+                Q.locationController.showItemsList(field, true);
             }
             function clickHeading(){
                 var headingIndex = $(this).index();
-                Q.locationController.sortBy = currentHeadings[headingIndex];
+                Q.locationController.sortBy = currentHeadings[headingIndex][1];
                 Q.locationController.sortOrder *= -1;
                 sortTable();
                 Q.audioController.playSound("rotate_tech.mp3");
@@ -2036,11 +2216,14 @@ Quintus.UIObjects=function(Q){
                 currentHeadings = headings;
                 var headingCont = MB.cont("w-xl h-xs table-row flex-h options-list-row retain-selected-index");
                 for(var i=0;i<headings.length;i++){
-                    var itm = MB.text("w-xl h-xl item-table-item menu-option borderless", headings[i]);
-                    itm.on("mouseover", {}, MB.MBUtility.hoverTableOption);
-                    MB.MBUtility.hoverMenuOption(itm, "menu-option-selected");
-                    itm.on("click",clickHeading);
-                    headingCont.append(itm);
+                    var container = MB.cont("w-xl h-xl item-table-item menu-option borderless");
+                    var itm = MB.icon("h-xl","gear-heading-"+headings[i][1]);//MB.text("w-xl h-xl item-table-item menu-option borderless", headings[i]);
+                    container.attr("field",headings[i]);
+                    container.on("mouseover", {}, MB.MBUtility.hoverTableOption);
+                    MB.MBUtility.hoverMenuOption(container, "menu-option-selected", $(".text-bar"), "Sort by: "+headings[i][0]);
+                    container.on("click",clickHeading);
+                    container.append(itm);
+                    headingCont.append(container);
                 }
                 headingCont.children(".menu-option").first().on("pressLeft", function(){
                     headingCont.children(".menu-option").last().trigger("mouseover");
@@ -2050,12 +2233,23 @@ Quintus.UIObjects=function(Q){
                 });
                 cont.append(headingCont);
             }
-            function displayTableItem(values){
-                var valueCont = MB.cont("w-xl h-xs table-row flex-h options-list-row retain-selected-index");
+            function displayTableItem(values, itemNum, equipment){
+                var valueCont = MB.cont("w-xl h-xxs table-row flex-h options-list-row retain-selected-index");
                 for(var i=0;i<values.length;i++){
-                    var itm = MB.text("w-xl h-xl item-table-item menu-option borderless",values[i]);
+                    var itm = MB.text("item-table-item menu-option borderless",values[i]);
+                    itm.children("span").addClass("small-font");
+                    var descString = values[0];
+                    if(equipment){
+                        var quality = equipment[0];
+                        var material = equipment[1];
+                        descString = quality + " " + material + " " + values[0];
+                        if(i === 0){
+                            itm.prepend(MB.icon("","material-"+(material.replace(/\s/g , "-").toLowerCase())));
+                            itm.addClass("quality-bg-"+quality);
+                        }
+                    }
                     itm.on("mouseover", {} ,MB.MBUtility.hoverTableOption);
-                    MB.MBUtility.hoverMenuOption(itm, "menu-option-selected");
+                    MB.MBUtility.hoverMenuOption(itm, "menu-option-selected", $(".text-bar"), descString);
                     itm.on("click",function(){MB.MenuControls.cycleIndex(1, 0, 0);});
                     $(itm).on("pressRight", function(){
                         $(this).trigger("click");
@@ -2063,54 +2257,108 @@ Quintus.UIObjects=function(Q){
                     valueCont.append(itm);
                 }
                 cont.append(valueCont);
+                if(itemNum >= maxItemsShown){ valueCont.hide(); };
             }
             switch(field){
                 case "Materials":
-                    displayTable(["Name", "Value"]);
+                    displayTable([["Name", "name"], ["Total Cost", "cost"]]);
                     for(var i=0;i<items.length;i++){
-                        displayTableItem([items[i], allItems[field][items[i]].cost]);
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost], i);
                     }
                     break;
                 case "Consumables":
-                    displayTable(["Name", "Value", "Description"]);
+                    displayTable([["Name", "name"], ["Total Cost", "cost"],["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
-                        var itm = allItems[field][items[i]];
-                        displayTableItem([items[i], itm.cost, itm.desc]);
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, itm.desc], i);
                     }
                     break;
                 case "Accessories":
-                    displayTable(["Name", "Value", "Description"]);
+                    displayTable([["Name", "name"], ["Total Cost", "cost"],["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
-                        var itm = allItems[field][items[i]];
-                        displayTableItem([items[i], itm.cost, itm.desc]);
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, itm.desc], i);
                     }
                     break;
                 case "Weapons":
-
+                    displayTable([["Name", "name"], ["Total Cost", "cost"], ["Damage", "damage"], ["Atk Speed", "atkspeed"],  ["Range", "range"], ["Description","desc"]]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, ~~((itm.mindmg+itm.maxdmg)/2), itm.attackSpeed, itm.range,"Weapon desc..."], i, [itm.quality, itm.material]);
+                    }
                     break;
                 case "Shields":
-
+                    displayTable([["Name", "name"], ["Total Cost", "cost"],["Block", "block"],["Description","desc"]]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, itm.block, "Shield desc..."], i, [itm.quality, itm.material]);
+                    }
                     break;
                 case "Armour":
-
+                    displayTable([["Name", "name"], ["Total Cost", "cost"],["Dmg Reduction", "defense"],["Description","desc"]]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, itm.damageReduction, "Armour desc..."], i, [itm.quality, itm.material]);
+                    }
                     break;
                 case "Footwear":
-
+                    displayTable([["Name", "name"], ["Total Cost", "cost"],["Description","desc"]]);
+                    for(var i=0;i<items.length;i++){
+                        var itm = items[i];
+                        displayTableItem([itm.name, itm.cost, "Footwear desc..."], i, [itm.quality, itm.material]);
+                    }
                     break;
             }
-            //cont.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
+            if(items.length >= maxItemsShown){
+                var bottomIdx = 3;
+                var curBottom = bottomIdx;
+                var curTop = bottomIdx + maxItemsShown - 1;
+                var maxTop = items.length + 2;
+                
+                var upArrow = MB.cont("options-list-row w-xl h-xxxs");
+                var opt = MB.createOption({text:" ",desc:"Cycle list up"}, upArrow, $(".text-bar"), "");
+                opt.on("click",function(){
+                    if(curBottom - 1 < bottomIdx) { 
+                        return;
+                    } else {
+                        curBottom --;
+                        $(cont).children(".options-list-row:eq("+curBottom+")").show();
+                        $(cont).children(".options-list-row:eq("+curTop+")").hide();
+                        curTop --;
+                    }
+                });
+                upArrow.append(opt);
+                opt.children("span").replaceWith(MB.icon("menu-option", "quantifier-up-arrow"));
+                cont.children(".options-list-row:eq(2)").before(upArrow);
+                
+                var downArrow = MB.cont("options-list-row w-xl h-xxxs");
+                var opt = MB.createOption({text:" ",desc:"Cycle list down"}, downArrow, $(".text-bar"), "");
+                opt.on("click",function(){
+                    if(curTop + 1 > maxTop) { 
+                        return;
+                    } else {
+                        curTop ++;
+                        $(cont).children(".options-list-row:eq("+curBottom+")").hide();
+                        $(cont).children(".options-list-row:eq("+curTop+")").show();
+                        curBottom ++;
+                    }
+                })
+                downArrow.append(opt);
+                opt.children("span").replaceWith(MB.icon("menu-option", "quantifier-down-arrow"));
+                cont.append(downArrow);
+                if(!sorted) cont.children(".options-list-row:eq(3)").children(".menu-option:eq(0)").trigger("mouseover");
+            } else {
+                if(!sorted) cont.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
+            }
         },
         askQuantityPurchaseItem:function(){
             var controller = this;
-            var allItems = Q.state.get("equipment");
             var menu = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
             var typeIdx = menu.children(".options-list-row:eq(0)").children(".menu-option-selected").text();
-            var itmIdx = menu.children(".options-list-row").not(":eq(0)").children(".hovered-row:eq(0)").text();
-            if(!itmIdx){
-                itmIdx = menu.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").text();
-                menu.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
-            }
-            var item = allItems[typeIdx][itmIdx];
+            var itmIdx = menu.children(".options-list-row").index(menu.children(".options-list-row").children(".hovered-row:eq(0)").parent()) - 2;
+            if(!itmIdx || itmIdx < 0) itmIdx = 0;
+            var item = controller.currentItems[typeIdx][itmIdx];
             var MB = Q.menuBuilder;
             var cont = MB.cont("screen-menu menu-style3 w-s");
             var list = MB.cont("w-xl h-l options-list");
@@ -2149,11 +2397,7 @@ Quintus.UIObjects=function(Q){
                     $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
                 });
             });
-            confirmCont.append(confirm);
-            var backCont = MB.cont("w-xl h-s options-list-row");
-            var back = MB.text("w-xl h-xl menu-option", "Back");
-            MB.MBUtility.hoverMenuOption(back, "menu-option-selected");
-            back.on("click",function(){
+            var goBack = function(){
                 if(Q.menuBuilder.MenuControls.disabled) return;
                 $("#fader").remove();
                 $(".screen-menu:eq(2)").remove();
@@ -2162,7 +2406,13 @@ Quintus.UIObjects=function(Q){
                 MB.MenuControls.getSelected().mouseover();
                 $(".screen-menu:eq(0)").children(".options-list").removeClass("list-keyboard-disabled");
                 $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
-            });
+            }
+            confirm.on("back",goBack);
+            confirmCont.append(confirm);
+            var backCont = MB.cont("w-xl h-s options-list-row");
+            var back = MB.text("w-xl h-xl menu-option", "Back");
+            MB.MBUtility.hoverMenuOption(back, "menu-option-selected");
+            back.on("click",goBack);
             backCont.append(back);
             list.append(confirmCont);
             list.append(backCont);
@@ -2186,11 +2436,449 @@ Quintus.UIObjects=function(Q){
             cont.css({width:width, height:height, top:pos.top, left:pos.left});
             cont.children(".options-list").children(".options-list-row:eq(0)").children(".menu-option").first().trigger("mouseover");
         },
-        askQuantityBarterItem:function(){
+        askQuantityBarterItem:function(minCost, maxCost, minQuantity, char, item){
+            var controller = this;
+            var menu = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
+            if(!item){
+                var typeIdx = menu.children(".options-list-row:eq(0)").children(".menu-option-selected").text();
+                var itmIdx = menu.children(".options-list-row").index(menu.children(".options-list-row").children(".hovered-row:eq(0)").parent()) - 2;
+                if(!itmIdx || itmIdx < 0) itmIdx = 0;
+                item = controller.currentItems[typeIdx][itmIdx];
+            }
+            var MB = Q.menuBuilder;
+            var cont = MB.cont("screen-menu menu-style3 w-l");
+            $(".screen-menu:eq(0)").replaceWith(cont);
+            var confirmButton = $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(0)").children(".menu-option");
+            confirmButton.addClass("menu-option-disabled");
+            function goBack(){
+                controller.displayMenu(controller.currentPageName, true);
+                $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").children("span:contains("+typeIdx+")").trigger("mouseover");
+                $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").children("span:contains("+itmIdx+")").trigger("mouseover");
+            }
             
-        },
-        askExchangeItem:function(){
+            var characters = Q.partyManager.allies.filter(function(char){return !char.tempAction && !char.action;});
+            var lastChar = char || {};
+            function getBarterChance(itemCost, quantity, priceOffered, offSkl){
+                var fullCost = itemCost;
+                var mltInf = 0.05;
+                var halfCost = fullCost / 2;
+                var sklInf = 0.001;
+                var offInfluence = 1 + offSkl * sklInf + (quantity - 1) * mltInf;
+                var percentageBetween = getPercentageBetween(halfCost, fullCost, priceOffered * offInfluence);
+                return percentageBetween;
+            }
+            function getHalfway(min, max){
+                return max - (max - min) / 2;
+            }
+            function getNumWanted(){
+                return parseInt($(smallQuantifier[1]).children("span").text());
+            }
+            function getCost(){
+                return parseInt($(bigQuantifier[2]).children("span").text());
+            }
+            function getPercentageBetween(min, max, target){
+                var newMax = max - min;// 200 - 100 = 100
+                var newTarget = target - min;// 200 - 100 = 100
+                var onePercent = newMax / 100;// 100/100 = 1
+                return newTarget / onePercent; //100 / 1 = 100;
+            };
+            function calcOffer(itemCost, quantity, priceOffered, offSkl){
+                var fullCost = itemCost;
+                var mltInf = 0.05;
+                var halfCost = fullCost / 2;
+                var sklInf = 0.001;
+                var offInfluence = 1 + offSkl * sklInf + (quantity - 1) * mltInf;
+                var percentValue = halfCost / 100;
+                var rand = Math.random();
+                var point = halfCost + percentValue * rand * 100;
+                var offeredValue = priceOffered * offInfluence;
+                
+                /*
+                var maxValue = halfCost + percentValue * 1 * 100;
+                var minValue = halfCost + percentValue * 0 * 100;
+                console.log("Range of possible points: ("+minValue+" - "+maxValue+")");
+                */
+                /*console.log(
+                "Full Cost: "+fullCost, 
+                "Half Cost: "+halfCost, 
+                "OffInf: "+offInfluence, 
+                "Percent Value: "+percentValue,
+                "Point: "+ point, 
+                "Price Offered: "+priceOffered,
+                "Rand: "+rand,
+                "Offered Value: "+offeredValue);
+                 */
+                if(point <= offeredValue){
+                    return "success";
+                } else if(halfCost + (percentValue * (rand * 100 - 20)) <= offeredValue){
+                    return getHalfway(point, fullCost);
+                } else {
+                    return "failed";
+                }
+            }
+            function processResult(cost, quantity, result){
+                var fader = $("<div id='fader' class='fader-black'></div>");
+                fader.css("opacity", 0.2);
+                $("#main-container").append(fader);
+                var resultCont = MB.cont("screen menu-style1-solid");
+                resultCont.addClass("above-fader");
+                $("#main-container").append(resultCont);
+                if(result === "success"){
+                    Q.variableProcessor.changeMoney(-cost);
+                    Q.partyManager.bag.addItem(item.kind,{gear:item.name,amount:quantity, quality:item.quality, material:item.material});
+                    resultCont.append(MB.text("w-xl h-s","Successfully saved "+((item.cost * quantity) - cost)+" gold on the purchase of "+quantity+" "+item.name+"!"));
+
+                    Q.menuBuilder.MenuControls.disabled = true;
+                    Q.audioController.interruptMusic("103-Small_Reward.mp3",function(){
+                        Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                        Q.menuBuilder.MenuControls.disabled = false;
+                        $("#fader").remove();
+                        resultCont.remove();
+                        goBack();
+                    });
+
+                } else if(result === "failed"){
+                    resultCont.append(MB.text("w-xl h-s","The deal fell through."));
+
+                    Q.menuBuilder.MenuControls.disabled = true;
+                    Q.audioController.interruptMusic("105-Bad_Thing.mp3",function(){
+                        Q.audio.resume("bgm/"+Q.audioController.currentMusic);
+                        Q.menuBuilder.MenuControls.disabled = false;
+                        $("#fader").remove();
+                        resultCont.remove();
+                        goBack();
+                    });
+                } 
+                //The shopkeeper will make his own deal here
+                //Probably don't need to access this code elsewhere, so don't make a function for it.
+                else {
+                    var offSkl = lastChar.baseStats.skl;
+                    var rand = ~~(Math.random() * 100);
+                    var howManyAdded = ~~(rand / offSkl);
+                    var newQuantity = quantity + howManyAdded;
+                    var newCost = cost + ((cost / quantity) * howManyAdded);
+                    var newFullCost = item.cost * newQuantity;
+                    var percentage = getPercentageBetween(newFullCost/2, newFullCost, newCost);
+                    var middlePercent = (100 - percentage) / 2;
+                    newCost = ~~(newFullCost - (middlePercent / 100) * newFullCost / 2);
+
+                    var sayingCont = MB.cont("w-m h-s");
+                    var sayings = Q.state.get("jobsList").defaults.barterTexts[1];
+                    var randSaying = sayings[~~(Math.random()*sayings.length)];
+                    sayingCont.append(MB.text("w-xl h-xl", randSaying));
+                    var dataCont = MB.cont("w-m h-m menu-style3 flex-h");
+                    var left = MB.cont("w-m h-xl flex-v");
+                    
+                    var itemHeading = MB.cont("w-xl h-xs heading-text");
+                    itemHeading.append(MB.text("w-xl h-xl", "Item"));
+                    left.append(itemHeading);
+                    
+                    var itemCont = MB.cont("w-xl h-ms");
+                    itemCont.append(MB.text("w-xl h-xl", item.name));
+                    left.append(itemCont);
+                    var fullCostHeading = MB.cont("w-xl h-xs heading-text");
+                    fullCostHeading.append(MB.text("w-xl h-xl", "Full Cost"));
+                    left.append(fullCostHeading);
+                    
+                    var fullCostCont = MB.cont("w-xl h-ms flex-h");
+                    fullCostCont.append(MB.text("w-m h-xl crossed-out", item.cost * quantity));
+                    fullCostCont.append(MB.text("w-m h-xl star-border", newFullCost));
+                    left.append(fullCostCont);
+
+                    var right = MB.cont("w-m h-xl flex-v");
+                    
+                    var quantHeading = MB.cont("w-xl h-xs heading-text");
+                    quantHeading.append(MB.text("w-xl h-xl", "Quantity"));
+                    right.append(quantHeading);
+                    
+                    var quantCont = MB.cont("w-xl h-ms flex-h");
+                    quantCont.append(MB.text("w-m h-xl crossed-out", quantity));
+                    quantCont.append(MB.text("w-m h-xl star-border", newQuantity));
+                    right.append(quantCont);
+                    
+                    var newCostHeading = MB.cont("w-xl h-xs heading-text");
+                    newCostHeading.append(MB.text("w-xl h-xl", "Discounted Price"));
+                    right.append(newCostHeading);
+                    
+                    var newCostCont = MB.cont("w-xl h-ms flex-h");
+                    newCostCont.append(MB.text("w-m h-xl crossed-out", cost));
+                    newCostCont.append(MB.text("w-m h-xl star-border", newCost));
+                    right.append(newCostCont);
+
+
+                    dataCont.append(left);
+                    dataCont.append(right);
+
+                    var choicesCont = MB.cont("w-m h-s");
+                    var list = {
+                        listClass:"h-xl w-xl flex-v",
+                        rowClass:"h-m w-xl flex-h",
+                        textClass:"",
+                        items:[
+                            [
+                                {text:"Accept", desc:"Accept the new offer.",
+                                    confirm:{
+                                        func:function(){
+                                            $("#fader").remove();
+                                            resultCont.remove();
+                                            processResult(newCost, newQuantity, "success");
+                                        }
+                                    },
+                                    disabled: newCost > Q.state.get("saveData").money ? true : false
+                                },
+                                {text:"Barter", desc:"Continue Bartering.", 
+                                    confirm:{
+                                        func:function(){
+                                            $("#fader").remove();
+                                            resultCont.remove();
+                                            controller.askQuantityBarterItem(cost, newCost, newQuantity, lastChar, item);
+                                        }
+                                    }
+                                },
+                                {text:"Decline", desc:"Decline the offer.", 
+                                    confirm:{
+                                        func:function(){
+                                            $("#fader").remove();
+                                            resultCont.remove();
+                                            processResult(newCost, newQuantity, "failed");
+
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    };
+                    choicesCont.append(MB.optionsList(list, Q.locationsController, $(".text-bar")));
+                    
+
+                    resultCont.append(sayingCont);
+                    resultCont.append(dataCont);
+                    resultCont.append(choicesCont);
+
+                }
+            }
+            function doResultOfOffer(){
+                if(!lastChar.baseStats) return;
+                Q.jobsController.addAction([lastChar], "barter", 1);
+                var cost = getCost();
+                var quantity = getNumWanted();
+                var result = calcOffer(item.cost * quantity, quantity, cost, lastChar.baseStats.skl);
+                if(cost === maxCost) result = "success";
+                processResult(cost, quantity, result);
+            }
             
+            MB.replaceList(
+                $(".screen-menu:eq(1)").children(".options-list:eq(0)"), 
+                {
+                    listClass:"v-list",
+                    rowClass:"w-xl h-xl",
+                    items:[
+                        [
+                            {
+                                text:"Confirm",
+                                desc:"Barter for "+item.name+"?",
+                                confirm:{
+                                    func:doResultOfOffer
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                text:"Back",
+                                desc:"",
+                                confirm:{
+                                    func:goBack
+                                }
+                            }
+                        ]
+                    ] 
+                },
+                controller,
+                $(".text-bar")
+            );
+            var leftCont = MB.cont("options-list w-msm h-xl");
+            var nameCont = MB.cont("w-m h-xs");
+            var name = MB.text("w-xl h-xl", lastChar.name || "");
+            nameCont.append(name);
+            var row = MB.cont("options-list-row h-sm flex-h");
+            
+            
+            var descPara = MB.cont();
+            descPara.append(MB.text("w-xl text-paragraph","Select who will barter"));
+            var portraitSection = MB.getPortraitSection(
+                function(){
+                    if(char) return;
+                    function chooseChar(){
+                        var index = MB.MBUtility.getSelectedIdx(cont.next()) - 2;
+                        lastChar = characters[index] || {};
+                        cont.show();
+                        cont.children(".options-list").removeClass("list-keyboard-disabled");
+                        cont.next().remove();
+                        $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
+                        
+                        MB.MenuControls.selectSelectedIdx([0,0,0]);
+                        MB.MenuControls.setFocus();
+                        $(MB.MenuControls.getSelected()).trigger("mouseover");
+                        if(lastChar.name){
+                            //TEMP
+                            if(lastChar.name) lastChar.sprite = "knight.png";
+                            cont.children(".options-list").children(".menu-container:eq(1)").children(".menu-text").children("span").text(lastChar.name);
+                            cont.children(".options-list").children(".options-list-row").children(".menu-option").children(".char-portrait-container").children(".char-portrait-bg").children(".char-portrait-img").attr("src","images/story/"+lastChar.sprite);
+                            cont.children(".options-list").children(".menu-container:eq(3)").children(".menu-container").children(".menu-text").last().children("span").text(lastChar.baseStats.skl);
+                        } else {
+                            cont.children(".options-list").children(".menu-container:eq(1)").children(".menu-text").children("span").text("");
+                            cont.children(".options-list").children(".options-list-row").children(".menu-option").children(".char-portrait-container").children(".char-portrait-bg").children(".char-portrait-img").attr("src","images/story/empty.png");
+                            cont.children(".options-list").children(".menu-container:eq(3)").children(".menu-container").children(".menu-text").last().children("span").text("");
+                        }
+                        updatePrediction();
+                    };
+                    function backFromCharSelection(){
+                        if(!lastChar.name){
+                            cont.children(".options-list").children(".options-list-row").last().children(".menu-option").trigger("mouseover");
+                        } else {
+                            var lastCharIdx = characters.indexOf(lastChar);
+                            MB.MenuControls.selectSelectedIdx([2,lastCharIdx + 1,0]);
+                            $(MB.MenuControls.getSelected()).trigger("mouseover");
+                        }
+                        chooseChar();
+                    }
+                    cont.hide();
+                    cont.children(".options-list").addClass("list-keyboard-disabled");
+                    $(".screen-menu:eq(1)").children(".options-list").addClass("list-keyboard-disabled");
+                    var newCont = MB.cont("screen-menu menu-style3 w-l");
+                    cont.after(newCont);
+                    MB.produceHeadingLists(["skl"], newCont, characters, chooseChar, backFromCharSelection);
+                    
+                    var lastCharIdx = Math.max(0, characters.indexOf(lastChar));
+                    MB.MenuControls.selectSelectedIdx([3,lastCharIdx + 1,0]);
+                    MB.MenuControls.setFocus();
+                    $(MB.MenuControls.getSelected()).trigger("mouseover");
+
+                },
+                goBack,
+                lastChar
+            );
+            function updatePrediction(){
+                if(!lastChar.name){
+                    descPara.children(".text-paragraph").children("span").text("Select who will barter");
+                    return;
+                }
+                var reducedCost = getCost();
+                var chance = 0;
+                if(reducedCost === maxCost){
+                    chance = 100;
+                } else {
+                    var amount = getNumWanted();
+                    chance = Math.floor(Math.min(100, Math.max(getBarterChance(item.cost * amount , amount, reducedCost, lastChar.baseStats.skl), 0)));
+                }
+                var jobDefaults = Q.state.get("jobsList").defaults;
+                var chanceTier = chance === 0 ? 0 : chance <= 20 ? 1 : chance <= 40 ? 2 :  chance <= 60 ? 3 : chance <= 80 ? 4 : chance <= 99 ? 5 : 6;
+                var text = jobDefaults.barterTexts[0][chanceTier];
+                descPara.children(".text-paragraph").children("span").text(text + " ("+chance+"%)");
+                var confirmButton = $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(0)").children(".menu-option");
+                if(reducedCost > Q.state.get("saveData").money){
+                    confirmButton.addClass("menu-option-disabled");
+                } else {
+                    confirmButton.removeClass("menu-option-disabled");
+                }
+            }
+            var skillCont = MB.cont("w-sm flex-v");
+            var skCont = MB.cont("menu-container w-xl flex-h");
+            var skill = MB.text("menu-text flex-h justify-left w-m", "SKL");
+            var skillText = MB.text("menu-text flex-h justify-right w-m", lastChar.baseStats ? lastChar.baseStats.skl : "");
+            skCont.append(skill);
+            skCont.append(skillText);
+            skillCont.append(skCont);
+            if(char) portraitSection.addClass("menu-option-disabled");
+            leftCont.append(MB.cont("w-xl h-xs"));
+            leftCont.append(nameCont);
+            row.append(portraitSection);
+            leftCont.append(row);
+            leftCont.append(skillCont);
+            leftCont.append(descPara);
+            
+            cont.append(leftCont);
+            
+            
+            var maxQuantity = minQuantity || 99;
+            var minQuantity = minQuantity || 1;
+            var minCost = minCost || Math.ceil(item.cost / 2);
+            minCost *= minQuantity;
+            var maxCost = maxCost || item.cost;
+            var rightCont = MB.cont("w-mm h-xl");
+            var topTextCont = MB.cont("w-xl h-xs");
+            topTextCont.append(MB.text("w-xl h-xl", "Barter for:"));
+            var itemCont = MB.cont("w-xl h-xs");
+            itemCont.append(MB.text("w-xl h-xl",item.name));
+            var titlesCont = MB.cont("w-ms h-l flex-v");
+            titlesCont.append(MB.text("w-xl h-s", "Quantity"));
+            titlesCont.append(MB.text("w-xl h-xs", ""));
+            titlesCont.append(MB.text("w-xl h-s", "Reduced Price"));
+            titlesCont.append(MB.text("w-xl h-sm", "Regular Price"));
+            var numsCont = MB.cont("w-ms h-l flex-v");
+            var fullCost = MB.text("w-xl h-sm", item.cost * minQuantity);
+            
+            var arrowsCont = MB.cont("w-s h-l flex-v options-list");
+            
+            var smallQuantifier = MB.quantifier("w-l h-xs options-list-row flex-v", "w-xl h-s flex-v", minQuantity, 1, minQuantity, maxQuantity);
+            var bigQuantifier = MB.quantifier("w-l h-xs options-list-row flex-v", "w-xl h-s flex-v", maxCost, minQuantity, minCost, maxCost, true);
+            arrowsCont.append(smallQuantifier);
+            arrowsCont.append(MB.text("w-xl h-xs", ""));
+            arrowsCont.append(bigQuantifier);
+            
+            $(smallQuantifier[1]).on("changed",function(e, num, oldAmount){
+                var amount = parseInt($(this).children("span").text());
+                if(oldAmount === amount) return;
+                var quantCost = amount * item.cost;
+                var halfCost = quantCost / 2;
+                $(bigQuantifier[2]).attr("step", amount);
+                $(bigQuantifier[2]).attr("min", halfCost);
+                $(bigQuantifier[2]).attr("max", quantCost);
+                
+                var curAsk = parseInt($(bigQuantifier[2]).children("span").text());
+                var unitPrice = curAsk / (amount - num);
+                curAsk += unitPrice * num;
+                $(bigQuantifier[2]).children("span").text(curAsk);
+                if(curAsk < halfCost) $(bigQuantifier[2]).children("span").text(halfCost);
+                if(curAsk > quantCost) $(bigQuantifier[2]).children("span").text(quantCost);
+                fullCost.children("span").text(quantCost);
+                maxCost = quantCost;
+                updatePrediction();
+            });
+            $(bigQuantifier[2]).on("changed",function(){
+                updatePrediction();
+            });
+            
+            numsCont.append(smallQuantifier[1]);
+            numsCont.append(MB.text("w-xl h-xs", ""));
+            numsCont.append(bigQuantifier[2]);
+            numsCont.append(fullCost);
+            
+            rightCont.append(topTextCont);
+            rightCont.append(itemCont);
+            rightCont.append(titlesCont);
+            rightCont.append(numsCont);
+            rightCont.append(arrowsCont);
+            cont.append(rightCont);
+            
+            var characters = Q.partyManager.allies.filter(function(char){return !char.tempAction && !char.action;});
+            lastChar = characters.sort(function(a, b){return a.baseStats.skl < b.baseStats.skl;})[0];
+            
+            if(lastChar.name) lastChar.sprite = "knight.png";
+            cont.children(".options-list").children(".menu-container:eq(1)").children(".menu-text").children("span").text(lastChar.name);
+            cont.children(".options-list").children(".options-list-row").children(".menu-option").children(".char-portrait-container").children(".char-portrait-bg").children(".char-portrait-img").attr("src","images/story/"+lastChar.sprite);
+            cont.children(".options-list").children(".menu-container:eq(3)").children(".menu-container").children(".menu-text").last().children("span").text(lastChar.baseStats.skl);
+            
+            updatePrediction();
+            
+            if(!char){
+                MB.MenuControls.selectSelectedIdx([0,0,0]);
+                MB.MenuControls.getSelected().mouseover();
+            } else {
+                MB.MenuControls.selectSelectedIdx([1,0,0]);
+                MB.MenuControls.getSelected().mouseover();
+                updatePrediction();
+            }
         },
         confirmedGiveReward:function(){
             var MB = Q.menuBuilder;
@@ -2285,9 +2973,9 @@ Quintus.UIObjects=function(Q){
             basicStatsCont.append(MB.text("char-levelclass","LV " + char.level + " " + char.charClass));
             var hp = MB.cont("w-xl flex-h");
 
-            hp.append(MB.icon("text-icon","icon-hp.png"), MB.text("char-hp w-m h-xl", char.combatStats.maxHp+"/"+char.combatStats.hp));
+            hp.append(MB.icon("text-icon","icon-hp"), MB.text("char-hp w-m h-xl", char.combatStats.maxHp+"/"+char.combatStats.hp));
             var tp = MB.cont("w-xl flex-h");
-            tp.append(MB.icon("text-icon","icon-tp.png"), MB.text("char-tp w-m h-xl", char.combatStats.maxTp+"/"+char.combatStats.tp));
+            tp.append(MB.icon("text-icon","icon-tp"), MB.text("char-tp w-m h-xl", char.combatStats.maxTp+"/"+char.combatStats.tp));
             basicStatsCont.append(hp, tp);
             mainStats.append(basicStatsCont);
             
@@ -2368,7 +3056,7 @@ Quintus.UIObjects=function(Q){
         buildOptionsMenu:function(){
             var cont = $(".screen-menu:eq(0)");
             var MB = Q.menuBuilder;
-            MB.MBUtility.roundList(cont.children(".options-list:eq(0)"));
+            MB.MBUtility.roundList(cont.children(".options-list:eq(0)").children(".options-list-row"));
             
             var optBuilder = MB.cont("w-xl h-m");
             optBuilder.append(MB.text("","Options Builder code goes here. "));

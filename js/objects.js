@@ -6,12 +6,11 @@ Quintus.Objects=function(Q){
             this.items = this.convertItemData(data.items);
         },
         convertConsumable:function(k){
-            var items = Q.state.get("items");
-            var id = k[1];
-            var itemKeys = Object.keys(items[id]);
+            var items = Q.state.get("equipment");
+            var itemKeys  = Object.keys(items.Consumables[k[1]]);
             var newItem = {amount:k[0]};
             itemKeys.forEach(function(ik){
-                newItem[ik] = items[id][ik];
+                newItem[ik] = items.Consumables[k[1]][ik];
             });
             return newItem;
         },

@@ -1,59 +1,1425 @@
 {
-    "jobs":{
-        "woodcutting":[
+    "jobs": {
+        "woodcutting": [
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [
+                    "end"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Wool"
+                        ],
+                        "60"
+                    ],
+                    [
+                        [
+                            "Weapons",
+                            "Shoddy",
+                            "Wood",
+                            "Bow"
+                        ],
+                        "1"
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Weapons",
+                        "Average",
+                        "Wood",
+                        "Bow"
+                    ]
+                ]
+            },
+            {
+                "reward": "200",
+                "weeks": "2",
+                "reqs": [
+                    [
+                        "end",
+                        50
+                    ]
+                ],
+                "stats": [
+                    "end"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Wool"
+                        ],
+                        "65"
+                    ],
+                    [
+                        [
+                            "Weapons",
+                            "Average",
+                            "Wood",
+                            "Bow"
+                        ],
+                        "1"
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Materials",
+                        "Wool"
+                    ]
+                ]
+            },
+            {
+                "reward": "500",
+                "weeks": "3",
+                "reqs": [
+                    [
+                        "end",
+                        80
+                    ]
+                ],
+                "stats": [
+                    "end"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Wool"
+                        ],
+                        "60"
+                    ],
+                    [
+                        [
+                            "Weapons",
+                            "Average",
+                            "Wood",
+                            "Bow"
+                        ],
+                        "1"
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Materials",
+                        "Wool"
+                    ]
+                ]
+            },
+            {
+                "reward": "1000",
+                "weeks": "4",
+                "reqs": [
+                    [
+                        "end",
+                        110
+                    ]
+                ],
+                "stats": [
+                    "end"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Wool"
+                        ],
+                        "75"
+                    ],
+                    [
+                        [
+                            "Weapons",
+                            "Quality",
+                            "Wood",
+                            "Bow"
+                        ],
+                        "1"
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Materials",
+                        "Wool"
+                    ]
+                ]
+            },
+            {
+                "reward": "2000",
+                "weeks": "5",
+                "reqs": [
+                    [
+                        "end",
+                        150
+                    ]
+                ],
+                "stats": [
+                    "end"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Wool"
+                        ],
+                        "80"
+                    ],
+                    [
+                        [
+                            "Weapons",
+                            "Excellent",
+                            "Wood",
+                            "Bow"
+                        ],
+                        "1"
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Materials",
+                        "Wool"
+                    ],
+                    [
+                        "Materials",
+                        "Wool"
+                    ]
+                ]
+            }
+        ],
+        "hunting": [
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "foraging": [
+            {
+                "reward": "1006",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": "100",
+                "weeks": "1",
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "fishing": [
             {
                 "reward": 100,
                 "weeks": 1,
                 "reqs": [],
-                "stats":["end"],
-                "loots":[[["Materials", "Wood"], 60], [["Equipment", "Shoddy", "Wood", "Bow"], 1]],
-                "earnings":[["Materials", "Wood"]]
+                "stats": [],
+                "loots": [],
+                "earnings": []
             },
-            {
-                "reward": 200,
-                "weeks": 2,
-                "reqs": [["end", 20]],
-                "stats":["end"],
-                "loots":[[["Materials", "Wood"], 60], [["Equipment", "Average", "Wood", "Bow"], 2]],
-                "earnings":[["Materials", "Wood"], ["Materials", "Wood"]]
-            },
-            {},
-            {},
-            {}
-        ],
-        "mining":[
             {
                 "reward": 100,
                 "weeks": 1,
-                "reqs": [["str", 10]],
-                "stats":["str"],
-                "loots":[[["Materials", "Iron"], 60], [["Equipment", "Shoddy", "Iron", "Short Sword"], 1]],
-                "earnings":[["Materials", "Iron"]]
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
             },
-            {},
-            {},
-            {},
-            {}
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "carpenting": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "mageAssistant": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "potionBrewer": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "merchantBodyguard": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "homeSecurity": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "ironMiner": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [
+                    [
+                        "str",
+                        10
+                    ]
+                ],
+                "stats": [
+                    "str"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Iron"
+                        ],
+                        60
+                    ],
+                    [
+                        [
+                            "Equipment",
+                            "Shoddy",
+                            "Iron",
+                            "Short Sword"
+                        ],
+                        1
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Iron"
+                    ]
+                ]
+            },
+            {
+                "reward": 200,
+                "weeks": 1,
+                "reqs": [
+                    [
+                        "str",
+                        10
+                    ]
+                ],
+                "stats": [
+                    "str"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Iron"
+                        ],
+                        60
+                    ],
+                    [
+                        [
+                            "Equipment",
+                            "Shoddy",
+                            "Iron",
+                            "Short Sword"
+                        ],
+                        1
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Iron"
+                    ]
+                ]
+            },
+            {
+                "reward": 500,
+                "weeks": 1,
+                "reqs": [
+                    [
+                        "str",
+                        10
+                    ]
+                ],
+                "stats": [
+                    "str"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Iron"
+                        ],
+                        60
+                    ],
+                    [
+                        [
+                            "Equipment",
+                            "Shoddy",
+                            "Iron",
+                            "Short Sword"
+                        ],
+                        1
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Iron"
+                    ]
+                ]
+            },
+            {
+                "reward": 1000,
+                "weeks": 1,
+                "reqs": [
+                    [
+                        "str",
+                        10
+                    ]
+                ],
+                "stats": [
+                    "str"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Iron"
+                        ],
+                        60
+                    ],
+                    [
+                        [
+                            "Equipment",
+                            "Shoddy",
+                            "Iron",
+                            "Short Sword"
+                        ],
+                        1
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Iron"
+                    ]
+                ]
+            },
+            {
+                "reward": 2000,
+                "weeks": 1,
+                "reqs": [
+                    [
+                        "str",
+                        10
+                    ]
+                ],
+                "stats": [
+                    "str"
+                ],
+                "loots": [
+                    [
+                        [
+                            "Materials",
+                            "Iron"
+                        ],
+                        60
+                    ],
+                    [
+                        [
+                            "Equipment",
+                            "Shoddy",
+                            "Iron",
+                            "Short Sword"
+                        ],
+                        1
+                    ]
+                ],
+                "earnings": [
+                    [
+                        "Materials",
+                        "Iron"
+                    ]
+                ]
+            }
+        ],
+        "brassMiner": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "trapper": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "brickLayer": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "wineTaster": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "roadBuilder": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "assassin": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "mediator": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "arborist": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "expedition": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "server": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "armamentsAssembler": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "farmhand": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "gateGuard": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "mechanic": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
+        ],
+        "clothesMaker": [
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            },
+            {
+                "reward": 100,
+                "weeks": 1,
+                "reqs": [],
+                "stats": [],
+                "loots": [],
+                "earnings": []
+            }
         ]
     },
     "defaults": {
-        "texts":[
+        "barterTexts": [
+            [
+                "No chance...",
+                "Pushing your luck.",
+                "Driving a hard bargain.",
+                "Seems fair.",
+                "Seems fair.",
+                "Safe bet.",
+                "Can't refuse."
+            ],
+            [
+                "That's a little low. How about this?",
+                "Hmm, I don't know about that. Let's agree on this deal.",
+                "I'd be willing to consider this deal."
+            ]
+        ],
+        "texts": [
             "Minimum requirements not met!",
             "Barely passable...",
             "Looks like it'll go smoothly.",
             "Exceeding expectations!"
         ],
-        "lootRolls":[
-            [1, 1],
-            [2, 2],
-            [3, 3]
+        "lootRolls": [
+            [
+                1,
+                1
+            ],
+            [
+                2,
+                2
+            ],
+            [
+                3,
+                3
+            ]
         ],
-        "weighted":[
-            [1],
-            [0.75, 0.25],
-            [0.5, 0.3, 0.2]
+        "weighted": [
+            [
+                1
+            ],
+            [
+                0.75,
+                0.25
+            ],
+            [
+                0.5,
+                0.3,
+                0.2
+            ]
         ],
-        "tiermin": [50, 20],
-        "tiermax": [30, 10]
+        "tiermin": [
+            50,
+            20
+        ],
+        "tiermax": [
+            30,
+            10
+        ]
     }
 }

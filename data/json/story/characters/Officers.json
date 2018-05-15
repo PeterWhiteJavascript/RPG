@@ -39,7 +39,7 @@
                 "rfl": 20,
                 "ini": 20,
                 "enr": 20,
-                "skl": 20,
+                "skl": 100,
                 "eff": 20
             },
             "techniques": [
@@ -106,7 +106,7 @@
                 "rfl": 16,
                 "ini": 20,
                 "enr": 16,
-                "skl": 20,
+                "skl": 1,
                 "eff": 16
             },
             "techniques": [

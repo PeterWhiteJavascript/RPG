@@ -64,10 +64,7 @@ var createMaterialsObj = function(){
             });
         });
     }
-    add(GDATA.dataFiles["equipment.json"],["Weapons","Shields","Armour","Footwear","Accessories"])
-    Object.keys(GDATA.dataFiles["items.json"]).forEach(function(i){
-        obj[i] = ["None"];
-    });
+    add(GDATA.dataFiles["equipment.json"],["Weapons","Shields","Armour","Footwear","Accessories"]);
     return obj;
 };
 var uic = new UIC({
@@ -109,8 +106,7 @@ var uic = new UIC({
             Shields:Object.keys(GDATA.dataFiles["equipment.json"].Shields),
             Armour:Object.keys(GDATA.dataFiles["equipment.json"].Armour),
             Footwear:Object.keys(GDATA.dataFiles["equipment.json"].Footwear),
-            Accessories:Object.keys(GDATA.dataFiles["equipment.json"].Accessories),
-            Consumables:Object.keys(GDATA.dataFiles["items.json"])
+            Accessories:Object.keys(GDATA.dataFiles["equipment.json"].Accessories)
         },
         materials:createMaterialsObj(),
         conditionalEquals:["==","!="],
