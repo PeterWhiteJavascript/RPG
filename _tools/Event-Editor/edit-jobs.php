@@ -208,6 +208,7 @@
                     saveFile:function(){
                         FileSaver.savePage();
                         saveJsonToFile("data", "jobs-list", FileSaver.fileData);
+                        
                     },
                     savePage:function(){
                         var currentPageId = $(".job-title-cont.selected").attr("id")
@@ -257,7 +258,7 @@
                                     itm[1] = itm[3];
                                     itm[3] = b;
                                 }
-                                var chance = $(this).children("input").val();
+                                var chance = parseInt($(this).children("input").val());
                                 tier.loots.push([itm, chance]);
                             });
                             FileSaver.fileData.jobs[currentPageId].push(tier);
@@ -400,7 +401,7 @@
                                 }
                             }
                             nameSelect.on("change",function(){
-                                nameSelect.nextAll().remove();
+                                nameSelect.nextAll().not($(this).parent().children().last()).remove();
                                 addQualityAndMatOptions($(typeSelect).val(), $(this).val());
                             });
                             typeSelect.on("change",function(){
@@ -561,15 +562,21 @@
                                 var earningsCont = cont.children(".job-tier-middle-cont").children(".earnings-cont");
                                 earningsCont.empty();
                                 for(var i=0;i<tier.earnings.length;i++){
-                                    var earning = addEarning(tier.earnings[i][0],tier.earnings[i][3],tier.earnings[i][2],tier.earnings[i][1]);
-                                    earningsCont.append(earning);
+                                    if(tier.earnings[i][3]){
+                                        earningsCont.append(addEarning(tier.earnings[i][0],tier.earnings[i][3],tier.earnings[i][2],tier.earnings[i][1]));
+                                    } else {
+                                        earningsCont.append(addEarning(tier.earnings[i][0],tier.earnings[i][1]));
+                                    }
                                 }
                                 
                                 var lootsCont = cont.children(".job-tier-right-cont").children(".loots-cont");
                                 lootsCont.empty();
                                 for(var i=0;i<tier.loots.length;i++){
-                                    var loot = addLoot(tier.loots[i][0][0],tier.loots[i][0][3],tier.loots[i][1],tier.loots[i][0][2],tier.loots[i][0][1]);
-                                    lootsCont.append(loot);
+                                    if(tier.loots[i][0][3]){
+                                        lootsCont.append(addLoot(tier.loots[i][0][0],tier.loots[i][0][3],tier.loots[i][1],tier.loots[i][0][2],tier.loots[i][0][1]));
+                                    } else {
+                                        lootsCont.append(addLoot(tier.loots[i][0][0],tier.loots[i][0][1],tier.loots[i][1]));
+                                    }
                                 }
 
                             }

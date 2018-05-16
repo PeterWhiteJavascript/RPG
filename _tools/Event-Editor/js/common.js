@@ -1,4 +1,15 @@
 var _hasUnsavedChanges = false;
+function savedAnimation(){
+    var anim = $("<div class='file-saver-animation'>File Saved!</div>");
+    $("body").append(anim);
+    anim.delay(100).animate({
+        opacity:0,
+        top:"10%"
+        }, 1200,"swing",
+        function(){
+            $(this).remove();
+        });
+}
 function saveJsonToFile(type, id, data) {
     $.ajax({
         type: 'POST',
@@ -13,9 +24,11 @@ function saveJsonToFile(type, id, data) {
             console.log(data);
             changed = false;
             _hasUnsavedChanges = false;
+            savedAnimation();
         })
         .fail(function (data) {
             console.log(data);
+            alert("Error Saving. Check console for details.");
         });
 }
 function saveStoryJsonToFile(type, scene, event, data) {

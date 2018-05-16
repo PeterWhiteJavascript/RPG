@@ -246,7 +246,15 @@ body {
     overflow-y:auto;*/
     margin-bottom:10px;
 }
-
+.file-saver-animation{
+    position:absolute;
+    font-size:22px;
+    background-color:black;
+    color:white;
+    top:30%;
+    left:calc(50% - 50px);
+    border-radius:5px;
+}
 
 .var-button{
     width:100%;

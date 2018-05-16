@@ -12,9 +12,9 @@
                     [
                         [
                             "Materials",
-                            "Wool"
+                            "Wood"
                         ],
-                        "60"
+                        60
                     ],
                     [
                         [
@@ -23,13 +23,13 @@
                             "Wood",
                             "Bow"
                         ],
-                        "1"
+                        1
                     ]
                 ],
                 "earnings": [
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Weapons",
@@ -55,9 +55,9 @@
                     [
                         [
                             "Materials",
-                            "Wool"
+                            "Wood"
                         ],
-                        "65"
+                        65
                     ],
                     [
                         [
@@ -66,17 +66,17 @@
                             "Wood",
                             "Bow"
                         ],
-                        "1"
+                        1
                     ]
                 ],
                 "earnings": [
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ]
                 ]
             },
@@ -96,9 +96,9 @@
                     [
                         [
                             "Materials",
-                            "Wool"
+                            "Wood"
                         ],
-                        "60"
+                        60
                     ],
                     [
                         [
@@ -107,17 +107,17 @@
                             "Wood",
                             "Bow"
                         ],
-                        "1"
+                        1
                     ]
                 ],
                 "earnings": [
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ]
                 ]
             },
@@ -137,9 +137,9 @@
                     [
                         [
                             "Materials",
-                            "Wool"
+                            "Wood"
                         ],
-                        "75"
+                        75
                     ],
                     [
                         [
@@ -148,17 +148,17 @@
                             "Wood",
                             "Bow"
                         ],
-                        "1"
+                        1
                     ]
                 ],
                 "earnings": [
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ]
                 ]
             },
@@ -178,9 +178,9 @@
                     [
                         [
                             "Materials",
-                            "Wool"
+                            "Wood"
                         ],
-                        "80"
+                        80
                     ],
                     [
                         [
@@ -189,21 +189,21 @@
                             "Wood",
                             "Bow"
                         ],
-                        "1"
+                        1
                     ]
                 ],
                 "earnings": [
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ],
                     [
                         "Materials",
-                        "Wool"
+                        "Wood"
                     ]
                 ]
             }
