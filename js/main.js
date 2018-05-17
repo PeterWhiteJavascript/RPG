@@ -198,6 +198,7 @@ Q.load(toLoad.join(","),function(){
     Q.state.set("entourageRanks", GDATA.dataFiles["entourage-ranks.json"]);
     
     Q.state.set("saveData",GDATA.dataFiles["new-game.json"]);
+    console.log(Q.state.p)
     //UI Objects
     Q.compileSheets("ui/ui-objects.png","json/data/ui-objects.json");
     
@@ -244,11 +245,13 @@ Q.load(toLoad.join(","),function(){
     Q.partyManager = new Q.PartyManager();
     //Advance jobs each week
     Q.jobsController = new Q.JobsController();
+    //Keep track of missions
+    Q.missionsController = new Q.MissionsController();
     
     
     //Creates menus (screens)
     Q.menuBuilder = new Q.MenuBuilder();
-    
+    Q.menuBuilder.MenuControls.turnOn();
     
     
     /* TESTING EVENT */

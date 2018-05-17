@@ -88,6 +88,9 @@
         }
     ],
     "missions":[
-    
+        {
+            "name":"Opening",
+            "desc":"Do the opening sequence."
+        }
     ]
 }

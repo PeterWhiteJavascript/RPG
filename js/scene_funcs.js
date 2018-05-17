@@ -37,6 +37,7 @@ Quintus.SceneFuncs=function(Q){
         var data = stage.options.data;
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
+            Q.menuBuilder.MenuControls.disabled = false;
         });
     });
     Q.scene("Location",function(stage){
@@ -45,7 +46,9 @@ Quintus.SceneFuncs=function(Q){
         Q.audioController.playMusic(data.mainMusic,function(){
             Q.locationController.data = data;
             Q.jobsController.currentJobs = Q.jobsController.getCurrentJobs();
+            Q.missionsController.currentMissions = Q.missionsController.getCurrentMissions();
             Q.locationController.startEvent(data);
+            Q.menuBuilder.MenuControls.disabled = false;
         });
     });
     

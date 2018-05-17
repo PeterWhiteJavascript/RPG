@@ -1,14 +1,17 @@
 {
     "properties":[
         "jobsAvailable",
-        "maxPartySize"
+        "maxPartySize",
+        "eqQualityRank"
     ],
     "base":[
         3,
-        10
+        10,
+        0
     ],
     "mult":[
         1,
-        2
+        2,
+        1
     ]
 }

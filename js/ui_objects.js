@@ -180,7 +180,7 @@ Quintus.UIObjects=function(Q){
             music:"townMusic",
             bg:"townBG",
             screen:[{
-                    cl:"w-s menu-style3-left",
+                    cl:"w-s menu-style3-left borderless-top-right borderless-bottom-right",
                     data:{
                         lists:[
                             {
@@ -192,7 +192,7 @@ Quintus.UIObjects=function(Q){
                     }
                 },
                 {
-                    cl:"w-m menu-style3-middle",
+                    cl:"w-m menu-style3-middle borderless",
                     data:{
                         lists:[
                             {
@@ -227,7 +227,7 @@ Quintus.UIObjects=function(Q){
                     }
                 },
                 {
-                    cl:"w-s menu-style3-right",
+                    cl:"w-s menu-style3-right borderless-top-left borderless-bottom-left",
                     data:{
                         lists:[
                             {
@@ -559,7 +559,18 @@ Quintus.UIObjects=function(Q){
             music:"mainMusic",
             bg:"mainBG",
             screen:[
-                
+                {
+                    cl:"w-sm",
+                    data:{
+                        lists:[
+                            {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
+                                items:"missions"
+                            }
+                        ]
+                    }
+                }
             ]
         },
         advanceWeek:{
@@ -1565,6 +1576,11 @@ Quintus.UIObjects=function(Q){
                 case "jobs":
                     var jobs = Q.jobsController.currentJobs;
                     return jobs.map(function(job, idx){return [{text:job.name, desc: job.desc, textClass:"retain-selected"+(job.inProgress ? " job-in-progress menu-option-disabled" : ""), idx:idx}];});
+                case "missions":
+                    var missions = Q.missionsController.currentMissions;
+                    var items = missions.map(function(mission, idx){return [{text:mission.name, desc: mission.desc, idx:idx, confirm:{func:"changeEvent",props:[mission.name]}}];});
+                    items.push([{text:"Back", desc:"Back to actions.", confirm:{func:"displayMenu",props:["actions"]}}]);
+                    return items;
                 case "roster":
                     var roster = Q.partyManager.roster;
                     return roster.map(function(char){ return [{text:char.name, desc: "Displaying "+char.name, textClass:"retain-selected"}]; });
@@ -1628,6 +1644,9 @@ Quintus.UIObjects=function(Q){
                     }
                 }
             });
+        },
+        turnOff:function(){
+            $(document).unbind("keydown");
         },
         reset:function(){
             this.selectedIdx = [0, 0, 0];
@@ -1810,14 +1829,12 @@ Quintus.UIObjects=function(Q){
             this.mainBG = data.mainBG;
             this.townBG = data.townBG;
             this.displayMenu("main", true);
-            //Turn on inputs for the menus
-            Q.menuBuilder.MenuControls.turnOn();
             
             
             //TEMP
+           /* $(".menu-option:eq(0)").trigger("click");
             $(".menu-option:eq(0)").trigger("click");
-            $(".menu-option:eq(0)").trigger("click");
-            $(".menu-option:eq(2)").trigger("click");
+            $(".menu-option:eq(2)").trigger("click");*/
             /*$(".screen-menu:eq(1)").children(".options-list").children(".options-list-row").children(".menu-option:eq(1)").trigger("click");
             $(".menu-option:eq(0)").trigger("click");
             $(".screen-menu:eq(1)").children(".options-list:eq(1)").children(".options-list-row:eq(1)").children(".menu-option:eq(0)").trigger("mouseover");  
@@ -1848,6 +1865,13 @@ Quintus.UIObjects=function(Q){
             //Set the focus to the selected menu item
             Q.menuBuilder.MenuControls.setFocus();
         },
+        changeEvent:function(name){
+            var type = Q.state.get("currentEvent").type;
+            var act = Q.state.get("currentEvent").scene;
+            $("#main-container").empty();
+            Q.menuBuilder.MenuControls.disabled = true;
+            Q.startScene(type, act, name);
+        },  
         advanceWeek:function(pageTo){
             var controller = this;
             Q.menuBuilder.MenuControls.disabled = true;
@@ -2082,6 +2106,10 @@ Quintus.UIObjects=function(Q){
                     chooseJob();
                     
                     break;
+                case "missions":
+                    var list = screen.children(".screen-menu:eq(0)").children(".options-list");
+                    
+                    break;
                 case "recruit":
                     function editCostText(){
                         var char = controller.curChar;
@@ -2172,6 +2200,7 @@ Quintus.UIObjects=function(Q){
             var allItems = Q.state.get("equipment");
             var MB = Q.menuBuilder;
             var maxItemsShown = 6;
+            var highestQualityOfEqShown = 11;Q.partyManager.getRankProp("eqQualityRank");
             var cont = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
             cont.children(".options-list-row:eq(0)").nextAll().remove();
             var currentHeadings = [];
@@ -2259,6 +2288,12 @@ Quintus.UIObjects=function(Q){
                 cont.append(valueCont);
                 if(itemNum >= maxItemsShown){ valueCont.hide(); };
             }
+            var qKeys = Object.keys(allItems.Quality);
+            
+            function validToShow(quality){
+                if(qKeys.indexOf(quality) <= highestQualityOfEqShown) return true;
+            }
+            var itemsShown = items.length;
             switch(field){
                 case "Materials":
                     displayTable([["Name", "name"], ["Total Cost", "cost"]]);
@@ -2285,32 +2320,49 @@ Quintus.UIObjects=function(Q){
                     displayTable([["Name", "name"], ["Total Cost", "cost"], ["Damage", "damage"], ["Atk Speed", "atkspeed"],  ["Range", "range"], ["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
                         var itm = items[i];
-                        displayTableItem([itm.name, itm.cost, ~~((itm.mindmg+itm.maxdmg)/2), itm.attackSpeed, itm.range,"Weapon desc..."], i, [itm.quality, itm.material]);
+                        if(validToShow(itm.quality)){ 
+                            displayTableItem([itm.name, itm.cost, ~~((itm.mindmg+itm.maxdmg)/2), itm.attackSpeed, itm.range,"Weapon desc..."], i, [itm.quality, itm.material]);
+                        } else {
+                            itemsShown --;
+                        }
                     }
                     break;
                 case "Shields":
                     displayTable([["Name", "name"], ["Total Cost", "cost"],["Block", "block"],["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
                         var itm = items[i];
-                        displayTableItem([itm.name, itm.cost, itm.block, "Shield desc..."], i, [itm.quality, itm.material]);
+                        if(validToShow(itm.quality)){
+                            displayTableItem([itm.name, itm.cost, itm.block, "Shield desc..."], i, [itm.quality, itm.material]);
+                        } else {
+                            itemsShown --;
+                        }
                     }
                     break;
                 case "Armour":
                     displayTable([["Name", "name"], ["Total Cost", "cost"],["Dmg Reduction", "defense"],["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
                         var itm = items[i];
-                        displayTableItem([itm.name, itm.cost, itm.damageReduction, "Armour desc..."], i, [itm.quality, itm.material]);
+                        if(!validToShow(itm.quality)){
+                            displayTableItem([itm.name, itm.cost, itm.damageReduction, "Armour desc..."], i, [itm.quality, itm.material]);
+                        } else {
+                            itemsShown --;
+                        }
                     }
                     break;
                 case "Footwear":
                     displayTable([["Name", "name"], ["Total Cost", "cost"],["Description","desc"]]);
                     for(var i=0;i<items.length;i++){
                         var itm = items[i];
-                        displayTableItem([itm.name, itm.cost, "Footwear desc..."], i, [itm.quality, itm.material]);
+                        if(!validToShow(itm.quality)){
+                            displayTableItem([itm.name, itm.cost, "Footwear desc..."], i, [itm.quality, itm.material]);
+                        } else {
+                            itemsShown --;
+                        }
                     }
                     break;
             }
-            if(items.length >= maxItemsShown){
+            
+            if(itemsShown >= maxItemsShown){
                 var bottomIdx = 3;
                 var curBottom = bottomIdx;
                 var curTop = bottomIdx + maxItemsShown - 1;
@@ -2343,7 +2395,7 @@ Quintus.UIObjects=function(Q){
                         $(cont).children(".options-list-row:eq("+curTop+")").show();
                         curBottom ++;
                     }
-                })
+                });
                 downArrow.append(opt);
                 opt.children("span").replaceWith(MB.icon("menu-option", "quantifier-down-arrow"));
                 cont.append(downArrow);
@@ -2351,12 +2403,19 @@ Quintus.UIObjects=function(Q){
             } else {
                 if(!sorted) cont.children(".options-list-row:eq(2)").children(".menu-option:eq(0)").trigger("mouseover");
             }
+            if(!itemsShown){
+                $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(0)").children(".menu-option").addClass("menu-option-disabled");
+                $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(1)").children(".menu-option").addClass("menu-option-disabled");
+            } else {
+                $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(0)").children(".menu-option").removeClass("menu-option-disabled");
+                $(".screen-menu:eq(1)").children(".options-list").children(".options-list-row:eq(1)").children(".menu-option").removeClass("menu-option-disabled");
+            }
         },
         askQuantityPurchaseItem:function(){
             var controller = this;
             var menu = $(".screen-menu:eq(0)").children(".options-list:eq(0)");
             var typeIdx = menu.children(".options-list-row:eq(0)").children(".menu-option-selected").text();
-            var itmIdx = menu.children(".options-list-row").index(menu.children(".options-list-row").children(".hovered-row:eq(0)").parent()) - 2;
+            var itmIdx = menu.children(".options-list-row").index(menu.children(".options-list-row").children(".hovered-row:eq(0)").parent()) - 3;
             if(!itmIdx || itmIdx < 0) itmIdx = 0;
             var item = controller.currentItems[typeIdx][itmIdx];
             var MB = Q.menuBuilder;
@@ -2406,7 +2465,7 @@ Quintus.UIObjects=function(Q){
                 MB.MenuControls.getSelected().mouseover();
                 $(".screen-menu:eq(0)").children(".options-list").removeClass("list-keyboard-disabled");
                 $(".screen-menu:eq(1)").children(".options-list").removeClass("list-keyboard-disabled");
-            }
+            };
             confirm.on("back",goBack);
             confirmCont.append(confirm);
             var backCont = MB.cont("w-xl h-s options-list-row");
@@ -3267,6 +3326,7 @@ Quintus.UIObjects=function(Q){
             Event:{}
         },
         changeMoney:function(amount){
+            if(typeof amount !== "number") amount = parseInt(amount);
             Q.state.get("saveData").money += amount;
             $("#hud-money").text(Q.state.get("saveData").money);
         },
@@ -3669,7 +3729,6 @@ Quintus.UIObjects=function(Q){
             $("#main-container").append('<div id="text-content" class="fancy-border"></div>');
             $("#text-content").append('<div id="text-content-story"></div>');
             this.data = data;
-            //Start should actually be party menu.
             
             this.displayPage(data.pages[0].name);
         },
@@ -3683,13 +3742,18 @@ Quintus.UIObjects=function(Q){
             $("#background-container").css('background-image', "url('"+url+"')");
             Q.groupsProcessor.processGroups(this.currentPage.onload,this);
             $("#text-content-story").append(this.newPage(this.currentPage));
+            var listIdx = $(".options-list-row").index($(".menu-option").first().parent());
+            Q.menuBuilder.MenuControls.selectSelectedIdx([0,listIdx,0]);
+            Q.menuBuilder.MenuControls.setFocus();
+            $(Q.menuBuilder.MenuControls.getSelected()).addClass("menu-option-selected");
         },
         changePage:function(name){
             //Wrap this in setTimeout because jquery append doesn't add to html instantly, which means that if there is a changePage in an onload, it will display two pages.
+            var cont = this;
             setTimeout(function(){
                 $("#text-content-story").children(".page").first().remove();
+                cont.displayPage(name);
             });
-            this.displayPage(name);
         },
         newPage:function(data){
             var cont = $("<div class='page'></div>");
@@ -3709,16 +3773,18 @@ Quintus.UIObjects=function(Q){
             Q.groupsProcessor.processImpact(data[3],Q.storyController);
         },
         getPageChoices:function(choices){
-            var cont = $("<div class='page-choices'></div>");
-            for(var i=0;i<choices.length;i++){
-                if(!choices[i][1]){
-                    //Use data prop as text may use variables
-                    $(cont).append("<div class='page-choice' data='"+choices[i][0]+"'><span>"+Q.textProcessor.replaceText(choices[i][0])+"</span></div>");
-                    $(cont).children(".page-choice").last().click(function(){
-                        Q.storyController.selectChoice($(this).attr("data"));
-                    });
-                }
-            }
+            var cont = Q.menuBuilder.optionsList({
+                listClass:"w-xl flex-v",
+                rowClass:"w-xl",
+                textClass:"",
+                items:choices.map(function(choice){
+                    return [{
+                        text: choice[0],
+                        disabled: choice[1],
+                        confirm:{func:function(){Q.storyController.selectChoice(choice[0]);}}
+                    }];
+                })
+            });
             return cont;
         },
         changeEvent:function(props){
@@ -4236,7 +4302,7 @@ Quintus.UIObjects=function(Q){
                 bigCont.append(cont);
                 var top = MB.cont("w-xl h-s flex-h");
                 var iconCont = MB.cont("w-sm h-xl");
-                iconCont.append(MB.icon("job-complete-icon","job-complete.png"));
+                iconCont.append(MB.icon("job-complete-icon","job-complete"));
                 var titleCont = MB.cont("w-sm h-xl");
                 titleCont.append(MB.text("w-xl h-xl heading-text", comp.job.name+" ("+(comp.job.tier+1)+")"));
                 var proceedButtonOptionsCont = MB.cont("w-sm h-xl flex-v options-list");
@@ -4288,6 +4354,18 @@ Quintus.UIObjects=function(Q){
             } else {
                 if(callback) callback();
             }
+        }
+    });
+    /*
+     *  All missions completed data should be saved in save file.
+     *  Missions that have been completed should not show when going back to a location.
+     */
+    Q.GameObject.extend("MissionsController",{
+        currentMissions:[],
+        getCurrentMissions:function(){
+            //TODO: filter through and check if the mission has been completed before displaying. Check that the mission is not expired as well based on week (or something like that).
+            var missions = Q.locationController.data.missions;
+            return missions;
         }
     });
     

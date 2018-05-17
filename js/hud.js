@@ -288,21 +288,23 @@ Quintus.HUD=function(Q){
                 options:[["Move","Attack","Technique","Carry","Item","Status","Wait"],["Status","Exit Menu"],[]],
                 funcs:[["loadMove","loadAttack","loadTechniquesMenu","loadLift","loadItemsMenu","loadStatus","loadEndTurn"],["loadStatus","loadExitMenu"],[]],
                 conts:[],
-                radius:0
+                radius:0,
+                menuNum
             });
             this.p.x = Q.width-this.p.w;
             this.p.y = Q.height-this.p.h;
             //Display the initial menu on inserted to the stage
             this.on("inserted");
             
+            //TODO: use jquery menu controls (ui-objects.js line 1624)
             //Add the inputs for the menu
-            this.add("menuControls");
+            //this.add("menuControls");
             //If this is the active character, set up the skills options and check for lifted
             if(this.p.active){
-                this.menuControls.menuNum = 0;
+                this.menuNum = 0;
                 this.setActionOptions();
                 this.checkLifting();
-            } else this.menuControls.menuNum = 1;
+            } else this.menuNum = 1;
         },
         inserted:function(){
             //Check if the target has done move or action and gray out the proper container
@@ -314,7 +316,7 @@ Quintus.HUD=function(Q){
             //Turn on the inputs
             this.menuControls.turnOnInputs();
             //Display the menu options
-            this.displayMenu(this.menuControls.menuNum,0);
+            this.displayMenu(this.menuNum,0);
         },
         pressConfirm:function(selected){
             this[this.p.conts[selected].p.func]();
@@ -396,7 +398,7 @@ Quintus.HUD=function(Q){
         },
         //Displays new menu items within this menu
         displayMenu:function(menuNum,selected){
-            this.menuControls.menuNum = menuNum;
+            this.menuNum = menuNum;
             if(this.p.title) this.p.title.destroy();
             if(this.p.conts.length) this.menuControls.destroyConts();
             this.p.title = this.insert(new Q.UI.Text({x:this.p.w/2,y:15,label:this.p.titles[menuNum],size:20}));
