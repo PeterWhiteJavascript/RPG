@@ -99,6 +99,7 @@ Quintus.HUD=function(Q){
             switch(type){
                 case "battle":
                     this.actionsMenu = this.staticMenu("actions-menu");
+                    this.actionsMenu.disable();
                     this.terrainMenu = this.staticMenu("terrain-menu");
                     this.charSummaryMenu = this.staticMenu("char-summary-menu");
                     $("#main-container").append(this.actionsMenu.menu,this.terrainMenu.menu,this.charSummaryMenu.menu);
@@ -123,7 +124,8 @@ Quintus.HUD=function(Q){
                 },
                 remove:function(){
                     this.menu.remove();
-                }
+                },
+                
             };
             switch(name){
                 case "actions-menu":
@@ -158,6 +160,7 @@ Quintus.HUD=function(Q){
                     }
                     function addPlaceableAlliesOptions(actionsMenu){
                         var opts = getPlaceableAlliesOpts(Q.BatCon.battlePlacement.placeableAllies);
+                        opts.push("Back");  
                         addOptions(opts,actionsMenu.menu);
                         actionsMenu.options = opts;
                     }
@@ -166,10 +169,14 @@ Quintus.HUD=function(Q){
                     menu.empty();
                     addPlaceableAlliesOptions(menu);
                     menu.confirm = function(){
+                        //If we've pressed the back button
+                        if(!this.placingCharacter){
+                            Q.inputs['confirm'] = false;
+                            return menu.back();
+                        }
                         this.placingCharacter.add("directionControls");
                         this.placingCharacter.on("pressedConfirm",function(){
                             Q.BatCon.battlePlacement.confirmPlacement(this);
-                            console.log(this)
                             this.directionControls.removeControls();
                             
                         });
@@ -192,17 +199,23 @@ Quintus.HUD=function(Q){
                     };
                     menu.onOption = function(){
                         var idx = Math.max(0,this.selected);
-                        var char = Q.BatCon.battlePlacement.placeableAllies[idx];
-                        char.loc = Q.pointer.p.loc;
-                        
                         if(this.placingCharacter){
                             this.placingCharacter.destroy();
                             Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
                         }
-                        this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
-                        Q.pointer.trigger("onTarget",this.placingCharacter);
+                        if(idx !== this.options.length - 1){
+                            var char = Q.BatCon.battlePlacement.placeableAllies[idx];
+                            char.loc = Q.pointer.p.loc;
+                            this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
+                            Q.pointer.trigger("onTarget",this.placingCharacter);
+                        } else {
+                            this.placingCharacter = false;
+                        }
                     };
                     menu.enable();
+                    break;
+                case "turnActions":
+                    console.log('hi')
                     break;
             }
             this.controls(this.actionsMenu);
@@ -220,7 +233,7 @@ Quintus.HUD=function(Q){
                 if(dir === "up") return 0;
                 if(dir === "down") return obj.options.length-1;
             }
-            function cycle(obj,to,selectedClass,dir){
+            function cycle(obj, to, selectedClass, dir){
                 if(to === obj.selected) return; //Don't allow selecting same option (hover same option multiple times)
                 obj.menu.children(".menu-option-cont:eq("+obj.selected+")").removeClass(selectedClass);
                 if(dir){
@@ -1432,68 +1445,6 @@ Quintus.HUD=function(Q){
             });
             Q.BatCon.setXY(this);
             this.add("animation");
-        }
-    });
-    Q.component("directionControls", {
-        added: function() {
-            this.dirSelector = $("<div class='battle-dir-selector'><div class='battle-dir-center'></div><div class='battle-dir-arrow-bg battle-dir-arrow-left'></div><div class='battle-dir-arrow-bg battle-dir-arrow-up'></div><div class='battle-dir-arrow-bg battle-dir-arrow-right'></div><div class='battle-dir-arrow-bg battle-dir-arrow-down'></div></div>");
-            $("#main-container").append(this.dirSelector);
-            this.dirSelector.children(".battle-dir-arrow-bg").on("mouseenter",this.hoverDirection);
-            this.dirSelector.children(".battle-dir-arrow-"+this.entity.p.dir).trigger("mouseenter");
-            var entity = this.entity;
-            this.dirSelector.children(".battle-dir-arrow-bg").on("click",function(){
-                entity.trigger("pressedConfirm");
-                Q.inputs['confirm']=false;
-            });
-            this.entity.on("step",this,"step");
-            this.canMove = true;
-            this.left = true;
-            this.right = true;
-            this.up = true;
-            this.down = true;
-            Q.inputs['confirm'] = false;
-        },
-        removeControls:function(){
-            this.entity.off("pressedConfirm");
-            this.entity.off("pressedBack");
-            this.entity.off("step",this,"step");
-            this.dirSelector.remove();
-            this.entity.del("directionControls");
-        },
-        hoverDirection:function(){
-            var dirCl = $(this).attr("class").split(" ")[1];
-            var dirP = dirCl.split("-");
-            var dir = dirP[dirP.length-1];
-            Q.inputs[dir] = true;
-        },
-        step:function(dt){
-            var dir;
-            if(Q.inputs['left']&&this.left) {
-                dir='left';
-            } else if(Q.inputs['right']&&this.right) {;
-                dir='right';
-            } else if(Q.inputs['up']&&this.up) {
-                dir='up';
-            } else if(Q.inputs['down']&&this.down) {
-                dir='down';
-            }
-            if(dir){
-                this.entity.playStand(dir);
-                $(".battle-dir-arrow-bg-selected").removeClass("battle-dir-arrow-bg-selected");
-                this.dirSelector.children(".battle-dir-arrow-"+dir).addClass("battle-dir-arrow-bg-selected");
-            }
-            if(Q.inputs['back']){
-                this.entity.trigger("pressedBack");
-                Q.inputs['back']=false;
-            } 
-            else if(Q.inputs['confirm']){
-                this.entity.trigger("pressedConfirm");
-                Q.inputs['confirm']=false;
-            }
-            Q.inputs['left'] = false;
-            Q.inputs['right'] = false;
-            Q.inputs['up'] = false;
-            Q.inputs['down'] = false;
         }
     });
     

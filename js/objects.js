@@ -759,7 +759,7 @@ Quintus.Objects=function(Q){
         init:function(p){
             this._super(p,{
                 w:20,h:30,
-                type:Q.SPRITE_NONE,
+                type:Q.SPRITE_NONE | Q.SPRITE_CHARACTER,
                 sprite:"Character",
                 dir:"down",
                 //Store amounts for certain buffs/debuffs. Amounts are reset to 0 when the status finishes.
@@ -1099,5 +1099,73 @@ Quintus.Objects=function(Q){
             Q.audioController.playSound("shooting.mp3");
         },
         removeGaveStatus:function(){}
+    });
+    Q.component("directionControls", {
+        added: function() {
+            this.dirSelector = $("<div class='battle-dir-selector'><div class='battle-dir-center'></div><div class='battle-dir-arrow-bg battle-dir-arrow-left'></div><div class='battle-dir-arrow-bg battle-dir-arrow-up'></div><div class='battle-dir-arrow-bg battle-dir-arrow-right'></div><div class='battle-dir-arrow-bg battle-dir-arrow-down'></div></div>");
+            $("#main-container").append(this.dirSelector);
+            this.dirSelector.children(".battle-dir-arrow-bg").on("mouseenter",this.hoverDirection);
+            this.dirSelector.children(".battle-dir-arrow-"+this.entity.p.dir).trigger("mouseenter");
+            var entity = this.entity;
+            this.dirSelector.children(".battle-dir-arrow-bg").on("click",function(){
+                entity.trigger("pressedConfirm");
+                Q.inputs['confirm']=false;
+            });
+            this.entity.on("step",this,"step");
+            this.canMove = true;
+            this.left = true;
+            this.right = true;
+            this.up = true;
+            this.down = true;
+            Q.inputs['confirm'] = false;
+            this.entity.stage.viewSprite.on("touch", $.proxy(this.clickOutside, this));
+            $("#quintus").focus();
+        },
+        clickOutside:function(){
+            this.entity.trigger("pressedBack");
+        },
+        removeControls:function(e){
+            this.entity.stage.viewSprite.off("touch",this.removeControls);
+            this.entity.off("pressedConfirm");
+            this.entity.off("pressedBack");
+            this.entity.off("step", this, "step");
+            this.dirSelector.remove();
+            this.entity.del("directionControls");
+        },
+        hoverDirection:function(){
+            var dirCl = $(this).attr("class").split(" ")[1];
+            var dirP = dirCl.split("-");
+            var dir = dirP[dirP.length-1];
+            Q.inputs[dir] = true;
+        },
+        step:function(dt){
+            var dir;
+            if(Q.inputs['left']&&this.left) {
+                dir='left';
+            } else if(Q.inputs['right']&&this.right) {;
+                dir='right';
+            } else if(Q.inputs['up']&&this.up) {
+                dir='up';
+            } else if(Q.inputs['down']&&this.down) {
+                dir='down';
+            }
+            if(dir){
+                this.entity.playStand(dir);
+                $(".battle-dir-arrow-bg-selected").removeClass("battle-dir-arrow-bg-selected");
+                this.dirSelector.children(".battle-dir-arrow-"+dir).addClass("battle-dir-arrow-bg-selected");
+            }
+            if(Q.inputs['back']){
+                this.entity.trigger("pressedBack");
+                Q.inputs['back']=false;
+            } 
+            else if(Q.inputs['confirm']){
+                this.entity.trigger("pressedConfirm");
+                Q.inputs['confirm']=false;
+            }
+            Q.inputs['left'] = false;
+            Q.inputs['right'] = false;
+            Q.inputs['up'] = false;
+            Q.inputs['down'] = false;
+        }
     });
 };

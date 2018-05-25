@@ -1,5 +1,6 @@
 Quintus.SceneFuncs=function(Q){
     Q.startScene = function(type,scene,event,char){
+        Q.menuBuilder.MenuControls.turnOff();
         $("#HUD-container").hide();
         Q.load("json/story/events/"+type+"/"+scene+"/"+event+".json",function(){
             Q.clearStages();
@@ -107,9 +108,11 @@ Quintus.SceneFuncs=function(Q){
                 stage.viewport.scale = 2;
                 //The invisible sprite that the viewport follows
                 stage.viewSprite = stage.insert(new Q.ViewSprite());
+                
                 Q.viewFollow(stage.viewSprite,stage);
 
                 stage.viewSprite.animateTo(Q.BatCon.getXY(data.viewLoc));
+                
 
                 //Set the batcon's stage
                 Q.BatCon.stage = stage;
@@ -205,8 +208,6 @@ Quintus.SceneFuncs=function(Q){
                 Q.BattleGrid.reset();
                 //Set the batcon's stage
                 Q.BatCon.stage = stage;
-                stage.add("viewport");
-                stage.viewport.scale = 2;
 
                 //Display the enemies, interactables, pickups, and placement locations
                 var chars = [];
@@ -225,6 +226,40 @@ Quintus.SceneFuncs=function(Q){
                 //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
                 Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
 
+                stage.add("viewport");
+                stage.viewport.scale = 2;
+                
+                
+                stage.viewSprite = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI, x:Q.pointer.p.x, y:Q.pointer.p.y, dragged:false}));
+                stage.viewSprite.add("tween");
+                stage.viewSprite.on("touch",function(){
+                    if(stage.viewport.following !== this){
+                        Q.viewFollow(this,stage);
+                    }
+                });
+                stage.viewSprite.drag = function(touch){
+                    this.p.x = touch.origX - touch.dx / stage.viewport.scale;
+                    this.p.y = touch.origY - touch.dy / stage.viewport.scale;
+                    this.p.dragged = true;
+                };
+                stage.viewSprite.on("drag");
+                stage.viewSprite.on("touchEnd",function(touch){
+                    //We clicked without dragging
+                    if(!Q.pointer.p.disabled && !this.p.dragged){
+                        Q.pointer.p.loc = Q.getLoc(touch.x, touch.y);
+                        Q.BatCon.setXY(Q.pointer);
+                        Q.pointer.trigger("pressedConfirm", Q.pointer);
+                    } else {
+                        
+                    }
+                    
+                    this.p.dragged = false;
+                });
+                stage.viewSprite.centerOn = function(loc){
+                    var pos = Q.getXY(loc);
+                    this.p.x = pos.x;
+                    this.p.y = pos.y;
+                };
                 //Default to following the pointer
                 Q.viewFollow(Q.pointer,stage);
 
@@ -234,8 +269,11 @@ Quintus.SceneFuncs=function(Q){
                 Q.BatCon.battlePlacement.showPlacementSquares(battleData.placementSquares);
                 Q.BatCon.battlePlacement.startPlacingAllies(battleData);
                 
+                Q.pointer.add("pointerPlaceAllies");
                 Q.BattleMenusController = new Q.Menus("battle");
-                Q.BattleMenusController.displayActions("characterSelection");
+                //Q.BattleMenusController.displayActions("characterSelection");
+                
+                
             });
         },{
             progressCallback:Q.progressCallback,

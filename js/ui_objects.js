@@ -3741,19 +3741,17 @@ Quintus.UIObjects=function(Q){
             var url = 'images/bg/'+this.currentPage.bg;
             $("#background-container").css('background-image', "url('"+url+"')");
             Q.groupsProcessor.processGroups(this.currentPage.onload,this);
-            $("#text-content-story").append(this.newPage(this.currentPage));
+            //If there was a changePage in the onload, don't load the default.
+            if(!$(".page").length) $("#text-content-story").append(this.newPage(this.currentPage));
+            
             var listIdx = $(".options-list-row").index($(".menu-option").first().parent());
             Q.menuBuilder.MenuControls.selectSelectedIdx([0,listIdx,0]);
             Q.menuBuilder.MenuControls.setFocus();
             $(Q.menuBuilder.MenuControls.getSelected()).addClass("menu-option-selected");
         },
         changePage:function(name){
-            //Wrap this in setTimeout because jquery append doesn't add to html instantly, which means that if there is a changePage in an onload, it will display two pages.
-            var cont = this;
-            setTimeout(function(){
-                $("#text-content-story").children(".page").first().remove();
-                cont.displayPage(name);
-            });
+            $("#text-content-story").children(".page").first().remove();
+            this.displayPage(name);
         },
         newPage:function(data){
             var cont = $("<div class='page'></div>");

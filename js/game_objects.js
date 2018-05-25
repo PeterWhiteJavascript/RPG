@@ -6,6 +6,7 @@ Quintus.GameObjects=function(Q){
             this.entity.on("pressedConfirm",Q.BatCon.battlePlacement,"checkPlacement");
             this.entity.on("checkInputs");
             this.entity.on("checkConfirm");
+            this.entity.p.disabled = false;
         },
         remove:function(){
             this.entity.hide();
@@ -13,6 +14,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkInputs");
             this.entity.off("checkConfirm");
             this.entity.del("pointerPlaceAllies");
+            this.entity.p.disabled = true;
         }
     });
     //When a pointer is selecting where the character should move to
@@ -25,6 +27,7 @@ Quintus.GameObjects=function(Q){
             this.entity.on("checkConfirm");
             this.entity.on("inputMoved",this,"inputMoved");
             this.entity.snapTo(this.entity.p.user);
+            this.entity.p.disabled = false;
         },
         disable:function(){
             this.entity.hide();
@@ -33,6 +36,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkInputs");
             this.entity.off("checkConfirm");
             this.entity.off("inputMoved",this,"inputMoved");
+            this.entity.p.disabled = true;
         },
         remove:function(){
             Q.stage(2).ActionMenu.show();
@@ -40,6 +44,7 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).ActionMenu.displayMenu(Q.stage(2).ActionMenu.menuControls.menuNum,0);
             this.entity.del("pointerMoveControls");
             this.entity.p.user = false;
+            this.entity.p.disabled = true;
         },
         pressedBack:function(){
             this.entity.snapTo(Q.rangeController.target);
@@ -58,6 +63,7 @@ Quintus.GameObjects=function(Q){
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkInputs");
             this.entity.on("checkConfirm");
+            this.entity.p.disabled = false;
         },
         remove:function(){
             this.entity.hide();
@@ -69,6 +75,7 @@ Quintus.GameObjects=function(Q){
             Q.stage(2).ActionMenu.show();
             Q.stage(2).ActionMenu.menuControls.turnOnInputs();
             this.entity.p.user = false;
+            this.entity.p.disabled = true;
         },
         disable:function(){
             this.entity.off("pressedConfirm",this,"checkOnCharacter");
@@ -105,6 +112,7 @@ Quintus.GameObjects=function(Q){
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkConfirm");
             this.entity.on("checkInputs");
+            this.entity.p.disabled = false;
         },
         
         remove:function(){
@@ -115,6 +123,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkConfirm");
             this.entity.del("pointerDropControls");
             this.entity.p.user = false;
+            this.entity.p.disabled = true;
         },
         checkValidToDrop:function(){
             var user = Q.BatCon.turnOrder[0];
@@ -155,6 +164,7 @@ Quintus.GameObjects=function(Q){
             this.entity.on("pressedBack",this,"pressedBack");
             this.entity.on("checkConfirm");
             this.entity.on("checkInputs");
+            this.entity.p.disabled = false;
         },
         remove:function(){
             this.entity.hide();
@@ -164,6 +174,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("checkConfirm");
             this.entity.del("pointerLiftControls");
             this.entity.p.user = false;
+            this.entity.p.disabled = true;
         },
         checkValidToCarry:function(){
             var user = Q.BatCon.turnOrder[0];
@@ -243,6 +254,7 @@ Quintus.GameObjects=function(Q){
                     this.entity.snapTo(possibleTargets[0]);
                 }
             }
+            this.entity.p.disabled = false;
         },
         inputMoved:function(){},
         remove:function(){
@@ -267,6 +279,7 @@ Quintus.GameObjects=function(Q){
             this.entity.off("pressedConfirm",Q.rangeController,"checkConfirmAttack");
             this.entity.off("pressedBack",this,"pressedBack");
             this.entity.del("pointerAttackControls");
+            this.entity.p.disabled = true;
         },
         adjustTiles:function(dir,center,technique){
             Q.aoeController.resetGrid();
@@ -337,7 +350,8 @@ Quintus.GameObjects=function(Q){
                 flashObjs:[],
                 viewNotSet:true,
                 
-                locsTo:[]
+                locsTo:[],
+                disabled:true
             });
             this.add("animation, tween");
             this.on("inserted");
@@ -346,6 +360,45 @@ Quintus.GameObjects=function(Q){
         inserted:function(){
             Q.BatCon.setXY(this);
             Q._generatePoints(this,true);
+            var pointer = this;
+            var dragged = false;
+            //Turn on clicking sprites/ground
+            Q.el.addEventListener("click",function(e){
+                //If we've dragged, don't click
+                if(dragged||!Q.stage()){
+                    dragged = false;
+                    return;
+                }
+                //Can't click sprite if placing one
+                var x = e.offsetX || e.layerX,
+                    y = e.offsetY || e.layerY,
+                    stage = Q.stage();
+
+                var stageX = Q.canvasToStageX(x, stage),
+                    stageY = Q.canvasToStageY(y, stage);
+                var locX = Math.floor(stageX/Q.tileW);
+                var locY = Math.floor(stageY/Q.tileH);
+                var objAt = Q.getSpriteAt([locX,locY]);
+                if(objAt){
+                    Q.stage(0).trigger("selectedCharacter",objAt);
+                } else {
+                    Q.stage(0).trigger("selectedLocation",[locX,locY]);
+                }
+            });
+            Q.el.addEventListener("mousemove",function(e) {
+                if(!Q.stage()) return;
+                var x = e.offsetX || e.layerX,
+                    y = e.offsetY || e.layerY,
+                    stage = Q.stage();
+
+                var stageX = Q.canvasToStageX(x, stage),
+                    stageY = Q.canvasToStageY(y, stage);
+                var locX = Math.floor(stageX/Q.tileW);
+                var locY = Math.floor(stageY/Q.tileH);
+                $("#canvas-coordinates").text(locX+","+locY);
+                $("#canvas-coordinates").attr("locX",locX);
+                $("#canvas-coordinates").attr("locY",locY);
+            });
         },
         //Makes the pointer go to a certain object
         snapTo:function(obj){
@@ -469,6 +522,16 @@ Quintus.GameObjects=function(Q){
                 Q.inputs['ctrl'] = false;
             }
         },
+        checkAnimateTo:function(){
+            var stage = Q.stage();
+            //If the user dragged the screen, tween back to the pointer
+            if(stage.viewport.following !== this){
+                var pointer = this;
+                stage.viewSprite.animate({x:pointer.p.x, y:pointer.p.y}, 0.1,{callback:function(){Q.viewFollow(pointer, stage);}});
+            } else {
+                stage.viewSprite.centerOn(this.p.loc);
+            }
+        },
         //Do the logic for the directional inputs that were pressed
         checkInputs:function(){
             var p = this.p;
@@ -503,6 +566,7 @@ Quintus.GameObjects=function(Q){
                 this.checkTarget();
                 if(p.user) p.user.playStand(Q.compareLocsForDirection(p.user.p.loc,p.loc,p.user.p.dir));
                 this.trigger("inputMoved",this);
+                this.checkAnimateTo();
             } else {
                 p.diffX = 0;
                 p.diffY = 0;
@@ -808,8 +872,9 @@ Quintus.GameObjects=function(Q){
                 Q.BattleMenusController.actionsMenu.empty();
                 Q.BattleMenusController.displayActions("characterSelection");
                 pointer.pointerPlaceAllies.remove();
+                Q.viewFollow(Q.pointer, Q.stage());
             } else {
-                Q.audioController.playSound("cannot_do.mp3");
+                //Q.audioController.playSound("cannot_do.mp3");
             }
         },
         showPlacementSquares:function(tiles){
@@ -859,7 +924,7 @@ Quintus.GameObjects=function(Q){
             var allies = Q.partyManager.allies;
             for(var i=0;i<allies.length;i++){
                 var ally = allies[i];
-                if(ally.name===char.p.name&&ally.uniqueId===char.p.uniqueId){
+                if(ally.name === char.p.name && ally.uniqueId === char.p.uniqueId){
                     ally.placedOnMap = true;
                     ally.loc = char.p.loc;
                     i = allies.length;
@@ -1261,7 +1326,8 @@ Quintus.GameObjects=function(Q){
                     //Start the turn. Will return false if the character can't do anything this turn  for whatever reason (dead, ini under 0, etc...)
                     if(Q.BatCon.turnOrder[0].startTurn()){
                         //Display the menu on turn start
-                        Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:Q.BatCon.turnOrder[0],pointer:this});
+                        Q.BattleMenusController.displayActions("turnActions");
+                        //Q.stageScene("characterMenu",2,{target:this.p.target,currentTurn:Q.BatCon.turnOrder[0],pointer:this});
                         
                     };
                     this.off("atDest");

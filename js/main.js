@@ -94,7 +94,7 @@ Q.newGame=function(options){
             return sc.name===Q.state.get("saveData").startSceneName;
         })[0].vrs
     );
-    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,"Pannopolis"/*Q.state.get("saveData").startEventName*/);
+    Q.startScene(Q.state.get("saveData").startSceneType,Q.state.get("saveData").startSceneName,"test-battle"/*Q.state.get("saveData").startEventName*/);
         
     $("#hud-money").text(Q.state.get("saveData").money);
     $("#hud-week").text(Q.state.get("saveData").week);

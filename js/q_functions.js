@@ -197,4 +197,14 @@ Quintus.QFunctions=function(Q){
             });
         }, startTime);
     };
+    
+    Q.getSpriteAt = function(loc){
+        return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
+    };
+    Q.getXY = function(loc){
+        return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
+    };
+    Q.getLoc = function(x, y){
+        return [~~(x / Q.tileW), ~~(y / Q.tileH)];
+    };
 };
