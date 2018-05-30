@@ -246,11 +246,11 @@ Quintus.SceneFuncs=function(Q){
                 stage.viewSprite.on("touchEnd",function(touch){
                     //We clicked without dragging
                     if(!Q.pointer.p.disabled && !this.p.dragged){
-                        Q.pointer.p.loc = Q.getLoc(touch.x, touch.y);
+                        Q.pointer.setLoc(Q.getLoc(touch.x, touch.y));
                         Q.BatCon.setXY(Q.pointer);
                         Q.pointer.trigger("pressedConfirm", Q.pointer);
                     } else {
-                        
+                        Q.pointer.trigger("pressedOffMenu");
                     }
                     
                     this.p.dragged = false;
@@ -272,8 +272,8 @@ Quintus.SceneFuncs=function(Q){
                 Q.pointer.add("pointerPlaceAllies");
                 Q.BattleMenusController = new Q.Menus("battle");
                 //Q.BattleMenusController.displayActions("characterSelection");
-                
-                
+                //Make sure the menus display
+                Q.pointer.setLoc(battleData.placementSquares[0]);
             });
         },{
             progressCallback:Q.progressCallback,
@@ -344,12 +344,6 @@ Quintus.SceneFuncs=function(Q){
                 Q.inputs['down']=false;
             }
         });
-    });
-    Q.scene("battleHUD",function(stage){
-        //Create the top left hud which gives information about the ground (grass,dirt,etc...)
-        var terrainHUD = stage.insert(new Q.TerrainHUD());
-        //Create the top right hud that shows condensed stats about the currently hovered object (people, interactable non-human/monsters, etc...)
-        var statsHUD = stage.insert(new Q.StatsHUD());
     });
     Q.scene("battleText",function(stage){
         stage.insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));

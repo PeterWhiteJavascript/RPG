@@ -1118,14 +1118,9 @@ Quintus.Objects=function(Q){
             this.up = true;
             this.down = true;
             Q.inputs['confirm'] = false;
-            this.entity.stage.viewSprite.on("touch", $.proxy(this.clickOutside, this));
             $("#quintus").focus();
         },
-        clickOutside:function(){
-            this.entity.trigger("pressedBack");
-        },
         removeControls:function(e){
-            this.entity.stage.viewSprite.off("touch",this.removeControls);
             this.entity.off("pressedConfirm");
             this.entity.off("pressedBack");
             this.entity.off("step", this, "step");

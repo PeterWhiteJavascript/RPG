@@ -107,7 +107,7 @@ Quintus.HUD=function(Q){
             }
         },
         staticMenu:function(name){
-            var menu = $("<div id='"+name+"' class='menu menu-style1'></div>");
+            var menu = $("<div id='"+name+"' class='menu menu-style5'></div>");
             var obj = {
                 menu:menu,
                 disable:function(){
@@ -134,10 +134,32 @@ Quintus.HUD=function(Q){
                     obj.selectedClass = "menu-option-cont-selected";
                     break;
                 case "terrain-menu":
-                    
+                    var name = $("<div class='terrain-name'><span></span></div>");
+                    var move = $("<div class='terrain-move'><span></span></div>");
+                    var buff = $("<div class='terrain-buff'><span></span></div>");
+                    menu.append(name, move, buff);
+                    Q.pointer.on("onTerrain",function(terrain){
+                        var data = Q.state.get("tileTypes")[terrain];
+                        name.children("span").text(data.name);
+                        move.children("span").text(data.move);
+                        buff.children("span").text(data.buff);
+                    });
                     break;
                 case "char-summary-menu":
-                    
+                    var name = $("<div class='char-name'><span></span></div>");
+                    var chcl = $("<div class='char-class'><span></span></div>");
+                    var levl = $("<div class='char-level'><span></span></div>");
+                    menu.append(name, chcl, levl);
+                    Q.pointer.on("onTarget",function(target){
+                        name.children("span").text(target.p.name);
+                        chcl.children("span").text(target.p.charClass);
+                        levl.children("span").text(target.p.level);
+                    });
+                    Q.pointer.on("offTarget",function(){
+                        name.children("span").text("");
+                        chcl.children("span").text("");
+                        levl.children("span").text("");
+                    });
                     break;
             }
             return obj;
@@ -151,6 +173,7 @@ Quintus.HUD=function(Q){
             };
             switch(name){
                 case "characterSelection":
+                    Q.stage().viewSprite.centerOn(Q.pointer.p.loc);
                     function getPlaceableAlliesOpts(chars){
                         var opts = [];
                         for(var i=0;i<chars.length;i++){
@@ -161,7 +184,7 @@ Quintus.HUD=function(Q){
                     function addPlaceableAlliesOptions(actionsMenu){
                         var opts = getPlaceableAlliesOpts(Q.BatCon.battlePlacement.placeableAllies);
                         opts.push("Back");  
-                        addOptions(opts,actionsMenu.menu);
+                        addOptions(opts, actionsMenu.menu);
                         actionsMenu.options = opts;
                     }
                     var menu = this.actionsMenu;
@@ -178,7 +201,7 @@ Quintus.HUD=function(Q){
                         this.placingCharacter.on("pressedConfirm",function(){
                             Q.BatCon.battlePlacement.confirmPlacement(this);
                             this.directionControls.removeControls();
-                            
+                            Q.pointer.off("pressedOffMenu", menu, "back");
                         });
                         this.placingCharacter.on("pressedBack",function(){
                             this.directionControls.removeControls();
@@ -192,10 +215,10 @@ Quintus.HUD=function(Q){
                             Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
                             this.placingCharacter.destroy();
                         }
+                        Q.pointer.off("pressedOffMenu", menu, "back");
                         this.disable();
                         Q.pointer.trigger("offTarget");
                         Q.pointer.add("pointerPlaceAllies");
-                        
                     };
                     menu.onOption = function(){
                         var idx = Math.max(0,this.selected);
@@ -212,10 +235,16 @@ Quintus.HUD=function(Q){
                             this.placingCharacter = false;
                         }
                     };
+                    Q.pointer.on("pressedOffMenu", menu, "back");
                     menu.enable();
                     break;
                 case "turnActions":
-                    console.log('hi')
+                    var menu = this.actionsMenu;
+                    menu.selected = -1;
+                    menu.empty();
+                    menu.options = [];
+                    addOptions(menu.options, menu);
+                    console.log("Turn code", menu.options)
                     break;
             }
             this.controls(this.actionsMenu);
@@ -955,8 +984,11 @@ Quintus.HUD=function(Q){
     //Make it again. This time, it doesn't get destroyed. Include options for aoe
     Q.GameObject.extend("RangeController",{
         pulse:function(){
-            Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.pulse();}});
-            
+            Q.RangeTileLayer.stop();
+            this.animatePulse();
+        },
+        animatePulse:function(){
+            Q.RangeTileLayer.animate({opacity:0.7} ,1.2, Q.Easing.Linear).chain({opacity:0.3} , 1, Q.Easing.Linear, {callback:function(){Q.rangeController.animatePulse();}});
         },
         setTiles:function(tile,loc,range,rangeProps,matrix){
             Q.RangeTileLayer.stop();
