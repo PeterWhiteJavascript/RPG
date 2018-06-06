@@ -232,7 +232,7 @@ Quintus.SceneFuncs=function(Q){
                 
                 stage.viewSprite = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI, x:Q.pointer.p.x, y:Q.pointer.p.y, dragged:false}));
                 stage.viewSprite.add("tween");
-                stage.viewSprite.on("touch",function(){
+                stage.viewSprite.on("touch",function(e){
                     if(stage.viewport.following !== this){
                         Q.viewFollow(this,stage);
                     }
@@ -243,14 +243,20 @@ Quintus.SceneFuncs=function(Q){
                     this.p.dragged = true;
                 };
                 stage.viewSprite.on("drag");
-                stage.viewSprite.on("touchEnd",function(touch){
-                    //We clicked without dragging
-                    if(!Q.pointer.p.disabled && !this.p.dragged){
-                        Q.pointer.setLoc(Q.getLoc(touch.x, touch.y));
-                        Q.BatCon.setXY(Q.pointer);
-                        Q.pointer.trigger("pressedConfirm", Q.pointer);
+                stage.viewSprite.on("touchEnd",function(e){
+                    var stage = Q.stage(0);
+                    var obj = stage.locate(e.x, e.y, Q.SPRITE_DIRECTION);
+                    if(!obj){
+                        //We clicked without dragging
+                        if(!Q.pointer.p.disabled && !this.p.dragged){
+                            Q.pointer.setLoc(Q.getLoc(e.x, e.y));
+                            Q.BatCon.setXY(Q.pointer);
+                            Q.pointer.trigger("pressedConfirm", Q.pointer);
+                        } else {
+                            Q.pointer.trigger("pressedOffMenu");
+                        }
                     } else {
-                        Q.pointer.trigger("pressedOffMenu");
+                        obj.select();
                     }
                     
                     this.p.dragged = false;

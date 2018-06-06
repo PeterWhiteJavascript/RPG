@@ -391,7 +391,7 @@ Quintus.GameObjects=function(Q){
                 } else {
                     Q.stage(0).trigger("selectedLocation",[locX,locY]);
                 }
-            });
+            });/*
             Q.el.addEventListener("mousemove",function(e) {
                 if(!Q.stage()) return;
                 var x = e.offsetX || e.layerX,
@@ -405,7 +405,7 @@ Quintus.GameObjects=function(Q){
                 $("#canvas-coordinates").text(locX+","+locY);
                 $("#canvas-coordinates").attr("locX",locX);
                 $("#canvas-coordinates").attr("locY",locY);
-            });
+            });*/
         },
         //Makes the pointer go to a certain object
         snapTo:function(obj){
@@ -846,6 +846,7 @@ Quintus.GameObjects=function(Q){
                         //Find the ally's sprite and set up directional controls for this character
                         Q.stage(0).lists['Character'].forEach(function(char,j){
                             if(char.p.name===ally.name&&char.p.uniqueId===ally.uniqueId){
+                                Q.BattleMenusController.actionsMenu.placingCharacter = char;
                                 char.add("directionControls");
                                 char.confirm = function(){
                                     Q.pointer.off("pressedOffMenu", char, "back");
@@ -863,7 +864,8 @@ Quintus.GameObjects=function(Q){
                                     this.destroy();
                                 };
                                 char.on("pressedBack", char, "back");
-                                Q.pointer.on("pressedOffMenu", char,"back");
+                                Q.pointer.on("pressedOffMenu", char, "back");
+                                Q.stage().viewSprite.centerOn(char.p.loc);
                             }
                         });
                         pointer.pointerPlaceAllies.remove();

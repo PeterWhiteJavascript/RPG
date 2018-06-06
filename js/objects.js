@@ -1100,17 +1100,54 @@ Quintus.Objects=function(Q){
         },
         removeGaveStatus:function(){}
     });
+    Q.UI.Container.extend("DirectionArrow",{
+        init:function(p){
+            this._super(p, {
+                w:Q.tileW,
+                h:Q.tileH,
+                type: Q.SPRITE_DIRECTION,
+                color:"green",
+                selColor:"blue",
+                z:1000000000000
+            });
+            this.p.size = this.p.w / 2;
+            this.p.tri = this.getPoints(this.p.dir);
+        },
+        select:function(){
+            Q.BattleMenusController.actionsMenu.placingCharacter.trigger("pressedConfirm");
+        },
+        getPoints:function(dir){
+            switch(dir){
+                case "up":
+                    return [[-this.p.size, this.p.size],[0, 0],[this.p.size, this.p.size]];
+                case "right":
+                    return [[-this.p.size, -this.p.size],[0, 0],[-this.p.size, this.p.size]];
+                case "down":
+                    return [[this.p.size, -this.p.size],[0, 0],[-this.p.size, -this.p.size]];
+                case "left":
+                    return [[this.p.size, this.p.size],[0, 0],[this.p.size, -this.p.size]];
+            }
+        },
+        draw:function(ctx){
+            ctx.fillStyle = this.p.over ? this.p.selColor : this.p.color;
+            ctx.beginPath();
+            ctx.moveTo(this.p.tri[0][0], this.p.tri[0][1]);
+            ctx.lineTo(this.p.tri[1][0], this.p.tri[1][1]);
+            ctx.lineTo(this.p.tri[2][0], this.p.tri[2][1]);
+            ctx.fill();
+        }
+    });
+    //Added to character
     Q.component("directionControls", {
         added: function() {
-            this.dirSelector = $("<div class='battle-dir-selector'><div class='battle-dir-center'></div><div class='battle-dir-arrow-bg battle-dir-arrow-left'></div><div class='battle-dir-arrow-bg battle-dir-arrow-up'></div><div class='battle-dir-arrow-bg battle-dir-arrow-right'></div><div class='battle-dir-arrow-bg battle-dir-arrow-down'></div></div>");
-            $("#main-container").append(this.dirSelector);
-            this.dirSelector.children(".battle-dir-arrow-bg").on("mouseenter",this.hoverDirection);
-            this.dirSelector.children(".battle-dir-arrow-"+this.entity.p.dir).trigger("mouseenter");
+            var stage = this.entity.stage;
             var entity = this.entity;
-            this.dirSelector.children(".battle-dir-arrow-bg").on("click",function(){
-                entity.trigger("pressedConfirm");
-                Q.inputs['confirm']=false;
-            });
+            entity.upArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y - Q.tileH, dir:"up"}));
+            entity.rightArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x + Q.tileW, y:entity.p.y, dir:"right"}));
+            entity.downArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y + Q.tileH, dir:"down"}));
+            entity.leftArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x - Q.tileW, y:entity.p.y, dir:"left"}));
+            stage.currentObj = null;
+            Q.el.addEventListener("mousemove", this.checkHoverDirection);
             this.entity.on("step",this,"step");
             this.canMove = true;
             this.left = true;
@@ -1119,19 +1156,32 @@ Quintus.Objects=function(Q){
             this.down = true;
             Q.inputs['confirm'] = false;
             $("#quintus").focus();
+            this.changeDir(this.entity.p.dir);
+            Q.pointer.p.disabled = true;
+        },
+        checkHoverDirection:function(e){
+            var x = e.offsetX || e.layerX,
+            y = e.offsetY || e.layerY;
+            var stage = Q.stage(0);
+            var stageX = Q.canvasToStageX(x, stage),
+            stageY = Q.canvasToStageY(y, stage);
+            var obj = stage.locate(stageX, stageY, Q.SPRITE_DIRECTION);
+            if(obj) {
+                Q.BattleMenusController.actionsMenu.placingCharacter.directionControls.changeDir(obj.p.dir);
+            }
         },
         removeControls:function(e){
+            Q.el.removeEventListener("mousemove", this.checkHoverDirection);
             this.entity.off("pressedConfirm");
             this.entity.off("pressedBack");
             this.entity.off("step", this, "step");
-            this.dirSelector.remove();
+            Q("DirectionArrow").destroy();
             this.entity.del("directionControls");
         },
-        hoverDirection:function(){
-            var dirCl = $(this).attr("class").split(" ")[1];
-            var dirP = dirCl.split("-");
-            var dir = dirP[dirP.length-1];
-            Q.inputs[dir] = true;
+        changeDir:function(dir){
+            Q("DirectionArrow").set("over", false);
+            this.entity[dir+"Arrow"].p.over = true;
+            this.entity.playStand(dir);
         },
         step:function(dt){
             var dir;
@@ -1144,10 +1194,9 @@ Quintus.Objects=function(Q){
             } else if(Q.inputs['down']&&this.down) {
                 dir='down';
             }
-            if(dir){
-                this.entity.playStand(dir);
-                $(".battle-dir-arrow-bg-selected").removeClass("battle-dir-arrow-bg-selected");
-                this.dirSelector.children(".battle-dir-arrow-"+dir).addClass("battle-dir-arrow-bg-selected");
+            if(dir && dir !== this.lastDir){
+                this.changeDir(dir);
+                this.lastDir = dir;
             }
             if(Q.inputs['back']){
                 this.entity.trigger("pressedBack");
