@@ -142,6 +142,7 @@ Quintus.SceneFuncs=function(Q){
                 stage.lists.TileLayer[1].p.z = -4;
                 stage.mapWidth = stage.lists.TileLayer[0].p.tiles[0].length;
                 stage.mapHeight = stage.lists.TileLayer[0].p.tiles.length;
+                
                 //The range tiles
                 var gridMatrix = function(){
                     var matrix = [];
@@ -200,15 +201,13 @@ Quintus.SceneFuncs=function(Q){
                 }));
                 Q.AOETileLayer.add("tween");
                 
-                
-                
                 //Set the battlegrid's stage
                 Q.BattleGrid.stage = stage;
                 //Reset the battle grid for this battle
                 Q.BattleGrid.reset();
                 //Set the batcon's stage
                 Q.BatCon.stage = stage;
-
+                
                 //Display the enemies, interactables, pickups, and placement locations
                 var chars = [];
                 for(var i=0;i<battleData.characters.length;i++){
@@ -223,63 +222,104 @@ Quintus.SceneFuncs=function(Q){
                     c.dir = char[5];
                     stage.insert(new Q.Character(c));
                 });
-                //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
-                Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
+                
+                
+                stage.dragged = false;
+                function clickStage(e){
+                    //Can't click sprite if placing one
+                    var x = e.offsetX || e.layerX,
+                        y = e.offsetY || e.layerY,
+                        stage = Q.stage();
+                    //If we've dragged or it's disabled, don't click
+                    if(stage.dragged || stage.disabled || !stage){
+                        stage.dragged = false;
+                        return;
+                    }
 
+                    var stageX = Q.canvasToStageX(x, stage),
+                        stageY = Q.canvasToStageY(y, stage);
+                    if(stageX < 0 || stageY < 0) return;
+                    
+                    var locX = Math.floor(stageX / Q.tileW);
+                    var locY = Math.floor(stageY / Q.tileH);
+                    var objAt = Q.getSpriteAt([locX, locY]);
+                    if(objAt){
+                        Q.stage().trigger("selectedCharacter", objAt);
+                    } else {
+                        Q.stage().trigger("selectedLocation", [locX, locY]);
+                    }
+                    Q.stage().trigger("clickedStage", {stageX:stageX, stageY:stageY});
+                }
+                //Turn on clicking sprites/ground
+                Q.el.addEventListener("click", clickStage);
+                function mouseOverStage(e){
+                    var x = e.offsetX || e.layerX,
+                    y = e.offsetY || e.layerY;
+                    var stage = Q.stage(0);
+                    var stageX = Q.canvasToStageX(x, stage),
+                    stageY = Q.canvasToStageY(y, stage);
+                    Q.stage().trigger("mouseAt", {stageX:stageX, stageY:stageY});
+                }
+                Q.el.addEventListener("mousemove", mouseOverStage);
+                function listenForInput(){
+                    if(Q.inputs['confirm']){
+                        this.trigger("pressedConfirm", "confirm");
+                        Q.inputs['confirm'] = false;
+                    } else if(Q.inputs['back']){
+                        this.trigger("pressedBack", "back");
+                        Q.inputs['back'] = false;
+                    } else if(Q.inputs['shift']){
+                        this.trigger("pressedShift", "shift");
+                        Q.inputs['shift'] = false;
+                    } else if(Q.inputs['ctrl']){
+                        this.trigger("pressedCtrl", "ctrl");
+                        Q.inputs['ctrl'] = false;
+                    } else {
+                        if(Q.inputs['up']){
+                            this.trigger("pressedUp", "up");
+                        } else if(Q.inputs['down']){
+                            this.trigger("pressedDown", "down");
+                        }
+                        if(Q.inputs['right']){
+                            this.trigger("pressedRight", "right");
+                        } else if(Q.inputs['left']){
+                            this.trigger("pressedLeft", "left");
+                        }
+                    }
+                }
+                Q.stage(0).on("step", listenForInput);
                 stage.add("viewport");
                 stage.viewport.scale = 2;
                 
+                //The pointer is what the user controls to select things. At the start of the battle it is used to place characters and hover enemies (that are already placed).
+                Q.pointer = stage.insert(new Q.Pointer({loc:battleData.placementSquares[0]}));
+                Q.pointer.add("pointerControls, pointerPlacementRoaming");
                 
-                stage.viewSprite = stage.insert(new Q.UI.Container({w:Q.width,h:Q.height,type:Q.SPRITE_UI, x:Q.pointer.p.x, y:Q.pointer.p.y, dragged:false}));
-                stage.viewSprite.add("tween");
-                stage.viewSprite.on("touch",function(e){
-                    if(stage.viewport.following !== this){
-                        Q.viewFollow(this,stage);
-                    }
-                });
-                stage.viewSprite.drag = function(touch){
-                    this.p.x = touch.origX - touch.dx / stage.viewport.scale;
-                    this.p.y = touch.origY - touch.dy / stage.viewport.scale;
-                    this.p.dragged = true;
-                };
-                stage.viewSprite.on("drag");
-                stage.viewSprite.on("touchEnd",function(e){
-                    var stage = Q.stage(0);
-                    var obj = stage.locate(e.x, e.y, Q.SPRITE_DIRECTION);
-                    if(!obj){
-                        //We clicked without dragging
-                        if(!Q.pointer.p.disabled && !this.p.dragged){
-                            Q.pointer.setLoc(Q.getLoc(e.x, e.y));
-                            Q.BatCon.setXY(Q.pointer);
-                            Q.pointer.trigger("pressedConfirm", Q.pointer);
-                        } else {
-                            Q.pointer.trigger("pressedOffMenu");
-                        }
-                    } else {
-                        obj.select();
-                    }
-                    
-                    this.p.dragged = false;
-                });
-                stage.viewSprite.centerOn = function(loc){
-                    var pos = Q.getXY(loc);
-                    this.p.x = pos.x;
-                    this.p.y = pos.y;
-                };
-                //Default to following the pointer
-                Q.viewFollow(Q.pointer,stage);
-
-                //Display the hud which shows character and terrain information
-                //Q.stageScene("battleHUD",3);
+                //The viewSprite is what moves when dragging the viewport
+                stage.viewSprite = stage.insert(new Q.ViewSprite());
+                //Time specific events in battle
                 Q.BatCon.battleTriggers.setUpTriggers(battleData.events);
+                //Show the squares that the player can place characters on
                 Q.BatCon.battlePlacement.showPlacementSquares(battleData.placementSquares);
+                //Create the list of placeable characters and set the direction they should be facing by default
                 Q.BatCon.battlePlacement.startPlacingAllies(battleData);
                 
-                Q.pointer.add("pointerPlaceAllies");
+                //Show the three battle menus
                 Q.BattleMenusController = new Q.Menus("battle");
-                //Q.BattleMenusController.displayActions("characterSelection");
-                //Make sure the menus display
-                Q.pointer.setLoc(battleData.placementSquares[0]);
+                
+                //Start at the first square
+                Q.stage(0).trigger("selectedLocation", battleData.placementSquares[0]);
+                
+                //Beyond is TEMP to place characters at start.
+                Q.stage(0).trigger("pressedConfirm");
+                Q.stage(0).trigger("pressedConfirm"); 
+                Q.stage(0).trigger("selectedLocation", battleData.placementSquares[1]);
+                Q.stage(0).trigger("pressedConfirm");
+                Q.stage(0).trigger("pressedConfirm");
+                Q.BattleMenusController.actionsMenu.selected = 3;
+                Q.stage(0).trigger("pressedConfirm");
+                
+                
             });
         },{
             progressCallback:Q.progressCallback,

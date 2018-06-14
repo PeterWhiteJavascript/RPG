@@ -455,10 +455,10 @@ body{
     background-color:#BBB;
     text-align:center;
     user-select:none;
+    cursor:pointer;
 }
 /* For mouse and keyboard */
-.menu-option-cont:hover, .menu-option-cont-selected{
-    cursor:pointer;
+.menu-option-cont:hover:not(.menu-option-disabled), .menu-option-cont-selected{
     background-color:#999;
 }
 .menu-option-disabled{

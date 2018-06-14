@@ -166,9 +166,9 @@ Quintus.QFunctions=function(Q){
     };
     
     //Make the character look at the pointer when moving.
-    Q.compareLocsForDirection = function(userLoc,loc,dir){
-        var difX = userLoc[0]-loc[0];
-        var difY = userLoc[1]-loc[1];
+    Q.compareLocsForDirection = function(userLoc, loc, dir){
+        var difX = userLoc[0] - loc[0];
+        var difY = userLoc[1] - loc[1];
         //When the pointer is on top of the character, don't change the direction
         if(difX===0&&difY===0) return;
         //If the x dif is greater than the y dif
@@ -202,7 +202,7 @@ Quintus.QFunctions=function(Q){
         return Q.stage(0).locate(loc[0]*Q.tileW+Q.tileW/2,loc[1]*Q.tileH+Q.tileH/2,Q.SPRITE_CHARACTER);
     };
     Q.getXY = function(loc){
-        return {x:loc[0]*Q.tileW+Q.tileW/2,y:loc[1]*Q.tileH+Q.tileH/2};
+        return {x:loc[0] * Q.tileW + Q.tileW / 2,y:loc[1] * Q.tileH + Q.tileH / 2};
     };
     Q.getLoc = function(x, y){
         return [~~(x / Q.tileW), ~~(y / Q.tileH)];

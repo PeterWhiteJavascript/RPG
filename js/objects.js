@@ -317,7 +317,7 @@ Quintus.Objects=function(Q){
             //Displays the miss dynamic number
             showMiss:function(attacker,callback){
                 //Face the attacker
-                this.playMiss(Q.compareLocsForDirection(this.p.loc,attacker.p.loc,this.p.dir),callback);
+                this.playMiss(Q.compareLocsForDirection(this.p.loc,attacker.p.loc,this.p.dir), callback);
                 this.stage.insert(new Q.DynamicNumber({color:"#000", loc:this.p.loc, text:"Miss!",z:this.p.z}));
                 Q.audioController.playSound("cannot_do.mp3");
             },
@@ -779,12 +779,21 @@ Quintus.Objects=function(Q){
                 statChanges:[]
             });
             this.p.sheet = this.p.charClass.toLowerCase();
+            this.p.canSetDir = this.canSetDir();
             //Quintus components
             this.add("2d, animation, tween");
             //Custom components
             this.add("animations,interactable,combatant");
             //Turn the inserted function on. This is called when the sprite is added to a stage.
             this.on("inserted");
+        },
+        canSetDir:function(){
+            return {
+                left:true,
+                right:true,
+                up:true,
+                down:true
+            }
         },
         //Will run when this character is inserted into the stage (whether it be placement by the user, or when inserting enemies)
         inserted:function(){
@@ -944,11 +953,12 @@ Quintus.Objects=function(Q){
                     return;
                 }
                 Q.pointer.checkTarget();
+                Q.pointer.p.loc = t.p.loc;
+                Q.BatCon.setXY(Q.pointer);
+                Q.stage().viewSprite.centerOn(Q.pointer.p.loc);
                 //If this character hasn't attacked yet this turn, generate a new attackgraph
                 if(!t.p.didAction){
                     t.p.attackMatrix = new Q.Graph(Q.getMatrix("attack"));
-                    Q.pointer.p.loc = t.p.loc;
-                    Q.BatCon.setXY(Q.pointer);
                     //Do the AI action
                     //TEMP
                     if(false&&this.p.team==="enemy") {
@@ -956,7 +966,7 @@ Quintus.Objects=function(Q){
                     } 
                     //Load the action menu
                     else {
-                        Q.pointer.pointerMoveControls.remove();
+                        Q.BattleMenusController.displayActions("turnActions");
                     }
                 } else {
                     //TEMP
@@ -1142,39 +1152,33 @@ Quintus.Objects=function(Q){
         added: function() {
             var stage = this.entity.stage;
             var entity = this.entity;
-            entity.upArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y - Q.tileH, dir:"up"}));
-            entity.rightArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x + Q.tileW, y:entity.p.y, dir:"right"}));
-            entity.downArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y + Q.tileH, dir:"down"}));
-            entity.leftArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x - Q.tileW, y:entity.p.y, dir:"left"}));
+            if(entity.p.canSetDir.up) entity.upArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y - Q.tileH, dir:"up"}));
+            if(entity.p.canSetDir.right) entity.rightArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x + Q.tileW, y:entity.p.y, dir:"right"}));
+            if(entity.p.canSetDir.down) entity.downArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x, y:entity.p.y + Q.tileH, dir:"down"}));
+            if(entity.p.canSetDir.left) entity.leftArrow = stage.insert(new Q.DirectionArrow({x:entity.p.x - Q.tileW, y:entity.p.y, dir:"left"}));
             stage.currentObj = null;
-            Q.el.addEventListener("mousemove", this.checkHoverDirection);
-            this.entity.on("step",this,"step");
-            this.canMove = true;
-            this.left = true;
-            this.right = true;
-            this.up = true;
-            this.down = true;
+            Q.stage().on("mouseAt", this, "checkHoverDirection");
+            Q.stage().on("pressedUp", this, "changeDir");
+            Q.stage().on("pressedRight", this, "changeDir");
+            Q.stage().on("pressedDown", this, "changeDir");
+            Q.stage().on("pressedLeft", this, "changeDir");
             Q.inputs['confirm'] = false;
             $("#quintus").focus();
             this.changeDir(this.entity.p.dir);
-            Q.pointer.p.disabled = true;
         },
         checkHoverDirection:function(e){
-            var x = e.offsetX || e.layerX,
-            y = e.offsetY || e.layerY;
-            var stage = Q.stage(0);
-            var stageX = Q.canvasToStageX(x, stage),
-            stageY = Q.canvasToStageY(y, stage);
-            var obj = stage.locate(stageX, stageY, Q.SPRITE_DIRECTION);
+            var obj = Q.stage().locate(e.stageX, e.stageY, Q.SPRITE_DIRECTION);
             if(obj) {
-                Q.BattleMenusController.actionsMenu.placingCharacter.directionControls.changeDir(obj.p.dir);
+                this.changeDir(obj.p.dir);
             }
         },
         removeControls:function(e){
-            Q.el.removeEventListener("mousemove", this.checkHoverDirection);
-            this.entity.off("pressedConfirm");
-            this.entity.off("pressedBack");
-            this.entity.off("step", this, "step");
+            Q.stage().off("mouseAt", this, "checkHoverDirection");
+            Q.stage().off("pressedUp", this, "changeDir");
+            Q.stage().off("pressedRight", this, "changeDir");
+            Q.stage().off("pressedDown", this, "changeDir");
+            Q.stage().off("pressedLeft", this, "changeDir");
+            
             Q("DirectionArrow").destroy();
             this.entity.del("directionControls");
         },
@@ -1182,34 +1186,6 @@ Quintus.Objects=function(Q){
             Q("DirectionArrow").set("over", false);
             this.entity[dir+"Arrow"].p.over = true;
             this.entity.playStand(dir);
-        },
-        step:function(dt){
-            var dir;
-            if(Q.inputs['left']&&this.left) {
-                dir='left';
-            } else if(Q.inputs['right']&&this.right) {;
-                dir='right';
-            } else if(Q.inputs['up']&&this.up) {
-                dir='up';
-            } else if(Q.inputs['down']&&this.down) {
-                dir='down';
-            }
-            if(dir && dir !== this.lastDir){
-                this.changeDir(dir);
-                this.lastDir = dir;
-            }
-            if(Q.inputs['back']){
-                this.entity.trigger("pressedBack");
-                Q.inputs['back']=false;
-            } 
-            else if(Q.inputs['confirm']){
-                this.entity.trigger("pressedConfirm");
-                Q.inputs['confirm']=false;
-            }
-            Q.inputs['left'] = false;
-            Q.inputs['right'] = false;
-            Q.inputs['up'] = false;
-            Q.inputs['down'] = false;
         }
     });
 };

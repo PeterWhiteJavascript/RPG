@@ -125,6 +125,9 @@ Quintus.HUD=function(Q){
                 remove:function(){
                     this.menu.remove();
                 },
+                confirm:function(){},
+                back:function(){},
+                onOption:function(){}
                 
             };
             switch(name){
@@ -140,6 +143,7 @@ Quintus.HUD=function(Q){
                     menu.append(name, move, buff);
                     Q.pointer.on("onTerrain",function(terrain){
                         var data = Q.state.get("tileTypes")[terrain];
+                        if(!data) return;
                         name.children("span").text(data.name);
                         move.children("span").text(data.move);
                         buff.children("span").text(data.buff);
@@ -164,13 +168,172 @@ Quintus.HUD=function(Q){
             }
             return obj;
         },
+        checkOptSelected:function(){
+            var menu = this.actionsMenu;
+            var selected = menu.selected;
+            var max = menu.options.length - 1;
+            //The last option is always back
+            if(selected === max){
+                this.goBack();
+            } else {
+                switch(menu.name){
+                    case "characterSelection":
+                        this.trigger("removeControls");
+                        menu.placingCharacter.add("directionControls");
+                        function done(){
+                            menu.placingCharacter.directionControls.removeControls();
+                            Q.stage().off("pressedConfirm");
+                            Q.stage().off("pressedBack");
+                            Q.stage().off("pressedOffMenu");
+                            Q.stage().off("clickedStage", Q.stage().viewSprite, "placement");
+                        }
+                        function goBack(){
+                            done();
+                            Q.BattleMenusController.displayActions("characterSelection");
+                        }
+                        function pressedConfirm(){
+                            done();
+                            Q.BatCon.battlePlacement.confirmPlacement(menu.placingCharacter);
+                            menu.placingCharacter = false;
+                        }
+                        Q.stage().on("pressedConfirm", pressedConfirm);
+                        Q.stage().on("pressedBack", goBack);
+                        Q.stage().on("pressedOffMenu", goBack);
+                        //Figure out if we've clicked a direction to set a character's direction when placing
+                        Q.stage().on("clickedStage", Q.stage().viewSprite, "placement");
+                        
+                        break;
+                    case "turnActions":
+                        var option = menu.options[selected];
+                        var currentCharacter = Q.BatCon.turnOrder[0];
+                        switch(option){
+                            case "Move":
+                                Q.rangeController.setTiles(1, currentCharacter.p.loc, currentCharacter.p.combatStats.moveSpeed, [], currentCharacter.p.walkMatrix);
+                                this.trigger("removeControls");
+                                currentCharacter.p.canSetDir = currentCharacter.canSetDir();
+                                Q.pointer.add("pointerControls, pointerMovementControls");
+                                break;
+                            case "Attack":
+                                Q.rangeController.setTiles(2,currentCharacter.p.loc,currentCharacter.p.combatStats.atkRange,[],currentCharacter.p.attackMatrix);
+                                this.trigger("removeControls");
+                                Q.pointer.add("pointerControls, pointerAttackControls");
+                                break;
+                            case "Technique":
+                                this.trigger("removeControls");
+                                this.displayActions("techniques");
+                                break;
+                            case "Item":
+                                this.trigger("removeControls");
+                                this.displayActions("items");
+                                break;
+                            case "Carry":
+                                
+                                break;
+                            case "Status":
+                                
+                                break;
+                            case "End Turn":
+                                this.trigger("removeControls");
+                                currentCharacter.p.canSetDir = currentCharacter.canSetDir();
+                                Q.BatCon.showEndTurnDirection(currentCharacter);
+                                break;
+                        }
+                        break;
+                    case "characterStatus":
+
+                        break;
+                    case "techniques":
+                        var option = menu.options[selected];
+                        var currentCharacter = Q.BatCon.turnOrder[0];
+                        var technique = currentCharacter.p.techniques.active.find(function(tech){return option === tech.name;});
+                        console.log(technique);
+                        //TODO: load technique range and aoe
+                        break;
+                    case "items":
+                        var option = menu.options[selected];
+                        var item = Q.partyManager.bag.items.Consumables.find(function(itm){return option === itm.namel});
+                        console.log(item)
+                        //TODO: load item range
+                        break;
+                }
+            }
+        },
+        goBack:function(){
+            var menu = this.actionsMenu;
+            switch(menu.name){
+                case "characterSelection":
+                    this.removePlacingCharacter();
+                    this.trigger("removeControls");
+                    Q.pointer.trigger("offTarget");
+                    Q.pointer.add("pointerControls, pointerPlacementRoaming");
+                    break;
+                case "turnActions":
+                    this.trigger("removeControls");
+                    Q.pointer.add("pointerControls, pointerRoamingControls");
+                    break;
+                case "characterStatus":
+                    this.trigger("removeControls");
+                    Q.pointer.add("pointerControls, pointerRoamingControls");
+                    break;
+                case "techniques":
+                    this.trigger("removeControls");
+                    this.displayActions("turnActions");
+                    break;
+                case "items":
+                    this.trigger("removeControls");
+                    this.displayActions("turnActions");
+                    break;
+            }
+        },
+        overOption:function(){
+            var menu = this.actionsMenu;
+            switch(menu.name){
+                case "characterSelection":
+                    this.removePlacingCharacter();
+                    var idx = Math.max(0, menu.selected);
+                    if(idx !== menu.options.length - 1){
+                        var char = Q.BatCon.battlePlacement.placeableAllies[idx];
+                        char.loc = Q.pointer.p.loc;
+                        menu.placingCharacter = Q.stage(0).insert(new Q.Character(char));
+                        Q.pointer.trigger("onTarget", menu.placingCharacter);
+                    } else {
+                        this.placingCharacter = false;
+                    }
+                    break;
+                case "turnActions":
+                    
+                    break;
+                case "characterStatus":
+                    
+                    break;
+                case "techniques":
+                    
+                    break;
+                case "items":
+                    
+                    break;
+            }
+        },
+        removePlacingCharacter:function(){
+            var menu = this.actionsMenu;
+            if(menu.placingCharacter){
+                if(menu.placingCharacter.has("directionControls")) menu.placingCharacter.directionControls.removeControls();
+                Q.BattleGrid.removeObjectFromBattle(menu.placingCharacter);
+                menu.placingCharacter.destroy();
+            }
+        },
         displayActions:function(name){
             //Adds a list of the options
-            function addOptions(options,menu){
+            function addOptions(options, menu){
                 for(var i=0;i<options.length;i++){
                     menu.append("<div class='menu-option-cont'><div class='menu-text'>"+options[i]+"</div></div>");
                 }
             };
+            var start = 0;
+            var menu = this.actionsMenu;
+            menu.name = name;
+            menu.selected = -1;
+            menu.empty();
             switch(name){
                 case "characterSelection":
                     Q.stage().viewSprite.centerOn(Q.pointer.p.loc);
@@ -183,137 +346,126 @@ Quintus.HUD=function(Q){
                     }
                     function addPlaceableAlliesOptions(actionsMenu){
                         var opts = getPlaceableAlliesOpts(Q.BatCon.battlePlacement.placeableAllies);
-                        opts.push("Back");  
+                        opts.push("Back");
                         addOptions(opts, actionsMenu.menu);
                         actionsMenu.options = opts;
                     }
-                    var menu = this.actionsMenu;
-                    menu.selected = -1;
-                    menu.empty();
                     addPlaceableAlliesOptions(menu);
-                    menu.confirm = function(){
-                        //If we've pressed the back button
-                        if(!this.placingCharacter){
-                            Q.inputs['confirm'] = false;
-                            return menu.back();
-                        }
-                        this.placingCharacter.add("directionControls");
-                        this.placingCharacter.on("pressedConfirm",function(){
-                            Q.BatCon.battlePlacement.confirmPlacement(this);
-                            this.directionControls.removeControls();
-                            Q.pointer.off("pressedOffMenu", menu, "back");
-                        });
-                        this.placingCharacter.on("pressedBack",function(){
-                            this.directionControls.removeControls();
-                            Q.BattleMenusController.displayActions("characterSelection");
-                        });
-                        this.disable();
-                    };
-                    menu.back = function(){
-                        if(this.placingCharacter){
-                            if(this.placingCharacter.has("directionControls")) this.placingCharacter.directionControls.removeControls();
-                            Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
-                            this.placingCharacter.destroy();
-                        }
-                        Q.pointer.off("pressedOffMenu", menu, "back");
-                        this.disable();
-                        Q.pointer.trigger("offTarget");
-                        Q.pointer.add("pointerPlaceAllies");
-                    };
-                    menu.onOption = function(){
-                        var idx = Math.max(0,this.selected);
-                        if(this.placingCharacter){
-                            this.placingCharacter.destroy();
-                            Q.BattleGrid.removeObjectFromBattle(this.placingCharacter);
-                        }
-                        if(idx !== this.options.length - 1){
-                            var char = Q.BatCon.battlePlacement.placeableAllies[idx];
-                            char.loc = Q.pointer.p.loc;
-                            this.placingCharacter = Q.stage(0).insert(new Q.Character(char));
-                            Q.pointer.trigger("onTarget",this.placingCharacter);
-                        } else {
-                            this.placingCharacter = false;
-                        }
-                    };
-                    Q.pointer.on("pressedOffMenu", menu, "back");
-                    menu.enable();
                     break;
                 case "turnActions":
-                    var menu = this.actionsMenu;
-                    menu.selected = -1;
-                    menu.empty();
-                    menu.options = [];
-                    addOptions(menu.options, menu);
-                    console.log("Turn code", menu.options)
+                    menu.options = ["Move", "Attack", "Technique", "Item", "Carry", "Status", "End Turn", "Exit"];
+                    addOptions(menu.options, menu.menu);
+                    var char = Q.BatCon.turnOrder[0];
+                    if(char.p.didMove){
+                        menu.menu.children(".menu-option-cont:eq(0)").addClass("menu-option-disabled");
+                        start = 1;
+                    } else if(char.p.didAction){
+                        menu.menu.children(".menu-option-cont:eq(1)").addClass("menu-option-disabled");
+                        menu.menu.children(".menu-option-cont:eq(2)").addClass("menu-option-disabled");
+                        menu.menu.children(".menu-option-cont:eq(3)").addClass("menu-option-disabled");
+                    }
+                    //console.log("Turn code", menu.options, menu)
                     break;
-            }
-            this.controls(this.actionsMenu);
+                //For the non-active character
+                case "characterStatus":
+                    var menu = this.actionsMenu;
+                    menu.options = ["Status","Exit"];
+                    addOptions(menu.options, menu.menu);
+                    break;
+                    
+                case "techniques":
+                    var character = Q.BatCon.turnOrder[0];
+                    var techniques = character.p.techniques.active;
+                    menu.options = techniques.map(function(tech){return tech.name;});
+                    menu.options.push("Back");
+                    addOptions(menu.options, menu.menu);
+                    break;
+                case "items":
+                    var items = Q.partyManager.bag.items.Consumables;
+                    menu.options = items.map(function(item){return item.name;});
+                    menu.options.push("Back");
+                    addOptions(menu.options, menu.menu);
+                    break;
+            } 
+            this.controls(start);
         },
-        controls:function(menuObj){
-            function checkBounds(obj, dir){
-                var bound = getBound(obj, dir);
-                if(dir === "up"){
-                    return obj.selected <= bound ? obj.options.length - 1 : obj.selected - 1;
-                } else {
-                    return obj.selected >= bound ? 0 : obj.selected + 1;
-                }
+        checkBounds:function(obj, dir){
+            var bound = this.getBound(obj, dir);
+            if(dir === "up"){
+                return obj.selected <= bound ? obj.options.length - 1 : obj.selected - 1;
+            } else {
+                return obj.selected >= bound ? 0 : obj.selected + 1;
             }
-            function getBound(obj, dir){
-                if(dir === "up") return 0;
-                if(dir === "down") return obj.options.length-1;
-            }
-            function cycle(obj, to, selectedClass, dir){
+        },
+        getBound:function(obj, dir){
+            if(dir === "up") return 0;
+            if(dir === "down") return obj.options.length-1;
+        },
+        cycle:function(dir){
+            var obj = this.actionsMenu;
+            var to;
+            if(typeof dir === "string"){
+                obj.menu.children(".menu-option-cont:eq("+obj.selected+")").removeClass(obj.selectedClass);
+                var to = dir === "up" ? obj.selected - 1 : obj.selected + 1;
                 if(to === obj.selected) return; //Don't allow selecting same option (hover same option multiple times)
-                obj.menu.children(".menu-option-cont:eq("+obj.selected+")").removeClass(selectedClass);
                 if(dir){
                     //Skip disabled options
                     do {
-                        to = checkBounds(obj,dir);
+                        to = this.checkBounds(obj,dir);
                         obj.selected = to;
                     } while(obj.menu.children(".menu-option-cont:eq("+to+")").hasClass("menu-option-disabled"));
                 }
-                obj.menu.children(".menu-option-cont:eq("+to+")").addClass(selectedClass);
                 if(obj.options.length === 1) return; //Don't run the function since there's only one option
-                obj.selected = to;
-                obj.onOption();
+                Q.inputs[dir] = false;
+            } else {
+                if(obj.menu.children(".menu-option-cont:eq("+dir+")").hasClass("menu-option-disabled")) return;
+                obj.menu.children(".menu-option-cont:eq("+obj.selected+")").removeClass(obj.selectedClass);
+                to = dir;
             }
-            $(document).unbind("keydown");
-            $(document).keydown(function(e) {
-                if(menuObj.disabled) return;
-                switch(e.which) {
-                    case 13: //enter
-                        menuObj.confirm();
-                        break;
-                    case 27: //esc
-                        menuObj.back();
-                        break;
-                    case 37: // left
-                        
-                        break;
-                    case 38: // up
-                        cycle(menuObj, menuObj.selected - 1, menuObj.selectedClass, "up");
-                        
-                        break;
-                    case 39: // right
-                        
-                        break;
-                    case 40: // down
-                        cycle(menuObj, menuObj.selected + 1, menuObj.selectedClass, "down");
-                        
-                        break;
-                    default: return;
-                }
-                e.preventDefault();
+            //Don't allow hovering disabled options
+            obj.selected = to;
+            obj.menu.children(".menu-option-cont:eq("+to+")").addClass(obj.selectedClass);
+            this.trigger("overOption");
+        },
+        removeControls:function(){
+            Q.stage().off("pressedUp", this, "cycle");
+            Q.stage().off("pressedDown", this, "cycle");
+            Q.stage().off("pressedConfirm", this, "checkOptSelected");
+            Q.stage().off("pressedBack", this, "goBack");
+            Q.stage().off("pressedOffMenu", this, "goBack");
+            Q.stage().off("clickedStage", Q.stage().viewSprite, "placement");
+            this.off("removeControls", this,"removeControls");
+            this.off("overOption", this, "overOption");
+            this.actionsMenu.disable();
+        },
+        controls:function(start){
+            Q.stage().on("pressedUp", this, "cycle");
+            Q.stage().on("pressedDown", this, "cycle");
+            Q.stage().on("pressedConfirm", this, "checkOptSelected");
+            Q.stage().on("pressedBack", this, "goBack");
+            Q.stage().on("pressedOffMenu", this, "goBack");
+            //Delay setting this up otherwise it is instantly triggered when setting this up from clicking a placement square
+            setTimeout(function(){
+                Q.stage().on("clickedStage", Q.stage().viewSprite, "placement");
             });
+            
+            
+            this.on("removeControls", this, "removeControls");
+            this.on("overOption", this, "overOption");
+            this.actionsMenu.enable();
+            
+            var controller = this;
+            var menuObj = this.actionsMenu;
+            //Touch controls
             menuObj.menu.children(".menu-option-cont").each(function(){
                 $(this).on("mouseenter",function(e){
-                    cycle(menuObj,$(this).index(),menuObj.selectedClass);
+                    controller.cycle($(this).index());
                 });
                 $(this).on("click",function(e){
-                    menuObj.confirm();
+                    controller.checkOptSelected();
                 });
             });
-            cycle(menuObj,0,menuObj.selectedClass);
+            this.cycle(start);
         }
     });
     
@@ -1055,19 +1207,20 @@ Quintus.HUD=function(Q){
             });
             this.tiles = [];
         },
-        checkConfirmMove:function(){
-            if(this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,1)){
-                var user = this.target;
-                if(!Q.BattleGrid.getObject(Q.pointer.p.loc)){
+        checkConfirmMove:function(user, loc){
+            if(this.checkValidPointerLoc(Q.RangeTileLayer, loc, 1)){
+                if(!Q.BattleGrid.getObject(loc)){
+                    //Follow the mover
+                    Q.viewFollow(user, Q.stage());
                     //Make the character move to the spot
-                    user.moveAlong(Q.getPath(user.p.loc,Q.pointer.p.loc,user.p.walkMatrix));
+                    user.moveAlong(Q.getPath(user.p.loc, loc, user.p.walkMatrix));
                     //Destroy this range grid
                     this.resetGrid();
-                    Q.pointer.pointerMoveControls.disable();
+                    return true;
                 } else {this.cannotDo();}
             } else {this.cannotDo();}
         },
-        validateTechnique:function(technique,loc,user){
+        validateTechnique:function(technique, loc, user){
             var maxRangeFixed = technique.rangeProps.includes("MaxRangeFixed");
             //If the technique is not even on a range tile, it's not valid (unless it's MaxRangeFixed)
             if(!maxRangeFixed && !this.checkValidPointerLoc(Q.RangeTileLayer,Q.pointer.p.loc,2)) return this.cannotDo();
@@ -1135,14 +1288,14 @@ Quintus.HUD=function(Q){
                 Q.pointer.pointerAttackControls.remove();
             } else {this.cannotDo();}
         },
-        validateAttack:function(user){
-            var obj = Q.BattleGrid.getObject(Q.pointer.p.loc);
+        validateAttack:function(user, loc){
+            var obj = Q.BattleGrid.getObject(loc);
             //Make sure the target hasn't died (due to extra attacks)
-            if(obj&&Q.BattleGrid.removeDead([obj]).length){
-                Q.BatCon.previewAttackTarget(user,Q.pointer.p.loc);
+            if(obj && Q.BattleGrid.removeDead([obj]).length){
+                Q.BatCon.previewAttackTarget(user, loc);
                 //Destroy this range grid
                 this.resetGrid();
-                Q.pointer.pointerAttackControls.remove();
+                return true;
             } else {this.cannotDo();}
         },
         checkConfirmAttack:function(){
@@ -1168,8 +1321,8 @@ Quintus.HUD=function(Q){
             this.on("step",this,"refresh");
         },
         //Checks if we've selected a tile
-        checkValidPointerLoc:function(tileLayer,loc,validTile){
-            return tileLayer.getTile(loc[0],loc[1]) === validTile;
+        checkValidPointerLoc:function(tileLayer, loc, validTile){
+            return tileLayer.getTile(loc[0], loc[1]) === validTile;
         },
         getPossibleTargets:function(tiles){
             var targets = [];
@@ -1461,7 +1614,6 @@ Quintus.HUD=function(Q){
             this.add("tween");
             this.animate({ y:this.p.y-Q.tileH, opacity: 0 }, 2, Q.Easing.Quadratic.Out, { callback: function() { this.destroy(); }});
         },
-
 
         draw: function(ctx){
             ctx.fillStyle = this.p.color;

@@ -1,6 +1,6 @@
 $(function() {
 var Q = window.Q = Quintus({audioSupported: ['mp3','ogg','wav']}) 
-        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, QFunctions, AI, Animations, HUD, Music, Objects, UIObjects, SceneFuncs, GameObjects")
+        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio, QFunctions, AI, Animations, HUD, Music, Objects, UIObjects, SceneFuncs, GameObjects, Pointer")
         .setup("quintus",{development:true, width:$("#content-container").width(), height:$("#content-container").height()})
         .touch().controls(true)
         .enableSound();
@@ -78,7 +78,7 @@ Q.newGame=function(options){
     Q.partyManager.alex = storyAlex;
     var astraea = Q.charGen.generateCharacter(GDATA.chars["Officers.json"]["Officers"].Astraea);
     astraea.loyalty = 60;
-    Q.partyManager.allies = [storyAlex,astraea];
+    Q.partyManager.allies = [storyAlex, astraea];
     Q.partyManager.bag = new Q.Bag({items:Q.state.get("saveData")["bag"]});
     Q.partyManager.influence = Q.state.get("saveData").influence;
     Q.partyManager.relations = Q.state.get("saveData").relations;
