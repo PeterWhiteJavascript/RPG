@@ -28,7 +28,7 @@ Quintus.QFunctions=function(Q){
         Q.state.p.options[opt]=value;
     };
     //Follows a sprite
-    Q.viewFollow=function(obj,stage){
+    Q.viewFollow=function(obj, stage){
         if(!stage){stage=Q.stage(0);};
         var minX=0;
         var maxX=(stage.mapWidth*Q.tileW)*stage.viewport.scale;
@@ -170,7 +170,7 @@ Quintus.QFunctions=function(Q){
         var difX = userLoc[0] - loc[0];
         var difY = userLoc[1] - loc[1];
         //When the pointer is on top of the character, don't change the direction
-        if(difX===0&&difY===0) return;
+        if(difX===0&&difY===0) return dir;
         //If the x dif is greater than the y dif
         if(Math.abs(difX)>Math.abs(difY)){
             //If the user is to the left of the pointer, make him face right
@@ -182,6 +182,26 @@ Quintus.QFunctions=function(Q){
         }
         return dir;
     };
+    
+    //Returns a new dir if one of the locations is the same
+    Q.getStraightDirection = function(loc1, loc2, dir){
+        //x is same, figure out if y is greater or less than
+        if(loc1[0] === loc2[0]){
+            if(loc1[1] < loc2[1]){
+                return "up";
+            } else if(loc1[1] > loc2[1]){
+                return "down";
+            }
+        } else if(loc1[1] === loc2[1]){
+            if(loc1[0] < loc2[0]){
+                return "left";
+            } else if(loc1[0] > loc2[0]){
+                return "right";
+            }
+        }
+        return dir;
+    };
+    
     Q.fadeAnim = function(ms, color, startTime, opacityTo, opacityStart, callback){
         color = color || "white";
         var fader = $("<div id='fader' class='fader-"+color+"'></div>");

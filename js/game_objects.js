@@ -661,6 +661,10 @@ Quintus.GameObjects=function(Q){
             };
         },
         finishBattle:function(props){
+            Q.el.removeEventListener("click", Q.clickStage);
+            Q.el.removeEventListener("mousemove", Q.mouseOverStage);
+                
+                
             Q.groupsProcessor.processGroups(props.events);
             console.log(props)
             //Figure out exp distribution
@@ -774,8 +778,8 @@ Quintus.GameObjects=function(Q){
                 char.placedOnMap = false;
             });
             
-            
-            $("#leaderboard-next-button").click(function(){
+            function next(){
+                Q.BattleMenusController.destroyAll();
                 $("#leaderboard").remove();
                 //TODO: checks
                 //Cycle week happens in location
@@ -785,7 +789,12 @@ Quintus.GameObjects=function(Q){
                 //Reset contributions
                 //TODO: save awards
                 Q.BatCon.allyExpContributions = [];
-            });
+                
+                //TEMP - Start next scene. This might actually be what happens here, I dunno
+                Q.startScene(props.next[0], props.next[1], props.next[2]);
+            }
+            Q.stage().on("pressedConfirm", next);
+            $("#leaderboard-next-button").click(next);
             
         },
         //Eventually check custom win conditions. For now, if there are no players OR no enemies, end it.
@@ -889,7 +898,6 @@ Quintus.GameObjects=function(Q){
             Q.viewFollow(Q.pointer,this.stage);
             //Tween the pointer to the AI
             Q.pointer.tweenTo(obj);
-            console.log(obj)
         },
         //When a character ends their turn, run this to cycle the turn order
         endTurn:function(){
@@ -1060,8 +1068,12 @@ Quintus.GameObjects=function(Q){
             //Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:[Q.BattleGrid.getObject(loc)]}));
         },
         //Previews a skill
-        previewDoTechnique:function(user,loc,technique,targets,tiles){
-            Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user,targets:targets,technique:technique,areaAffected:tiles}));
+        previewDoTechnique:function(user, loc, technique, targets, tiles){
+            //TODO: show technique prediction
+            
+            user.p.dir = Q.compareLocsForDirection(user.p.loc, targets[0].p.loc, user.p.dir);
+            Q.BatCon.attackFuncs.doAttack(user, targets, technique, tiles);
+            //Q.stage(2).insert(new Q.AttackPreviewBox({attacker:user, targets:targets, technique:technique, areaAffected:tiles}));
         },
         showEndTurnDirection:function(obj){
             obj.add("directionControls");

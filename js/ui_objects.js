@@ -1623,6 +1623,9 @@ Quintus.UIObjects=function(Q){
     //Includes up, down, confirm, and esc.
     Q.component("MenuControls", {
         disabled:false,
+        added:function(){
+            this.reset();
+        },
         turnOn:function(){
             var menu = this;
             $(document).keydown(function( e ){
@@ -1712,6 +1715,7 @@ Quintus.UIObjects=function(Q){
             this.setIdx(idx[0], idx[1], idx[2]);
         },
         setIdx:function(z, y, x, yAdd, xAdd){
+            console.log(z, y, x, yAdd, xAdd, this)
             if(z !== this.selectedIdx[0]) this.trigger("changedMenu");
             yAdd = yAdd || 1;
             xAdd = xAdd || 1;
@@ -5037,47 +5041,6 @@ Quintus.UIObjects=function(Q){
             ctx.lineTo(this.p.p3[0],this.p.p3[1]);
             ctx.closePath();
             ctx.fill();
-        }
-    });
-    //The invisible sprite that follows characters
-    Q.Sprite.extend("ViewSprite",{
-        init:function(p){
-            this._super(p,{
-                w:Q.tileW,
-                h:Q.tileH,
-                type:Q.SPRITE_NONE,
-                x:0,
-                y:0
-            });
-            this.add("animation, tween");
-        },
-        animateTo:function(to,speed,callback){
-            if(this.p.obj){
-                this.p.obj = false;
-                this.off("step","follow");
-            }
-            if(!speed){
-                this.p.x = to.x;
-                this.p.y = to.y;
-                if(callback){
-                    callback();
-                }
-            } else {
-                this.animate({x:to.x,y:to.y},speed,Q.Easing.Quadratic.InOut,{callback:callback || function(){} });
-            }
-        },
-        followObj:function(obj){
-            this.p.obj = obj;
-            this.on("step","follow");
-        },
-        follow:function(){
-            var obj = this.p.obj;
-            if(obj){
-                this.p.x = obj.p.x;
-                this.p.y = obj.p.y;
-            } else {
-                this.off("step","follow");
-            }
         }
     });
     Q.UI.Container.extend("PlacementSquare",{

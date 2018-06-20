@@ -82,7 +82,7 @@ var CharacterGenerator = {
         
         //If the character has a random charClass, generate default techniques.
         char.techniques = data.techniques && data.charClass !== "Random" ? this.categorizeTechniques(this.getTechniques(this.setLevelTechniques(data.techniques,char.level),char.charClass,char.equipment),char.equipment,char.baseStats.skl) : this.categorizeTechniques(this.generateTechniques(char.charClass,char.level,char.equipment),char.equipment,char.baseStats.skl);
-        char.talents = this.getTalents(char.charClass,char.charGroup);
+        char.talents = this.getTalents(char.charClass, char.charGroup);
         
         char.gender = data.gender === "Random" || !data.gender ? this.generateGender(char.charClass,char.natNum) : data.gender;
         char.name = data.name || this.generateName(char.natNum,char.gender);//Requires natNum and gender
@@ -275,7 +275,7 @@ var CharacterGenerator = {
         }
         return [rh,lh,ar,ft,ac];
     },
-    categorizeTechniques:function(techs,equipment,skill){
+    categorizeTechniques:function(techs, equipment, skill){
         var processed = {
             active:[],
             passive:[]

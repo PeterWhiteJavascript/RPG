@@ -13,6 +13,37 @@ Quintus.Pointer = function(Q){
             this.on("touch");
             this.on("drag");
         },
+        animateTo:function(to, speed, callback){
+            if(this.p.obj){
+                this.p.obj = false;
+                this.off("step","follow");
+            }
+            if(!speed){
+                this.p.x = to.x;
+                this.p.y = to.y;
+                if(callback){
+                    callback();
+                }
+            } else {
+                this.animate({x:to.x,y:to.y},speed,Q.Easing.Quadratic.InOut,{callback:callback || function(){} });
+            }
+        },
+        unfollowObj:function(){
+            this.p.obj = false;
+        },
+        followObj:function(obj){
+            this.p.obj = obj;
+            this.on("step","follow");
+        },
+        follow:function(){
+            var obj = this.p.obj;
+            if(obj){
+                this.p.x = obj.p.x;
+                this.p.y = obj.p.y;
+            } else {
+                this.off("step","follow");
+            }
+        },
         //If we're not following the viewSprite, follow it
         touch:function(){
             if(this.stage.viewport.following !== this){
@@ -145,10 +176,6 @@ Quintus.Pointer = function(Q){
         checkInputs:function(){
             var p = this.p;
             if(p.stepping) return;
-            if(this.stage.viewport.following !== this){
-                Q.viewFollow(this, this.stage);
-            }
-            
             var input = Q.inputs;
             var newLoc = [p.loc[0],p.loc[1]];
             if(input['up']){
@@ -178,7 +205,7 @@ Quintus.Pointer = function(Q){
                 this.setLoc(newLoc);
                 //Put next line in listener in character (on at start of turn maybe)
                 //if(p.user) p.user.playStand(Q.compareLocsForDirection(p.user.p.loc,p.loc,p.user.p.dir));
-                this.trigger("inputMoved",this);
+                this.trigger("inputMoved", this.p.loc);
                 //this.checkAnimateTo();
             } else {
                 p.diffX = 0;
@@ -190,32 +217,30 @@ Quintus.Pointer = function(Q){
             var p = this.p;
             if(p.stepping) return;
             var input = Q.inputs;
-            var newLoc = [p.user.p.loc[0],p.user.p.loc[1]];
+            var newLoc = [Q.BatCon.turnOrder[0].p.loc[0], Q.BatCon.turnOrder[0].p.loc[1]];
             var dir;
             if(input['up']){
-                if(this.p.movingStraight) newLoc[1]-=1;
+                newLoc[1] -= 1;
                 dir = "up";
-                input['up']=false;
             } else if(input['down']){
-                if(this.p.movingStraight) newLoc[1]+=1;
+                newLoc[1] += 1;
                 dir = "down";
-                input['down']=false;
-            } 
-            
-            if(input['right']){
-                if(this.p.movingStraight) newLoc[0]+=1;
+            } else if(input['right']){
+                newLoc[0] += 1;
                 dir = "right";
-                input['right']=false;
             } else if(input['left']){
-                if(this.p.movingStraight) newLoc[0]-=1;
+                newLoc[0] -= 1;
                 dir = "left";
-                input['left']=false;
             }
+            input['up'] = false;
+            input['down'] = false;
+            input['right'] = false;
+            input['left'] = false;
             var validLoc = this.checkValidLoc(newLoc);
             //If there's a dir, loc, and the loc is valid
-            if(dir&&validLoc){
-                p.diffX = (newLoc[0]-p.loc[0])*p.stepDistanceX;
-                p.diffY = (newLoc[1]-p.loc[1])*p.stepDistanceY;
+            if(dir && validLoc){
+                p.diffX = (newLoc[0] - p.loc[0]) * p.stepDistanceX;
+                p.diffY = (newLoc[1] - p.loc[1]) * p.stepDistanceY;
                 p.stepping = true;
                 p.origX = p.x;
                 p.origY = p.y;
@@ -224,8 +249,8 @@ Quintus.Pointer = function(Q){
                 p.stepWait = p.stepDelay;
                 //Set the loc right away and not when the pointer gets to the location
                 this.setLoc(newLoc);
-                p.user.playStand(dir);
-                this.trigger("inputMoved",this);
+                Q.BatCon.turnOrder[0].playStand(Q.compareLocsForDirection(Q.BatCon.turnOrder[0].p.loc, newLoc, Q.BatCon.turnOrder[0].p.dir));
+                this.trigger("inputMoved", [Q.BatCon.turnOrder[0].p.loc[0], Q.BatCon.turnOrder[0].p.loc[1]]);
             } else {
                 p.diffX = 0;
                 p.diffY = 0;
@@ -273,16 +298,25 @@ Quintus.Pointer = function(Q){
     Q.component("pointerControls",{
         added:function(){
             this.entity.show();
-            Q.stage().on("pressedUp", this.entity, "checkInputs");
-            Q.stage().on("pressedRight", this.entity, "checkInputs");
-            Q.stage().on("pressedDown", this.entity, "checkInputs");
-            Q.stage().on("pressedLeft", this.entity, "checkInputs");
-            //Allow for moving the pointer by clicking
-            Q.stage().on("selectedLocation", this, "centerOnLocation");  
-            Q.stage().on("selectedCharacter", this, "centerOnCharacter");  
+            if(this.entity.techMaxRangeFixed){
+                Q.stage().on("pressedUp", this.entity, "checkStraightInputs");
+                Q.stage().on("pressedRight", this.entity, "checkStraightInputs");
+                Q.stage().on("pressedDown", this.entity, "checkStraightInputs");
+                Q.stage().on("pressedLeft", this.entity, "checkStraightInputs");
+                this.entity.hide();
+                var dir = Q.BatCon.turnOrder[0].p.dir;
+                Q.inputs[dir] = true;
+            } else {
+                Q.stage().on("pressedUp", this.entity, "checkInputs");
+                Q.stage().on("pressedRight", this.entity, "checkInputs");
+                Q.stage().on("pressedDown", this.entity, "checkInputs");
+                Q.stage().on("pressedLeft", this.entity, "checkInputs");
+                //Allow for moving the pointer by clicking
+                Q.stage().on("selectedLocation", this, "centerOnLocation");  
+                Q.stage().on("selectedCharacter", this, "centerOnCharacter");  
+            }
             //Force the focus to the canvas
             $("#quintus").focus();
-            Q.viewFollow(this.entity, this.entity.stage);
         },
         centerOnCharacter:function(objAt){
             this.entity.setLoc(objAt.p.loc);
@@ -294,12 +328,19 @@ Quintus.Pointer = function(Q){
         },
         remove:function(){
             this.entity.hide();
-            Q.stage().off("pressedUp", this.entity, "checkInputs");
-            Q.stage().off("pressedRight", this.entity, "checkInputs");
-            Q.stage().off("pressedDown", this.entity, "checkInputs");
-            Q.stage().off("pressedLeft", this.entity, "checkInputs");
-            Q.stage().off("selectedLocation", this, "centerOnLocation");  
-            Q.stage().off("selectedCharacter", this, "centerOnCharacter");
+            if(this.entity.techMaxRangeFixed){
+                Q.stage().off("pressedUp", this.entity, "checkStraightInputs");
+                Q.stage().off("pressedRight", this.entity, "checkStraightInputs");
+                Q.stage().off("pressedDown", this.entity, "checkStraightInputs");
+                Q.stage().off("pressedLeft", this.entity, "checkStraightInputs");
+            } else {
+                Q.stage().off("pressedUp", this.entity, "checkInputs");
+                Q.stage().off("pressedRight", this.entity, "checkInputs");
+                Q.stage().off("pressedDown", this.entity, "checkInputs");
+                Q.stage().off("pressedLeft", this.entity, "checkInputs");
+                Q.stage().off("selectedLocation", this, "centerOnLocation");  
+                Q.stage().off("selectedCharacter", this, "centerOnCharacter");
+            }
             this.entity.del("pointerControls");
         }
     });
@@ -327,7 +368,26 @@ Quintus.Pointer = function(Q){
     Q.component("pointerRoamingControls",{
         added:function(){
             Q.stage().on("pressedConfirm", this, "selectCharacter");
+            Q.stage().on("pressedBack", this, "centerOnChar");
             Q.stage().on("selectedCharacter", this, "selectCharacter");
+            Q.stage().viewSprite.unfollowObj();
+        },
+        centerOnChar:function(){
+            var sp = Q.stage(0).viewSprite;
+            var char = Q.BatCon.turnOrder[0];
+            if(sp.p.x === char.p.x && sp.p.y === char.p.y){
+                if(char.p.didMove){
+                    char.resetMove();
+                    this.centerOnChar();
+                } else {
+                    this.entity.pointerControls.remove();
+                    this.remove();
+                    Q.BattleMenusController.displayActions("turnActions");
+                }
+            } else {
+                this.entity.snapTo(char);
+                sp.animateTo(Q.BatCon.getXY(char.p.loc));
+            }
         },
         selectCharacter:function(obj){
             obj = obj.p ? obj : Q.getSpriteAt([this.entity.p.loc[0], this.entity.p.loc[1]]);
@@ -345,6 +405,7 @@ Quintus.Pointer = function(Q){
         },
         remove:function(){
             Q.stage().off("pressedConfirm", this, "selectCharacter");
+            Q.stage().off("pressedBack", this, "centerOnChar");
             Q.stage().off("selectedCharacter", this, "selectCharacter");
             this.entity.del("pointerRoamingControls");
         }
@@ -354,7 +415,7 @@ Quintus.Pointer = function(Q){
            this._super(p, {
                w:Q.tileW,
                h:Q.tileH,
-               color: "orange",
+               color: "green",
                type:Q.SPRITE_NONE
            });
        },
@@ -369,10 +430,19 @@ Quintus.Pointer = function(Q){
             Q.stage().on("pressedConfirm", this, "detectMovementTile");
             Q.stage().on("clickedStage", this, "detectMovementTile");
             Q.stage().on("mouseAt", this, "showHelperTile");
+            Q.pointer.on("inputMoved", this, "moveHelperTile");
             this.helperTile = Q.stage().insert(new Q.HelperTile({color:"purple"}));
+            this.prevLoc = [-1, -1];
+            Q.stage().viewSprite.unfollowObj();
         },
         showHelperTile:function(e){
+            if(e.dragged) return;
             var loc = Q.getLoc(e.stageX, e.stageY);
+            if(loc[0] === this.prevLoc[0] && loc[1] === this.prevLoc[1]) return;
+            this.moveHelperTile(loc);
+            this.prevLoc = loc;
+        },
+        moveHelperTile:function(loc){
             var pos = Q.getXY(loc);
             this.helperTile.p.x = pos.x;
             this.helperTile.p.y = pos.y;
@@ -409,26 +479,76 @@ Quintus.Pointer = function(Q){
             Q.stage().on("pressedBack", this, "snapBackToChar");
             Q.stage().on("pressedConfirm", this, "detectAttackTile");
             Q.stage().on("clickedStage", this, "detectAttackTile");
-            Q.stage().on("mouseAt", this, "showHelperTile");
-            this.helperTile = Q.stage().insert(new Q.HelperTile({color:"orange"}));
+            this.prevLoc = [-1, -1];
+            if(this.entity.technique){
+                this.techRange = this.getRange(this.entity.technique, Q.BatCon.turnOrder[0]);
+                Q.stage().on("mouseAt", this, "moveMouseAOE");
+                Q.pointer.on("inputMoved", this, "moveAOE");
+                this.moveAOE(this.entity.p.loc.slice(0));
+            } else {
+                this.helperTile = Q.stage().insert(new Q.HelperTile({color:"green"}));
+                Q.stage().on("mouseAt", this, "showHelperTile");
+                Q.pointer.on("inputMoved", this, "moveHelperTile");
+            }
+            Q.stage().viewSprite.unfollowObj();
         },
-        showHelperTile:function(e){
+        getRange:function(technique, currentCharacter){
+            var range = technique.range;
+            //Don't display a range for maxRangeFixed
+            if(!this.entity.techMaxRangeFixed){
+                Q.rangeController.setTiles(2, currentCharacter.p.loc, range, technique.rangeProps, currentCharacter.p.attackMatrix);
+                if(technique.rangeProps.includes("TargetSelf")){
+                    Q.rangeController.setSpecificTile(2, currentCharacter.p.loc);
+                }
+            }
+            return range;
+        },
+        moveAOE:function(loc){
+            Q.aoeController.resetGrid();
+            var char = Q.BatCon.turnOrder[0];
+            var tech = this.entity.technique;
+            Q.aoeController.setTiles(3, loc, char.p.dir, tech.aoe, tech.aoeType, tech.aoeProps, tech.rangeProps, this.techRange);
+            this.prevLoc = loc;
+        },
+        moveMouseAOE:function(e){
+            if(e.dragged) return;
             var loc = Q.getLoc(e.stageX, e.stageY);
+            if(loc[0] === this.prevLoc[0] && loc[1] === this.prevLoc[1] || Q.BattleGrid.outOfBounds(loc)) return;
+            if(!this.entity.techMaxRangeFixed){
+                this.moveAOE(loc);
+            } else {
+                var char = Q.BatCon.turnOrder[0];
+                char.p.dir = Q.getStraightDirection(loc, char.p.loc, char.p.dir);
+                Q.inputs[char.p.dir] = true;
+            }
+        },
+        moveHelperTile:function(loc){
             var pos = Q.getXY(loc);
             this.helperTile.p.x = pos.x;
             this.helperTile.p.y = pos.y;
+        },
+        showHelperTile:function(e){
+            var loc = Q.getLoc(e.stageX, e.stageY);
+            if(loc[0] === this.prevLoc[0] && loc[1] === this.prevLoc[1]) return;
+            this.moveHelperTile(loc);
+            this.prevLoc = loc;
         },
         snapBackToChar:function(){
             this.entity.pointerControls.centerOnCharacter(Q.BatCon.turnOrder[0]);
             this.entity.pointerControls.remove();
             this.remove();
             Q.rangeController.resetGrid();
-            Q.BattleMenusController.displayActions("turnActions");
+            Q.BattleMenusController.displayActions(this.previousMenu);
         },
         detectAttackTile:function(loc){
             loc = loc.stageX ? Q.getLoc(loc.stageX, loc.stageY) : Q.pointer.p.loc;
-            if(this.entity.p.technique){
-                Q.rangeController.validateTechnique(this.entity.p.technique, loc, Q.BatCon.turnOrder[0]);
+            if(this.entity.technique){
+                if(Q.rangeController.validateTechnique(this.entity.technique, loc, Q.BatCon.turnOrder[0])){
+                    this.entity.pointerControls.remove();
+                    this.remove();
+                } else {
+                    this.snapBackToChar();
+                }
             } else {
                 if(Q.rangeController.checkValidPointerLoc(Q.RangeTileLayer, loc, 2)){
                     if(Q.rangeController.validateAttack(Q.BatCon.turnOrder[0], loc)){
@@ -444,8 +564,17 @@ Quintus.Pointer = function(Q){
             Q.stage().off("pressedBack", this, "snapBackToChar");
             Q.stage().off("pressedConfirm", this, "detectAttackTile");
             Q.stage().off("clickedStage", this, "detectAttackTile");
-            Q.stage().off("mouseAt", this, "showHelperTile");
-            this.helperTile.destroy();
+            if(this.entity.technique){
+                Q.stage().off("mouseAt", this, "moveMouseAOE");
+                Q.pointer.off("inputMoved", this, "moveAOE");
+                Q.aoeController.resetGrid();
+                this.entity.technique = false;
+                this.entity.techMaxRangeFixed = false;
+            } else {
+                this.helperTile.destroy();
+                Q.stage().off("mouseAt", this, "showHelperTile");
+                Q.pointer.off("inputMoved", this, "moveHelperTile");
+            }
             this.entity.del("pointerAttackControls");
         }
     });

@@ -39,6 +39,7 @@ Quintus.SceneFuncs=function(Q){
         Q.audioController.playMusic(data.pages[0].music,function(){
             Q.storyController.startEvent(data);
             Q.menuBuilder.MenuControls.disabled = false;
+            Q.menuBuilder.MenuControls.turnOn();
         });
     });
     Q.scene("Location",function(stage){
@@ -50,6 +51,7 @@ Quintus.SceneFuncs=function(Q){
             Q.missionsController.currentMissions = Q.missionsController.getCurrentMissions();
             Q.locationController.startEvent(data);
             Q.menuBuilder.MenuControls.disabled = false;
+            Q.menuBuilder.MenuControls.turnOn();
         });
     });
     
@@ -127,6 +129,65 @@ Quintus.SceneFuncs=function(Q){
     },{
         sort:true
     });
+    Q.clickStage = function(e){
+        //Can't click sprite if placing one
+        var x = e.offsetX || e.layerX,
+            y = e.offsetY || e.layerY,
+            stage = Q.stage();
+        //If we've dragged or it's disabled, don't click
+        if(stage.dragged || stage.disabled || !stage){
+            stage.dragged = false;
+            return;
+        }
+
+        var stageX = Q.canvasToStageX(x, stage),
+            stageY = Q.canvasToStageY(y, stage);
+        if(stageX < 0 || stageY < 0) return;
+
+        var locX = Math.floor(stageX / Q.tileW);
+        var locY = Math.floor(stageY / Q.tileH);
+        var objAt = Q.getSpriteAt([locX, locY]);
+        if(objAt){
+            Q.stage().trigger("selectedCharacter", objAt);
+        } else {
+            Q.stage().trigger("selectedLocation", [locX, locY]);
+        }
+        Q.stage().trigger("clickedStage", {stageX:stageX, stageY:stageY, dragged:stage.dragged});
+    }
+    Q.mouseOverStage = function(e){
+        var x = e.offsetX || e.layerX,
+        y = e.offsetY || e.layerY;
+        var stage = Q.stage(0);
+        var stageX = Q.canvasToStageX(x, stage),
+        stageY = Q.canvasToStageY(y, stage);
+        Q.stage().trigger("mouseAt", {stageX:stageX, stageY:stageY});
+    }
+    Q.listenForInput = function(){
+        if(Q.inputs['confirm']){
+            this.trigger("pressedConfirm", "confirm");
+            Q.inputs['confirm'] = false;
+        } else if(Q.inputs['back']){
+            this.trigger("pressedBack", "back");
+            Q.inputs['back'] = false;
+        } else if(Q.inputs['shift']){
+            this.trigger("pressedShift", "shift");
+            Q.inputs['shift'] = false;
+        } else if(Q.inputs['ctrl']){
+            this.trigger("pressedCtrl", "ctrl");
+            Q.inputs['ctrl'] = false;
+        } else {
+            if(Q.inputs['up']){
+                this.trigger("pressedUp", "up");
+            } else if(Q.inputs['down']){
+                this.trigger("pressedDown", "down");
+            }
+            if(Q.inputs['right']){
+                this.trigger("pressedRight", "right");
+            } else if(Q.inputs['left']){
+                this.trigger("pressedLeft", "left");
+            }
+        }
+    };
     Q.scene("Battle",function(stage){
         $("#loading-screen").show();
         //The data that is used for this battle
@@ -225,69 +286,10 @@ Quintus.SceneFuncs=function(Q){
                 
                 
                 stage.dragged = false;
-                function clickStage(e){
-                    //Can't click sprite if placing one
-                    var x = e.offsetX || e.layerX,
-                        y = e.offsetY || e.layerY,
-                        stage = Q.stage();
-                    //If we've dragged or it's disabled, don't click
-                    if(stage.dragged || stage.disabled || !stage){
-                        stage.dragged = false;
-                        return;
-                    }
-
-                    var stageX = Q.canvasToStageX(x, stage),
-                        stageY = Q.canvasToStageY(y, stage);
-                    if(stageX < 0 || stageY < 0) return;
-                    
-                    var locX = Math.floor(stageX / Q.tileW);
-                    var locY = Math.floor(stageY / Q.tileH);
-                    var objAt = Q.getSpriteAt([locX, locY]);
-                    if(objAt){
-                        Q.stage().trigger("selectedCharacter", objAt);
-                    } else {
-                        Q.stage().trigger("selectedLocation", [locX, locY]);
-                    }
-                    Q.stage().trigger("clickedStage", {stageX:stageX, stageY:stageY});
-                }
                 //Turn on clicking sprites/ground
-                Q.el.addEventListener("click", clickStage);
-                function mouseOverStage(e){
-                    var x = e.offsetX || e.layerX,
-                    y = e.offsetY || e.layerY;
-                    var stage = Q.stage(0);
-                    var stageX = Q.canvasToStageX(x, stage),
-                    stageY = Q.canvasToStageY(y, stage);
-                    Q.stage().trigger("mouseAt", {stageX:stageX, stageY:stageY});
-                }
-                Q.el.addEventListener("mousemove", mouseOverStage);
-                function listenForInput(){
-                    if(Q.inputs['confirm']){
-                        this.trigger("pressedConfirm", "confirm");
-                        Q.inputs['confirm'] = false;
-                    } else if(Q.inputs['back']){
-                        this.trigger("pressedBack", "back");
-                        Q.inputs['back'] = false;
-                    } else if(Q.inputs['shift']){
-                        this.trigger("pressedShift", "shift");
-                        Q.inputs['shift'] = false;
-                    } else if(Q.inputs['ctrl']){
-                        this.trigger("pressedCtrl", "ctrl");
-                        Q.inputs['ctrl'] = false;
-                    } else {
-                        if(Q.inputs['up']){
-                            this.trigger("pressedUp", "up");
-                        } else if(Q.inputs['down']){
-                            this.trigger("pressedDown", "down");
-                        }
-                        if(Q.inputs['right']){
-                            this.trigger("pressedRight", "right");
-                        } else if(Q.inputs['left']){
-                            this.trigger("pressedLeft", "left");
-                        }
-                    }
-                }
-                Q.stage(0).on("step", listenForInput);
+                Q.el.addEventListener("click", Q.clickStage);
+                Q.el.addEventListener("mousemove", Q.mouseOverStage);
+                Q.stage(0).on("step", Q.listenForInput);
                 stage.add("viewport");
                 stage.viewport.scale = 2;
                 
@@ -297,6 +299,8 @@ Quintus.SceneFuncs=function(Q){
                 
                 //The viewSprite is what moves when dragging the viewport
                 stage.viewSprite = stage.insert(new Q.ViewSprite());
+                //stage.viewSprite.followObj(Q.pointer);
+                Q.viewFollow(Q.pointer, stage);
                 //Time specific events in battle
                 Q.BatCon.battleTriggers.setUpTriggers(battleData.events);
                 //Show the squares that the player can place characters on
@@ -309,16 +313,15 @@ Quintus.SceneFuncs=function(Q){
                 
                 //Start at the first square
                 Q.stage(0).trigger("selectedLocation", battleData.placementSquares[0]);
-                
                 //Beyond is TEMP to place characters at start.
-                Q.stage(0).trigger("pressedConfirm");
+                /*Q.stage(0).trigger("pressedConfirm");
                 Q.stage(0).trigger("pressedConfirm"); 
                 Q.stage(0).trigger("selectedLocation", battleData.placementSquares[1]);
                 Q.stage(0).trigger("pressedConfirm");
                 Q.stage(0).trigger("pressedConfirm");
-                Q.BattleMenusController.actionsMenu.selected = 3;
-                Q.stage(0).trigger("pressedConfirm");
-                
+                //Q.BattleMenusController.actionsMenu.selected = 2;
+                //Q.stage(0).trigger("pressedConfirm");
+                */
                 
             });
         },{

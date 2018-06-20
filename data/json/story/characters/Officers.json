@@ -43,7 +43,7 @@
                 "eff": 20
             },
             "techniques": [
-                "Forced March",
+                "Quicken",
                 "Fortify",
                 "Embolden",
                 "Fervour",
@@ -51,7 +51,7 @@
                 "Phalanx"
             ],
             "nationality": "Venorian",
-            "charClass": "Random",
+            "charClass": "Skirmisher",
             "lean": [
                 [
                     25,
@@ -70,8 +70,8 @@
         "Astraea": {
             "handle": "Astraea",
             "name": "Astraea",
-            "levelmin": 1,
-            "levelmax": 1,
+            "levelmin": 8,
+            "levelmax": 8,
             "gender": "Female",
             "team": "Ally",
             "promotion": 1,
