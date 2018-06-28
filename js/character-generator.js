@@ -204,6 +204,7 @@ var CharacterGenerator = {
     convertEquipment:function(eq,quality){//console.log(eq,quality)
         if(!eq) return false;
         var data = this.equipment.gear[eq[1]];
+        console.log(eq, quality, data)
         var keys = Object.keys(data);
         var gear = {
             material:eq[0],

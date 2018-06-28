@@ -4258,9 +4258,20 @@ Quintus.UIObjects=function(Q){
                     loot.forEach(function(l){
                         var contains = false;
                         var idx = false;
-                        processed.forEach(function(p, i){if(p[0] === l[0] && p[1] === l[1]){contains = p; idx = i;};});
-                        if(contains) processed[idx][2] ++;
-                        else processed.push([l[0],l[1],1]);
+                        switch(l[0]){
+                            case "Materials":
+                                processed.forEach(function(p, i){if(p[0] === l[0] && p[1] === l[1]){contains = p; idx = i;};});
+                                break;
+                            default:
+                                processed.forEach(function(p, i){if(p[0] === l[0] && p[1] === l[1] && p[2] === 1[2]){contains = p; idx = i;};});
+                                break;
+                        }
+                        if(contains) { processed[idx][processed[idx].length - 1] ++; }
+                        else {
+                            var itm = l.slice(0);
+                            itm.push(1);
+                            processed.push(itm);
+                        }
                     });
                     this.completedJobs.push({loot:processed, chars:chars, job:data.job});
                     job.inProgress = false;
@@ -4343,8 +4354,9 @@ Quintus.UIObjects=function(Q){
                     } else {
                         leftCont.append(MB.text("w-xl h-s", loot[1] + " x" +loot[2]));
                     }
+                    var itm = loot.length > 3 ? {amount:loot[4], gear:loot[3], material: loot[2], quality:loot[1]} : {amount:loot[2], gear:loot[1]}
                     //Add the earnings to the bag
-                    Q.partyManager.bag.addItem(loot[0], {amount:loot[2], gear:loot[1]});
+                    Q.partyManager.bag.addItem(loot[0], itm);
                 }
                 bottom.append(completedByCont);
                 bottom.append(earningsCont);
