@@ -7,13 +7,14 @@
             
         ],
         "Weapons":[
-            
+            [1,  "Short Sword", "Average", "Bronze"],
+            [1, "Short Sword", "Quality" ,"Bronze"]
         ],
         "Shields":[
-            
+            [1, "Shield", "Quality", "Bronze"]
         ],
         "Armour":[
-            
+            [1, "Outfit", "Quality", "Wool"]
         ],
         "Footwear":[
             

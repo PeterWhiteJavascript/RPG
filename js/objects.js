@@ -100,35 +100,51 @@ Quintus.Objects=function(Q){
         increaseItem:function(itm,amount){
             itm.amount += amount || 1;
         },
-        decreaseItem:function(type,itm,amount){
-            var item = this.getItem(type,{gear:itm.gear,quality:itm.quality,material:itm.material});
+        decreaseItem:function(type, itm, amount){
+            var item = this.getItem(type, {gear:itm.gear,quality:itm.quality,material:itm.material});
             item.amount -= amount || 1;
             if(item.amount<=0) this.removeItem(type,itm);
         },
         
-        equipItem:function(char,to,gear,material,quality){
+        equipItem:function(char, to, gear, material, quality){
             if(!gear) return;
             var eq = Q.charGen.convertEquipment([material,gear],quality);
             char.equipment[to] = eq;
-            this.decreaseItem(eq.kind,{gear:gear,quality:quality,material:material},1);
+            this.decreaseItem(eq.kind,{gear:gear,quality:quality,material:material}, 1);
             var hp = char.combatStats.hp;
             var tp = char.combatStats.tp;
             char.combatStats = Q.charGen.getCombatStats(char);
             char.combatStats.hp = hp;
             char.combatStats.tp = tp;
+            this.adjustCombatStats(char);
         },
-        unequipItem:function(char,from,options){
+        //Used for charClone in equipping (just doesn't decrease from bag)
+        equipItemFromNowhere:function(char, to, gear, material, quality){
+            if(!gear) return;
+            var eq = Q.charGen.convertEquipment([material,gear],quality);
+            char.equipment[to] = eq;
+            this.adjustCombatStats(char);
+        },
+        unequipItem:function(char, from, options){
             if(!char.equipment[from]) return;
             var eq = char.equipment[from];
             switch(options){
                 case "toBag":
-                    this.addItem(eq.kind,{gear:eq.name,material:eq.material,quality:eq.quality});
+                    this.addItem(eq.kind, {gear:eq.name,material:eq.material,quality:eq.quality});
                     char.equipment[from] = false;
                     break;
                 case "delete":
                     char.equipment[from] = false;
                     break;
             }
+            this.adjustCombatStats(char);
+        },
+        adjustCombatStats:function(char){
+            var hp = char.combatStats.hp;
+            var tp = char.combatStats.tp;
+            char.combatStats = Q.charGen.getCombatStats(char);
+            char.combatStats.hp = hp;
+            char.combatStats.tp = tp;
         }
     });
     //Adds more control over what animations are playing.

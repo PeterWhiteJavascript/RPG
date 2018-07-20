@@ -201,10 +201,9 @@ var CharacterGenerator = {
     },
     //Changes the equipment from an array to an object containing all of the stats from equipment.json
     //eq is an array [gearMaterial,gearName]
-    convertEquipment:function(eq,quality){//console.log(eq,quality)
+    convertEquipment:function(eq,quality){
         if(!eq) return false;
         var data = this.equipment.gear[eq[1]];
-        console.log(eq, quality, data)
         var keys = Object.keys(data);
         var gear = {
             material:eq[0],
@@ -763,6 +762,7 @@ var CharacterGenerator = {
         char.combatStats.maxTp = this.get_maxTp(char);
         char.combatStats.tp = char.combatStats.maxTp;
 
+        char.combatStats.block = this.get_block(char);
         char.combatStats.encumbranceThreshold = this.get_encumbranceThreshold(char);
         char.combatStats.totalWeight = this.get_totalWeight(char);
         char.combatStats.encumbrancePenalty = this.get_encumbrancePenalty(char);
@@ -821,13 +821,16 @@ var CharacterGenerator = {
         var z = charGroup==="Fighter"?5:charGroup==="Rogue"?4:charGroup==="Mage"?3:0;
         return this.getPassiveEffect(Math.floor(end*z+level),"combatStats","painTolerance",p.techniques.passive);
     },
+    get_block:function(p){
+        return this.getEquipmentProp("block",p.equipment[1]);
+    },
     get_defensiveAbility:function(p){
         var rfl = p.combatStats.reflexes, 
-            encPenalty = p.talents.includes("Armoured Defense")?0:p.combatStats.encumbrancePenalty,
+            encPenalty = p.talents.includes("Armoured Defense") ? 0 : p.combatStats.encumbrancePenalty,
             level = p.level,
             block = this.getEquipmentProp("block",p.equipment[1]);
         var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
-        return this.getPassiveEffect(rfl+encPenalty+level+block+dualWield,"combatStats","defensiveAbility",p.techniques.passive);
+        return this.getPassiveEffect(rfl + encPenalty + level + block + dualWield,"combatStats","defensiveAbility",p.techniques.passive);
     },
     get_damageReduction:function(p){
         return this.getPassiveEffect(this.getEquipmentProp("damageReduction",p.equipment[2]),"combatStats","damageReduction",p.techniques.passive);
@@ -869,7 +872,7 @@ var CharacterGenerator = {
         var d = charGroup==="Fighter"?1:charGroup==="Rogue"?2:charGroup==="Mage"?1:0;
         var dualWield = p.talents.includes("Dual Wielder")&&p.equipment[1].wield?5:0;
         var amount = Math.floor(dex+weaponSpeedRight+(weaponSpeedLeft/2)-encPenalty+(level*d)+dualWield);
-        return this.getPassiveEffect(amount,"combatStats","atkSpeed",p.techniques.passive);
+        return this.getPassiveEffect(amount, "combatStats", "atkSpeed", p.techniques.passive);
     },
     get_atkRange:function(p){
         var attackRangeRight = this.getEquipmentProp("range",p.equipment[0]), attackRangeLeft = this.getEquipmentProp("range",p.equipment[1]);
@@ -910,7 +913,7 @@ var CharacterGenerator = {
             charGroup = p.charGroup;
         var m = charGroup==="Fighter"?6:charGroup==="Rogue"?7:charGroup==="Mage"?5:0;
         var shoes = this.getEquipmentProp("move",p.equipment[3]);
-        return this.getPassiveEffect(m + Math.floor(encPenalty/10) + shoes,"combatStats","moveSpeed",p.techniques.passive);
+        return this.getPassiveEffect(m - Math.floor(encPenalty/10) + shoes,"combatStats","moveSpeed",p.techniques.passive);
     },
     get_encumbranceThreshold:function(p){
         var str = p.combatStats.strength, charGroup = p.charGroup;

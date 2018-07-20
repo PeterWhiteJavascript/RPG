@@ -52,6 +52,9 @@ Quintus.SceneFuncs=function(Q){
             Q.locationController.startEvent(data);
             Q.menuBuilder.MenuControls.disabled = false;
             Q.menuBuilder.MenuControls.turnOn();
+            
+            //TEMP
+            $(".menu-option:eq(2)").trigger("click");
         });
     });
     
@@ -153,7 +156,7 @@ Quintus.SceneFuncs=function(Q){
             Q.stage().trigger("selectedLocation", [locX, locY]);
         }
         Q.stage().trigger("clickedStage", {stageX:stageX, stageY:stageY, dragged:stage.dragged});
-    }
+    };
     Q.mouseOverStage = function(e){
         var x = e.offsetX || e.layerX,
         y = e.offsetY || e.layerY;
@@ -161,7 +164,7 @@ Quintus.SceneFuncs=function(Q){
         var stageX = Q.canvasToStageX(x, stage),
         stageY = Q.canvasToStageY(y, stage);
         Q.stage().trigger("mouseAt", {stageX:stageX, stageY:stageY});
-    }
+    };
     Q.listenForInput = function(){
         if(Q.inputs['confirm']){
             this.trigger("pressedConfirm", "confirm");
@@ -340,59 +343,6 @@ Quintus.SceneFuncs=function(Q){
         } else {
             stage.ActionMenu = stage.insert(new Q.ActionMenu({target:target}));
         }
-    });
-    //Displayed when pressing the menu button at any time.
-    Q.scene("optionsMenu",function(stage){
-        alert("This will be deleted (options menu)")
-        var menu = stage.insert(new Q.UI.Container({w:Q.width/2,h:Q.height/2,cx:0,cy:0,fill:"blue",opacity:0.5}));
-        menu.p.x = Q.width/2-menu.p.w/2;
-        menu.p.y = Q.height/2-menu.p.h/2;
-        var title = menu.insert(new Q.UI.Text({x:menu.p.w/2,y:15,label:"OPTIONS",size:30}));
-        var texts = ["Music","Sound","Text Speed","Auto Scroll","Cursor Speed"];
-        var vals = Q.state.get("options");
-        var values = ["musicEnabled","soundEnabled","textSpeed","autoScroll","cursorSpeed"];
-        var options = [];
-        for(var i=0;i<texts.length;i++){
-            var option = menu.insert(new Q.UI.Container({x:10,y:50+i*40,fill:"red",w:menu.p.w-20,h:40,cx:0,cy:0,radius:0,value:vals[values[i]]}));
-            option.insert(new Q.UI.Text({align:"left",x:10,y:8,label:texts[i]}));
-            option.val = option.insert(new Q.UI.Text({align:"right",x:option.p.w-10,y:8,label:""+vals[values[i]]}));
-            if(i===0){
-                option.p.fill = "green";
-            }
-            options.push(option);
-        }
-        var optionNum = 0;
-        var optsFuncs  = [
-            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
-            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
-            function(opt){opt.p.value++;if(opt.p.value>3){opt.p.value=1;}},
-            function(opt){if(opt.p.value){opt.p.value=false;}else{opt.p.value=true;}},
-            function(opt){opt.p.value++;if(opt.p.value>3){opt.p.value=1;}}
-        ];
-        stage.on("step",function(){
-            if(Q.inputs['confirm']){
-                //Run the proper function
-                optsFuncs[optionNum](options[optionNum]);
-                vals[values[optionNum]] = options[optionNum].p.value;
-                options[optionNum].val.p.label = ""+vals[values[optionNum]];
-                Q.state.trigger("change."+values[optionNum],options[optionNum].p.value);
-                Q.inputs['confirm']=false;
-                return;
-            }
-            if(Q.inputs['up']){
-                options[optionNum].p.fill="red";
-                optionNum--;
-                if(optionNum<0){optionNum=options.length-1;};
-                options[optionNum].p.fill="green";
-                Q.inputs['up']=false;
-            } else if(Q.inputs['down']){
-                options[optionNum].p.fill="red";
-                optionNum++;
-                if(optionNum>=options.length){optionNum=0;};
-                options[optionNum].p.fill="green";
-                Q.inputs['down']=false;
-            }
-        });
     });
     Q.scene("battleText",function(stage){
         stage.insert(new Q.BattleTextBox({text:stage.options.text,callback:stage.options.callback}));

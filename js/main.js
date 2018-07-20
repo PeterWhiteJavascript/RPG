@@ -94,7 +94,7 @@ Q.newGame=function(options){
         })[0].vrs
     );
     Q.startScene(Q.state.get("saveData").startSceneType, Q.state.get("saveData").startSceneName, "Pannopolis"/*Q.state.get("saveData").startEventName*/);
-        
+    
     $("#hud-money").text(Q.state.get("saveData").money);
     $("#hud-week").text(Q.state.get("saveData").week);
     Q.timeController.week = Q.state.get("saveData").week;

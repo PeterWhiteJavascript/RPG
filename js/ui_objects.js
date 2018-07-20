@@ -96,7 +96,7 @@ Quintus.UIObjects=function(Q){
                                     ],
                                     [
                                         {
-                                            text:"Missions",
+                                            text:"Events", //Renamed from missions to events because flavour events will be here as well.
                                             desc:"Continue with the story.",
                                             confirm:{func:"displayMenu",props:["missions"]}
                                         }
@@ -688,6 +688,8 @@ Quintus.UIObjects=function(Q){
                     data:{
                         lists:[
                             {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
                                 items:"allies"
                             }
                         ]
@@ -696,31 +698,7 @@ Quintus.UIObjects=function(Q){
                 {
                     cl:"w-m menu-style3-middle",
                     data:{
-                        lists:[
-                            {
-                                items:[
-                                    [
-                                    {
-                                        img:"arrow-left",
-                                        desc:"Cycle menu left.",
-                                        confirm:{func:"cycleStatusMenu", props:[-1]}, 
-                                        imgClass:"menu-option"
-                                    }
-                                    ]
-                                ]
-                            },
-                            {
-                                items:[
-                                    [
-                                    {
-                                        img:"arrow-right",
-                                        desc:"Cycle menu right.",
-                                        confirm:{func:"cycleStatusMenu", props:[1]},
-                                        imgClass:"menu-option"
-                                    }]
-                                ]
-                            }
-                        ]
+                        lists:[]
                     }
                 },
                 {
@@ -728,6 +706,8 @@ Quintus.UIObjects=function(Q){
                     data:{
                         lists:[
                             {
+                                listClass:"v-list",
+                                rowClass:"w-xl h-xl",
                                 items:[
                                     [
                                         {
@@ -992,9 +972,24 @@ Quintus.UIObjects=function(Q){
             if(data.pressDown) this.MBUtility.pressDownFor(opt, obj, obj[data.pressDown.func] || data.pressDown.func, data.pressDown.props);
             if(data.pressLeft) this.MBUtility.pressLeftFor(opt, obj, obj[data.pressLeft.func] || data.pressLeft.func, data.pressLeft.props);
             if(data.pressRight) this.MBUtility.pressRightFor(opt, obj, obj[data.pressRight.func] || data.pressRight.func, data.pressRight.props);
-            this.MBUtility.hoverMenuOption(opt, "menu-option-selected", descBar, data.desc);
+            if(descBar) this.MBUtility.hoverMenuOption(opt, "menu-option-selected", descBar, data.desc);
             if(data.idx !== undefined) opt.attr("idx", data.idx);
             return opt;
+        },
+        list:function(options, obj){
+            var list = this.cont("regular-list " + options.listClass || "");
+            var items = this.MBUtility.getOptionsListItems(options.items, options.props);
+            for(var i=0;i<items.length;i++){
+                var row = this.cont("regular-list-row " + options.rowClass || "");
+                var textClass = options.textClass || "menu-item-font";
+                for(var j=0;j<items[i].length;j++){
+                    if(items[i][j].disabled) continue; // option is hidden (disabled)
+                    var opt = this.text(textClass ,items[i][j].text);
+                    row.append(opt);
+                }
+                list.append(row);
+            }
+            return list;
         },
         optionsList:function(options, obj, descBar){
             var list = this.cont("options-list " + (options.listClass || ""));
@@ -1478,6 +1473,7 @@ Quintus.UIObjects=function(Q){
         },
         hoverMenuOption:function(itm, selectedClass, descBar, desc){
             var util = this;
+            //TODO: if we want to change mouseover to mousedown or click.
             itm.on("mouseover",function(){
                 if(Q.menuBuilder.MenuControls.disabled || itm.hasClass("menu-option-disabled")) return;
                 $("."+selectedClass).not(".retain-selected").removeClass(selectedClass);
@@ -1715,7 +1711,6 @@ Quintus.UIObjects=function(Q){
             this.setIdx(idx[0], idx[1], idx[2]);
         },
         setIdx:function(z, y, x, yAdd, xAdd){
-            console.log(z, y, x, yAdd, xAdd, this)
             if(z !== this.selectedIdx[0]) this.trigger("changedMenu");
             yAdd = yAdd || 1;
             xAdd = xAdd || 1;
@@ -1758,7 +1753,7 @@ Quintus.UIObjects=function(Q){
             toZ += mod;
             var newZ = this.checkWrap($(".options-list").length, toZ);
             //If we're not allowed to wrap this screen from max -> min and the opposite.
-            if(this.noWrap && newZ !== toZ){return;} else if(this.focusList && newZ !== this.selectedIdx[0]){return;} else { toZ = newZ;};
+            if(this.noWrap && newZ !== toZ){ return; } else if(this.focusList && newZ !== this.selectedIdx[0]){ return; } else { toZ = newZ;};
             if(toZ !== this.selectedIdx[0]){
                 //If the list is disabled, cycle again
                 if($(".options-list:eq("+toZ+")").hasClass("list-keyboard-disabled")) return this.cycleIndex(toZ, toY, toX + mod);
@@ -2026,7 +2021,6 @@ Quintus.UIObjects=function(Q){
                 
                     break;
                 case "status":
-                case "equip":
                     screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
                         $(this).on("mouseover",function(){
                             buildStatusMenu("allies");
@@ -2035,6 +2029,26 @@ Quintus.UIObjects=function(Q){
                     //Append a placeholder for replacing
                     screen.children(".screen-menu:eq(1)").children(".arrow-container:eq(0)").after(MB.cont());
                     buildStatusMenu("allies");
+                    screen.children(".screen-menu").removeClass("menu-style3");
+                    break;
+                case "equip":
+                    function buildEquipMenu(){
+                        if(Q.menuBuilder.MenuControls.disabled) return;
+                        var char = controller.getCurrentChar("allies");
+                        if(!char) char = $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option").children("span").text();
+                        if(char.name === controller.curChar.name) return;
+                        controller.curChar = char;
+                        controller.buildCharEquipment(char);
+                    }
+                    screen.children(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-text").each(function(){
+                        $(this).on("mouseover",function(){
+                            buildEquipMenu();
+                        });
+                    });
+                    //Append a placeholder for replacing
+                    screen.children(".screen-menu:eq(1)").append(MB.cont());
+                    buildEquipMenu();
+                    screen.children(".screen-menu").removeClass("menu-style3");
                     break;
                 case "town":
                     if(!Q.partyManager.roster.length){
@@ -3018,8 +3032,215 @@ Quintus.UIObjects=function(Q){
         getCurrentChar:function(type){
             return Q.partyManager[type].filter(function(ally){return ally.name === $(".screen-menu:eq(0)").children(".options-list").children(".options-list-row").children(".menu-option-selected").children("span").text();})[0];
         },
-        buildCharEquipment:function(){
+        buildCharEquipment:function(char){
             var cont = $(".screen").children(".screen-menu:eq(1)");
+            var MB = Q.menuBuilder;
+            
+            var meat = MB.cont("sub-menu w-ll");
+            var mainStats = MB.cont("char-stats-main-container");
+            mainStats.append(MB.portrait("knight.png"));
+            var basicStatsCont = MB.cont("char-stats-basic flex-v");
+
+            basicStatsCont.append(MB.text("char-name",char.name));
+            basicStatsCont.append(MB.text("char-levelclass","LV " + char.level + " " + char.charClass));
+            var hp = MB.cont("w-xl flex-h");
+
+            hp.append(MB.icon("text-icon","icon-hp"), MB.text("char-hp w-m h-xl", char.combatStats.maxHp+"/"+char.combatStats.hp));
+            var tp = MB.cont("w-xl flex-h");
+            tp.append(MB.icon("text-icon","icon-tp"), MB.text("char-tp w-m h-xl", char.combatStats.maxTp+"/"+char.combatStats.tp));
+            basicStatsCont.append(hp, tp);
+            mainStats.append(basicStatsCont);
+            meat.append(mainStats);
+            var combatStats = MB.cont("h-sm w-xl flex-h");
+            //Only stats that can be altered by equipment
+            var statNames = Q.state.get("charGeneration").eqStats;
+            var cStats = Q.state.get("charGeneration").eqMinStats;
+            meat.append(combatStats);
+            function genCombatStatsList(){
+                //var statDescs = Q.state.get("charGeneration").statDescs;
+                var bsList = {
+                    listClass:"w-m flex-v",
+                    rowClass:"w-xl flex-h",
+                    textClass:"no-border no-bg justify-left menu-item-font",
+                    items:[]
+                };
+                for(var i=0;i<statNames.length;i++){
+                    bsList.items.push([{text:statNames[i] + " " + char.combatStats[cStats[i]], desc:"-"/*statDescs[i]*/}]);
+                    if(i % 4 === 3){
+                        combatStats.append(MB.list(bsList, this));
+                        bsList.items = [];
+                    }
+                }
+            }
+            genCombatStatsList();
+            function getEquipmentIcon(equip){
+                var itm = MB.text("menu-option", equip.name || "-");
+                if(equip){
+                    if(equip.quality){
+                        itm.prepend(MB.icon("","material-"+(equip.material.replace(/\s/g , "-").toLowerCase())));
+                        itm.addClass("quality-bg-"+equip.quality);
+                    }
+                }
+                return itm;
+            }
+            function showPotentialStats(charClone){
+                $(".potential-stat").remove();
+                var col = 0;
+                for(var i=0; i < statNames.length; i++){
+                    if(i % 5 === 4) col ++;
+                    var textElm = combatStats.children(".regular-list:eq("+col+")").children(".regular-list-row:eq("+(i - (col * 4))+")").children(".menu-text").first();
+                        console.log(textElm, stText, (i - (col * 4)))
+                    textElm.nextAll().remove();
+                    var stText = cStats[i];
+                    var charStat = charClone.combatStats[stText];
+                    if(charStat !== char.combatStats[stText]){
+                        var color = "green-text";
+                        if(char.combatStats[stText] > charStat){
+                            if(stText !== "totalWeight" || stText === "encumbrancePenalty"){
+                                color = "red-text";
+                            }
+                        } else {
+                            if((stText === "totalWeight" || stText === "encumbrancePenalty") && char.combatStats[stText] !== charStat){
+                                color = "red-text";
+                            }
+                        }
+                        textElm.parent().append(MB.text("no-border no-bg justify-left potential-stat "+color, " -> "+charStat));
+                    }
+                }
+            }
+            function createBagItemsList(items, idx){
+                var prevIdx = 0;
+                var charClone = {
+                    combatStats: Object.assign({}, char.combatStats), 
+                    equipment:  [Object.assign({}, char.equipment[0]), Object.assign({}, char.equipment[1]), Object.assign({}, char.equipment[2]), Object.assign({}, char.equipment[3]), Object.assign({}, char.equipment[4])], 
+                    baseStats: Object.assign({}, char.baseStats), 
+                    techniques: {passive: char.techniques.passive}, 
+                    talents: char.talents,
+                    level: char.level,
+                    charGroup: char.charGroup,
+                    charClass: char.charClass
+                };
+                for(var i=0;i<items.length;i++){
+                    var avail = MB.cont("w-xl h-sx flex-h options-list-row");
+
+                    var eqItm = getEquipmentIcon(items[i]);
+                    if(i === 0){ 
+                        eqItm.prepend(MB.text("", "e"));
+                        if(!char.equipment[idx]) eqItm.children(".menu-text:eq(0)").hide();
+                    };
+                    var descString = items[i].gear;
+                    if(items[i].material) descString = items[i].quality + " " + items[i].material + " " + descString;
+                    MB.MBUtility.hoverMenuOption(eqItm, "menu-option-selected", $(".text-bar"), descString);
+                    avail.append(eqItm);
+                    equipAvailable.append(avail);
+                    //Calculate difference in stats
+                    var prevBagIdx = -1;
+                    eqItm.on("mouseover", function(){
+                        var bagIdx = $(this).parent().index();
+                        if(bagIdx === prevBagIdx) return;
+                        if(bagIdx === prevIdx && char.equipment[idx]){
+                            charClone.equipment[idx] = false;
+                            Q.partyManager.bag.adjustCombatStats(charClone);
+                        } else {
+                            var bagItem = items[bagIdx];
+                            charClone.equipment[idx] = bagItem;
+                            Q.partyManager.bag.adjustCombatStats(charClone);
+                        }
+                        showPotentialStats(charClone);
+                    
+                        prevBagIdx = bagIdx;
+                    });
+                    eqItm.on("click", function(){
+                        var bagIdx = $(this).parent().index();
+                        var bagItem = items[bagIdx];
+                        var same = false;
+                        if(char.equipment[idx].gear === bagItem.gear && char.equipment[idx].material === bagItem.material && char.equipment[idx].quality === bagItem.quality) same = true;
+                        if(char.equipment[idx]) Q.partyManager.bag.unequipItem(char, idx, "toBag");
+                        if(!same) Q.partyManager.bag.equipItem(char, idx, bagItem.name, bagItem.material, bagItem.quality);
+                        if(!char.equipment[idx]){
+                            eqItm.parent().parent().children(".options-list-row:eq("+prevIdx+")").children(".menu-text").children(".menu-text:eq(0)").hide();
+                        } else {
+                            eqItm.parent().parent().children(".options-list-row:eq("+prevIdx+")").children(".menu-text").children(".menu-text:eq(0)").show();
+                        }
+                        eqItm.parent().parent().children(".options-list-row:eq("+bagIdx+")").children(".menu-text").prepend(eqItm.parent().parent().children(".options-list-row:eq("+prevIdx+")").children(".menu-text").children(".menu-text:eq(0)"));
+                        var itm = createEquippedIcon(char.equipment[idx]);
+                        equipped.children(".options-list-row:eq("+idx+")").children(".menu-text").replaceWith(itm);
+                        combatStats.empty();
+                        genCombatStatsList();
+                        prevIdx = bagIdx;
+                        prevBagIdx = -1;
+                        $(this).trigger("mouseover");
+                    });
+                }
+            }
+            function showListOfItemsToEquip(){
+                $(".potential-stat").remove();
+                var bagEquipment = Q.partyManager.bag.items;
+                //Load the potetial equipment
+                var idx = $(this).parent().index();
+                equipAvailable.empty();
+                var items = [];
+                switch(idx){
+                    case 0:
+                        var eq1 = char.equipment[0];
+                        items = eq1 ? [eq1].concat(bagEquipment.Weapons) : bagEquipment.Weapons.slice(0);
+                        break;
+                    //Shields can be equipped here
+                    case 1:
+                        var eq1 = char.equipment[0];
+                        var eq2 = char.equipment[1];
+                        items = eq2 ? [eq2].concat(bagEquipment.Weapons.concat(bagEquipment.Shields)) : bagEquipment.Weapons.concat(bagEquipment.Shields).slice(0);
+                        break;
+                    case 2:
+                        var eq3 = char.equipment[2];
+                        items = eq3 ? [eq3].concat(bagEquipment.Armour) : bagEquipment.Armour.slice(0);
+                        break;
+                    case 3:
+                        var eq4 = char.equipment[3];
+                        items = eq4 ? [eq4].concat(bagEquipment.Footwear) : bagEquipment.Footwear.slice(0);
+                        break;
+                    case 4:
+                        var eq5 = char.equipment[4];
+                        items = eq5 ? [eq5].concat(bagEquipment.Accessories) : bagEquipment.Accessories.slice(0);
+                        break;
+                }
+                if(!items.length) return;
+                
+                createBagItemsList(items, idx);
+            }
+            function createEquippedIcon(equip){
+                var itm = getEquipmentIcon(equip);
+                var descString = equip.name || "-";
+                if(equip.material) descString = equip.quality + " " + equip.material + " " + descString;
+                MB.MBUtility.hoverMenuOption(itm, "menu-option-selected", $(".text-bar"), descString);
+                equipped.append(valueCont);
+                $(itm).on("mouseover", showListOfItemsToEquip);
+                $(itm).on("click", function(){
+                    MB.MenuControls.cycleIndex(MB.MenuControls.selectedIdx[0], MB.MenuControls.selectedIdx[1], MB.MenuControls.selectedIdx[2] + 1);
+                });
+                $(itm).on("pressRight", function(){
+                    MB.MenuControls.cycleIndex(MB.MenuControls.selectedIdx[0], MB.MenuControls.selectedIdx[1], MB.MenuControls.selectedIdx[2] + 1);
+                });
+                return itm;
+            }
+            
+            var equipment = MB.cont("h-sm w-xl flex-h");
+            
+            var equipped = MB.cont("h-xl w-msm options-list");
+            var equipAvailable = MB.cont("h-xl w-mm options-list");
+            for(var i = 0; i < char.equipment.length; i++){
+                var equip = char.equipment[i];
+                var valueCont = MB.cont("w-xl h-sx flex-h options-list-row retain-selected-index");
+                var itm = createEquippedIcon(equip);
+                valueCont.append(itm);
+                
+            }
+            equipment.append(equipped);
+            
+            equipment.append(equipAvailable);
+            
+            meat.append(equipment);
+            cont.children(".menu-container:eq(0)").replaceWith(meat);
         },
         buildCharStatus:function(char){
             this.menuNum = 0;
@@ -4354,7 +4575,7 @@ Quintus.UIObjects=function(Q){
                     } else {
                         leftCont.append(MB.text("w-xl h-s", loot[1] + " x" +loot[2]));
                     }
-                    var itm = loot.length > 3 ? {amount:loot[4], gear:loot[3], material: loot[2], quality:loot[1]} : {amount:loot[2], gear:loot[1]}
+                    var itm = loot.length > 3 ? {amount:loot[4], gear:loot[3], material: loot[2], quality:loot[1]} : {amount:loot[2], gear:loot[1]};
                     //Add the earnings to the bag
                     Q.partyManager.bag.addItem(loot[0], itm);
                 }
